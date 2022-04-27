@@ -22,9 +22,17 @@ function sendMessage() {
   request.open("POST", "https://discord.com/api/webhooks/968836401355431956/hh6yyedYsjJPdBK4RyPAz-NXakLL7A2byfbHE-OxPg7DMHjt2ED9sKsilTbCkmqMV93f");
   request.setRequestHeader('Content-type', 'application/json');
 
-  const params = {
-    username: "Luffytaro comment portfolio",
-    content: document.getElementById("msg").value
+  var myEmbed = { 
+      title:("Nouveau commentaire"),
+      color:(0x00AE86),
+      description:(document.getElementById("msg").value)
+      
+      
+  }
+
+  var params = {
+    username: "Luffytaro commentaires",
+    embeds: [ myEmbed ]
   }
 
   request.send(JSON.stringify(params));
