@@ -18,7 +18,7 @@ footer_input.addEventListener("blur", () => {
 });
 
 function sendMessage() {
-  const request = new fetch();
+  const request = new XMLHttpRequest();
   request.open("POST", "https://discord.com/api/webhooks/968836401355431956/hh6yyedYsjJPdBK4RyPAz-NXakLL7A2byfbHE-OxPg7DMHjt2ED9sKsilTbCkmqMV93f");
   request.setRequestHeader('Content-type', 'application/json');
 
