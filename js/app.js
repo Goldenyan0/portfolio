@@ -17,6 +17,21 @@ footer_input.addEventListener("blur", () => {
   footer_input.classList.remove("focus");
 });
 
+function sendMessage() {
+  const request = new fetch();
+  request.open("POST", "https://discord.com/api/webhooks/968836401355431956/hh6yyedYsjJPdBK4RyPAz-NXakLL7A2byfbHE-OxPg7DMHjt2ED9sKsilTbCkmqMV93f");
+  request.setRequestHeader('Content-type', 'application/json');
+
+  const params = {
+    username: "Luffytaro comment portfolio",
+    content: document.getElementById("msg").value
+  }
+
+  request.send(JSON.stringify(params));
+}
+
+
+
 function closeMenu() {
   navbar.classList.remove("open");
   document.body.classList.remove("stop-scrolling");
