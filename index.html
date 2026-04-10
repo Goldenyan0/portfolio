@@ -9,6 +9,24 @@
   <link rel="stylesheet" href="./css/style.css" />
   <link href="lightbox/css/lightbox.min.css" rel="stylesheet">
   <style>
+    /* ── Lang toggle button ── */
+    .lang-btn {
+      background: var(--main-color);
+      color: #fff;
+      border: none;
+      border-radius: 2rem;
+      padding: 0.5rem 1.2rem;
+      font-size: 0.85rem;
+      font-family: "Poppins", sans-serif;
+      font-weight: 600;
+      cursor: pointer;
+      margin-left: 1rem;
+      transition: background .3s;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    .lang-btn:hover { background: #6b44e0; }
+
     /* ── Contact bar ── */
     .contact-bar {
       background: #1a1a2e;
@@ -27,6 +45,11 @@
     .contact-bar a:hover { color: #fff; }
     .contact-bar i { margin-right: 6px; }
 
+    /* ── Skills wrap (needed for scroll trigger) ── */
+    .skills-wrap-trigger {
+      width: 100%;
+    }
+
     /* ── Skills grid ── */
     .skills-grid {
       display: grid;
@@ -42,8 +65,31 @@
       margin: 18px 0 10px;
       grid-column: 1 / -1;
     }
+    .skill { margin: 0.6rem 0; }
+    .skill-title {
+      color: #555;
+      font-weight: 600;
+      font-size: 0.88rem;
+      margin-bottom: 4px;
+    }
+    .skill-bar {
+      width: 100%;
+      height: 7px;
+      border-radius: 4px;
+      background: #ece6fa;
+      position: relative;
+      overflow: hidden;
+    }
+    .skill-progress {
+      position: absolute;
+      height: 100%;
+      width: 0%;
+      top: 0; left: 0;
+      background: var(--main-color);
+      transition: width 1.2s ease;
+    }
 
-    /* ── About text ── */
+    /* ── About text blocks ── */
     .about-text-block {
       background: rgba(255,255,255,0.04);
       border-left: 3px solid #a78bfa;
@@ -63,18 +109,10 @@
       line-height: 1.7;
       color: #ccc;
     }
-    .about-text-block ul {
-      padding-left: 16px;
-      margin: 0;
-    }
+    .about-text-block ul { padding-left: 16px; margin: 0; }
     .about-text-block ul li { margin-bottom: 4px; }
 
-    .info-tags {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      margin-top: 6px;
-    }
+    .info-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 6px; }
     .info-tag {
       background: rgba(167,139,250,0.12);
       border: 1px solid rgba(167,139,250,0.3);
@@ -84,7 +122,7 @@
       font-size: 0.78rem;
     }
 
-    /* ── Timeline (experience) ── */
+    /* ── Timeline ── */
     .timeline { position: relative; padding-left: 22px; margin-top: 10px; }
     .timeline::before {
       content: '';
@@ -103,25 +141,11 @@
       background: #a78bfa;
       border: 2px solid #1a1a2e;
     }
-    .timeline-item h5 {
-      font-size: 0.88rem;
-      color: #e2e8f0;
-      margin: 0 0 2px;
-    }
-    .timeline-item span {
-      font-size: 0.75rem;
-      color: #a78bfa;
-      display: block;
-      margin-bottom: 4px;
-    }
-    .timeline-item p {
-      font-size: 0.82rem;
-      color: #aaa;
-      margin: 0;
-      line-height: 1.5;
-    }
+    .timeline-item h5 { font-size: 0.88rem; color: #e2e8f0; margin: 0 0 2px; }
+    .timeline-item span { font-size: 0.75rem; color: #a78bfa; display: block; margin-bottom: 4px; }
+    .timeline-item p { font-size: 0.82rem; color: #aaa; margin: 0; line-height: 1.5; }
 
-    /* ── About section layout fix ── */
+    /* ── About layout ── */
     .about .section-body { align-items: flex-start; }
     .about .column-1 { width: 100%; }
     .about-columns {
@@ -135,11 +159,12 @@
       .skills-grid { grid-template-columns: 1fr; }
     }
 
-    /* ── Portfolio fix ── */
+    /* ── Portfolio overlay FIX (better readability) ── */
     .grid-item .gallery-image {
       position: relative;
       overflow: hidden;
       border-radius: 8px;
+      height: 220px;
     }
     .grid-item .gallery-image img {
       width: 100%;
@@ -149,24 +174,42 @@
       transition: transform .4s;
     }
     .grid-item .gallery-image:hover img { transform: scale(1.05); }
+
+    /* Overlay : dark + violet gradient pour lisibilité */
     .img-overlay {
       position: absolute;
       inset: 0;
-      background: rgba(26,26,46,0.82);
+      background: linear-gradient(135deg, rgba(26,26,46,0.93) 0%, rgba(120,76,251,0.85) 100%);
       display: flex;
       align-items: center;
       justify-content: center;
       opacity: 0;
-      transition: opacity .3s;
+      transition: opacity .35s;
+      z-index: 3;
     }
     .grid-item .gallery-image:hover .img-overlay { opacity: 1; }
-    .img-description { text-align: center; color: #fff; }
-    .img-description h3 { font-size: 0.8rem; color: #a78bfa; margin-bottom: 4px; }
-    .img-description h2 { font-size: 1rem; }
+    .grid-item .work-box:hover .img-overlay { opacity: 1; }
 
-    /* lightbox items */
-    .grid-item .work-box { position: relative; }
-    .grid-item .work-box > a { display: block; }
+    .img-description { text-align: center; color: #fff; padding: 0 12px; }
+    .img-description h3 {
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      color: #d8b4fe;
+      margin-bottom: 6px;
+    }
+    .img-description h2 {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #fff;
+      text-shadow: 0 2px 8px rgba(0,0,0,0.6);
+      line-height: 1.3;
+    }
+
+    /* lightbox work-box */
+    .grid-item .work-box { position: relative; height: 220px; border-radius: 8px; overflow: hidden; }
+    .grid-item .work-box > a { display: block; height: 100%; }
     .grid-item .work-img img {
       width: 100%;
       height: 220px;
@@ -177,17 +220,8 @@
     }
     .grid-item .work-box:hover .work-img img { transform: scale(1.05); }
     .grid-item .work-box .img-overlay {
-      position: absolute;
-      inset: 0;
-      background: rgba(26,26,46,0.82);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      opacity: 0;
-      transition: opacity .3s;
       border-radius: 8px;
     }
-    .grid-item .work-box:hover .img-overlay { opacity: 1; }
   </style>
 </head>
 <body>
@@ -204,26 +238,28 @@
   <!-- ══ HEADER ══ -->
   <header id="header">
     <div class="overlay overlay-lg">
-      <img src="./img/shapes/square.png"       class="shape square"       alt="" />
-      <img src="./img/shapes/circle.png"        class="shape circle"       alt="" />
-      <img src="./img/shapes/half-circle.png"   class="shape half-circle1" alt="" />
-      <img src="./img/shapes/half-circle.png"   class="shape half-circle2" alt="" />
-      <img src="./img/shapes/x.png"             class="shape xshape"       alt="" />
-      <img src="./img/shapes/wave.png"          class="shape wave wave1"   alt="" />
-      <img src="./img/shapes/wave.png"          class="shape wave wave2"   alt="" />
-      <img src="./img/shapes/triangle.png"      class="shape triangle"     alt="" />
-      <img src="./img/shapes/points1.png"       class="points points1"     alt="" />
+      <img src="./img/shapes/square.png"      class="shape square"       alt="" />
+      <img src="./img/shapes/circle.png"       class="shape circle"       alt="" />
+      <img src="./img/shapes/half-circle.png"  class="shape half-circle1" alt="" />
+      <img src="./img/shapes/half-circle.png"  class="shape half-circle2" alt="" />
+      <img src="./img/shapes/x.png"            class="shape xshape"       alt="" />
+      <img src="./img/shapes/wave.png"         class="shape wave wave1"   alt="" />
+      <img src="./img/shapes/wave.png"         class="shape wave wave2"   alt="" />
+      <img src="./img/shapes/triangle.png"     class="shape triangle"     alt="" />
+      <img src="./img/shapes/points1.png"      class="points points1"     alt="" />
     </div>
     <nav>
       <div class="container">
         <div class="logo"><img src="./img/logo.png" alt=""/></div>
         <div class="links">
           <ul>
-            <li><a href="#services">Domains</a></li>
-            <li><a href="#portfolio">Portfolio</a></li>
-            <li><a href="#about">About me</a></li>
+            <li><a href="#services"  data-en="Domains"    data-fr="Domaines">Domains</a></li>
+            <li><a href="#portfolio" data-en="Portfolio"  data-fr="Portfolio">Portfolio</a></li>
+            <li><a href="#about"     data-en="About me"   data-fr="À propos">About me</a></li>
           </ul>
         </div>
+        <!-- ✦ LANG TOGGLE -->
+        <button class="lang-btn" id="langToggle" onclick="toggleLang()">🇫🇷 FR</button>
         <div class="hamburger-menu"><div class="bar"></div></div>
       </div>
     </nav>
@@ -231,17 +267,19 @@
       <div class="container grid-2">
         <div class="column-1">
           <h1 class="header-title">Yanis Poulain</h1>
-          <p class="text">
+          <p class="text"
+             data-en="21-year-old French computer science student at Université de Rennes 1 (ISTIC), passionate about <strong>cybersecurity</strong> and software development since age 11. I master Linux environments, network analysis tools and several programming languages. Currently seeking an <strong>apprenticeship in cybersecurity or IT</strong>."
+             data-fr="Étudiant en informatique de 21 ans à l'Université de Rennes 1 (ISTIC), passionné de <strong>cybersécurité</strong> et de développement depuis l'âge de 11 ans. Je maîtrise les environnements Linux, les outils d'analyse réseau et plusieurs langages de programmation. Je recherche actuellement une <strong>alternance en cybersécurité ou informatique</strong>.">
             21-year-old French computer science student at Université de Rennes 1 (ISTIC),
             passionate about <strong>cybersecurity</strong> and software development since age 11.
             I master Linux environments, network analysis tools and several programming languages.
             Currently seeking an <strong>apprenticeship in cybersecurity or IT</strong>.
           </p>
-          <a href="#services" class="btn">Learn more</a>
+          <a href="#services" class="btn" data-en="Learn more" data-fr="En savoir plus">Learn more</a>
         </div>
         <div class="column-2 image">
           <img src="./img/shapes/points2.png" class="points points2" alt="" />
-          <img src="./img/person.png"          class="img-element z-index" alt=""/>
+          <img src="./img/person.png" class="img-element z-index" alt=""/>
         </div>
       </div>
     </div>
@@ -251,55 +289,61 @@
   <section class="services section" id="services">
     <div class="container">
       <div class="section-header">
-        <h3 class="title">Domains</h3>
+        <h3 class="title" data-en="Domains" data-fr="Domaines">Domains</h3>
       </div>
       <div class="cards">
 
-        <!-- Card 1 : Cybersecurity -->
+        <!-- Card 1 -->
         <div class="card-wrap">
           <div class="card">
             <div class="card-content z-index">
               <img src="./img/design-icon.png" class="icon" alt="" />
-              <h3 class="title-sm">Cybersecurity</h3>
-              <p class="text">
+              <h3 class="title-sm" data-en="Cybersecurity" data-fr="Cybersécurité">Cybersecurity</h3>
+              <p class="text"
+                 data-en="Network scanning with <strong>Nmap</strong>, traffic analysis with <strong>Wireshark</strong>, penetration testing with <strong>Metasploit</strong>. Active on TryHackMe &amp; HackTheBox."
+                 data-fr="Scan réseau avec <strong>Nmap</strong>, analyse de trafic avec <strong>Wireshark</strong>, tests d'intrusion avec <strong>Metasploit</strong>. Actif sur TryHackMe &amp; HackTheBox.">
                 Network scanning with <strong>Nmap</strong>, traffic analysis with <strong>Wireshark</strong>,
                 penetration testing with <strong>Metasploit</strong>. Active on
                 <a href="https://tryhackme.com/p/Goldenyan.exe" target="_blank">TryHackMe</a> &amp;
                 <a href="https://www.hackthebox.com" target="_blank">HackTheBox</a>.
               </p>
-              <a href="#portfolio" class="btn small">Learn more</a>
+              <a href="#portfolio" class="btn small" data-en="Learn more" data-fr="En savoir plus">Learn more</a>
             </div>
           </div>
         </div>
 
-        <!-- Card 2 : Web Development -->
+        <!-- Card 2 -->
         <div class="card-wrap">
           <div class="card">
             <div class="card-content z-index">
               <img src="./img/code-icon.png" class="icon" alt="" />
-              <h3 class="title-sm">Web Development</h3>
-              <p class="text">
+              <h3 class="title-sm" data-en="Web Development" data-fr="Développement Web">Web Development</h3>
+              <p class="text"
+                 data-en="Building responsive websites and web applications using <strong>HTML</strong>, <strong>CSS</strong>, <strong>JavaScript</strong> and <strong>Node.js</strong>. From design to deployment."
+                 data-fr="Création de sites et applications web responsive avec <strong>HTML</strong>, <strong>CSS</strong>, <strong>JavaScript</strong> et <strong>Node.js</strong>. Du design au déploiement.">
                 Building responsive websites and web applications using <strong>HTML</strong>,
                 <strong>CSS</strong>, <strong>JavaScript</strong> and <strong>Node.js</strong>.
                 From design to deployment.
               </p>
-              <a href="#portfolio" class="btn small">Learn more</a>
+              <a href="#portfolio" class="btn small" data-en="Learn more" data-fr="En savoir plus">Learn more</a>
             </div>
           </div>
         </div>
 
-        <!-- Card 3 : Systems & Networks -->
+        <!-- Card 3 -->
         <div class="card-wrap">
           <div class="card">
             <div class="card-content z-index">
               <img src="./img/app-icon.png" class="icon" alt="" />
-              <h3 class="title-sm">Systems & Networks</h3>
-              <p class="text">
+              <h3 class="title-sm" data-en="Systems & Networks" data-fr="Systèmes & Réseaux">Systems & Networks</h3>
+              <p class="text"
+                 data-en="Comfortable with <strong>Linux / Debian</strong> CLI, network architecture, server administration and hardware troubleshooting. Passionate about understanding how systems work at a low level."
+                 data-fr="À l'aise avec la CLI <strong>Linux / Debian</strong>, l'architecture réseau, l'administration serveur et le dépannage matériel. Passionné par le fonctionnement des systèmes à bas niveau.">
                 Comfortable with <strong>Linux / Debian</strong> CLI, network architecture,
                 server administration and hardware troubleshooting. Passionate about
                 understanding how systems work at a low level.
               </p>
-              <a href="#portfolio" class="btn small">Learn more</a>
+              <a href="#portfolio" class="btn small" data-en="Learn more" data-fr="En savoir plus">Learn more</a>
             </div>
           </div>
         </div>
@@ -323,14 +367,14 @@
     </div>
     <div class="container">
       <div class="section-header">
-        <h3 class="title" data-title="My works">Portfolio</h3>
+        <h3 class="title" data-title="My works" data-en="Portfolio" data-fr="Portfolio">Portfolio</h3>
       </div>
       <div class="section-body">
         <div class="filter">
-          <button class="filter-btn active" data-filter="*">All</button>
-          <button class="filter-btn" data-filter=".ui">Cybersecurity</button>
-          <button class="filter-btn" data-filter=".webdev">Web Dev</button>
-          <button class="filter-btn" data-filter=".appdev">App Dev</button>
+          <button class="filter-btn active" data-filter="*"       data-en="All"          data-fr="Tout">All</button>
+          <button class="filter-btn"        data-filter=".ui"     data-en="Cybersecurity" data-fr="Cybersécurité">Cybersecurity</button>
+          <button class="filter-btn"        data-filter=".webdev" data-en="Web Dev"       data-fr="Dev Web">Web Dev</button>
+          <button class="filter-btn"        data-filter=".appdev" data-en="App Dev"       data-fr="Dev App">App Dev</button>
         </div>
 
         <div class="grid">
@@ -342,8 +386,8 @@
               <a href="https://tryhackme.com/p/Goldenyan.exe" target="_blank">
                 <div class="img-overlay">
                   <div class="img-description">
-                    <h3>Cybersecurity</h3>
-                    <h2>TryHackMe Profile</h2>
+                    <h3 data-en="Cybersecurity" data-fr="Cybersécurité">Cybersecurity</h3>
+                    <h2 data-en="TryHackMe Profile" data-fr="Profil TryHackMe">TryHackMe Profile</h2>
                   </div>
                 </div>
               </a>
@@ -357,8 +401,8 @@
               <a href="https://goldenyan0.github.io/goldencity/" target="_blank">
                 <div class="img-overlay">
                   <div class="img-description">
-                    <h3>WebSite</h3>
-                    <h2>GTA V Roleplay Server</h2>
+                    <h3 data-en="Website" data-fr="Site Web">Website</h3>
+                    <h2 data-en="GTA V Roleplay Server" data-fr="Serveur GTA V Roleplay">GTA V Roleplay Server</h2>
                   </div>
                 </div>
               </a>
@@ -368,20 +412,18 @@
           <!-- Discord BOT (lightbox) -->
           <div class="grid-item appdev webdev">
             <div class="gallery-image">
-              <div class="col-md-4">
-                <div class="work-box">
-                  <a href="./img/portfolio/port5.jpg" data-lightbox="gallery-mf">
-                    <div class="work-img">
-                      <img src="./img/portfolio/port5.jpg" alt="Discord Bot" class="img-fluid">
+              <div class="work-box">
+                <a href="./img/portfolio/port5.jpg" data-lightbox="gallery-mf">
+                  <div class="work-img">
+                    <img src="./img/portfolio/port5.jpg" alt="Discord Bot">
+                  </div>
+                  <div class="img-overlay">
+                    <div class="img-description">
+                      <h3 data-en="App / Web Dev" data-fr="App / Dev Web">App / Web Dev</h3>
+                      <h2 data-en="Discord BOT" data-fr="Bot Discord">Discord BOT</h2>
                     </div>
-                    <div class="img-overlay">
-                      <div class="img-description">
-                        <h3>App / Web Development</h3>
-                        <h2>Discord BOT</h2>
-                      </div>
-                    </div>
-                  </a>
-                </div>
+                  </div>
+                </a>
               </div>
             </div>
           </div>
@@ -393,8 +435,8 @@
               <a href="https://goldenyan0.github.io/Nsi-Game-JS/" target="_blank">
                 <div class="img-overlay">
                   <div class="img-description">
-                    <h3>App Development</h3>
-                    <h2>NSI OS Project</h2>
+                    <h3 data-en="App Development" data-fr="Développement App">App Development</h3>
+                    <h2 data-en="NSI OS Project" data-fr="Projet NSI">NSI OS Project</h2>
                   </div>
                 </div>
               </a>
@@ -408,8 +450,8 @@
               <a href="https://github.com/Goldenyan0" target="_blank">
                 <div class="img-overlay">
                   <div class="img-description">
-                    <h3>App Development</h3>
-                    <h2>GitHub Profile</h2>
+                    <h3 data-en="App Development" data-fr="Développement App">App Development</h3>
+                    <h2 data-en="GitHub Profile" data-fr="Profil GitHub">GitHub Profile</h2>
                   </div>
                 </div>
               </a>
@@ -419,20 +461,18 @@
           <!-- GTA RP Server (lightbox) -->
           <div class="grid-item appdev">
             <div class="gallery-image">
-              <div class="col-md-4">
-                <div class="work-box">
-                  <a href="./img/portfolio/port9.png" data-lightbox="gallery-mf">
-                    <div class="work-img">
-                      <img src="./img/portfolio/port9.png" alt="GTA RP Server" class="img-fluid">
+              <div class="work-box">
+                <a href="./img/portfolio/port9.png" data-lightbox="gallery-mf">
+                  <div class="work-img">
+                    <img src="./img/portfolio/port9.png" alt="GTA RP Server">
+                  </div>
+                  <div class="img-overlay">
+                    <div class="img-description">
+                      <h3 data-en="App Development" data-fr="Développement App">App Development</h3>
+                      <h2 data-en="GTA V Roleplay Server" data-fr="Serveur GTA V Roleplay">GTA V Roleplay Server</h2>
                     </div>
-                    <div class="img-overlay">
-                      <div class="img-description">
-                        <h3>App Development</h3>
-                        <h2>GTA V Roleplay Server</h2>
-                      </div>
-                    </div>
-                  </a>
-                </div>
+                  </div>
+                </a>
               </div>
             </div>
           </div>
@@ -444,8 +484,8 @@
               <a href="https://github.com/Goldenyan0/multifighter" target="_blank">
                 <div class="img-overlay">
                   <div class="img-description">
-                    <h3>App Development</h3>
-                    <h2>Multifighter</h2>
+                    <h3 data-en="App Development" data-fr="Développement App">App Development</h3>
+                    <h2 data-en="Multifighter" data-fr="Multifighter">Multifighter</h2>
                   </div>
                 </div>
               </a>
@@ -461,13 +501,14 @@
   <section class="about section" id="about">
     <div class="container">
       <div class="section-header">
-        <h3 class="title" data-title="Who Am I">About me</h3>
+        <h3 class="title" data-title="Who Am I" data-en="About me" data-fr="À propos">About me</h3>
       </div>
 
-      <!-- top bio -->
+      <!-- Bio block -->
       <div class="about-text-block">
-        <h4>Who am I?</h4>
-        <p>
+        <h4 data-en="Who am I?" data-fr="Qui suis-je ?">Who am I?</h4>
+        <p data-en="I'm <strong>Yanis Poulain</strong>, a 21-year-old French computer science student at <strong>Université de Rennes 1 – ISTIC</strong>. Passionate about cybersecurity, networks and software development since I was 11, I'm actively looking for an <strong>apprenticeship in cybersecurity or IT</strong>. Fluent in French, intermediate in English (B1/B2). Driving licence B."
+           data-fr="Je suis <strong>Yanis Poulain</strong>, étudiant en informatique de 21 ans à l'<strong>Université de Rennes 1 – ISTIC</strong>. Passionné par la cybersécurité, les réseaux et le développement depuis mes 11 ans, je recherche activement une <strong>alternance en cybersécurité ou informatique</strong>. Français natif, anglais intermédiaire (B1/B2). Permis B.">
           I'm <strong>Yanis Poulain</strong>, a 21-year-old French computer science student at
           <strong>Université de Rennes 1 – ISTIC</strong>. Passionate about cybersecurity, networks and
           software development since I was 11, I'm actively looking for an
@@ -478,8 +519,8 @@
           <span class="info-tag"><i class="fas fa-map-marker-alt" style="margin-right:5px;"></i>Rennes, France</span>
           <span class="info-tag"><i class="fas fa-envelope" style="margin-right:5px;"></i>y.poulain04@gmail.com</span>
           <span class="info-tag"><i class="fas fa-phone" style="margin-right:5px;"></i>07 63 53 13 10</span>
-          <span class="info-tag"><i class="fas fa-car" style="margin-right:5px;"></i>Permis B</span>
-          <span class="info-tag"><i class="fas fa-graduation-cap" style="margin-right:5px;"></i>Licence Informatique – Rennes 1</span>
+          <span class="info-tag"><i class="fas fa-car" style="margin-right:5px;"></i><span data-en="Driving licence B" data-fr="Permis B">Driving licence B</span></span>
+          <span class="info-tag"><i class="fas fa-graduation-cap" style="margin-right:5px;"></i><span data-en="Computer Science degree – Rennes 1" data-fr="Licence Informatique – Rennes 1">Computer Science degree – Rennes 1</span></span>
         </div>
       </div>
 
@@ -487,242 +528,169 @@
 
         <!-- LEFT column -->
         <div>
-
-          <!-- Technical skills -->
           <div class="about-text-block">
-            <h4>Technical Skills</h4>
+            <h4 data-en="Technical Skills" data-fr="Compétences Techniques">Technical Skills</h4>
 
-            <div class="skills-grid">
+            <!-- The skills wrapper — MUST have class "skills" for app.js scroll trigger -->
+            <div class="skills skills-wrap-trigger">
+              <div class="skills-grid">
 
-              <!-- Programming Languages -->
-              <div style="grid-column:1/-1" class="skills-section-title">Programming Languages</div>
-              <div>
-                <div class="skill html">
-                  <h3 class="skill-title">HTML / CSS</h3>
-                  <div class="skill-bar"><div class="skill-progress" data-progress="90%"></div></div>
+                <!-- Programming Languages -->
+                <div class="skills-section-title" data-en="Programming Languages" data-fr="Langages de Programmation">Programming Languages</div>
+                <div>
+                  <div class="skill"><h3 class="skill-title">HTML / CSS</h3><div class="skill-bar"><div class="skill-progress" data-progress="90%"></div></div></div>
+                  <div class="skill"><h3 class="skill-title">JavaScript</h3><div class="skill-bar"><div class="skill-progress" data-progress="80%"></div></div></div>
+                  <div class="skill"><h3 class="skill-title">Python</h3><div class="skill-bar"><div class="skill-progress" data-progress="80%"></div></div></div>
                 </div>
-                <div class="skill js">
-                  <h3 class="skill-title">JavaScript</h3>
-                  <div class="skill-bar"><div class="skill-progress" data-progress="80%"></div></div>
+                <div>
+                  <div class="skill"><h3 class="skill-title">Lua</h3><div class="skill-bar"><div class="skill-progress" data-progress="75%"></div></div></div>
+                  <div class="skill"><h3 class="skill-title">Shell / Bash</h3><div class="skill-bar"><div class="skill-progress" data-progress="55%"></div></div></div>
+                  <div class="skill"><h3 class="skill-title">SQL</h3><div class="skill-bar"><div class="skill-progress" data-progress="50%"></div></div></div>
                 </div>
-                <div class="skill js">
-                  <h3 class="skill-title">Python</h3>
-                  <div class="skill-bar"><div class="skill-progress" data-progress="80%"></div></div>
-                </div>
-              </div>
-              <div>
-                <div class="skill js">
-                  <h3 class="skill-title">Lua</h3>
-                  <div class="skill-bar"><div class="skill-progress" data-progress="75%"></div></div>
-                </div>
-                <div class="skill js">
-                  <h3 class="skill-title">Shell / Bash</h3>
-                  <div class="skill-bar"><div class="skill-progress" data-progress="55%"></div></div>
-                </div>
-                <div class="skill js">
-                  <h3 class="skill-title">SQL</h3>
-                  <div class="skill-bar"><div class="skill-progress" data-progress="50%"></div></div>
-                </div>
-              </div>
 
-              <!-- OS & Systems -->
-              <div style="grid-column:1/-1" class="skills-section-title">OS & Systems</div>
-              <div>
-                <div class="skill html">
-                  <h3 class="skill-title">Linux / Debian</h3>
-                  <div class="skill-bar"><div class="skill-progress" data-progress="85%"></div></div>
+                <!-- OS & Systems -->
+                <div class="skills-section-title" data-en="OS & Systems" data-fr="OS & Systèmes">OS & Systems</div>
+                <div>
+                  <div class="skill"><h3 class="skill-title">Linux / Debian</h3><div class="skill-bar"><div class="skill-progress" data-progress="85%"></div></div></div>
+                  <div class="skill"><h3 class="skill-title">Windows (CLI & Admin)</h3><div class="skill-bar"><div class="skill-progress" data-progress="90%"></div></div></div>
                 </div>
-                <div class="skill html">
-                  <h3 class="skill-title">Windows (CLI & Admin)</h3>
-                  <div class="skill-bar"><div class="skill-progress" data-progress="90%"></div></div>
+                <div>
+                  <div class="skill"><h3 class="skill-title">Kali Linux</h3><div class="skill-bar"><div class="skill-progress" data-progress="70%"></div></div></div>
+                  <div class="skill"><h3 class="skill-title">Bash / PowerShell</h3><div class="skill-bar"><div class="skill-progress" data-progress="75%"></div></div></div>
                 </div>
-              </div>
-              <div>
-                <div class="skill html">
-                  <h3 class="skill-title">Kali Linux</h3>
-                  <div class="skill-bar"><div class="skill-progress" data-progress="70%"></div></div>
-                </div>
-                <div class="skill html">
-                  <h3 class="skill-title">Command Line (Bash/PowerShell)</h3>
-                  <div class="skill-bar"><div class="skill-progress" data-progress="75%"></div></div>
-                </div>
-              </div>
 
-              <!-- Cybersecurity Tools -->
-              <div style="grid-column:1/-1" class="skills-section-title">Cybersecurity Tools</div>
-              <div>
-                <div class="skill html">
-                  <h3 class="skill-title">Nmap (network scanning)</h3>
-                  <div class="skill-bar"><div class="skill-progress" data-progress="75%"></div></div>
+                <!-- Cybersecurity Tools -->
+                <div class="skills-section-title" data-en="Cybersecurity Tools" data-fr="Outils Cybersécurité">Cybersecurity Tools</div>
+                <div>
+                  <div class="skill"><h3 class="skill-title">Nmap</h3><div class="skill-bar"><div class="skill-progress" data-progress="75%"></div></div></div>
+                  <div class="skill"><h3 class="skill-title">Wireshark</h3><div class="skill-bar"><div class="skill-progress" data-progress="70%"></div></div></div>
+                  <div class="skill"><h3 class="skill-title">Metasploit</h3><div class="skill-bar"><div class="skill-progress" data-progress="60%"></div></div></div>
                 </div>
-                <div class="skill html">
-                  <h3 class="skill-title">Wireshark (traffic analysis)</h3>
-                  <div class="skill-bar"><div class="skill-progress" data-progress="70%"></div></div>
+                <div>
+                  <div class="skill"><h3 class="skill-title">Burp Suite</h3><div class="skill-bar"><div class="skill-progress" data-progress="55%"></div></div></div>
+                  <div class="skill"><h3 class="skill-title">John the Ripper / Hashcat</h3><div class="skill-bar"><div class="skill-progress" data-progress="55%"></div></div></div>
+                  <div class="skill"><h3 class="skill-title">Netcat / Gobuster</h3><div class="skill-bar"><div class="skill-progress" data-progress="60%"></div></div></div>
                 </div>
-                <div class="skill html">
-                  <h3 class="skill-title">Metasploit Framework</h3>
-                  <div class="skill-bar"><div class="skill-progress" data-progress="60%"></div></div>
-                </div>
-              </div>
-              <div>
-                <div class="skill html">
-                  <h3 class="skill-title">Burp Suite</h3>
-                  <div class="skill-bar"><div class="skill-progress" data-progress="55%"></div></div>
-                </div>
-                <div class="skill html">
-                  <h3 class="skill-title">John the Ripper / Hashcat</h3>
-                  <div class="skill-bar"><div class="skill-progress" data-progress="55%"></div></div>
-                </div>
-                <div class="skill html">
-                  <h3 class="skill-title">Netcat / Gobuster</h3>
-                  <div class="skill-bar"><div class="skill-progress" data-progress="60%"></div></div>
-                </div>
-              </div>
 
-              <!-- Networks & Protocols -->
-              <div style="grid-column:1/-1" class="skills-section-title">Networks & Protocols</div>
-              <div>
-                <div class="skill html">
-                  <h3 class="skill-title">TCP/IP, DNS, DHCP, HTTP(S)</h3>
-                  <div class="skill-bar"><div class="skill-progress" data-progress="75%"></div></div>
+                <!-- Networks -->
+                <div class="skills-section-title" data-en="Networks & Protocols" data-fr="Réseaux & Protocoles">Networks & Protocols</div>
+                <div>
+                  <div class="skill"><h3 class="skill-title">TCP/IP · DNS · DHCP · HTTP(S)</h3><div class="skill-bar"><div class="skill-progress" data-progress="75%"></div></div></div>
+                  <div class="skill"><h3 class="skill-title">SSH / FTP / SMB</h3><div class="skill-bar"><div class="skill-progress" data-progress="70%"></div></div></div>
                 </div>
-                <div class="skill html">
-                  <h3 class="skill-title">SSH / FTP / SMB</h3>
-                  <div class="skill-bar"><div class="skill-progress" data-progress="70%"></div></div>
+                <div>
+                  <div class="skill"><h3 class="skill-title">VPN / Firewall basics</h3><div class="skill-bar"><div class="skill-progress" data-progress="60%"></div></div></div>
+                  <div class="skill"><h3 class="skill-title">CTF / Pentest methodology</h3><div class="skill-bar"><div class="skill-progress" data-progress="65%"></div></div></div>
                 </div>
-              </div>
-              <div>
-                <div class="skill html">
-                  <h3 class="skill-title">VPN / Firewall basics</h3>
-                  <div class="skill-bar"><div class="skill-progress" data-progress="60%"></div></div>
-                </div>
-                <div class="skill html">
-                  <h3 class="skill-title">CTF / Pentest methodology</h3>
-                  <div class="skill-bar"><div class="skill-progress" data-progress="65%"></div></div>
-                </div>
-              </div>
 
-              <!-- Dev Tools & Platforms -->
-              <div style="grid-column:1/-1" class="skills-section-title">Dev Tools & Platforms</div>
-              <div>
-                <div class="skill html">
-                  <h3 class="skill-title">Git / GitHub</h3>
-                  <div class="skill-bar"><div class="skill-progress" data-progress="80%"></div></div>
+                <!-- Dev Tools -->
+                <div class="skills-section-title" data-en="Dev Tools & Platforms" data-fr="Outils Dev & Plateformes">Dev Tools & Platforms</div>
+                <div>
+                  <div class="skill"><h3 class="skill-title">Git / GitHub</h3><div class="skill-bar"><div class="skill-progress" data-progress="80%"></div></div></div>
+                  <div class="skill"><h3 class="skill-title">VS Code</h3><div class="skill-bar"><div class="skill-progress" data-progress="90%"></div></div></div>
                 </div>
-                <div class="skill html">
-                  <h3 class="skill-title">VS Code</h3>
-                  <div class="skill-bar"><div class="skill-progress" data-progress="90%"></div></div>
+                <div>
+                  <div class="skill"><h3 class="skill-title">Node.js / Discord.js</h3><div class="skill-bar"><div class="skill-progress" data-progress="75%"></div></div></div>
+                  <div class="skill"><h3 class="skill-title">FiveM / GTA RP Dev</h3><div class="skill-bar"><div class="skill-progress" data-progress="80%"></div></div></div>
                 </div>
-              </div>
-              <div>
-                <div class="skill html">
-                  <h3 class="skill-title">Node.js / Discord.js</h3>
-                  <div class="skill-bar"><div class="skill-progress" data-progress="75%"></div></div>
-                </div>
-                <div class="skill html">
-                  <h3 class="skill-title">FiveM / GTA RP Server Dev</h3>
-                  <div class="skill-bar"><div class="skill-progress" data-progress="80%"></div></div>
-                </div>
-              </div>
 
-            </div><!-- /.skills-grid -->
+              </div><!-- /.skills-grid -->
+            </div><!-- /.skills -->
           </div><!-- /.about-text-block -->
 
-          <!-- Platforms & Learning -->
+          <!-- Platforms -->
           <div class="about-text-block">
-            <h4>Platforms & Learning</h4>
+            <h4 data-en="Platforms & Learning" data-fr="Plateformes & Formation">Platforms & Learning</h4>
             <ul>
-              <li>🏆 <strong>TryHackMe</strong> – Active ranked profile (Goldenyan.exe) — CTF rooms, OSCP-path</li>
-              <li>🏆 <strong>HackTheBox</strong> – Machine solving, Pro Hacker progression</li>
-              <li>📚 <strong>Bac Général</strong> – Spécialité Maths + NSI (Numérique & Sciences Informatiques) – 2023</li>
-              <li>📚 <strong>Licence Informatique</strong> – Université Rennes 1 ISTIC – depuis 2024</li>
+              <li>🏆 <strong>TryHackMe</strong> – <span data-en="Active ranked profile (Goldenyan.exe) — CTF rooms, OSCP-path" data-fr="Profil classé actif (Goldenyan.exe) — salles CTF, parcours OSCP">Active ranked profile (Goldenyan.exe) — CTF rooms, OSCP-path</span></li>
+              <li>🏆 <strong>HackTheBox</strong> – <span data-en="Machine solving, Pro Hacker progression" data-fr="Résolution de machines, progression Pro Hacker">Machine solving, Pro Hacker progression</span></li>
+              <li>📚 <strong>Bac Général</strong> – <span data-en="Maths + NSI specialities – 2023" data-fr="Spécialités Maths + NSI – 2023">Maths + NSI specialities – 2023</span></li>
+              <li>📚 <strong><span data-en="Computer Science degree" data-fr="Licence Informatique">Computer Science degree</span></strong> – <span data-en="Université Rennes 1 ISTIC – since 2024" data-fr="Université Rennes 1 ISTIC – depuis 2024">Université Rennes 1 ISTIC – since 2024</span></li>
             </ul>
           </div>
-
-        </div><!-- /left column -->
+        </div><!-- /left -->
 
         <!-- RIGHT column -->
         <div>
 
-          <!-- Notable Projects -->
+          <!-- Projects -->
           <div class="about-text-block">
-            <h4>Notable Projects</h4>
+            <h4 data-en="Notable Projects" data-fr="Projets Notables">Notable Projects</h4>
             <div class="timeline">
               <div class="timeline-item">
                 <h5>GTA V Roleplay Server</h5>
                 <span>Lua · FiveM · Web · SQL</span>
-                <p>Full server development: scripted game mechanics in Lua, MySQL database management, custom web panel for server administration.</p>
+                <p data-en="Full server development: scripted game mechanics in Lua, MySQL database management, custom web panel for server administration." data-fr="Développement complet du serveur : mécaniques de jeu scriptées en Lua, gestion base MySQL, panel web d'administration.">Full server development: scripted game mechanics in Lua, MySQL database management, custom web panel for server administration.</p>
               </div>
               <div class="timeline-item">
                 <h5>Discord BOT</h5>
                 <span>JavaScript · Node.js · Discord.js</span>
-                <p>Multi-feature bot: moderation, custom commands, API integrations, deployed on a Linux VPS.</p>
+                <p data-en="Multi-feature bot: moderation, custom commands, API integrations, deployed on a Linux VPS." data-fr="Bot multi-fonctions : modération, commandes personnalisées, intégrations API, déployé sur VPS Linux.">Multi-feature bot: moderation, custom commands, API integrations, deployed on a Linux VPS.</p>
               </div>
               <div class="timeline-item">
                 <h5>Multifighter — Python Game</h5>
                 <span>Python · Pygame</span>
-                <p>2D fighting game developed in Python with Pygame. Object-oriented architecture, collision system, game loop.</p>
+                <p data-en="2D fighting game in Python with Pygame. OOP architecture, collision system, game loop." data-fr="Jeu de combat 2D en Python avec Pygame. Architecture orientée objet, système de collision, boucle de jeu.">2D fighting game in Python with Pygame. OOP architecture, collision system, game loop.</p>
               </div>
               <div class="timeline-item">
-                <h5>NSI OS Project — Browser Game</h5>
+                <h5>NSI OS Project</h5>
                 <span>JavaScript · HTML · CSS</span>
-                <p>Interactive browser-based game developed as a high school CS project. Hosted on GitHub Pages.</p>
+                <p data-en="Interactive browser game developed as a high school CS project. Hosted on GitHub Pages." data-fr="Jeu interactif en navigateur développé en terminale NSI. Hébergé sur GitHub Pages.">Interactive browser game developed as a high school CS project. Hosted on GitHub Pages.</p>
               </div>
               <div class="timeline-item">
                 <h5>GoldCity RP — Website</h5>
                 <span>HTML · CSS · JavaScript</span>
-                <p>Presentation website for a GTA V RP community. Responsive design, animations, hosted on GitHub Pages.</p>
+                <p data-en="Presentation website for a GTA V RP community. Responsive design, animations, GitHub Pages." data-fr="Site vitrine pour une communauté GTA V RP. Design responsive, animations, hébergé sur GitHub Pages.">Presentation website for a GTA V RP community. Responsive design, animations, GitHub Pages.</p>
               </div>
             </div>
           </div>
 
-          <!-- Professional Experience -->
+          <!-- Experience -->
           <div class="about-text-block">
-            <h4>Professional Experience</h4>
+            <h4 data-en="Professional Experience" data-fr="Expérience Professionnelle">Professional Experience</h4>
             <div class="timeline">
               <div class="timeline-item">
-                <h5>Responsable Préparation Automobile</h5>
-                <span>AAA Locatour / Europcar – Rennes · Depuis fév. 2026</span>
-                <p>Planning des préparations, accueil client, check-out véhicules, suivi des immobilisations, coordination atelier.</p>
+                <h5 data-en="Vehicle Preparation Manager" data-fr="Responsable Préparation Automobile">Responsable Préparation Automobile</h5>
+                <span>AAA Locatour / Europcar – Rennes · <span data-en="Since Feb. 2026" data-fr="Depuis fév. 2026">Depuis fév. 2026</span></span>
+                <p data-en="Scheduling vehicle preparations, customer reception, vehicle check-out, fleet tracking, workshop coordination." data-fr="Planning des préparations, accueil client, check-out véhicules, suivi des immobilisations, coordination atelier.">Planning des préparations, accueil client, check-out véhicules, suivi des immobilisations, coordination atelier.</p>
               </div>
               <div class="timeline-item">
-                <h5>Agent de Préparation Véhicules</h5>
+                <h5 data-en="Vehicle Preparation Agent" data-fr="Agent de Préparation Véhicules">Agent de Préparation Véhicules</h5>
                 <span>Sixt / Group L – Rennes Gare · 2025</span>
-                <p>Contrôle visuel, remise véhicules, convoyages inter-agences. Autonomie et rigueur.</p>
+                <p data-en="Visual inspection, vehicle handover, inter-agency transfers. Autonomy and rigor." data-fr="Contrôle visuel, remise véhicules, convoyages inter-agences. Autonomie et rigueur.">Contrôle visuel, remise véhicules, convoyages inter-agences. Autonomie et rigueur.</p>
               </div>
               <div class="timeline-item">
-                <h5>Équipier Polyvalent</h5>
+                <h5 data-en="Crew Member" data-fr="Équipier Polyvalent">Équipier Polyvalent</h5>
                 <span>McDonald's Pleumeleuc · 2025</span>
-                <p>Travail en forte affluence, respect des normes d'hygiène, formation de nouveaux équipiers.</p>
+                <p data-en="High-traffic work environment, hygiene compliance, training new team members." data-fr="Travail en forte affluence, respect des normes d'hygiène, formation de nouveaux équipiers.">Travail en forte affluence, respect des normes d'hygiène, formation de nouveaux équipiers.</p>
               </div>
               <div class="timeline-item">
-                <h5>Enquêteur Vacataire / Inventoriste</h5>
+                <h5 data-en="Stock Auditor / Inventory Taker" data-fr="Enquêteur Vacataire / Inventoriste">Enquêteur Vacataire / Inventoriste</h5>
                 <span>RGIS Bretagne · 2024</span>
-                <p>Comptage de stocks, lecteurs codes-barres, horaires décalés (nuit), déplacements en équipe.</p>
+                <p data-en="Stock counting with barcode scanners, night shifts, team travel." data-fr="Comptage de stocks, lecteurs codes-barres, horaires décalés (nuit), déplacements en équipe.">Comptage de stocks, lecteurs codes-barres, horaires décalés (nuit), déplacements en équipe.</p>
               </div>
             </div>
           </div>
 
-          <!-- Soft Skills & Interests -->
+          <!-- Soft skills -->
           <div class="about-text-block">
-            <h4>Soft Skills & Interests</h4>
+            <h4 data-en="Soft Skills & Interests" data-fr="Soft Skills & Centres d'intérêt">Soft Skills & Interests</h4>
             <div class="info-tags">
-              <span class="info-tag">🤝 Team work</span>
-              <span class="info-tag">⏱ Autonomy</span>
-              <span class="info-tag">🎯 Rigour</span>
-              <span class="info-tag">🔄 Adaptability</span>
-              <span class="info-tag">🚗 Automobile</span>
-              <span class="info-tag">💻 Tech / IT</span>
-              <span class="info-tag">🏊 Swimming</span>
-              <span class="info-tag">💪 Bodybuilding</span>
-              <span class="info-tag">🔐 CTF / Hacking</span>
-              <span class="info-tag">🌐 Networking</span>
+              <span class="info-tag" data-en="🤝 Team work"    data-fr="🤝 Travail d'équipe">🤝 Team work</span>
+              <span class="info-tag" data-en="⏱ Autonomy"      data-fr="⏱ Autonomie">⏱ Autonomy</span>
+              <span class="info-tag" data-en="🎯 Rigour"        data-fr="🎯 Rigueur">🎯 Rigour</span>
+              <span class="info-tag" data-en="🔄 Adaptability"  data-fr="🔄 Adaptabilité">🔄 Adaptability</span>
+              <span class="info-tag" data-en="🚗 Automobile"    data-fr="🚗 Automobile">🚗 Automobile</span>
+              <span class="info-tag" data-en="💻 Tech / IT"     data-fr="💻 Tech / Informatique">💻 Tech / IT</span>
+              <span class="info-tag" data-en="🏊 Swimming"      data-fr="🏊 Natation">🏊 Swimming</span>
+              <span class="info-tag" data-en="💪 Bodybuilding"  data-fr="💪 Musculation">💪 Bodybuilding</span>
+              <span class="info-tag" data-en="🔐 CTF / Hacking" data-fr="🔐 CTF / Hacking">🔐 CTF / Hacking</span>
+              <span class="info-tag" data-en="🌐 Networking"    data-fr="🌐 Réseaux">🌐 Networking</span>
             </div>
           </div>
 
-        </div><!-- /right column -->
+        </div><!-- /right -->
       </div><!-- /about-columns -->
-
     </div>
   </section>
 
@@ -731,7 +699,7 @@
     <div class="container">
       <div class="grid-4">
         <div class="grid-4-col footer-about">
-          <h3 class="title-sm">Contact</h3>
+          <h3 class="title-sm" data-en="Contact" data-fr="Contact">Contact</h3>
           <p class="text">
             <i class="fas fa-envelope" style="margin-right:6px;color:#a78bfa;"></i>
             <a href="mailto:y.poulain04@gmail.com" style="color:#ccc;">y.poulain04@gmail.com</a><br/>
@@ -741,7 +709,7 @@
           </p>
         </div>
         <div class="grid-4-col footer-newstletter">
-          <h3 class="title-sm">Subscribe</h3>
+          <h3 class="title-sm" data-en="Subscribe" data-fr="S'abonner">Subscribe</h3>
           <div class="footer-input-wrap">
             <input type="email" class="footer-input" placeholder="Email" />
             <a href="#" class="input-arrow"><i class="fas fa-angle-right"></i></a>
@@ -756,13 +724,13 @@
         </div>
         <div class="followme-wrap">
           <div class="followme">
-            <h3>Follow me</h3>
+            <h3 data-en="Follow me" data-fr="Suivre">Follow me</h3>
             <span class="footer-line"></span>
             <div class="social-media">
-              <a href="https://github.com/Goldenyan0" target="_blank"><i class="fab fa-github"></i></a>
-              <a href="https://tryhackme.com/p/Goldenyan.exe" target="_blank"><i class="fas fa-shield-alt"></i></a>
-              <a href="mailto:y.poulain04@gmail.com"><i class="fas fa-envelope"></i></a>
-              <a href="https://www.linkedin.com" target="_blank"><i class="fab fa-linkedin-in"></i></a>
+              <a href="https://github.com/Goldenyan0"            target="_blank"><i class="fab fa-github"></i></a>
+              <a href="https://tryhackme.com/p/Goldenyan.exe"    target="_blank"><i class="fas fa-shield-alt"></i></a>
+              <a href="mailto:y.poulain04@gmail.com">                            <i class="fas fa-envelope"></i></a>
+              <a href="https://www.linkedin.com"                 target="_blank"><i class="fab fa-linkedin-in"></i></a>
             </div>
           </div>
           <div class="back-btn-wrap">
@@ -780,5 +748,71 @@
 <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
 <script src="./js/app.js"></script>
 <script src="lightbox/js/lightbox.min.js"></script>
+
+<script>
+/* ══════════════════════════════════════
+   SKILL BARS — fix (app.js uses .skills querySelector
+   which only gets the first element; we re-implement
+   a reliable IntersectionObserver version)
+══════════════════════════════════════ */
+(function() {
+  const bars = document.querySelectorAll('.skill-progress');
+  let animated = false;
+
+  function animateBars() {
+    if (animated) return;
+    bars.forEach(bar => {
+      bar.style.width = bar.dataset.progress;
+    });
+    animated = true;
+  }
+
+  // Use IntersectionObserver on the skills section
+  const skillsSection = document.querySelector('.skills');
+  if (skillsSection && 'IntersectionObserver' in window) {
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) { animateBars(); }
+      });
+    }, { threshold: 0.1 });
+    observer.observe(skillsSection);
+  } else {
+    // Fallback: trigger on scroll
+    window.addEventListener('scroll', function() {
+      if (!skillsSection) return;
+      const rect = skillsSection.getBoundingClientRect();
+      if (rect.top < window.innerHeight) animateBars();
+    });
+  }
+})();
+
+/* ══════════════════════════════════════
+   LANGUAGE TOGGLE
+══════════════════════════════════════ */
+let currentLang = 'en';
+
+function toggleLang() {
+  currentLang = currentLang === 'en' ? 'fr' : 'en';
+  const btn = document.getElementById('langToggle');
+  btn.textContent = currentLang === 'en' ? '🇫🇷 FR' : '🇬🇧 EN';
+
+  // All elements with data-en / data-fr
+  document.querySelectorAll('[data-en][data-fr]').forEach(el => {
+    const val = el.getAttribute('data-' + currentLang);
+    if (val !== null) {
+      // Use innerHTML for elements that may contain <strong> etc.
+      if (el.tagName === 'P' || el.tagName === 'H3' || el.tagName === 'H4' || el.tagName === 'A' || el.tagName === 'SPAN') {
+        el.innerHTML = val;
+      } else {
+        el.textContent = val;
+      }
+    }
+  });
+
+  // Placeholder for footer input
+  const inp = document.querySelector('.footer-input');
+  if (inp) inp.placeholder = currentLang === 'fr' ? 'Email' : 'Email';
+}
+</script>
 </body>
 </html>
