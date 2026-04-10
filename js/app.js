@@ -122,3 +122,38 @@ var mySwiper = new Swiper(".swiper-container", {
     nextEl: ".swiper-button-next",
   },
 });
+
+// ── Fix skill bars : observer au lieu de scroll simple ──
+const skillsWrap = document.querySelector(".skills");
+if (skillsWrap) {
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        document.querySelectorAll(".skill-progress").forEach(bar => {
+          bar.style.width = bar.dataset.progress;
+        });
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.1 });
+  observer.observe(skillsWrap);
+}
+
+// ── Système bilingue ──
+const langBtns = document.querySelectorAll(".lang-btn");
+let currentLang = "en";
+
+function applyLang(lang) {
+  currentLang = lang;
+  document.querySelectorAll("[data-en]").forEach(el => {
+    el.textContent = lang === "fr" ? el.dataset.fr : el.dataset.en;
+  });
+  langBtns.forEach(btn => {
+    btn.classList.toggle("active", btn.dataset.lang === lang);
+  });
+}
+
+langBtns.forEach(btn => {
+  btn.addEventListener("click", () => applyLang(btn.dataset.lang));
+});
+
