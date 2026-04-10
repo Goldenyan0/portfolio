@@ -1,369 +1,377 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Portfolio Yanis</title>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Portfolio Yanis</title>
 
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css"/>
-  <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css"/>
-  <link rel="stylesheet" href="./css/style.css" />
-  <link href="lightbox/css/lightbox.min.css" rel="stylesheet">
-</head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css"/>
+    <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css"/>
+    <link rel="stylesheet" href="./css/style.css" />
+    <link href="lightbox/css/lightbox.min.css" rel="stylesheet">
+  </head>
 
-<body>
+  <body>
 
-<main>
+    <main>
 
-<header id="header">
+      <!-- HEADER -->
+      <header id="header">
+        <div class="overlay overlay-lg">
+          <img src="./img/shapes/square.png" class="shape square" alt="" />
+          <img src="./img/shapes/circle.png" class="shape circle" alt="" />
+          <img src="./img/shapes/half-circle.png" class="shape half-circle1" alt="" />
+          <img src="./img/shapes/half-circle.png" class="shape half-circle2" alt="" />
+          <img src="./img/shapes/x.png" class="shape xshape" alt="" />
+          <img src="./img/shapes/wave.png" class="shape wave wave1" alt="" />
+          <img src="./img/shapes/wave.png" class="shape wave wave2" alt="" />
+          <img src="./img/shapes/triangle.png" class="shape triangle" alt="" />
+          <img src="./img/shapes/points1.png" class="points points1" alt="" />
+        </div>
 
-  <div class="overlay overlay-lg">
-    <img src="./img/shapes/square.png" class="shape square" alt="" />
-    <img src="./img/shapes/circle.png" class="shape circle" alt="" />
-    <img src="./img/shapes/half-circle.png" class="shape half-circle1" alt="" />
-    <img src="./img/shapes/half-circle.png" class="shape half-circle2" alt="" />
-    <img src="./img/shapes/x.png" class="shape xshape" alt="" />
-    <img src="./img/shapes/wave.png" class="shape wave wave1" alt="" />
-    <img src="./img/shapes/wave.png" class="shape wave wave2" alt="" />
-    <img src="./img/shapes/triangle.png" class="shape triangle" alt="" />
-    <img src="./img/shapes/points1.png" class="points points1" alt="" />
-  </div>
+        <nav>
+          <div class="container">
+            <div class="logo">
+              <img src="./img/logo.png" alt=""/>
+            </div>
 
-  <nav>
-    <div class="container">
+            <div class="links">
+              <ul>
+                <li><a href="#services">Domains</a></li>
+                <li><a href="#portfolio">Portfolio</a></li>
+                <li><a href="#about">About me</a></li>
+              </ul>
+            </div>
 
-      <div class="logo">
-        <img src="./img/logo.png" alt=""/>
-      </div>
+            <div class="hamburger-menu">
+              <div class="bar"></div>
+            </div>
+          </div>
+        </nav>
 
-      <div class="links">
-        <ul>
-          <li><a href="#services">Domains</a></li>
-          <li><a href="#portfolio">Portfolio</a></li>
-          <li><a href="#about">About me</a></li>
-        </ul>
-      </div>
+        <div class="header-content">
+          <div class="container grid-2">
 
-      <div class="hamburger-menu">
-        <div class="bar"></div>
-      </div>
+            <div class="column-1">
+              <h1 class="header-title">Yanis Poulain</h1>
 
-    </div>
-  </nav>
+              <p class="text">
+                Étudiant en informatique passionné par la cybersécurité, les réseaux et le développement.
+                Objectif : alternance informatique / cybersécurité.
+              </p>
 
-  <div class="header-content">
-    <div class="container grid-2">
+              <p class="text">
+                📧 y.poulain04@gmail.com <br>
+                📞 07 63 53 13 10
+              </p>
 
-      <div class="column-1">
+              <a href="#services" class="btn">Learn more</a>
+            </div>
 
-        <h1 class="header-title">Yanis Poulain</h1>
-
-        <p class="text">
-          Étudiant en informatique passionné par la cybersécurité, les réseaux et le développement.
-          Objectif : alternance en informatique et spécialisation cybersécurité.
-        </p>
-
-        <p class="text">
-          📧 y.poulain04@gmail.com<br>
-          📞 07 63 53 13 10
-        </p>
-
-        <a href="#services" class="btn">Voir mes compétences</a>
-
-      </div>
-
-      <div class="column-2 image">
-        <img src="./img/shapes/points2.png" class="points points2" alt=""/>
-        <img src="./img/person.png" class="img-element z-index" alt=""/>
-      </div>
-
-    </div>
-  </div>
-
-</header>
-
-<!-- SERVICES -->
-<section class="services section" id="services">
-
-  <div class="container">
-
-    <div class="section-header">
-      <h3 class="title">Compétences</h3>
-    </div>
-
-    <div class="cards">
-
-      <div class="card-wrap">
-        <div class="card">
-          <div class="card-content z-index">
-
-            <img src="./img/design-icon.png" class="icon" alt="" />
-            <h3 class="title-sm">Cybersécurité & Réseaux</h3>
-
-            <p class="text">
-              Linux (Debian, Ubuntu), Bash, CLI Windows<br><br>
-              Réseaux : TCP/IP, DNS, DHCP, VPN, pare-feu, notions de routage<br><br>
-              Outils : Nmap, Wireshark, Metasploit (bases), analyse trafic, scan réseau
-            </p>
+            <div class="column-2 image">
+              <img src="./img/shapes/points2.png" class="points points2" alt=""/>
+              <img src="./img/person.png" class="img-element z-index" alt=""/>
+            </div>
 
           </div>
         </div>
-      </div>
+      </header>
 
-      <div class="card-wrap">
-        <div class="card">
-          <div class="card-content z-index">
-
-            <img src="./img/code-icon.png" class="icon" alt="" />
-            <h3 class="title-sm">Développement</h3>
-
-            <p class="text">
-              HTML / CSS / JavaScript (sites web)<br>
-              Python (scripts, jeux, automation)<br>
-              Bots Discord<br>
-              Bases backend & API simples
-            </p>
-
+      <!-- SERVICES -->
+      <section class="services section" id="services">
+        <div class="container">
+          <div class="section-header">
+            <h3 class="title">Domains</h3>
           </div>
-        </div>
-      </div>
 
-      <div class="card-wrap">
-        <div class="card">
-          <div class="card-content z-index">
+          <div class="cards">
 
-            <img src="./img/app-icon.png" class="icon" alt="" />
-            <h3 class="title-sm">Projets & Systèmes</h3>
-
-            <p class="text">
-              Serveurs GTA RP (FiveM, Lua)<br>
-              Développement de bots Discord<br>
-              Maintenance hardware & PC<br>
-              Environnements Windows / Linux
-            </p>
-
-          </div>
-        </div>
-      </div>
-
-    </div>
-
-  </div>
-
-</section>
-
-<!-- PORTFOLIO -->
-<section class="portfolio section" id="portfolio">
-
-  <div class="background-bg">
-    <div class="overlay overlay-sm">
-      <img src="./img/shapes/half-circle.png" class="shape half-circle1" alt="" />
-      <img src="./img/shapes/half-circle.png" class="shape half-circle2" alt="" />
-      <img src="./img/shapes/square.png" class="shape square" alt="" />
-      <img src="./img/shapes/wave.png" class="shape wave" alt="" />
-      <img src="./img/shapes/circle.png" class="shape circle" alt="" />
-      <img src="./img/shapes/triangle.png" class="shape triangle" alt="" />
-      <img src="./img/shapes/x.png" class="shape xshape" alt="" />
-    </div>
-  </div>
-
-  <div class="container">
-
-    <div class="section-header">
-      <h3 class="title">Portfolio</h3>
-    </div>
-
-    <div class="section-body">
-
-      <div class="filter">
-        <button class="filter-btn active" data-filter="*">All</button>
-        <button class="filter-btn" data-filter=".ui">Cybersecurity</button>
-        <button class="filter-btn" data-filter=".webdev">Web Dev</button>
-        <button class="filter-btn" data-filter=".appdev">App Dev</button>
-      </div>
-
-      <div class="grid">
-
-        <div class="grid-item ui">
-          <div class="gallery-image">
-            <img src="./img/portfolio/port3.png" alt="" />
-            <a href="https://tryhackme.com/p/Goldenyan.exe" target="_blank">
-              <div class="img-overlay">
-                <div class="img-description">
-                  <h3>Cybersecurity</h3>
-                  <h2>TryHackMe</h2>
+            <div class="card-wrap">
+              <div class="card">
+                <div class="card-content z-index">
+                  <img src="./img/design-icon.png" class="icon" alt="" />
+                  <h3 class="title-sm">Cybersecurity</h3>
+                  <p class="text">
+                    Linux (Debian, Ubuntu), Bash, Windows CMD<br>
+                    TCP/IP, DNS, DHCP, VPN, firewall basics<br>
+                    Tools: Nmap, Wireshark, Metasploit (basics)
+                  </p>
+                  <a href="#portfolio" class="btn small">Learn more</a>
                 </div>
               </div>
-            </a>
-          </div>
-        </div>
+            </div>
 
-        <div class="grid-item webdev">
-          <div class="gallery-image">
-            <img src="./img/portfolio/port4.png" alt="" />
-            <a href="https://goldenyan0.github.io/goldencity/" target="_blank">
-              <div class="img-overlay">
-                <div class="img-description">
-                  <h3>Web</h3>
-                  <h2>GTA RP Website</h2>
+            <div class="card-wrap">
+              <div class="card">
+                <div class="card-content z-index">
+                  <img src="./img/code-icon.png" class="icon" alt="" />
+                  <h3 class="title-sm">Web / App development</h3>
+                  <p class="text">
+                    HTML, CSS, JavaScript<br>
+                    Python (scripts, mini-games)<br>
+                    Discord bots, web projects
+                  </p>
+                  <a href="#portfolio" class="btn small">Learn more</a>
                 </div>
               </div>
-            </a>
-          </div>
-        </div>
+            </div>
 
-        <div class="grid-item appdev webdev">
-          <div class="gallery-image">
-            <img src="./img/portfolio/port5.jpg" alt="" />
-            <a href="https://github.com/Goldenyan0" target="_blank">
-              <div class="img-overlay">
-                <div class="img-description">
-                  <h3>Dev</h3>
-                  <h2>Discord Bot</h2>
+            <div class="card-wrap">
+              <div class="card">
+                <div class="card-content z-index">
+                  <img src="./img/app-icon.png" class="icon" alt="" />
+                  <h3 class="title-sm">Hardware</h3>
+                  <p class="text">
+                    PC architecture, components, maintenance<br>
+                    Windows / Linux environments
+                  </p>
+                  <a href="#portfolio" class="btn small">Learn more</a>
                 </div>
               </div>
-            </a>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
+      <!-- PORTFOLIO (100% INCHANGÉ) -->
+      <section class="portfolio section" id="portfolio">
+
+        <div class="background-bg">
+          <div class="overlay overlay-sm">
+            <img src="./img/shapes/half-circle.png" class="shape half-circle1" alt="" />
+            <img src="./img/shapes/half-circle.png" class="shape half-circle2" alt="" />
+            <img src="./img/shapes/square.png" class="shape square" alt="" />
+            <img src="./img/shapes/wave.png" class="shape wave" alt="" />
+            <img src="./img/shapes/circle.png" class="shape circle" alt="" />
+            <img src="./img/shapes/triangle.png" class="shape triangle" alt="" />
+            <img src="./img/shapes/x.png" class="shape xshape" alt="" />
           </div>
         </div>
 
-        <div class="grid-item appdev webdev">
-          <div class="gallery-image">
-            <img src="./img/portfolio/port6.jpg" alt="" />
-            <a href="https://goldenyan0.github.io/Nsi-Game-JS/" target="_blank">
-              <div class="img-overlay">
-                <div class="img-description">
-                  <h3>Game</h3>
-                  <h2>NSI Project</h2>
+        <div class="container">
+
+          <div class="section-header">
+            <h3 class="title" data-title="My works">Portfolio</h3>
+          </div>
+
+          <div class="section-body">
+
+            <div class="filter">
+              <button class="filter-btn active" data-filter="*">All</button>
+              <button class="filter-btn" data-filter=".ui">Cybersecurity</button>
+              <button class="filter-btn" data-filter=".webdev">Web Dev</button>
+              <button class="filter-btn" data-filter=".appdev">App Dev</button>
+            </div>
+
+            <div class="grid">
+
+              <div class="grid-item ui">
+                <div class="gallery-image">
+                  <img src="./img/portfolio/port3.png" alt="" />
+                  <a href="https://tryhackme.com/p/Goldenyan.exe" target="_blank">
+                    <div class="img-overlay">
+                      <div class="img-description">
+                        <h3>Cybersecurity</h3>
+                        <h2>Tryhackme Profile</h2>
+                      </div>
+                    </div>
+                  </a>
                 </div>
               </div>
-            </a>
-          </div>
-        </div>
 
-        <div class="grid-item appdev webdev">
-          <div class="gallery-image">
-            <img src="./img/portfolio/port8.png" alt="" />
-            <a href="https://github.com/Goldenyan0" target="_blank">
-              <div class="img-overlay">
-                <div class="img-description">
-                  <h3>Dev</h3>
-                  <h2>GitHub</h2>
+              <div class="grid-item webdev">
+                <div class="gallery-image">
+                  <img src="./img/portfolio/port4.png" alt="" />
+                  <a href="https://goldenyan0.github.io/goldencity/" target="_blank">
+                    <div class="img-overlay">
+                      <div class="img-description">
+                        <h3>WebSite</h3>
+                        <h2>Gta V Roleplay Server</h2>
+                      </div>
+                    </div>
+                  </a>
                 </div>
               </div>
-            </a>
-          </div>
-        </div>
 
-        <div class="grid-item appdev">
-          <div class="gallery-image">
-            <img src="./img/portfolio/multifighter.png" alt="" />
-            <a href="https://github.com/Goldenyan0/multifighter" target="_blank">
-              <div class="img-overlay">
-                <div class="img-description">
-                  <h3>Python</h3>
-                  <h2>Multifighter</h2>
+              <div class="grid-item appdev webdev">
+                <div class="gallery-image">
+                  <div class="col-md-4">
+                    <div class="work-box">
+                      <a href="./img/portfolio/port5.jpg" data-lightbox="gallery-mf">
+                        <div class="work-img">
+                          <img src="./img/portfolio/port5.jpg" alt="" class="img-fluid">
+                        </div>
+                        <div class="img-overlay">
+                          <div class="img-description">
+                            <h3>App/Web development</h3>
+                            <h2>Discord BOT</h2>
+                          </div>
+                        </div>
+                      </a>
+                    </div>
+                  </div>
                 </div>
               </div>
-            </a>
+
+              <div class="grid-item webdev appdev">
+                <div class="gallery-image">
+                  <img src="./img/portfolio/port6.jpg" alt="" />
+                  <a href="https://goldenyan0.github.io/Nsi-Game-JS/" target="_blank">
+                    <div class="img-overlay">
+                      <div class="img-description">
+                        <h3>App Development</h3>
+                        <h2>NSI OS project</h2>
+                      </div>
+                    </div>
+                  </a>
+                </div>
+              </div>
+
+              <div class="grid-item appdev webdev">
+                <div class="gallery-image">
+                  <img src="./img/portfolio/port8.png" alt="" />
+                  <a href="https://github.com/Goldenyan0" target="_blank">
+                    <div class="img-overlay">
+                      <div class="img-description">
+                        <h3>App Development</h3>
+                        <h2>Github profile</h2>
+                      </div>
+                    </div>
+                  </a>
+                </div>
+              </div>
+
+              <div class="grid-item appdev">
+                <div class="gallery-image">
+                  <div class="col-md-4">
+                    <div class="work-box">
+                      <a href="./img/portfolio/port9.png" data-lightbox="gallery-mf">
+                        <div class="work-img">
+                          <img src="./img/portfolio/port9.png" alt="" class="img-fluid">
+                        </div>
+                        <div class="img-overlay">
+                          <div class="img-description">
+                            <h3>App development</h3>
+                            <h2>Gta V Roleplay Server</h2>
+                          </div>
+                        </div>
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="grid-item appdev webdev">
+                <div class="gallery-image">
+                  <img src="./img/portfolio/multifighter.png" alt="" />
+                  <a href="https://github.com/Goldenyan0/multifighter" target="_blank">
+                    <div class="img-overlay">
+                      <div class="img-description">
+                        <h3>App Development</h3>
+                        <h2>Multifighter</h2>
+                      </div>
+                    </div>
+                  </a>
+                </div>
+              </div>
+
+            </div>
+
           </div>
+
         </div>
 
-      </div>
+      </section>
 
-    </div>
+      <!-- ABOUT -->
+      <section class="about section" id="about">
 
-  </div>
+        <div class="container">
 
-</section>
+          <div class="section-header">
+            <h3 class="title" data-title="Who Am I">About me</h3>
+          </div>
 
-<!-- ABOUT -->
-<section class="about section" id="about">
+          <div class="section-body grid-2">
 
-  <div class="container">
+            <div class="column-1">
 
-    <div class="section-header">
-      <h3 class="title">About me</h3>
-    </div>
+              <h3 class="header-title">Profil</h3>
 
-    <div class="section-body grid-2">
+              <p class="text">
+                Étudiant en informatique orienté cybersécurité et réseaux.
+                Expérience terrain en logistique, restauration et services.
+              </p>
 
-      <div class="column-1">
+              <p class="text">
+                Travail en équipe, autonomie, respect des consignes, gestion du stress,
+                environnement exigeant, horaires décalés.
+              </p>
 
-        <p class="text">
-          Étudiant en informatique orienté cybersécurité et réseaux.
-          Expérience terrain en logistique, restauration et services.
-        </p>
+              <p class="text">
+                Langues : Français (courant), Anglais (intermédiaire)
+              </p>
 
-        <p class="text">
-          Travail en équipe, autonomie, respect des procédures, gestion du stress,
-          environnement exigeant, horaires décalés.
-        </p>
+              <p class="text">
+                Expériences : Europcar, Sixt, McDonald's, RGIS (logistique, préparation véhicules, inventory)
+              </p>
 
-        <p class="text">
-          Langues : Français (courant), Anglais (intermédiaire)
-        </p>
+              <p class="text">
+                Formation : Licence informatique ISTIC Rennes + Bac Maths / NSI
+              </p>
 
-        <p class="text">
-          Expérience : Europcar / Sixt / McDonald's / RGIS (logistique, service, inventory)
-        </p>
+              <p class="text">
+                Centres d’intérêt : informatique, cybersécurité, automobile, sport
+              </p>
 
-        <p class="text">
-          Formation : Licence informatique ISTIC Rennes + Bac spécialité Maths / NSI
-        </p>
+            </div>
 
-        <p class="text">
-          Centres d’intérêt : cybersécurité, informatique, automobile, sport
-        </p>
+            <div class="column-2 image">
+              <img src="./img/shapes/points4.png" class="points" alt="" />
+              <img src="./img/about.png" class="z-index" alt="" />
+            </div>
 
-      </div>
+          </div>
 
-      <div class="column-2 image">
-        <img src="./img/shapes/points4.png" class="points" alt="" />
-        <img src="./img/about.png" class="z-index" alt="" />
-      </div>
+        </div>
 
-    </div>
+      </section>
 
-  </div>
+      <!-- FOOTER -->
+      <footer class="footer">
 
-</section>
+        <div class="container">
 
-<!-- FOOTER -->
-<footer class="footer">
+          <div class="grid-4">
 
-  <div class="container">
+            <div class="grid-4-col footer-about">
+              <h3 class="title-sm">Contact</h3>
+              <p class="text">
+                Email : y.poulain04@gmail.com<br>
+                Téléphone : 07 63 53 13 10
+              </p>
+            </div>
 
-    <div class="grid-4">
+          </div>
 
-      <div class="grid-4-col footer-about">
-        <h3 class="title-sm">Contact</h3>
-        <p class="text">
-          Email : y.poulain04@gmail.com<br>
-          Téléphone : 07 63 53 13 10
-        </p>
-      </div>
+          <div class="bottom-footer">
+            <div class="copyright">
+              <p class="text">© 2026 Yanis Poulain</p>
+            </div>
+          </div>
 
-    </div>
+        </div>
 
-    <div class="bottom-footer">
+      </footer>
 
-      <div class="copyright">
-        <p class="text">© 2026 Yanis Poulain</p>
-      </div>
+    </main>
 
-    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="./js/isotope.pkgd.min.js"></script>
+    <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
+    <script src="./js/app.js"></script>
+    <script src="lightbox/js/lightbox.min.js"></script>
 
-  </div>
-
-</footer>
-
-</main>
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-<script src="./js/isotope.pkgd.min.js"></script>
-<script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
-<script src="./js/app.js"></script>
-<script src="lightbox/js/lightbox.min.js"></script>
-
-</body>
+  </body>
 </html>
