@@ -1,418 +1,779 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Portfolio Yanis</title>
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css"
-    />
-    <link
-      rel="stylesheet"
-      href="https://unpkg.com/swiper/swiper-bundle.min.css"
-    />
-    <link rel="stylesheet" href="./css/style.css" />
-    <link href="lightbox/css/lightbox.min.css" rel="stylesheet">
-  </head>
-  <body>
-    <main>
-      <header id="header">
-        <div class="overlay overlay-lg">
-          <img src="./img/shapes/square.png" class="shape square" alt="" />
-          <img src="./img/shapes/circle.png" class="shape circle" alt="" />
-          <img
-            src="./img/shapes/half-circle.png"
-            class="shape half-circle1"
-            alt=""
-          />
-          <img
-            src="./img/shapes/half-circle.png"
-            class="shape half-circle2"
-            alt=""
-          />
-          <img src="./img/shapes/x.png" class="shape xshape" alt="" />
-          <img src="./img/shapes/wave.png" class="shape wave wave1" alt="" />
-          <img src="./img/shapes/wave.png" class="shape wave wave2" alt="" />
-          <img src="./img/shapes/triangle.png" class="shape triangle" alt="" />
-          <img src="./img/shapes/points1.png" class="points points1" alt="" />
-        </div>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Portfolio Yanis</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css" />
+  <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css" />
+  <link rel="stylesheet" href="./css/style.css" />
+  <link href="lightbox/css/lightbox.min.css" rel="stylesheet">
+  <style>
+    /* ── Contact bar ── */
+    .contact-bar {
+      background: #1a1a2e;
+      padding: 8px 0;
+      text-align: center;
+      font-size: 0.85rem;
+      color: #ccc;
+      letter-spacing: 0.5px;
+    }
+    .contact-bar a {
+      color: #a78bfa;
+      text-decoration: none;
+      margin: 0 18px;
+      transition: color .3s;
+    }
+    .contact-bar a:hover { color: #fff; }
+    .contact-bar i { margin-right: 6px; }
 
-        <nav>
-          <div class="container">
-            <div class="logo">
-              <img src="./img/logo.png" alt=""/>
-          </div>
+    /* ── Skills grid ── */
+    .skills-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0 40px;
+    }
+    .skills-section-title {
+      font-size: 0.8rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      color: #a78bfa;
+      margin: 18px 0 10px;
+      grid-column: 1 / -1;
+    }
 
-            <div class="links">
-              <ul>
-                <li>
-                  <a href="#services">Domains</a>
-                </li>
-                <li>
-                  <a href="#portfolio">Portfolio</a>
-                </li>
-                <li>
-                  <a href="#about">About me</a>
-                </li>
-              </ul>
-            </div>
+    /* ── About text ── */
+    .about-text-block {
+      background: rgba(255,255,255,0.04);
+      border-left: 3px solid #a78bfa;
+      border-radius: 6px;
+      padding: 18px 22px;
+      margin-bottom: 20px;
+    }
+    .about-text-block h4 {
+      color: #a78bfa;
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      margin-bottom: 8px;
+    }
+    .about-text-block p, .about-text-block li {
+      font-size: 0.9rem;
+      line-height: 1.7;
+      color: #ccc;
+    }
+    .about-text-block ul {
+      padding-left: 16px;
+      margin: 0;
+    }
+    .about-text-block ul li { margin-bottom: 4px; }
 
-            <div class="hamburger-menu">
-              <div class="bar"></div>
-            </div>
-          </div>
-        </nav>
+    .info-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 6px;
+    }
+    .info-tag {
+      background: rgba(167,139,250,0.12);
+      border: 1px solid rgba(167,139,250,0.3);
+      color: #c4b5fd;
+      border-radius: 20px;
+      padding: 4px 14px;
+      font-size: 0.78rem;
+    }
 
-        <div class="header-content">
-          <div class="container grid-2">
-            <div class="column-1">
-              <h1 class="header-title">Yanis Poulain</h1>
-              <p class="text">
-                Hello, I'm a 21 years old french student passionate about computer science since I touched it when I was 11 years old. I love understanding how certain systems work and being able to create them. My goal is to specialize in cybersecurity.
-              </p>
-              <a href="#services" class="btn">Learn more</a>
-            </div>
+    /* ── Timeline (experience) ── */
+    .timeline { position: relative; padding-left: 22px; margin-top: 10px; }
+    .timeline::before {
+      content: '';
+      position: absolute;
+      left: 6px; top: 6px; bottom: 6px;
+      width: 2px;
+      background: rgba(167,139,250,0.25);
+    }
+    .timeline-item { position: relative; margin-bottom: 20px; }
+    .timeline-item::before {
+      content: '';
+      position: absolute;
+      left: -19px; top: 5px;
+      width: 10px; height: 10px;
+      border-radius: 50%;
+      background: #a78bfa;
+      border: 2px solid #1a1a2e;
+    }
+    .timeline-item h5 {
+      font-size: 0.88rem;
+      color: #e2e8f0;
+      margin: 0 0 2px;
+    }
+    .timeline-item span {
+      font-size: 0.75rem;
+      color: #a78bfa;
+      display: block;
+      margin-bottom: 4px;
+    }
+    .timeline-item p {
+      font-size: 0.82rem;
+      color: #aaa;
+      margin: 0;
+      line-height: 1.5;
+    }
 
-            <div class="column-2 image">
-              <img
-                src="./img/shapes/points2.png"
-                class="points points2"
-                alt=""
-              />
-              <img src="./img/person.png" class="img-element z-index" alt=""/>
-            </div>
-          </div>
-        </div>
-      </header>
+    /* ── About section layout fix ── */
+    .about .section-body { align-items: flex-start; }
+    .about .column-1 { width: 100%; }
+    .about-columns {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 30px;
+      margin-top: 30px;
+    }
+    @media (max-width: 900px) {
+      .about-columns { grid-template-columns: 1fr; }
+      .skills-grid { grid-template-columns: 1fr; }
+    }
 
-      <section class="services section" id="services">
-        <div class="container">
-          <div class="section-header">
-            <h3 class="title">Domains</h3>
-          </div>
+    /* ── Portfolio fix ── */
+    .grid-item .gallery-image {
+      position: relative;
+      overflow: hidden;
+      border-radius: 8px;
+    }
+    .grid-item .gallery-image img {
+      width: 100%;
+      height: 220px;
+      object-fit: cover;
+      display: block;
+      transition: transform .4s;
+    }
+    .grid-item .gallery-image:hover img { transform: scale(1.05); }
+    .img-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(26,26,46,0.82);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      transition: opacity .3s;
+    }
+    .grid-item .gallery-image:hover .img-overlay { opacity: 1; }
+    .img-description { text-align: center; color: #fff; }
+    .img-description h3 { font-size: 0.8rem; color: #a78bfa; margin-bottom: 4px; }
+    .img-description h2 { font-size: 1rem; }
 
-          <div class="cards">
-            <div class="card-wrap">
-              <div class="card">
-                <div class="card-content z-index">
-                  <img src="./img/design-icon.png" class="icon" alt="" />
-                  <h3 class="title-sm">Cybersecurity</h3>
-                  <p class="text">
-                    I regularly learn new cybersecurity skills on the internet by following specialized people or on websites such as <a href="https://tryhackme.com">Tryhackme</a> or <a href="https://www.hackthebox.com">HackTheBox</a>
-                  </p>
-                  <a href="#portfolio" class="btn small">Learn more</a>
-                </div>
-              </div>
-            </div>
+    /* lightbox items */
+    .grid-item .work-box { position: relative; }
+    .grid-item .work-box > a { display: block; }
+    .grid-item .work-img img {
+      width: 100%;
+      height: 220px;
+      object-fit: cover;
+      display: block;
+      border-radius: 8px;
+      transition: transform .4s;
+    }
+    .grid-item .work-box:hover .work-img img { transform: scale(1.05); }
+    .grid-item .work-box .img-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(26,26,46,0.82);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      transition: opacity .3s;
+      border-radius: 8px;
+    }
+    .grid-item .work-box:hover .img-overlay { opacity: 1; }
+  </style>
+</head>
+<body>
 
-            <div class="card-wrap">
-              <div class="card">
-                <div class="card-content z-index">
-                  <img src="./img/code-icon.png" class="icon" alt="" />
-                  <h3 class="title-sm">Web / App development</h3>
-                  <p class="text">
-                    I carried out various projects that allowed me to learn more about the functioning of applications and websites
-                  </p>
-                  <a href="#portfolio" class="btn small">Learn more</a>
-                </div>
-              </div>
-            </div>
+<!-- ══ CONTACT BAR ══ -->
+<div class="contact-bar">
+  <a href="mailto:y.poulain04@gmail.com"><i class="fas fa-envelope"></i>y.poulain04@gmail.com</a>
+  <a href="tel:0763531310"><i class="fas fa-phone"></i>07 63 53 13 10</a>
+  <a href="https://github.com/Goldenyan0" target="_blank"><i class="fab fa-github"></i>github.com/Goldenyan0</a>
+  <a href="https://tryhackme.com/p/Goldenyan.exe" target="_blank"><i class="fas fa-shield-alt"></i>TryHackMe</a>
+</div>
 
-            <div class="card-wrap">
-              <div class="card">
-                <div class="card-content z-index">
-                  <img src="./img/app-icon.png" class="icon" alt="" />
-                  <h3 class="title-sm">Hardware</h3>
-                  <p class="text">
-                    In addition to software, the hardware aspect of computers interests me (how a computer works, the different components they contain...)
-                  </p>
-                  <a href="#portfolio" class="btn small">Learn more</a>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section class="portfolio section" id="portfolio">
-        <div class="background-bg">
-          <div class="overlay overlay-sm">
-            <img
-              src="./img/shapes/half-circle.png"
-              class="shape half-circle1"
-              alt=""
-            />
-            <img
-              src="./img/shapes/half-circle.png"
-              class="shape half-circle2"
-              alt=""
-            />
-            <img src="./img/shapes/square.png" class="shape square" alt="" />
-            <img src="./img/shapes/wave.png" class="shape wave" alt="" />
-            <img src="./img/shapes/circle.png" class="shape circle" alt="" />
-            <img
-              src="./img/shapes/triangle.png"
-              class="shape triangle"
-              alt=""
-            />
-            <img src="./img/shapes/x.png" class="shape xshape" alt="" />
-          </div>
-        </div>
-
-        <div class="container">
-          <div class="section-header">
-            <h3 class="title" data-title="My works">Portfolio</h3>
-          </div>
-
-          <div class="section-body">
-            <div class="filter">
-              <button class="filter-btn active" data-filter="*">All</button>
-              <button class="filter-btn" data-filter=".ui">Cybersecurity</button>
-              <button class="filter-btn" data-filter=".webdev">Web Dev</button>
-              <button class="filter-btn" data-filter=".appdev">App Dev</button>
-            </div>
-            <div class="grid">
-              <div class="grid-item ui">
-                <div class="gallery-image">
-                  <img src="./img/portfolio/port3.png" alt="" />
-                  <a href="https://tryhackme.com/p/Goldenyan.exe" target="_blank">
-                  <div class="img-overlay">
-                    <div class="img-description">
-                      <h3>Cybersecurity</h3>
-                      <h2>Tryhackme Profile</h2>
-                    </div>
-                  </div>
-                </a>
-                </div>
-              </div>
-              <div class="grid-item webdev">
-                <div class="gallery-image">
-                  <img src="./img/portfolio/port4.png" alt="" />
-                  <a href="https://goldenyan0.github.io/goldencity/" target="_blank">
-                  <div class="img-overlay">
-                    <div class="img-description">
-                      <h3>WebSite</h3>
-                      <h2>Gta V Roleplay Server</h2>
-                    </div>
-                  </div>
-                </a>
-                </div>
-              </div>
-              <div class="grid-item appdev webdev">
-                <div class="gallery-image">
-                  <div class="col-md-4">
-                    <div class="work-box">
-                      <a href="./img/portfolio/port5.jpg" data-lightbox="gallery-mf">
-                        <div class="work-img">
-                          <img src="./img/portfolio/port5.jpg" alt="" class="img-fluid">
-                        </div>
-                        <div class="img-overlay">
-                          <div class="img-description">
-                            <h3>App/Web development</h3>
-                            <h2>Discord BOT</h2>
-                          </div>
-                        </div>
-                      </a>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div class="grid-item webdev appdev">
-                <div class="gallery-image">
-                  <img src="./img/portfolio/port6.jpg" alt="" />
-                  <a href="https://goldenyan0.github.io/Nsi-Game-JS/" target="_blank">
-                  <div class="img-overlay">
-                    <div class="img-description">
-                      <h3>App Development</h3>
-                      <h2>NSI OS project</h2>
-                    </div>
-                  </div>
-                </a>
-                </div>
-              </div>
-              <div class="grid-item appdev webdev">
-                <div class="gallery-image">
-                  <img src="./img/portfolio/port8.png" alt="" />
-                  <a href="https://github.com/Goldenyan0" target="_blank">
-                  <div class="img-overlay">
-                    <div class="img-description">
-                      <h3>App Development</h3>
-                      <h2>Github profile</h2>
-                    </div>
-                  </div>
-                </a>
-                </div>
-              </div>
-              <div class="grid-item appdev">
-                <div class="gallery-image">
-                  <div class="col-md-4">
-                    <div class="work-box">
-                      <a href="./img/portfolio/port9.png" data-lightbox="gallery-mf">
-                        <div class="work-img">
-                          <img src="./img/portfolio/port9.png" alt="" class="img-fluid">
-                        </div>
-                        <div class="img-overlay">
-                          <div class="img-description">
-                            <h3>App development</h3>
-                            <h2>Gta V Roleplay Server</h2>
-                          </div>
-                        </div>
-                      </a>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div class="grid-item appdev webdev">
-                <div class="gallery-image">
-                  <img src="./img/portfolio/multifighter.png" alt="" />
-                  <a href="https://github.com/Goldenyan0/multifighter" target="_blank">
-                  <div class="img-overlay">
-                    <div class="img-description">
-                      <h3>App Development</h3>
-                      <h2>Multifighter</h2>
-                    </div>
-                  </div>
-                </a>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section class="about section" id="about">
-        <div class="container">
-          <div class="section-header">
-            <h3 class="title" data-title="Who Am I">About me</h3>
-          </div>
-    
-          <div class="section-body grid-2">
-            <div class="column-1">
-                <h3 class="header-title">Skills</h3>
-              <div class="skills">
-                <h4 class="title-sm">Languages :</h4>
-                <div class="skill html">
-                  <h3 class="skill-title">HTML / CSS</h3>
-                  <div class="skill-bar">
-                    <div class="skill-progress" data-progress="90%"></div>
-                  </div>
-                </div>
-                <div class="skill js">
-                  <h3 class="skill-title">JavaScript</h3>
-                  <div class="skill-bar">
-                    <div class="skill-progress" data-progress="80%"></div>
-                  </div>
-                </div>
-                <div class="skill js">
-                  <h3 class="skill-title">Lua</h3>
-                  <div class="skill-bar">
-                    <div class="skill-progress" data-progress="80%"></div>
-                  </div>
-                </div>
-                <div class="skill js">
-                  <h3 class="skill-title">Python</h3>
-                  <div class="skill-bar">
-                    <div class="skill-progress" data-progress="80%"></div>
-                  </div>
-                </div>
-                <div class="skill js">
-                  <h3 class="skill-title">Shell</h3>
-                  <div class="skill-bar">
-                    <div class="skill-progress" data-progress="30%"></div>
-                  </div>
-                </div>
-                <h4 class="title-sm">Other skills :</h4>
-                <div class="skill html">
-                  <h3 class="skill-title">Windows</h3>
-                  <div class="skill-bar">
-                    <div class="skill-progress" data-progress="90%"></div>
-                  </div>
-                </div>
-                <div class="skill html">
-                  <h3 class="skill-title">Linux</h3>
-                  <div class="skill-bar">
-                    <div class="skill-progress" data-progress="90%"></div>
-                  </div>
-                </div>
-              </div>
-            </div>
-    
-            <div class="column-2 image">
-              <img src="./img/shapes/points4.png" class="points" alt="" />
-              <img src="./img/about.png" class="z-index" alt="" />
-            </div>
-          </div>
-        </div>
-      </section>
-
-    <footer class="footer">
+<main>
+  <!-- ══ HEADER ══ -->
+  <header id="header">
+    <div class="overlay overlay-lg">
+      <img src="./img/shapes/square.png"       class="shape square"       alt="" />
+      <img src="./img/shapes/circle.png"        class="shape circle"       alt="" />
+      <img src="./img/shapes/half-circle.png"   class="shape half-circle1" alt="" />
+      <img src="./img/shapes/half-circle.png"   class="shape half-circle2" alt="" />
+      <img src="./img/shapes/x.png"             class="shape xshape"       alt="" />
+      <img src="./img/shapes/wave.png"          class="shape wave wave1"   alt="" />
+      <img src="./img/shapes/wave.png"          class="shape wave wave2"   alt="" />
+      <img src="./img/shapes/triangle.png"      class="shape triangle"     alt="" />
+      <img src="./img/shapes/points1.png"       class="points points1"     alt="" />
+    </div>
+    <nav>
       <div class="container">
-        <div class="grid-4">
-          <div class="grid-4-col footer-about">
-            <h3 class="title-sm">About me</h3>
-            <p class="text">
-              y.poulain04@gmail.com
-            </p>
-          </div>
+        <div class="logo"><img src="./img/logo.png" alt=""/></div>
+        <div class="links">
+          <ul>
+            <li><a href="#services">Domains</a></li>
+            <li><a href="#portfolio">Portfolio</a></li>
+            <li><a href="#about">About me</a></li>
+          </ul>
+        </div>
+        <div class="hamburger-menu"><div class="bar"></div></div>
+      </div>
+    </nav>
+    <div class="header-content">
+      <div class="container grid-2">
+        <div class="column-1">
+          <h1 class="header-title">Yanis Poulain</h1>
+          <p class="text">
+            21-year-old French computer science student at Université de Rennes 1 (ISTIC),
+            passionate about <strong>cybersecurity</strong> and software development since age 11.
+            I master Linux environments, network analysis tools and several programming languages.
+            Currently seeking an <strong>apprenticeship in cybersecurity or IT</strong>.
+          </p>
+          <a href="#services" class="btn">Learn more</a>
+        </div>
+        <div class="column-2 image">
+          <img src="./img/shapes/points2.png" class="points points2" alt="" />
+          <img src="./img/person.png"          class="img-element z-index" alt=""/>
+        </div>
+      </div>
+    </div>
+  </header>
 
-          
-
-          
-
-          <div class="grid-4-col footer-newstletter">
-            <h3 class="title-sm">Subscribe</h3>
-            <div class="footer-input-wrap">
-              <input type="email" class="footer-input" placeholder="Email" />
-              <a href="#" class="input-arrow">
-                <i class="fas fa-angle-right"></i>
-              </a>
+  <!-- ══ SERVICES ══ -->
+  <section class="services section" id="services">
+    <div class="container">
+      <div class="section-header">
+        <h3 class="title">Domains</h3>
+      </div>
+      <div class="cards">
+        <div class="card-wrap">
+          <div class="card">
+            <div class="card-content z-index">
+              <img src="./img/design-icon.png" class="icon" alt="" />
+              <h3 class="title-sm">Cybersecurity</h3>
+              <p class="text">
+                Network scanning with <strong>Nmap</strong>, traffic analysis with <strong>Wireshark</strong>,
+                penetration testing with <strong>Metasploit</strong>. Active on
+                <a href="https://tryhackme.com/p/Goldenyan.exe" target="_blank">TryHackMe</a> &amp;
+                <a href="https://www.hackthebox.com" target="_blank">HackTheBox</a>.
+              </p>
+              <a href="#portfolio" class="btn small">Learn more</a>
             </div>
           </div>
         </div>
-
-        <div class="bottom-footer">
-          <div class="copyright">
-            <p class="text">
-              Copyright&copy;2020 All rights reserved | Made by
-              <span>Yanis Poulain</span>
-            </p>
-          </div>
-
-          <div class="followme-wrap">
-            <div class="followme">
-              <h3>Follow me</h3>
-              <span class="footer-line"></span>
-              <div class="social-media">
-                <a href="#">
-                  <i class="fab fa-facebook-f"></i>
-                </a>
-                <a href="#">
-                  <i class="fab fa-twitter"></i>
-                </a>
-                <a href="#">
-                  <i class="fab fa-instagram"></i>
-                </a>
-                <a href="#">
-                  <i class="fab fa-linkedin-in"></i>
-                </a>
-              </div>
+        <div class="card-wrap">
+          <div class="card">
+            <div class="card-content z-index">
+              <img src="./img/code-icon.png" class="icon" alt="" />
+              <h3 class="title-sm">Web / App Development</h3>
+              <p class="text">
+                GTA V RP server websites, Discord bots in JavaScript/Python,
+                browser games in JS, web applications — from design to deployment.
+              </p>
+              <a href="#portfolio" class="btn small">Learn more</a>
             </div>
-
-            <div class="back-btn-wrap">
-              <a href="#" class="back-btn">
-                <i class="fas fa-chevron-up"></i>
-              </a>
+          </div>
+        </div>
+        <div class="card-wrap">
+          <div class="card">
+            <div class="card-content z-index">
+              <img src="./img/app-icon.png" class="icon" alt="" />
+              <h3 class="title-sm">Systems & Networks</h3>
+              <p class="text">
+                Comfortable with <strong>Linux / Debian</strong> CLI, network architecture,
+                server administration and hardware troubleshooting. Passionate about
+                understanding how systems work at a low level.
+              </p>
+              <a href="#portfolio" class="btn small">Learn more</a>
             </div>
           </div>
         </div>
       </div>
-    </footer>
+    </div>
+  </section>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <script src="./js/isotope.pkgd.min.js"></script>
-    <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
-    <script src="./js/app.js"></script>
-    <script src="lightbox/js/lightbox.min.js"></script>
-  </body>
+  <!-- ══ PORTFOLIO ══ -->
+  <section class="portfolio section" id="portfolio">
+    <div class="background-bg">
+      <div class="overlay overlay-sm">
+        <img src="./img/shapes/half-circle.png" class="shape half-circle1" alt="" />
+        <img src="./img/shapes/half-circle.png" class="shape half-circle2" alt="" />
+        <img src="./img/shapes/square.png"       class="shape square"       alt="" />
+        <img src="./img/shapes/wave.png"         class="shape wave"         alt="" />
+        <img src="./img/shapes/circle.png"       class="shape circle"       alt="" />
+        <img src="./img/shapes/triangle.png"     class="shape triangle"     alt="" />
+        <img src="./img/shapes/x.png"            class="shape xshape"       alt="" />
+      </div>
+    </div>
+    <div class="container">
+      <div class="section-header">
+        <h3 class="title" data-title="My works">Portfolio</h3>
+      </div>
+      <div class="section-body">
+        <div class="filter">
+          <button class="filter-btn active" data-filter="*">All</button>
+          <button class="filter-btn" data-filter=".ui">Cybersecurity</button>
+          <button class="filter-btn" data-filter=".webdev">Web Dev</button>
+          <button class="filter-btn" data-filter=".appdev">App Dev</button>
+        </div>
+
+        <div class="grid">
+
+          <!-- TryHackMe -->
+          <div class="grid-item ui">
+            <div class="gallery-image">
+              <img src="./img/portfolio/port3.png" alt="TryHackMe profile" />
+              <a href="https://tryhackme.com/p/Goldenyan.exe" target="_blank">
+                <div class="img-overlay">
+                  <div class="img-description">
+                    <h3>Cybersecurity</h3>
+                    <h2>TryHackMe Profile</h2>
+                  </div>
+                </div>
+              </a>
+            </div>
+          </div>
+
+          <!-- GTA RP Website -->
+          <div class="grid-item webdev">
+            <div class="gallery-image">
+              <img src="./img/portfolio/port4.png" alt="GTA RP website" />
+              <a href="https://goldenyan0.github.io/goldencity/" target="_blank">
+                <div class="img-overlay">
+                  <div class="img-description">
+                    <h3>WebSite</h3>
+                    <h2>GTA V Roleplay Server</h2>
+                  </div>
+                </div>
+              </a>
+            </div>
+          </div>
+
+          <!-- Discord BOT (lightbox) -->
+          <div class="grid-item appdev webdev">
+            <div class="gallery-image">
+              <div class="col-md-4">
+                <div class="work-box">
+                  <a href="./img/portfolio/port5.jpg" data-lightbox="gallery-mf">
+                    <div class="work-img">
+                      <img src="./img/portfolio/port5.jpg" alt="Discord Bot" class="img-fluid">
+                    </div>
+                    <div class="img-overlay">
+                      <div class="img-description">
+                        <h3>App / Web Development</h3>
+                        <h2>Discord BOT</h2>
+                      </div>
+                    </div>
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- NSI Game -->
+          <div class="grid-item webdev appdev">
+            <div class="gallery-image">
+              <img src="./img/portfolio/port6.jpg" alt="NSI OS project" />
+              <a href="https://goldenyan0.github.io/Nsi-Game-JS/" target="_blank">
+                <div class="img-overlay">
+                  <div class="img-description">
+                    <h3>App Development</h3>
+                    <h2>NSI OS Project</h2>
+                  </div>
+                </div>
+              </a>
+            </div>
+          </div>
+
+          <!-- GitHub -->
+          <div class="grid-item appdev webdev">
+            <div class="gallery-image">
+              <img src="./img/portfolio/port8.png" alt="GitHub profile" />
+              <a href="https://github.com/Goldenyan0" target="_blank">
+                <div class="img-overlay">
+                  <div class="img-description">
+                    <h3>App Development</h3>
+                    <h2>GitHub Profile</h2>
+                  </div>
+                </div>
+              </a>
+            </div>
+          </div>
+
+          <!-- GTA RP Server (lightbox) -->
+          <div class="grid-item appdev">
+            <div class="gallery-image">
+              <div class="col-md-4">
+                <div class="work-box">
+                  <a href="./img/portfolio/port9.png" data-lightbox="gallery-mf">
+                    <div class="work-img">
+                      <img src="./img/portfolio/port9.png" alt="GTA RP Server" class="img-fluid">
+                    </div>
+                    <div class="img-overlay">
+                      <div class="img-description">
+                        <h3>App Development</h3>
+                        <h2>GTA V Roleplay Server</h2>
+                      </div>
+                    </div>
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Multifighter -->
+          <div class="grid-item appdev webdev">
+            <div class="gallery-image">
+              <img src="./img/portfolio/multifighter.png" alt="Multifighter" />
+              <a href="https://github.com/Goldenyan0/multifighter" target="_blank">
+                <div class="img-overlay">
+                  <div class="img-description">
+                    <h3>App Development</h3>
+                    <h2>Multifighter</h2>
+                  </div>
+                </div>
+              </a>
+            </div>
+          </div>
+
+        </div><!-- /.grid -->
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ ABOUT ══ -->
+  <section class="about section" id="about">
+    <div class="container">
+      <div class="section-header">
+        <h3 class="title" data-title="Who Am I">About me</h3>
+      </div>
+
+      <!-- top bio -->
+      <div class="about-text-block">
+        <h4>Who am I?</h4>
+        <p>
+          I'm <strong>Yanis Poulain</strong>, a 21-year-old French computer science student at
+          <strong>Université de Rennes 1 – ISTIC</strong>. Passionate about cybersecurity, networks and
+          software development since I was 11, I'm actively looking for an
+          <strong>apprenticeship in cybersecurity or IT</strong>.
+          Fluent in French, intermediate in English (B1/B2). Driving licence B.
+        </p>
+        <div class="info-tags" style="margin-top:12px;">
+          <span class="info-tag"><i class="fas fa-map-marker-alt" style="margin-right:5px;"></i>Rennes, France</span>
+          <span class="info-tag"><i class="fas fa-envelope" style="margin-right:5px;"></i>y.poulain04@gmail.com</span>
+          <span class="info-tag"><i class="fas fa-phone" style="margin-right:5px;"></i>07 63 53 13 10</span>
+          <span class="info-tag"><i class="fas fa-car" style="margin-right:5px;"></i>Permis B</span>
+          <span class="info-tag"><i class="fas fa-graduation-cap" style="margin-right:5px;"></i>Licence Informatique – Rennes 1</span>
+        </div>
+      </div>
+
+      <div class="about-columns">
+
+        <!-- LEFT column -->
+        <div>
+
+          <!-- Technical skills -->
+          <div class="about-text-block">
+            <h4>Technical Skills</h4>
+
+            <div class="skills-grid">
+              <!-- Programming languages -->
+              <div style="grid-column:1/-1" class="skills-section-title">Programming Languages</div>
+
+              <div>
+                <div class="skill html">
+                  <h3 class="skill-title">HTML / CSS</h3>
+                  <div class="skill-bar"><div class="skill-progress" data-progress="90%"></div></div>
+                </div>
+                <div class="skill js">
+                  <h3 class="skill-title">JavaScript</h3>
+                  <div class="skill-bar"><div class="skill-progress" data-progress="80%"></div></div>
+                </div>
+                <div class="skill js">
+                  <h3 class="skill-title">Python</h3>
+                  <div class="skill-bar"><div class="skill-progress" data-progress="80%"></div></div>
+                </div>
+              </div>
+
+              <div>
+                <div class="skill js">
+                  <h3 class="skill-title">Lua</h3>
+                  <div class="skill-bar"><div class="skill-progress" data-progress="75%"></div></div>
+                </div>
+                <div class="skill js">
+                  <h3 class="skill-title">Shell / Bash</h3>
+                  <div class="skill-bar"><div class="skill-progress" data-progress="55%"></div></div>
+                </div>
+                <div class="skill js">
+                  <h3 class="skill-title">SQL</h3>
+                  <div class="skill-bar"><div class="skill-progress" data-progress="50%"></div></div>
+                </div>
+              </div>
+
+              <!-- OS & Systems -->
+              <div style="grid-column:1/-1" class="skills-section-title">OS & Systems</div>
+
+              <div>
+                <div class="skill html">
+                  <h3 class="skill-title">Linux / Debian</h3>
+                  <div class="skill-bar"><div class="skill-progress" data-progress="85%"></div></div>
+                </div>
+                <div class="skill html">
+                  <h3 class="skill-title">Windows (CLI & Admin)</h3>
+                  <div class="skill-bar"><div class="skill-progress" data-progress="90%"></div></div>
+                </div>
+              </div>
+              <div>
+                <div class="skill html">
+                  <h3 class="skill-title">Kali Linux</h3>
+                  <div class="skill-bar"><div class="skill-progress" data-progress="70%"></div></div>
+                </div>
+                <div class="skill html">
+                  <h3 class="skill-title">Command Line (Bash/PowerShell)</h3>
+                  <div class="skill-bar"><div class="skill-progress" data-progress="75%"></div></div>
+                </div>
+              </div>
+
+              <!-- Cybersecurity tools -->
+              <div style="grid-column:1/-1" class="skills-section-title">Cybersecurity Tools</div>
+
+              <div>
+                <div class="skill html">
+                  <h3 class="skill-title">Nmap (network scanning)</h3>
+                  <div class="skill-bar"><div class="skill-progress" data-progress="75%"></div></div>
+                </div>
+                <div class="skill html">
+                  <h3 class="skill-title">Wireshark (traffic analysis)</h3>
+                  <div class="skill-bar"><div class="skill-progress" data-progress="70%"></div></div>
+                </div>
+                <div class="skill html">
+                  <h3 class="skill-title">Metasploit Framework</h3>
+                  <div class="skill-bar"><div class="skill-progress" data-progress="60%"></div></div>
+                </div>
+              </div>
+              <div>
+                <div class="skill html">
+                  <h3 class="skill-title">Burp Suite</h3>
+                  <div class="skill-bar"><div class="skill-progress" data-progress="55%"></div></div>
+                </div>
+                <div class="skill html">
+                  <h3 class="skill-title">John the Ripper / Hashcat</h3>
+                  <div class="skill-bar"><div class="skill-progress" data-progress="55%"></div></div>
+                </div>
+                <div class="skill html">
+                  <h3 class="skill-title">Netcat / Gobuster</h3>
+                  <div class="skill-bar"><div class="skill-progress" data-progress="60%"></div></div>
+                </div>
+              </div>
+
+              <!-- Networks -->
+              <div style="grid-column:1/-1" class="skills-section-title">Networks & Protocols</div>
+              <div>
+                <div class="skill html">
+                  <h3 class="skill-title">TCP/IP, DNS, DHCP, HTTP(S)</h3>
+                  <div class="skill-bar"><div class="skill-progress" data-progress="75%"></div></div>
+                </div>
+                <div class="skill html">
+                  <h3 class="skill-title">SSH / FTP / SMB</h3>
+                  <div class="skill-bar"><div class="skill-progress" data-progress="70%"></div></div>
+                </div>
+              </div>
+              <div>
+                <div class="skill html">
+                  <h3 class="skill-title">VPN / Firewall basics</h3>
+                  <div class="skill-bar"><div class="skill-progress" data-progress="60%"></div></div>
+                </div>
+                <div class="skill html">
+                  <h3 class="skill-title">CTF / Pentest methodology</h3>
+                  <div class="skill-bar"><div class="skill-progress" data-progress="65%"></div></div>
+                </div>
+              </div>
+
+              <!-- Dev tools -->
+              <div style="grid-column:1/-1" class="skills-section-title">Dev Tools & Platforms</div>
+              <div>
+                <div class="skill html">
+                  <h3 class="skill-title">Git / GitHub</h3>
+                  <div class="skill-bar"><div class="skill-progress" data-progress="80%"></div></div>
+                </div>
+                <div class="skill html">
+                  <h3 class="skill-title">VS Code</h3>
+                  <div class="skill-bar"><div class="skill-progress" data-progress="90%"></div></div>
+                </div>
+              </div>
+              <div>
+                <div class="skill html">
+                  <h3 class="skill-title">Node.js / Discord.js</h3>
+                  <div class="skill-bar"><div class="skill-progress" data-progress="75%"></div></div>
+                </div>
+                <div class="skill html">
+                  <h3 class="skill-title">FiveM / GTA RP Server Dev</h3>
+                  <div class="skill-bar"><div class="skill-progress" data-progress="80%"></div></div>
+                </div>
+              </div>
+
+            </div><!-- /.skills-grid -->
+          </div><!-- /.about-text-block -->
+
+          <!-- Certifications / platforms -->
+          <div class="about-text-block">
+            <h4>Platforms & Learning</h4>
+            <ul>
+              <li>🏆 <strong>TryHackMe</strong> – Active ranked profile (Goldenyan.exe) — CTF rooms, OSCP-path</li>
+              <li>🏆 <strong>HackTheBox</strong> – Machine solving, Pro Hacker progression</li>
+              <li>📚 <strong>Bac Général</strong> – Spécialité Maths + NSI (Numérique & Sciences Informatiques) – 2023</li>
+              <li>📚 <strong>Licence Informatique</strong> – Université Rennes 1 ISTIC – depuis 2024</li>
+            </ul>
+          </div>
+
+        </div><!-- /left column -->
+
+        <!-- RIGHT column -->
+        <div>
+
+          <!-- Projects -->
+          <div class="about-text-block">
+            <h4>Notable Projects</h4>
+            <div class="timeline">
+              <div class="timeline-item">
+                <h5>GTA V Roleplay Server</h5>
+                <span>Lua · FiveM · Web · SQL</span>
+                <p>Full server development: scripted game mechanics in Lua, MySQL database management, custom web panel for server administration.</p>
+              </div>
+              <div class="timeline-item">
+                <h5>Discord BOT</h5>
+                <span>JavaScript · Node.js · Discord.js</span>
+                <p>Multi-feature bot: moderation, custom commands, API integrations, deployed on a Linux VPS.</p>
+              </div>
+              <div class="timeline-item">
+                <h5>Multifighter — Python Game</h5>
+                <span>Python · Pygame</span>
+                <p>2D fighting game developed in Python with Pygame. Object-oriented architecture, collision system, game loop.</p>
+              </div>
+              <div class="timeline-item">
+                <h5>NSI OS Project — Browser Game</h5>
+                <span>JavaScript · HTML · CSS</span>
+                <p>Interactive browser-based game developed as a high school CS project. Hosted on GitHub Pages.</p>
+              </div>
+              <div class="timeline-item">
+                <h5>GoldCity RP — Website</h5>
+                <span>HTML · CSS · JavaScript</span>
+                <p>Presentation website for a GTA V RP community. Responsive design, animations, hosted on GitHub Pages.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Experience -->
+          <div class="about-text-block">
+            <h4>Professional Experience</h4>
+            <div class="timeline">
+              <div class="timeline-item">
+                <h5>Responsable Préparation Automobile</h5>
+                <span>AAA Locatour / Europcar – Rennes · Depuis fév. 2026</span>
+                <p>Planning des préparations, accueil client, check-out véhicules, suivi des immobilisations, coordination atelier.</p>
+              </div>
+              <div class="timeline-item">
+                <h5>Agent de Préparation Véhicules</h5>
+                <span>Sixt / Group L – Rennes Gare · 2025</span>
+                <p>Contrôle visuel, remise véhicules, convoyages inter-agences. Autonomie et rigueur.</p>
+              </div>
+              <div class="timeline-item">
+                <h5>Équipier Polyvalent</h5>
+                <span>McDonald's Pleumeleuc · 2025</span>
+                <p>Travail en forte affluence, respect des normes d'hygiène, formation de nouveaux équipiers.</p>
+              </div>
+              <div class="timeline-item">
+                <h5>Enquêteur Vacataire / Inventoriste</h5>
+                <span>RGIS Bretagne · 2024</span>
+                <p>Comptage de stocks, lecteurs codes-barres, horaires décalés (nuit), déplacements en équipe.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Soft skills & interests -->
+          <div class="about-text-block">
+            <h4>Soft Skills & Interests</h4>
+            <div class="info-tags">
+              <span class="info-tag">🤝 Team work</span>
+              <span class="info-tag">⏱ Autonomy</span>
+              <span class="info-tag">🎯 Rigour</span>
+              <span class="info-tag">🔄 Adaptability</span>
+              <span class="info-tag">🚗 Automobile</span>
+              <span class="info-tag">💻 Tech / IT</span>
+              <span class="info-tag">🏊 Swimming</span>
+              <span class="info-tag">💪 Bodybuilding</span>
+              <span class="info-tag">🔐 CTF / Hacking</span>
+              <span class="info-tag">🌐 Networking</span>
+            </div>
+          </div>
+
+        </div><!-- /right column -->
+      </div><!-- /about-columns -->
+
+    </div>
+  </section>
+
+  <!-- ══ FOOTER ══ -->
+  <footer class="footer">
+    <div class="container">
+      <div class="grid-4">
+        <div class="grid-4-col footer-about">
+          <h3 class="title-sm">Contact</h3>
+          <p class="text">
+            <i class="fas fa-envelope" style="margin-right:6px;color:#a78bfa;"></i>
+            <a href="mailto:y.poulain04@gmail.com" style="color:#ccc;">y.poulain04@gmail.com</a><br/>
+            <i class="fas fa-phone" style="margin-right:6px;color:#a78bfa;"></i>
+            <a href="tel:0763531310" style="color:#ccc;">07 63 53 13 10</a><br/>
+            <i class="fas fa-map-marker-alt" style="margin-right:6px;color:#a78bfa;"></i>Rennes, France
+          </p>
+        </div>
+        <div class="grid-4-col footer-newstletter">
+          <h3 class="title-sm">Subscribe</h3>
+          <div class="footer-input-wrap">
+            <input type="email" class="footer-input" placeholder="Email" />
+            <a href="#" class="input-arrow"><i class="fas fa-angle-right"></i></a>
+          </div>
+        </div>
+      </div>
+      <div class="bottom-footer">
+        <div class="copyright">
+          <p class="text">
+            Copyright&copy;2025 All rights reserved | Made by <span>Yanis Poulain</span>
+          </p>
+        </div>
+        <div class="followme-wrap">
+          <div class="followme">
+            <h3>Follow me</h3>
+            <span class="footer-line"></span>
+            <div class="social-media">
+              <a href="https://github.com/Goldenyan0" target="_blank"><i class="fab fa-github"></i></a>
+              <a href="https://tryhackme.com/p/Goldenyan.exe" target="_blank"><i class="fas fa-shield-alt"></i></a>
+              <a href="mailto:y.poulain04@gmail.com"><i class="fas fa-envelope"></i></a>
+              <a href="https://www.linkedin.com" target="_blank"><i class="fab fa-linkedin-in"></i></a>
+            </div>
+          </div>
+          <div class="back-btn-wrap">
+            <a href="#" class="back-btn"><i class="fas fa-chevron-up"></i></a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+</main>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="./js/isotope.pkgd.min.js"></script>
+<script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
+<script src="./js/app.js"></script>
+<script src="lightbox/js/lightbox.min.js"></script>
+</body>
 </html>
