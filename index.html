@@ -924,27 +924,153 @@
     });
   }
 })();
+</script>
 
-/* ══════════════════════════════════════
-   LANGUAGE TOGGLE
-   - démarre en FR
-   - bascule tous les éléments data-en / data-fr
-   - gère aussi les placeholders
-══════════════════════════════════════ */
-let currentLang = 'fr'; // ← démarre en français
+<script>
+/* ══ TRADUCTIONS ══ */
+const translations = {
+  // Navbar
+  'nav-services':  { fr: 'Domaines',   en: 'Domains' },
+  'nav-portfolio': { fr: 'Portfolio',  en: 'Portfolio' },
+  'nav-about':     { fr: 'À propos',   en: 'About me' },
+  'nav-contact':   { fr: 'Contact',    en: 'Contact' },
+
+  // Header
+  'header-text': {
+    fr: "Je m'appelle <strong>Yanis Poulain</strong>, étudiant en informatique de 21 ans à l'<strong>Université de Rennes 1 – ISTIC</strong>. Passionné par la cybersécurité, les réseaux et le développement logiciel depuis l'âge de 11 ans, je recherche une <strong>alternance en cybersécurité ou informatique</strong>. Français natif, anglais intermédiaire (B1/B2). Permis B.",
+    en: "I'm <strong>Yanis Poulain</strong>, a 21-year-old French computer science student at <strong>Université de Rennes 1 – ISTIC</strong>. Passionate about cybersecurity, networks and software development since I was 11, I'm actively looking for an <strong>apprenticeship in cybersecurity or IT</strong>. Fluent in French, intermediate in English (B1/B2). Driving licence B."
+  },
+  'header-btn':   { fr: 'En savoir plus', en: 'Learn more' },
+
+  // Services
+  'services-title': { fr: 'Mes Domaines', en: 'My Domains' },
+
+  'card1-title': { fr: 'Cybersécurité', en: 'Cybersecurity' },
+  'card1-text': {
+    fr: "Scan réseau avec <strong>Nmap</strong>, analyse de trafic avec <strong>Wireshark</strong>, tests d'intrusion avec <strong>Metasploit</strong>. Actif sur TryHackMe &amp; HackTheBox.",
+    en: "Network scanning with <strong>Nmap</strong>, traffic analysis with <strong>Wireshark</strong>, penetration testing with <strong>Metasploit</strong>. Active on TryHackMe &amp; HackTheBox."
+  },
+  'card1-btn': { fr: 'En savoir plus', en: 'Learn more' },
+
+  'card2-title': { fr: 'Développement Web', en: 'Web Development' },
+  'card2-text': {
+    fr: "Création de sites et applications web responsive avec <strong>HTML</strong>, <strong>CSS</strong>, <strong>JavaScript</strong> et <strong>Node.js</strong>. Du design au déploiement.",
+    en: "Building responsive websites and web apps with <strong>HTML</strong>, <strong>CSS</strong>, <strong>JavaScript</strong> and <strong>Node.js</strong>. From design to deployment."
+  },
+  'card2-btn': { fr: 'En savoir plus', en: 'Learn more' },
+
+  'card3-title': { fr: 'Systèmes & Réseaux', en: 'Systems & Networks' },
+  'card3-text': {
+    fr: "À l'aise avec la CLI <strong>Linux / Debian</strong>, l'architecture réseau, l'administration serveur et le dépannage matériel.",
+    en: "Comfortable with <strong>Linux / Debian</strong> CLI, network architecture, server administration and hardware troubleshooting."
+  },
+  'card3-btn': { fr: 'En savoir plus', en: 'Learn more' },
+
+  // Portfolio
+  'portfolio-title':   { fr: 'Portfolio',      en: 'Portfolio' },
+  'filter-all':        { fr: 'Tout',            en: 'All' },
+  'filter-cyber':      { fr: 'Cybersécurité',   en: 'Cybersecurity' },
+  'filter-web':        { fr: 'Dev Web',         en: 'Web Dev' },
+  'filter-app':        { fr: 'Dev App',         en: 'App Dev' },
+
+  'proj1-cat':   { fr: 'Cybersécurité',        en: 'Cybersecurity' },
+  'proj1-title': { fr: 'Profil TryHackMe',     en: 'TryHackMe Profile' },
+  'proj2-cat':   { fr: 'Site Web',             en: 'Website' },
+  'proj2-title': { fr: 'Serveur GTA V Roleplay', en: 'GTA V Roleplay Server' },
+  'proj3-cat':   { fr: 'App / Dev Web',        en: 'App / Web Dev' },
+  'proj3-title': { fr: 'Bot Discord',          en: 'Discord BOT' },
+  'proj4-cat':   { fr: 'Développement App',    en: 'App Development' },
+  'proj4-title': { fr: 'Projet NSI',           en: 'NSI OS Project' },
+  'proj5-cat':   { fr: 'Développement',        en: 'Development' },
+  'proj5-title': { fr: 'Profil GitHub',        en: 'GitHub Profile' },
+  'proj6-cat':   { fr: 'Développement App',    en: 'App Development' },
+  'proj6-title': { fr: 'Serveur GTA V RP',     en: 'GTA V RP Server' },
+  'proj7-cat':   { fr: 'Dev Web / App',        en: 'Web / App Dev' },
+  'proj7-title': { fr: 'Multifighter',         en: 'Multifighter' },
+
+  // About
+  'about-title': { fr: 'À Propos', en: 'About me' },
+  'about-skills-title': { fr: 'Compétences', en: 'Skills' },
+
+  'skills-prog':   { fr: 'Langages de Programmation', en: 'Programming Languages' },
+  'skills-os':     { fr: 'OS & Systèmes',              en: 'OS & Systems' },
+  'skills-cyber':  { fr: 'Outils Cybersécurité',       en: 'Cybersecurity Tools' },
+  'skills-net':    { fr: 'Réseaux & Protocoles',        en: 'Networks & Protocols' },
+  'skills-dev':    { fr: 'Outils Dev & Plateformes',    en: 'Dev Tools & Platforms' },
+
+  'platforms-title': { fr: 'Plateformes & Formation', en: 'Platforms & Learning' },
+  'thm-desc':  { fr: 'Profil classé actif (Goldenyan.exe) — salles CTF, parcours OSCP', en: 'Active ranked profile (Goldenyan.exe) — CTF rooms, OSCP path' },
+  'htb-desc':  { fr: 'Résolution de machines, progression Pro Hacker', en: 'Machine solving, Pro Hacker progression' },
+  'bac-desc':  { fr: 'Baccalauréat scientifique avec spécialité NSI (Informatique)', en: 'Scientific baccalaureate with specialisation in NSI (Computer Science)' },
+  'but-desc':  { fr: 'BUT Informatique – Rennes 1 (ISTIC)', en: 'BUT Computer Science – Rennes 1 (ISTIC)' },
+
+  'softskills-title': { fr: 'Qualités Personnelles', en: 'Soft Skills' },
+  'tag-team':     { fr: 'Travail en équipe',        en: 'Teamwork' },
+  'tag-adapt':    { fr: 'Adaptabilité',             en: 'Adaptability' },
+  'tag-auto':     { fr: 'Autonomie',                en: 'Autonomy' },
+  'tag-ponct':    { fr: 'Ponctualité',              en: 'Punctuality' },
+  'tag-prob':     { fr: 'Résolution de problèmes',  en: 'Problem solving' },
+  'tag-cur':      { fr: 'Curiosité',                en: 'Curiosity' },
+  'tag-hours':    { fr: 'Jour / Soir / Nuit / Week-end', en: 'Day / Evening / Night / Weekend' },
+
+  'exp-title': { fr: 'Expérience Professionnelle', en: 'Professional Experience' },
+  'exp1-title': { fr: 'Agent Polyvalent – Logistique / Industrie / Services', en: 'Polyvalent Agent – Logistics / Industry / Services' },
+  'exp1-sub':   { fr: 'Missions diverses — Disponible immédiatement', en: 'Various missions — Available immediately' },
+  'exp1-desc':  { fr: 'Profil polyvalent : logistique, industrie, services. Jour, soir, nuit, week-end. Adaptabilité et esprit d\'équipe.', en: 'Versatile profile: logistics, industry, services. Day, evening, night, weekend. Adaptability and team spirit.' },
+  'exp2-title': { fr: 'Serveur GTA V Roleplay – Fondateur & Développeur', en: 'GTA V Roleplay Server – Founder & Developer' },
+  'exp2-desc':  { fr: 'Création et gestion d\'un serveur FiveM RP : scripting Lua, architecture serveur, gestion de communauté (100+ joueurs).', en: 'Created and managed a FiveM RP server: Lua scripting, server architecture, community management (100+ players).' },
+  'exp3-title': { fr: 'Développeur Bot Discord', en: 'Discord Bot Developer' },
+  'exp3-desc':  { fr: 'Développement de bots de modération, musique et utilitaires en Node.js / Discord.js, déployés sur plusieurs serveurs.', en: 'Development of moderation, music and utility bots in Node.js / Discord.js, deployed on multiple servers.' },
+
+  'edu-title': { fr: 'Formation', en: 'Education' },
+  'edu1-title': { fr: 'BUT Informatique', en: 'BUT Computer Science' },
+  'edu1-sub':   { fr: 'Université Rennes 1 – ISTIC | 2023 – en cours', en: 'Université Rennes 1 – ISTIC | 2023 – present' },
+  'edu1-desc':  { fr: 'Réseaux, algorithmique, bases de données, développement web, génie logiciel.', en: 'Networks, algorithms, databases, web development, software engineering.' },
+  'edu2-title': { fr: 'Baccalauréat Scientifique – Spécialité NSI', en: 'Scientific Baccalaureate – NSI specialisation' },
+  'edu2-desc':  { fr: 'Spécialité NSI (algorithmique, Python, réseaux, bases de données).', en: 'NSI specialisation (algorithms, Python, networks, databases).' },
+
+  'lang-title': { fr: 'Langues', en: 'Languages' },
+  'lang-fr':    { fr: 'Français – Natif',            en: 'French – Native' },
+  'lang-en':    { fr: 'Anglais – Intermédiaire (B1/B2)', en: 'English – Intermediate (B1/B2)' },
+
+  'cert-title': { fr: 'Certifications & Objectifs', en: 'Certifications & Goals' },
+  'cert1': { fr: 'Préparation active CompTIA Security+',             en: 'Actively preparing for CompTIA Security+' },
+  'cert2': { fr: 'Parcours OSCP en cours sur TryHackMe',             en: 'OSCP path in progress on TryHackMe' },
+  'cert3': { fr: 'Recherche alternance cybersécurité / informatique 2025', en: 'Seeking apprenticeship in cybersecurity / IT 2025' },
+
+  // Contact
+  'contact-title':   { fr: 'Me contacter',    en: 'Get in touch' },
+  'contact-form-title': { fr: 'Envoyer un message', en: 'Send a message' },
+  'contact-btn':     { fr: 'Envoyer',         en: 'Send message' },
+  'ph-name':    { fr: 'Nom',              en: 'Name' },
+  'ph-subject': { fr: 'Objet',            en: 'Subject' },
+  'ph-message': { fr: 'Votre message...', en: 'Your message...' },
+
+  // Footer
+  'footer-subscribe': { fr: "S'abonner", en: 'Subscribe' },
+  'footer-follow':    { fr: 'Suivre',    en: 'Follow me' },
+};
+
+/* ══ APPLY LANG ══ */
+let currentLang = 'fr';
 
 function applyLang(lang) {
-  // Textes
-  document.querySelectorAll('[data-en][data-fr]').forEach(el => {
-    el.innerHTML = el.getAttribute('data-' + lang);
+  // Textes normaux
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.getAttribute('data-i18n');
+    if (translations[key] && translations[key][lang] !== undefined) {
+      el.innerHTML = translations[key][lang];
+    }
   });
-  // Placeholders (inputs / textareas)
-  document.querySelectorAll('[data-placeholder-en][data-placeholder-fr]').forEach(el => {
-    el.placeholder = el.getAttribute('data-placeholder-' + lang);
+  // Placeholders
+  document.querySelectorAll('[data-i18n-ph]').forEach(el => {
+    const key = el.getAttribute('data-i18n-ph');
+    if (translations[key] && translations[key][lang] !== undefined) {
+      el.placeholder = translations[key][lang];
+    }
   });
-  // Bouton : affiche la langue OPPOSÉE (vers laquelle on peut basculer)
-  const btn = document.getElementById('langToggle');
-  btn.textContent = lang === 'fr' ? '🇬🇧 EN' : '🇫🇷 FR';
+  // Bouton : montre la langue vers laquelle on peut basculer
+  document.getElementById('langToggle').textContent = lang === 'fr' ? '🇬🇧 EN' : '🇫🇷 FR';
 }
 
 function toggleLang() {
@@ -952,8 +1078,30 @@ function toggleLang() {
   applyLang(currentLang);
 }
 
-// Appliquer le français au chargement
+// Appliquer FR au chargement
 applyLang('fr');
+
+/* ══ SKILL BARS ══ */
+(function() {
+  const bars = document.querySelectorAll('.skill-progress');
+  let animated = false;
+  function animateBars() {
+    if (animated) return;
+    bars.forEach(b => b.style.width = b.dataset.progress);
+    animated = true;
+  }
+  const section = document.querySelector('.skills');
+  if (section && 'IntersectionObserver' in window) {
+    new IntersectionObserver(entries => {
+      if (entries[0].isIntersecting) animateBars();
+    }, { threshold: 0.1 }).observe(section);
+  } else {
+    window.addEventListener('scroll', () => {
+      if (section && section.getBoundingClientRect().top < window.innerHeight) animateBars();
+    });
+  }
+})();
 </script>
+
 </body>
 </html>
