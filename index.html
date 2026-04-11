@@ -11,6 +11,205 @@
   <link rel="stylesheet" href="./css/style.css" />
   <link href="lightbox/css/lightbox.min.css" rel="stylesheet">
   <style>
+    /* Contact bar sticky */
+.contact-bar {
+  position: sticky;
+  top: 0;
+  z-index: 9999;
+  background: #1a1a2e;
+  padding: 8px 0;
+  text-align: center;
+  font-size: 0.85rem;
+  color: #ccc;
+  letter-spacing: 0.5px;
+}
+
+/* Typing animation */
+.typed-cursor {
+  color: #a78bfa;
+  font-weight: 300;
+  animation: blink 1s infinite;
+}
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+
+/* Header amélioré */
+#header {
+  background: linear-gradient(135deg, #0f0f23 0%, #1a1a3e 50%, #0f0f23 100%);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Particules flottantes */
+.particles-container {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  z-index: 0;
+  pointer-events: none;
+}
+.particle {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(167,139,250,0.15);
+  animation: float-particle linear infinite;
+}
+@keyframes float-particle {
+  0%   { transform: translateY(100vh) scale(0); opacity: 0; }
+  10%  { opacity: 1; }
+  90%  { opacity: 1; }
+  100% { transform: translateY(-100px) scale(1); opacity: 0; }
+}
+
+/* Grille hero */
+.header-content .grid-2 {
+  align-items: center;
+  min-height: 85vh;
+}
+
+/* Texte hero */
+.header-title {
+  font-size: clamp(2.2rem, 5vw, 3.8rem) !important;
+  color: #fff !important;
+  line-height: 1.1 !important;
+  margin-bottom: 10px !important;
+}
+.header-content .text {
+  color: #c4b5fd !important;
+  font-size: 1.05rem;
+  line-height: 1.8;
+}
+
+/* Badge alternance */
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(167,139,250,0.15);
+  border: 1px solid rgba(167,139,250,0.4);
+  border-radius: 50px;
+  padding: 6px 16px;
+  font-size: 0.82rem;
+  color: #a78bfa;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  margin-bottom: 16px;
+  animation: pulse-badge 2s ease-in-out infinite;
+}
+.hero-badge .dot {
+  width: 8px; height: 8px;
+  background: #a78bfa;
+  border-radius: 50%;
+  animation: pulse-dot 2s ease-in-out infinite;
+}
+@keyframes pulse-badge {
+  0%,100% { box-shadow: 0 0 0 0 rgba(167,139,250,0.3); }
+  50%      { box-shadow: 0 0 0 8px rgba(167,139,250,0); }
+}
+@keyframes pulse-dot {
+  0%,100% { transform: scale(1); opacity: 1; }
+  50%      { transform: scale(1.4); opacity: 0.7; }
+}
+
+/* Tags hero */
+.hero-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 18px 0 24px;
+}
+.hero-tag {
+  background: rgba(255,255,255,0.07);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 6px;
+  padding: 4px 12px;
+  font-size: 0.78rem;
+  color: #e0d4fc;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Image hero flottante */
+.hero-image-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.hero-image-wrap .img-element {
+  animation: float-hero 4s ease-in-out infinite;
+  filter: drop-shadow(0 20px 60px rgba(167,139,250,0.35));
+  position: relative;
+  z-index: 2;
+}
+@keyframes float-hero {
+  0%,100% { transform: translateY(0px); }
+  50%      { transform: translateY(-18px); }
+}
+.hero-glow {
+  position: absolute;
+  width: 350px; height: 350px;
+  background: radial-gradient(circle, rgba(124,58,237,0.25) 0%, transparent 70%);
+  border-radius: 50%;
+  z-index: 1;
+  animation: glow-pulse 3s ease-in-out infinite;
+}
+@keyframes glow-pulse {
+  0%,100% { transform: scale(1); opacity: 0.6; }
+  50%      { transform: scale(1.15); opacity: 1; }
+}
+
+/* Scroll indicator */
+.scroll-indicator {
+  position: absolute;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  color: rgba(167,139,250,0.6);
+  font-size: 0.72rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  z-index: 5;
+  animation: fade-in-up 1s ease 1.5s both;
+}
+.scroll-mouse {
+  width: 22px; height: 36px;
+  border: 2px solid rgba(167,139,250,0.5);
+  border-radius: 12px;
+  display: flex;
+  justify-content: center;
+  padding-top: 6px;
+}
+.scroll-wheel {
+  width: 3px; height: 6px;
+  background: #a78bfa;
+  border-radius: 2px;
+  animation: scroll-anim 1.5s ease-in-out infinite;
+}
+@keyframes scroll-anim {
+  0%   { transform: translateY(0); opacity: 1; }
+  100% { transform: translateY(10px); opacity: 0; }
+}
+
+/* Fade in animations */
+@keyframes fade-in-up {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.hero-animate-1 { animation: fade-in-up 0.7s ease 0.1s both; }
+.hero-animate-2 { animation: fade-in-up 0.7s ease 0.3s both; }
+.hero-animate-3 { animation: fade-in-up 0.7s ease 0.5s both; }
+.hero-animate-4 { animation: fade-in-up 0.7s ease 0.7s both; }
+.hero-animate-5 { animation: fade-in-up 0.7s ease 0.9s both; }
+.hero-animate-img { animation: fade-in-up 0.9s ease 0.4s both; }
+
+/* Override overlay pour le dark header */
+#header .overlay { display: none; }
     .contact-bar {
       background: #1a1a2e;
       padding: 8px 0;
@@ -224,55 +423,84 @@
 <main>
 
   <!-- ══ HEADER ══ -->
-  <header id="header">
-    <div class="overlay overlay-lg">
-      <img src="./img/shapes/square.png"     class="shape square"       alt="" />
-      <img src="./img/shapes/circle.png"      class="shape circle"       alt="" />
-      <img src="./img/shapes/half-circle.png" class="shape half-circle1" alt="" />
-      <img src="./img/shapes/half-circle.png" class="shape half-circle2" alt="" />
-      <img src="./img/shapes/x.png"           class="shape xshape"       alt="" />
-      <img src="./img/shapes/wave.png"        class="shape wave wave1"   alt="" />
-      <img src="./img/shapes/wave.png"        class="shape wave wave2"   alt="" />
-      <img src="./img/shapes/triangle.png"    class="shape triangle"     alt="" />
-      <img src="./img/shapes/points1.png"     class="points points1"     alt="" />
-    </div>
-    <nav>
-      <div class="container">
-        <div class="logo"><img src="./img/logo.png" alt="" /></div>
-        <div class="links">
-          <ul>
-            <li><a href="#services">Domaines</a></li>
-            <li><a href="#portfolio">Portfolio</a></li>
-            <li><a href="#about">À propos</a></li>
-            <li><a href="#contact" class="active">Contact</a></li>
-          </ul>
-        </div>
-        <div class="hamburger-menu"><div class="bar"></div></div>
-      </div>
-    </nav>
+<header id="header">
 
-    <div class="header-content">
-      <div class="container grid-2">
-        <div class="column-1">
-          <h1 class="header-title">Yanis Poulain</h1>
-          <p class="text">
-            Étudiant en informatique de 21 ans à l'Université de Rennes 1 (ISTIC), passionné de
-            <strong>cybersécurité</strong> et de développement depuis l'âge de 11 ans.
-            Je maîtrise les environnements Linux, les outils d'analyse réseau et plusieurs langages
-            de programmation. Je recherche actuellement une
-            <strong>alternance en cybersécurité ou informatique</strong>.
-          </p>
-          <a href="#services" class="btn">En savoir plus</a>
+  <!-- Particules -->
+  <div class="particles-container" id="particles"></div>
+
+  <nav>
+    <div class="container">
+      <div class="logo"><img src="./img/logo.png" alt="" /></div>
+      <div class="links">
+        <ul>
+          <li><a href="#services" style="color:#e0d4fc;">Domaines</a></li>
+          <li><a href="#portfolio" style="color:#e0d4fc;">Portfolio</a></li>
+          <li><a href="#about" style="color:#e0d4fc;">À propos</a></li>
+          <li><a href="#contact" class="active">Contact</a></li>
+        </ul>
+      </div>
+      <div class="hamburger-menu"><div class="bar"></div></div>
+    </div>
+  </nav>
+
+  <div class="header-content">
+    <div class="container grid-2">
+
+      <!-- COLONNE GAUCHE -->
+      <div class="column-1">
+        <div class="hero-badge hero-animate-1">
+          <span class="dot"></span>
+          Recherche Alternance 2026
         </div>
-        <div class="column-2 image">
+
+        <h1 class="header-title hero-animate-2">Yanis Poulain</h1>
+
+        <p style="font-size:1.1rem; color:#a78bfa; font-weight:600; margin-bottom:10px;" class="hero-animate-2">
+          <span id="typed-text"></span><span class="typed-cursor">|</span>
+        </p>
+
+        <p class="text hero-animate-3">
+          Bienvenue sur mon portfolio ! Je suis <strong style="color:#fff;">Yanis Poulain</strong>, 21 ans,
+          passionné d'<strong style="color:#fff;">informatique</strong> depuis l'âge de 11 ans.
+          Je recherche activement une <strong style="color:#fff;">alternance en informatique</strong> et
+          à travers ce site vous retrouverez mes <strong style="color:#fff;">projets</strong>, mes
+          <strong style="color:#fff;">compétences</strong> et mon <strong style="color:#fff;">parcours</strong>.
+        </p>
+
+        <div class="hero-tags hero-animate-4">
+          <span class="hero-tag"><i class="fas fa-shield-alt" style="color:#a78bfa;"></i> Cybersécurité</span>
+          <span class="hero-tag"><i class="fas fa-network-wired" style="color:#a78bfa;"></i> Réseaux</span>
+          <span class="hero-tag"><i class="fas fa-code" style="color:#a78bfa;"></i> Dev Web</span>
+          <span class="hero-tag"><i class="fas fa-map-marker-alt" style="color:#a78bfa;"></i> Rennes</span>
+        </div>
+
+        <div class="hero-animate-5" style="display:flex; gap:12px; flex-wrap:wrap;">
+          <a href="#services" class="btn">En savoir plus</a>
+          <a href="#contact" class="btn" style="background:transparent; border:2px solid #a78bfa; color:#a78bfa;">Me contacter</a>
+        </div>
+      </div>
+
+      <!-- COLONNE DROITE -->
+      <div class="column-2 image hero-animate-img">
+        <div class="hero-image-wrap">
+          <div class="hero-glow"></div>
           <img src="./img/shapes/points2.png" class="points points2" alt="" />
           <img src="./img/person.png" class="img-element z-index" alt="" />
         </div>
       </div>
-    </div>
-  </header>
 
-  <!-- ══ SERVICES ══ -->
+    </div>
+  </div>
+
+  <!-- Scroll indicator -->
+  <div class="scroll-indicator">
+    <div class="scroll-mouse"><div class="scroll-wheel"></div></div>
+    <span>Scroll</span>
+  </div>
+
+</header>
+
+<!-- ══ SERVICES ══ -->
   <section class="services section" id="services">
     <div class="container">
       <div class="section-header">
@@ -286,11 +514,9 @@
               <img src="./img/design-icon.png" class="icon" alt="" />
               <h3 class="title-sm">Cybersécurité</h3>
               <p class="text">
-                Scan réseau avec <strong>Nmap</strong>, analyse de trafic avec
-                <strong>Wireshark</strong>, tests d'intrusion avec <strong>Metasploit</strong>.
-                Actif sur TryHackMe &amp; HackTheBox.
+                Analyse de vulnérabilités, tests d'intrusion et surveillance réseau.
               </p>
-              <a href="#portfolio" class="btn small">En savoir plus</a>
+              <a href="#portfolio" class="btn small">Voir mes projets</a>
             </div>
           </div>
         </div>
@@ -301,11 +527,10 @@
               <img src="./img/code-icon.png" class="icon" alt="" />
               <h3 class="title-sm">Développement Web</h3>
               <p class="text">
-                Création de sites et applications web responsive avec <strong>HTML</strong>,
-                <strong>CSS</strong>, <strong>JavaScript</strong> et <strong>Node.js</strong>.
-                Du design au déploiement.
+                Conception et développement de sites et applications web,
+                du design à la mise en ligne.
               </p>
-              <a href="#portfolio" class="btn small">En savoir plus</a>
+              <a href="#portfolio" class="btn small">Voir mes projets</a>
             </div>
           </div>
         </div>
@@ -316,11 +541,10 @@
               <img src="./img/app-icon.png" class="icon" alt="" />
               <h3 class="title-sm">Systèmes &amp; Réseaux</h3>
               <p class="text">
-                À l'aise avec la CLI <strong>Linux / Debian</strong>, l'architecture réseau,
-                l'administration serveur et le dépannage matériel. Passionné par le
-                fonctionnement des systèmes à bas niveau.
+                Administration système sous Linux, architecture réseau
+                et dépannage matériel.
               </p>
-              <a href="#portfolio" class="btn small">En savoir plus</a>
+              <a href="#portfolio" class="btn small">Voir mes projets</a>
             </div>
           </div>
         </div>
@@ -328,6 +552,7 @@
       </div>
     </div>
   </section>
+
 
   <!-- ══ PORTFOLIO ══ -->
   <section class="portfolio section" id="portfolio">
@@ -782,7 +1007,7 @@
 
 
 
-  <!-- ══ FOOTER ══ -->
+<!-- ══ FOOTER ══ -->
   <footer class="footer">
     <div class="container">
       <div class="grid-4">
@@ -796,7 +1021,7 @@
             <i class="fas fa-map-marker-alt" style="margin-right:6px;color:#a78bfa;"></i>Rennes, France
           </p>
         </div>
-        <div class="grid-4-col footer-newstletter">
+        <div class="grid-4-col footer-newstletter" style="display:none;">
           <h3 class="title-sm">S'abonner</h3>
           <div class="footer-input-wrap">
             <input type="email" class="footer-input" placeholder="Email" />
@@ -807,12 +1032,13 @@
       <div class="bottom-footer">
         <div class="copyright">
           <p class="text">
-            Copyright &copy; 2025 All rights reserved | Made by <span>Yanis Poulain</span>
+            Copyright &copy; 2026 All rights reserved | Made by <span>Yanis Poulain</span>
           </p>
         </div>
       </div>
     </div>
   </footer>
+
 
 </main>
 
@@ -875,6 +1101,53 @@ document.getElementById('contactForm').addEventListener('submit', function(e) {
   }
 })();
 </script>
+<script>
+/* ══ PARTICULES HERO ══ */
+(function() {
+  const container = document.getElementById('particles');
+  if (!container) return;
+  for (let i = 0; i < 18; i++) {
+    const p = document.createElement('div');
+    p.classList.add('particle');
+    const size = Math.random() * 60 + 10;
+    p.style.cssText = `
+      width: ${size}px;
+      height: ${size}px;
+      left: ${Math.random() * 100}%;
+      animation-duration: ${Math.random() * 15 + 10}s;
+      animation-delay: ${Math.random() * -20}s;
+    `;
+    container.appendChild(p);
+  }
+})();
+
+/* ══ TYPING EFFECT ══ */
+(function() {
+  const phrases = [
+    'Étudiant en Informatique',
+    'Passionné Cybersécurité',
+    'Développeur Web',
+    'En recherche d\'alternance'
+  ];
+  let pi = 0, ci = 0, deleting = false;
+  const el = document.getElementById('typed-text');
+  if (!el) return;
+  function type() {
+    const current = phrases[pi];
+    if (deleting) {
+      el.textContent = current.substring(0, ci--);
+      if (ci < 0) { deleting = false; pi = (pi + 1) % phrases.length; setTimeout(type, 400); return; }
+      setTimeout(type, 40);
+    } else {
+      el.textContent = current.substring(0, ci++);
+      if (ci > current.length) { deleting = true; setTimeout(type, 1800); return; }
+      setTimeout(type, 80);
+    }
+  }
+  type();
+})();
+</script>
+
   
 </body>
 </html>
