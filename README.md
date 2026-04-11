@@ -42,7 +42,7 @@ Ce projet est mon **portfolio personnel** — une vitrine en ligne conçue pour 
 ## 🧩 Structure du site
 
 ### 🏠 Header — Accueil
-- Présentation rapide : **Yanis Poulain, 21 ans, Rennes**
+- Présentation rapide
 - Effet **typing animé** (Étudiant en Informatique / Cybersécurité / Dev Web / Alternance)
 - Badge pulsant **"Recherche Alternance 2025"**
 - Particules flottantes et animations d'entrée
