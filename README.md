@@ -13,8 +13,6 @@
 
 Ce projet est mon **portfolio personnel** — une vitrine en ligne conçue pour présenter mon profil, mes compétences, mes projets et mon parcours dans le domaine de l'informatique.
 
-Passionné d'informatique depuis l'âge de **11 ans**, je suis actuellement en recherche d'une **alternance en informatique** (cybersécurité / développement / réseaux).
-
 ---
 
 ## 🎯 Objectifs du site
