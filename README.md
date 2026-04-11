@@ -44,7 +44,6 @@ Ce projet est mon **portfolio personnel** — une vitrine en ligne conçue pour 
 ### 🏠 Header — Accueil
 - Présentation rapide
 - Effet **typing animé** (Étudiant en Informatique / Cybersécurité / Dev Web / Alternance)
-- Badge pulsant **"Recherche Alternance 2025"**
 - Particules flottantes et animations d'entrée
 - Navigation sticky avec barre de contact en haut de page
 
