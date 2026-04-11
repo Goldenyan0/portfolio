@@ -4,6 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Portfolio Yanis</title>
+  <!-- Favicon -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%237c3aed'/><text x='50' y='68' font-size='55' font-family='Arial,sans-serif' font-weight='bold' fill='white' text-anchor='middle'>YP</text></svg>" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css" />
   <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css" />
   <link rel="stylesheet" href="./css/style.css" />
@@ -25,6 +27,12 @@
     }
     .contact-bar a:hover { color: #fff; }
     .contact-bar i { margin-right: 6px; }
+
+    /* Logo arrondi */
+    .logo img {
+      border-radius: 50%;
+      overflow: hidden;
+    }
 
     .skills-grid {
       display: grid;
@@ -173,6 +181,14 @@
       color: #fff;
       text-shadow: 0 2px 8px rgba(0,0,0,0.6);
       line-height: 1.3;
+      margin-bottom: 8px;
+    }
+    .img-description p {
+      font-size: 0.78rem;
+      color: #e0d4fc;
+      line-height: 1.4;
+      margin: 0;
+      max-width: 260px;
     }
 
     .grid-item .work-box {
@@ -349,6 +365,7 @@
                   <div class="img-description">
                     <h3>Cybersécurité</h3>
                     <h2>Profil TryHackMe</h2>
+                    <p>Salles CTF, parcours OSCP, classement actif sous le pseudo Goldenyan.exe.</p>
                   </div>
                 </div>
               </a>
@@ -364,6 +381,7 @@
                   <div class="img-description">
                     <h3>Site Web</h3>
                     <h2>Serveur GTA V Roleplay</h2>
+                    <p>Site vitrine responsive pour un serveur FiveM RP, réalisé en HTML/CSS/JS.</p>
                   </div>
                 </div>
               </a>
@@ -382,6 +400,7 @@
                     <div class="img-description">
                       <h3>App / Dev Web</h3>
                       <h2>Bot Discord</h2>
+                      <p>Bot multifonction en Node.js / Discord.js : modération, musique, commandes custom.</p>
                     </div>
                   </div>
                 </a>
@@ -398,6 +417,7 @@
                   <div class="img-description">
                     <h3>Développement App</h3>
                     <h2>Projet NSI</h2>
+                    <p>Jeu navigateur en JavaScript pur, réalisé dans le cadre de la spécialité NSI.</p>
                   </div>
                 </div>
               </a>
@@ -413,6 +433,7 @@
                   <div class="img-description">
                     <h3>Développement</h3>
                     <h2>Profil GitHub</h2>
+                    <p>Tous mes projets open-source : bots, jeux, sites web et outils divers.</p>
                   </div>
                 </div>
               </a>
@@ -431,6 +452,7 @@
                     <div class="img-description">
                       <h3>Développement App</h3>
                       <h2>Serveur GTA V RP</h2>
+                      <p>Serveur FiveM custom : scripting Lua, architecture serveur, 100+ joueurs.</p>
                     </div>
                   </div>
                 </a>
@@ -447,6 +469,7 @@
                   <div class="img-description">
                     <h3>Développement App</h3>
                     <h2>Multifighter</h2>
+                    <p>Jeu de combat en Python avec interface graphique, développé en binôme.</p>
                   </div>
                 </div>
               </a>
@@ -558,18 +581,39 @@
             <ul>
               <li>🏆 <strong>TryHackMe</strong> – Profil classé actif (Goldenyan.exe) — salles CTF, parcours OSCP</li>
               <li>🏆 <strong>HackTheBox</strong> – Résolution de machines, progression Pro Hacker</li>
-              <li>📚 <strong>Bac Général</strong> – Spécialité Maths + NSI (Numérique &amp; Sciences Informatiques) – 2023</li>
-              <li>📚 <strong>Licence Informatique</strong> – Université Rennes 1 ISTIC – depuis 2024</li>
-              <li>📚 <strong>BUT Informatique</strong> – Rennes 1 (ISTIC)</li>
+              <li>📚 <strong>Bac S</strong> – Baccalauréat scientifique avec spécialité NSI (Informatique)</li>
+              <li>🎓 <strong>BUT Informatique – Rennes 1 (ISTIC)</strong></li>
             </ul>
           </div>
-        </div>
 
-        <!-- ── RIGHT : Timeline ── -->
-        <div>
+          <!-- Soft Skills -->
           <div class="about-text-block">
-            <h4>Expériences &amp; Projets</h4>
+            <h4>Qualités Personnelles</h4>
+            <div class="info-tags">
+              <span class="info-tag">Travail en équipe</span>
+              <span class="info-tag">Adaptabilité</span>
+              <span class="info-tag">Autonomie</span>
+              <span class="info-tag">Ponctualité</span>
+              <span class="info-tag">Résolution de problèmes</span>
+              <span class="info-tag">Curiosité</span>
+              <span class="info-tag">Jour / Soir / Nuit / Week-end</span>
+            </div>
+          </div>
+        </div><!-- /left column -->
+
+        <!-- ── RIGHT : Experience & Education ── -->
+        <div>
+
+          <!-- Experience -->
+          <div class="about-text-block">
+            <h4>Expérience Professionnelle</h4>
             <div class="timeline">
+
+              <div class="timeline-item">
+                <h5>Agent Polyvalent – Logistique / Industrie / Services</h5>
+                <span>Missions diverses — Disponible immédiatement</span>
+                <p>Profil polyvalent : logistique, industrie, services. Jour, soir, nuit, week-end. Adaptabilité et esprit d'équipe.</p>
+              </div>
 
               <div class="timeline-item">
                 <h5>Serveur GTA V Roleplay – Fondateur &amp; Développeur</h5>
@@ -578,34 +622,56 @@
               </div>
 
               <div class="timeline-item">
-                <h5>Bot Discord – Développeur</h5>
-                <span>2022 – présent</span>
-                <p>Développement d'un bot Discord multifonction en Node.js / Discord.js : modération, musique, commandes personnalisées.</p>
-              </div>
-
-              <div class="timeline-item">
-                <h5>Projet NSI – Jeu navigateur</h5>
-                <span>2023</span>
-                <p>Jeu en JavaScript pur réalisé dans le cadre de la spécialité NSI au lycée.</p>
-              </div>
-
-              <div class="timeline-item">
-                <h5>Multifighter – Jeu combat</h5>
-                <span>2024</span>
-                <p>Jeu de combat en Python avec interface graphique, développé en binôme.</p>
-              </div>
-
-              <div class="timeline-item">
-                <h5>TryHackMe / HackTheBox – CTF &amp; Pentest</h5>
-                <span>2022 – présent</span>
-                <p>Résolution de machines et salles CTF : énumération, exploitation, privilege escalation.</p>
+                <h5>Développeur Bot Discord</h5>
+                <span>2020 – présent</span>
+                <p>Développement de bots de modération, musique et utilitaires en Node.js / Discord.js, déployés sur plusieurs serveurs.</p>
               </div>
 
             </div>
           </div>
-        </div>
 
-      </div><!-- /.about-columns -->
+          <!-- Education -->
+          <div class="about-text-block">
+            <h4>Formation</h4>
+            <div class="timeline">
+
+              <div class="timeline-item">
+                <h5>BUT Informatique</h5>
+                <span>Université Rennes 1 – ISTIC | 2023 – en cours</span>
+                <p>Réseaux, algorithmique, bases de données, développement web, génie logiciel.</p>
+              </div>
+
+              <div class="timeline-item">
+                <h5>Baccalauréat Scientifique – Spécialité NSI</h5>
+                <span>2023</span>
+                <p>Spécialité NSI (algorithmique, Python, réseaux, bases de données).</p>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- Languages -->
+          <div class="about-text-block">
+            <h4>Langues</h4>
+            <div class="info-tags">
+              <span class="info-tag">🇫🇷 Français – Natif</span>
+              <span class="info-tag">🇬🇧 Anglais – Intermédiaire (B1/B2)</span>
+            </div>
+          </div>
+
+          <!-- Certifications -->
+          <div class="about-text-block">
+            <h4>Certifications &amp; Objectifs</h4>
+            <ul>
+              <li>🎯 Préparation active CompTIA Security+</li>
+              <li>🎯 Parcours OSCP en cours sur TryHackMe</li>
+              <li>🎯 Recherche alternance cybersécurité / informatique 2025</li>
+            </ul>
+          </div>
+
+        </div><!-- /right column -->
+      </div><!-- /about-columns -->
+
     </div>
   </section>
 
