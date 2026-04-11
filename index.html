@@ -677,50 +677,52 @@
 
   <!-- ══ CONTACT ══ -->
   <section class="contact section" id="contact">
-    <div class="background-bg">
-      <div class="overlay overlay-sm">
-        <img src="./img/shapes/half-circle.png" class="shape half-circle1" alt="" />
-        <img src="./img/shapes/half-circle.png" class="shape half-circle2" alt="" />
-        <img src="./img/shapes/square.png"      class="shape square"       alt="" />
-        <img src="./img/shapes/wave.png"        class="shape wave"         alt="" />
-        <img src="./img/shapes/circle.png"      class="shape circle"       alt="" />
-        <img src="./img/shapes/triangle.png"    class="shape triangle"     alt="" />
-        <img src="./img/shapes/x.png"           class="shape xshape"       alt="" />
-      </div>
-    </div>
     <div class="container">
-      <div class="section-header">
-        <h3 class="title">Contact</h3>
-      </div>
-      <div class="section-body grid-2">
-        <div class="column-1">
-          <h3 class="title-sm">Contactez-moi</h3>
-          <p class="text">N'hésitez pas à me contacter pour toute opportunité d'alternance ou de collaboration.</p>
-          <div class="contact-info">
-            <div class="info-wrap">
-              <i class="fas fa-envelope"></i>
-              <p class="text"><a href="mailto:y.poulain04@gmail.com">y.poulain04@gmail.com</a></p>
+      <div class="contact-box">
+        <div class="contact-info">
+          <h3 class="title"
+              data-en="Get in touch"
+              data-fr="Me contacter">Me contacter</h3>
+          <div class="information-wrap">
+            <div class="information">
+              <div class="contact-icon"><i class="fas fa-map-marker-alt"></i></div>
+              <p class="info-text">Rennes, France</p>
             </div>
-            <div class="info-wrap">
-              <i class="fas fa-phone"></i>
-              <p class="text"><a href="tel:0763531310">07 63 53 13 10</a></p>
+            <div class="information">
+              <div class="contact-icon"><i class="fas fa-envelope"></i></div>
+              <p class="info-text">y.poulain04@gmail.com</p>
             </div>
-            <div class="info-wrap">
-              <i class="fas fa-map-marker-alt"></i>
-              <p class="text">Rennes, France</p>
+            <div class="information">
+              <div class="contact-icon"><i class="fas fa-phone"></i></div>
+              <p class="info-text">07 63 53 13 10</p>
             </div>
           </div>
         </div>
-        <div class="column-2">
-          <div class="contact-form">
-            <div class="inputs-wrap">
-              <input type="text" class="contact-input" placeholder="Nom" />
-              <input type="email" class="contact-input" placeholder="Email" />
-            </div>
-            <input type="text" class="contact-input" placeholder="Objet" />
-            <textarea id="msg" class="contact-input textarea" placeholder="Votre message..."></textarea>
-            <a href="#" class="btn" onclick="sendMessage()">Envoyer</a>
+        <div class="contact-form">
+          <h3 class="title"
+              data-en="Send a message"
+              data-fr="Envoyer un message">Envoyer un message</h3>
+          <div class="row">
+            <input type="text" class="contact-input"
+                   data-placeholder-en="Name"
+                   data-placeholder-fr="Nom"
+                   placeholder="Nom" />
+            <input type="email" class="contact-input"
+                   data-placeholder-en="Email"
+                   data-placeholder-fr="Email"
+                   placeholder="Email" />
           </div>
+          <input type="text" class="contact-input"
+                 data-placeholder-en="Subject"
+                 data-placeholder-fr="Objet"
+                 placeholder="Objet" />
+          <textarea id="msg" class="contact-input textarea"
+                    data-placeholder-en="Your message..."
+                    data-placeholder-fr="Votre message..."
+                    placeholder="Votre message..."></textarea>
+          <a href="#" class="btn" onclick="sendMessage()"
+             data-en="Send message"
+             data-fr="Envoyer">Envoyer</a>
         </div>
       </div>
     </div>
