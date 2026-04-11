@@ -9,23 +9,6 @@
   <link rel="stylesheet" href="./css/style.css" />
   <link href="lightbox/css/lightbox.min.css" rel="stylesheet">
   <style>
-    .lang-btn {
-      background: var(--main-color);
-      color: #fff;
-      border: none;
-      border-radius: 2rem;
-      padding: 0.5rem 1.2rem;
-      font-size: 0.85rem;
-      font-family: "Poppins", sans-serif;
-      font-weight: 600;
-      cursor: pointer;
-      margin-left: 1rem;
-      transition: background .3s;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-    }
-    .lang-btn:hover { background: #6b44e0; }
-
     .contact-bar {
       background: #1a1a2e;
       padding: 8px 0;
@@ -147,7 +130,6 @@
       .skills-grid { grid-template-columns: 1fr; }
     }
 
-    /* ── Portfolio overlay ── */
     .grid-item .gallery-image {
       position: relative;
       overflow: hidden;
@@ -243,22 +225,12 @@
         <div class="logo"><img src="./img/logo.png" alt="" /></div>
         <div class="links">
           <ul>
-            <li><a href="#services"
-                   data-en="Domains"
-                   data-fr="Domaines">Domaines</a></li>
-            <li><a href="#portfolio"
-                   data-en="Portfolio"
-                   data-fr="Portfolio">Portfolio</a></li>
-            <li><a href="#about"
-                   data-en="About me"
-                   data-fr="À propos">À propos</a></li>
-            <li><a href="#contact"
-                   data-en="Contact"
-                   data-fr="Contact"
-                   class="active">Contact</a></li>
+            <li><a href="#services">Domaines</a></li>
+            <li><a href="#portfolio">Portfolio</a></li>
+            <li><a href="#about">À propos</a></li>
+            <li><a href="#contact" class="active">Contact</a></li>
           </ul>
         </div>
-        <button class="lang-btn" id="langToggle" onclick="toggleLang()">🇬🇧 EN</button>
         <div class="hamburger-menu"><div class="bar"></div></div>
       </div>
     </nav>
@@ -267,18 +239,14 @@
       <div class="container grid-2">
         <div class="column-1">
           <h1 class="header-title">Yanis Poulain</h1>
-          <p class="text"
-             data-en="21-year-old French computer science student at Université de Rennes 1 (ISTIC), passionate about <strong>cybersecurity</strong> and software development since age 11. I master Linux environments, network analysis tools and several programming languages. Currently seeking an <strong>apprenticeship in cybersecurity or IT</strong>."
-             data-fr="Étudiant en informatique de 21 ans à l'Université de Rennes 1 (ISTIC), passionné de <strong>cybersécurité</strong> et de développement depuis l'âge de 11 ans. Je maîtrise les environnements Linux, les outils d'analyse réseau et plusieurs langages de programmation. Je recherche actuellement une <strong>alternance en cybersécurité ou informatique</strong>.">
+          <p class="text">
             Étudiant en informatique de 21 ans à l'Université de Rennes 1 (ISTIC), passionné de
             <strong>cybersécurité</strong> et de développement depuis l'âge de 11 ans.
             Je maîtrise les environnements Linux, les outils d'analyse réseau et plusieurs langages
             de programmation. Je recherche actuellement une
             <strong>alternance en cybersécurité ou informatique</strong>.
           </p>
-          <a href="#services" class="btn"
-             data-en="Learn more"
-             data-fr="En savoir plus">En savoir plus</a>
+          <a href="#services" class="btn">En savoir plus</a>
         </div>
         <div class="column-2 image">
           <img src="./img/shapes/points2.png" class="points points2" alt="" />
@@ -292,9 +260,7 @@
   <section class="services section" id="services">
     <div class="container">
       <div class="section-header">
-        <h3 class="title"
-            data-en="My Domains"
-            data-fr="Mes Domaines">Mes Domaines</h3>
+        <h3 class="title">Mes Domaines</h3>
       </div>
       <div class="cards">
 
@@ -302,19 +268,13 @@
           <div class="card">
             <div class="card-content z-index">
               <img src="./img/design-icon.png" class="icon" alt="" />
-              <h3 class="title-sm"
-                  data-en="Cybersecurity"
-                  data-fr="Cybersécurité">Cybersécurité</h3>
-              <p class="text"
-                 data-en="Network scanning with <strong>Nmap</strong>, traffic analysis with <strong>Wireshark</strong>, penetration testing with <strong>Metasploit</strong>. Active on TryHackMe &amp; HackTheBox."
-                 data-fr="Scan réseau avec <strong>Nmap</strong>, analyse de trafic avec <strong>Wireshark</strong>, tests d'intrusion avec <strong>Metasploit</strong>. Actif sur TryHackMe &amp; HackTheBox.">
+              <h3 class="title-sm">Cybersécurité</h3>
+              <p class="text">
                 Scan réseau avec <strong>Nmap</strong>, analyse de trafic avec
                 <strong>Wireshark</strong>, tests d'intrusion avec <strong>Metasploit</strong>.
                 Actif sur TryHackMe &amp; HackTheBox.
               </p>
-              <a href="#portfolio" class="btn small"
-                 data-en="Learn more"
-                 data-fr="En savoir plus">En savoir plus</a>
+              <a href="#portfolio" class="btn small">En savoir plus</a>
             </div>
           </div>
         </div>
@@ -323,19 +283,13 @@
           <div class="card">
             <div class="card-content z-index">
               <img src="./img/code-icon.png" class="icon" alt="" />
-              <h3 class="title-sm"
-                  data-en="Web Development"
-                  data-fr="Développement Web">Développement Web</h3>
-              <p class="text"
-                 data-en="Building responsive websites and web applications using <strong>HTML</strong>, <strong>CSS</strong>, <strong>JavaScript</strong> and <strong>Node.js</strong>. From design to deployment."
-                 data-fr="Création de sites et applications web responsive avec <strong>HTML</strong>, <strong>CSS</strong>, <strong>JavaScript</strong> et <strong>Node.js</strong>. Du design au déploiement.">
+              <h3 class="title-sm">Développement Web</h3>
+              <p class="text">
                 Création de sites et applications web responsive avec <strong>HTML</strong>,
                 <strong>CSS</strong>, <strong>JavaScript</strong> et <strong>Node.js</strong>.
                 Du design au déploiement.
               </p>
-              <a href="#portfolio" class="btn small"
-                 data-en="Learn more"
-                 data-fr="En savoir plus">En savoir plus</a>
+              <a href="#portfolio" class="btn small">En savoir plus</a>
             </div>
           </div>
         </div>
@@ -344,19 +298,13 @@
           <div class="card">
             <div class="card-content z-index">
               <img src="./img/app-icon.png" class="icon" alt="" />
-              <h3 class="title-sm"
-                  data-en="Systems &amp; Networks"
-                  data-fr="Systèmes &amp; Réseaux">Systèmes &amp; Réseaux</h3>
-              <p class="text"
-                 data-en="Comfortable with <strong>Linux / Debian</strong> CLI, network architecture, server administration and hardware troubleshooting. Passionate about understanding how systems work at a low level."
-                 data-fr="À l'aise avec la CLI <strong>Linux / Debian</strong>, l'architecture réseau, l'administration serveur et le dépannage matériel. Passionné par le fonctionnement des systèmes à bas niveau.">
+              <h3 class="title-sm">Systèmes &amp; Réseaux</h3>
+              <p class="text">
                 À l'aise avec la CLI <strong>Linux / Debian</strong>, l'architecture réseau,
                 l'administration serveur et le dépannage matériel. Passionné par le
                 fonctionnement des systèmes à bas niveau.
               </p>
-              <a href="#portfolio" class="btn small"
-                 data-en="Learn more"
-                 data-fr="En savoir plus">En savoir plus</a>
+              <a href="#portfolio" class="btn small">En savoir plus</a>
             </div>
           </div>
         </div>
@@ -380,20 +328,14 @@
     </div>
     <div class="container">
       <div class="section-header">
-        <h3 class="title"
-            data-en="Portfolio"
-            data-fr="Portfolio">Portfolio</h3>
+        <h3 class="title">Portfolio</h3>
       </div>
       <div class="section-body">
         <div class="filter">
-          <button class="filter-btn active" data-filter="*"
-                  data-en="All" data-fr="Tout">Tout</button>
-          <button class="filter-btn" data-filter=".ui"
-                  data-en="Cybersecurity" data-fr="Cybersécurité">Cybersécurité</button>
-          <button class="filter-btn" data-filter=".webdev"
-                  data-en="Web Dev" data-fr="Dev Web">Dev Web</button>
-          <button class="filter-btn" data-filter=".appdev"
-                  data-en="App Dev" data-fr="Dev App">Dev App</button>
+          <button class="filter-btn active" data-filter="*">Tout</button>
+          <button class="filter-btn" data-filter=".ui">Cybersécurité</button>
+          <button class="filter-btn" data-filter=".webdev">Dev Web</button>
+          <button class="filter-btn" data-filter=".appdev">Dev App</button>
         </div>
 
         <div class="grid">
@@ -405,8 +347,8 @@
               <a href="https://tryhackme.com/p/Goldenyan.exe" target="_blank">
                 <div class="img-overlay">
                   <div class="img-description">
-                    <h3 data-en="Cybersecurity" data-fr="Cybersécurité">Cybersécurité</h3>
-                    <h2 data-en="TryHackMe Profile" data-fr="Profil TryHackMe">Profil TryHackMe</h2>
+                    <h3>Cybersécurité</h3>
+                    <h2>Profil TryHackMe</h2>
                   </div>
                 </div>
               </a>
@@ -420,8 +362,8 @@
               <a href="https://goldenyan0.github.io/goldencity/" target="_blank">
                 <div class="img-overlay">
                   <div class="img-description">
-                    <h3 data-en="Website" data-fr="Site Web">Site Web</h3>
-                    <h2 data-en="GTA V Roleplay Server" data-fr="Serveur GTA V Roleplay">Serveur GTA V Roleplay</h2>
+                    <h3>Site Web</h3>
+                    <h2>Serveur GTA V Roleplay</h2>
                   </div>
                 </div>
               </a>
@@ -438,8 +380,8 @@
                   </div>
                   <div class="img-overlay">
                     <div class="img-description">
-                      <h3 data-en="App / Web Dev" data-fr="App / Dev Web">App / Dev Web</h3>
-                      <h2 data-en="Discord BOT" data-fr="Bot Discord">Bot Discord</h2>
+                      <h3>App / Dev Web</h3>
+                      <h2>Bot Discord</h2>
                     </div>
                   </div>
                 </a>
@@ -454,8 +396,8 @@
               <a href="https://goldenyan0.github.io/Nsi-Game-JS/" target="_blank">
                 <div class="img-overlay">
                   <div class="img-description">
-                    <h3 data-en="App Development" data-fr="Développement App">Développement App</h3>
-                    <h2 data-en="NSI OS Project" data-fr="Projet NSI">Projet NSI</h2>
+                    <h3>Développement App</h3>
+                    <h2>Projet NSI</h2>
                   </div>
                 </div>
               </a>
@@ -469,8 +411,8 @@
               <a href="https://github.com/Goldenyan0" target="_blank">
                 <div class="img-overlay">
                   <div class="img-description">
-                    <h3 data-en="Development" data-fr="Développement">Développement</h3>
-                    <h2 data-en="GitHub Profile" data-fr="Profil GitHub">Profil GitHub</h2>
+                    <h3>Développement</h3>
+                    <h2>Profil GitHub</h2>
                   </div>
                 </div>
               </a>
@@ -487,8 +429,8 @@
                   </div>
                   <div class="img-overlay">
                     <div class="img-description">
-                      <h3 data-en="App Development" data-fr="Développement App">Développement App</h3>
-                      <h2 data-en="GTA V RP Server" data-fr="Serveur GTA V RP">Serveur GTA V RP</h2>
+                      <h3>Développement App</h3>
+                      <h2>Serveur GTA V RP</h2>
                     </div>
                   </div>
                 </a>
@@ -503,7 +445,7 @@
               <a href="https://github.com/Goldenyan0/multifighter" target="_blank">
                 <div class="img-overlay">
                   <div class="img-description">
-                    <h3 data-en="App Development" data-fr="Développement App">Développement App</h3>
+                    <h3>Développement App</h3>
                     <h2>Multifighter</h2>
                   </div>
                 </div>
@@ -520,16 +462,13 @@
   <section class="about section" id="about">
     <div class="container">
       <div class="section-header">
-        <h3 class="title"
-            data-en="About me"
-            data-fr="À propos">À propos</h3>
+        <h3 class="title">À propos</h3>
       </div>
 
       <!-- Bio -->
       <div class="about-text-block">
-        <h4 data-en="Who am I?" data-fr="Qui suis-je ?">Qui suis-je ?</h4>
-        <p data-en="I'm <strong>Yanis Poulain</strong>, a 21-year-old French computer science student at <strong>Université de Rennes 1 – ISTIC</strong>. Passionate about cybersecurity, networks and software development since I was 11, I'm actively looking for an <strong>apprenticeship in cybersecurity or IT</strong>. Fluent in French, intermediate in English (B1/B2). Driving licence B."
-           data-fr="Je suis <strong>Yanis Poulain</strong>, étudiant en informatique de 21 ans à l'<strong>Université de Rennes 1 – ISTIC</strong>. Passionné par la cybersécurité, les réseaux et le développement depuis mes 11 ans, je recherche activement une <strong>alternance en cybersécurité ou informatique</strong>. Français natif, anglais intermédiaire (B1/B2). Permis B.">
+        <h4>Qui suis-je ?</h4>
+        <p>
           Je suis <strong>Yanis Poulain</strong>, étudiant en informatique de 21 ans à l'
           <strong>Université de Rennes 1 – ISTIC</strong>. Passionné par la cybersécurité, les
           réseaux et le développement depuis mes 11 ans, je recherche activement une
@@ -540,18 +479,9 @@
           <span class="info-tag"><i class="fas fa-map-marker-alt" style="margin-right:5px;"></i>Rennes, France</span>
           <span class="info-tag"><i class="fas fa-envelope" style="margin-right:5px;"></i>y.poulain04@gmail.com</span>
           <span class="info-tag"><i class="fas fa-phone" style="margin-right:5px;"></i>07 63 53 13 10</span>
-          <span class="info-tag">
-            <i class="fas fa-car" style="margin-right:5px;"></i>
-            <span data-en="Driving licence B" data-fr="Permis B">Permis B</span>
-          </span>
-          <span class="info-tag">
-            <i class="fas fa-graduation-cap" style="margin-right:5px;"></i>
-            <span data-en="Computer Science – Rennes 1" data-fr="Informatique – Rennes 1">Informatique – Rennes 1</span>
-          </span>
-          <span class="info-tag">
-            <i class="fas fa-briefcase" style="margin-right:5px;"></i>
-            <span data-en="Available immediately" data-fr="Disponible immédiatement">Disponible immédiatement</span>
-          </span>
+          <span class="info-tag"><i class="fas fa-car" style="margin-right:5px;"></i>Permis B</span>
+          <span class="info-tag"><i class="fas fa-graduation-cap" style="margin-right:5px;"></i>Informatique – Rennes 1</span>
+          <span class="info-tag"><i class="fas fa-briefcase" style="margin-right:5px;"></i>Disponible immédiatement</span>
         </div>
       </div>
 
@@ -560,13 +490,11 @@
         <!-- ── LEFT : Skills ── -->
         <div>
           <div class="about-text-block">
-            <h4 data-en="Technical Skills" data-fr="Compétences Techniques">Compétences Techniques</h4>
+            <h4>Compétences Techniques</h4>
             <div class="skills">
               <div class="skills-grid">
 
-                <div class="skills-section-title"
-                     data-en="Programming Languages"
-                     data-fr="Langages de Programmation">Langages de Programmation</div>
+                <div class="skills-section-title">Langages de Programmation</div>
                 <div>
                   <div class="skill"><h3 class="skill-title">HTML / CSS</h3><div class="skill-bar"><div class="skill-progress" data-progress="90%"></div></div></div>
                   <div class="skill"><h3 class="skill-title">JavaScript</h3><div class="skill-bar"><div class="skill-progress" data-progress="80%"></div></div></div>
@@ -578,9 +506,7 @@
                   <div class="skill"><h3 class="skill-title">SQL</h3><div class="skill-bar"><div class="skill-progress" data-progress="50%"></div></div></div>
                 </div>
 
-                <div class="skills-section-title"
-                     data-en="OS & Systems"
-                     data-fr="OS & Systèmes">OS &amp; Systèmes</div>
+                <div class="skills-section-title">OS &amp; Systèmes</div>
                 <div>
                   <div class="skill"><h3 class="skill-title">Linux / Debian</h3><div class="skill-bar"><div class="skill-progress" data-progress="85%"></div></div></div>
                   <div class="skill"><h3 class="skill-title">Windows CLI &amp; Admin</h3><div class="skill-bar"><div class="skill-progress" data-progress="90%"></div></div></div>
@@ -590,9 +516,7 @@
                   <div class="skill"><h3 class="skill-title">Bash / PowerShell</h3><div class="skill-bar"><div class="skill-progress" data-progress="75%"></div></div></div>
                 </div>
 
-                <div class="skills-section-title"
-                     data-en="Cybersecurity Tools"
-                     data-fr="Outils Cybersécurité">Outils Cybersécurité</div>
+                <div class="skills-section-title">Outils Cybersécurité</div>
                 <div>
                   <div class="skill"><h3 class="skill-title">Nmap</h3><div class="skill-bar"><div class="skill-progress" data-progress="75%"></div></div></div>
                   <div class="skill"><h3 class="skill-title">Wireshark</h3><div class="skill-bar"><div class="skill-progress" data-progress="70%"></div></div></div>
@@ -604,9 +528,7 @@
                   <div class="skill"><h3 class="skill-title">Netcat / Gobuster</h3><div class="skill-bar"><div class="skill-progress" data-progress="60%"></div></div></div>
                 </div>
 
-                <div class="skills-section-title"
-                     data-en="Networks & Protocols"
-                     data-fr="Réseaux & Protocoles">Réseaux &amp; Protocoles</div>
+                <div class="skills-section-title">Réseaux &amp; Protocoles</div>
                 <div>
                   <div class="skill"><h3 class="skill-title">TCP/IP · DNS · DHCP · HTTP(S)</h3><div class="skill-bar"><div class="skill-progress" data-progress="75%"></div></div></div>
                   <div class="skill"><h3 class="skill-title">SSH / FTP / SMB</h3><div class="skill-bar"><div class="skill-progress" data-progress="70%"></div></div></div>
@@ -616,9 +538,7 @@
                   <div class="skill"><h3 class="skill-title">CTF / Pentest</h3><div class="skill-bar"><div class="skill-progress" data-progress="65%"></div></div></div>
                 </div>
 
-                <div class="skills-section-title"
-                     data-en="Dev Tools & Platforms"
-                     data-fr="Outils Dev & Plateformes">Outils Dev &amp; Plateformes</div>
+                <div class="skills-section-title">Outils Dev &amp; Plateformes</div>
                 <div>
                   <div class="skill"><h3 class="skill-title">Git / GitHub</h3><div class="skill-bar"><div class="skill-progress" data-progress="80%"></div></div></div>
                   <div class="skill"><h3 class="skill-title">VS Code</h3><div class="skill-bar"><div class="skill-progress" data-progress="90%"></div></div></div>
@@ -634,204 +554,107 @@
 
           <!-- Platforms -->
           <div class="about-text-block">
-            <h4 data-en="Platforms & Learning" data-fr="Plateformes & Formation">Plateformes &amp; Formation</h4>
+            <h4>Plateformes &amp; Formation</h4>
             <ul>
-              <li>🏆 <strong>TryHackMe</strong> –
-                <span data-en="Active ranked profile (Goldenyan.exe) — CTF rooms, OSCP path"
-                      data-fr="Profil classé actif (Goldenyan.exe) — salles CTF, parcours OSCP">
-                  Profil classé actif (Goldenyan.exe) — salles CTF, parcours OSCP
-                </span>
-              </li>
-              <li>🏆 <strong>HackTheBox</strong> –
-                <span data-en="Machine solving, Pro Hacker progression"
-                      data-fr="Résolution de machines, progression Pro Hacker">
-                  Résolution de machines, progression Pro Hacker
-                </span>
-              </li>
-              <li>📚 <strong>Bac S</strong> –
-                <span data-en="Scientific baccalaureate with specialisation in NSI (Computer Science)"
-                      data-fr="Baccalauréat scientifique avec spécialité NSI (Informatique)">
-                  Baccalauréat scientifique avec spécialité NSI (Informatique)
-                </span>
-              </li>
-              <li>🎓 <strong data-en="BUT Computer Science – Rennes 1 (ISTIC)"
-                             data-fr="BUT Informatique – Rennes 1 (ISTIC)">
-                BUT Informatique – Rennes 1 (ISTIC)</strong>
-              </li>
+              <li>🏆 <strong>TryHackMe</strong> – Profil classé actif (Goldenyan.exe) — salles CTF, parcours OSCP</li>
+              <li>🏆 <strong>HackTheBox</strong> – Résolution de machines, progression Pro Hacker</li>
+              <li>📚 <strong>Bac Général</strong> – Spécialité Maths + NSI (Numérique &amp; Sciences Informatiques) – 2023</li>
+              <li>📚 <strong>Licence Informatique</strong> – Université Rennes 1 ISTIC – depuis 2024</li>
+              <li>📚 <strong>BUT Informatique</strong> – Rennes 1 (ISTIC)</li>
             </ul>
           </div>
+        </div>
 
-          <!-- Soft Skills -->
-          <div class="about-text-block">
-            <h4 data-en="Soft Skills" data-fr="Qualités Personnelles">Qualités Personnelles</h4>
-            <div class="info-tags">
-              <span class="info-tag" data-en="Teamwork" data-fr="Travail en équipe">Travail en équipe</span>
-              <span class="info-tag" data-en="Adaptability" data-fr="Adaptabilité">Adaptabilité</span>
-              <span class="info-tag" data-en="Autonomy" data-fr="Autonomie">Autonomie</span>
-              <span class="info-tag" data-en="Punctuality" data-fr="Ponctualité">Ponctualité</span>
-              <span class="info-tag" data-en="Problem solving" data-fr="Résolution de problèmes">Résolution de problèmes</span>
-              <span class="info-tag" data-en="Curiosity" data-fr="Curiosité">Curiosité</span>
-              <span class="info-tag" data-en="Day / Evening / Night / Weekend" data-fr="Jour / Soir / Nuit / Week-end">Jour / Soir / Nuit / Week-end</span>
-            </div>
-          </div>
-        </div><!-- /left column -->
-
-        <!-- ── RIGHT : Experience & Education ── -->
+        <!-- ── RIGHT : Timeline ── -->
         <div>
-
-          <!-- Experience -->
           <div class="about-text-block">
-            <h4 data-en="Professional Experience" data-fr="Expérience Professionnelle">Expérience Professionnelle</h4>
+            <h4>Expériences &amp; Projets</h4>
             <div class="timeline">
 
               <div class="timeline-item">
-                <h5 data-en="Polyvalent Agent – Logistics / Industry / Services"
-                    data-fr="Agent Polyvalent – Logistique / Industrie / Services">
-                  Agent Polyvalent – Logistique / Industrie / Services
-                </h5>
-                <span data-en="Various missions — Available immediately"
-                      data-fr="Missions diverses — Disponible immédiatement">
-                  Missions diverses — Disponible immédiatement
-                </span>
-                <p data-en="Versatile profile: logistics, industry, services. Day, evening, night, weekend. Adaptability and team spirit."
-                   data-fr="Profil polyvalent : logistique, industrie, services. Jour, soir, nuit, week-end. Adaptabilité et esprit d'équipe.">
-                  Profil polyvalent : logistique, industrie, services. Jour, soir, nuit, week-end. Adaptabilité et esprit d'équipe.
-                </p>
-              </div>
-
-              <div class="timeline-item">
-                <h5 data-en="GTA V Roleplay Server – Founder & Developer"
-                    data-fr="Serveur GTA V Roleplay – Fondateur & Développeur">
-                  Serveur GTA V Roleplay – Fondateur &amp; Développeur
-                </h5>
+                <h5>Serveur GTA V Roleplay – Fondateur &amp; Développeur</h5>
                 <span>2021 – 2023</span>
-                <p data-en="Created and managed a FiveM RP server: Lua scripting, server architecture, community management (100+ players)."
-                   data-fr="Création et gestion d'un serveur FiveM RP : scripting Lua, architecture serveur, gestion de communauté (100+ joueurs).">
-                  Création et gestion d'un serveur FiveM RP : scripting Lua, architecture serveur, gestion de communauté (100+ joueurs).
-                </p>
+                <p>Création et gestion d'un serveur FiveM RP : scripting Lua, architecture serveur, gestion de communauté (100+ joueurs).</p>
               </div>
 
               <div class="timeline-item">
-                <h5 data-en="Discord Bot Developer"
-                    data-fr="Développeur Bot Discord">
-                  Développeur Bot Discord
-                </h5>
-                <span>2020 – présent</span>
-                <p data-en="Development of moderation, music and utility bots in Node.js / Discord.js, deployed on multiple servers."
-                   data-fr="Développement de bots de modération, musique et utilitaires en Node.js / Discord.js, déployés sur plusieurs serveurs.">
-                  Développement de bots de modération, musique et utilitaires en Node.js / Discord.js, déployés sur plusieurs serveurs.
-                </p>
-              </div>
-
-            </div>
-          </div>
-
-          <!-- Education -->
-          <div class="about-text-block">
-            <h4 data-en="Education" data-fr="Formation">Formation</h4>
-            <div class="timeline">
-
-              <div class="timeline-item">
-                <h5 data-en="BUT Computer Science"
-                    data-fr="BUT Informatique">BUT Informatique</h5>
-                <span data-en="Université Rennes 1 – ISTIC | 2023 – present"
-                      data-fr="Université Rennes 1 – ISTIC | 2023 – en cours">
-                  Université Rennes 1 – ISTIC | 2023 – en cours
-                </span>
-                <p data-en="Networks, algorithms, databases, web development, software engineering."
-                   data-fr="Réseaux, algorithmique, bases de données, développement web, génie logiciel.">
-                  Réseaux, algorithmique, bases de données, développement web, génie logiciel.
-                </p>
+                <h5>Bot Discord – Développeur</h5>
+                <span>2022 – présent</span>
+                <p>Développement d'un bot Discord multifonction en Node.js / Discord.js : modération, musique, commandes personnalisées.</p>
               </div>
 
               <div class="timeline-item">
-                <h5 data-en="Scientific Baccalaureate – NSI specialisation"
-                    data-fr="Baccalauréat Scientifique – Spécialité NSI">
-                  Baccalauréat Scientifique – Spécialité NSI
-                </h5>
+                <h5>Projet NSI – Jeu navigateur</h5>
                 <span>2023</span>
-                <p data-en="Computer Science specialisation (algorithms, Python, networks, databases)."
-                   data-fr="Spécialité Numérique et Sciences Informatiques (algorithmique, Python, réseaux, bases de données).">
-                  Spécialité NSI (algorithmique, Python, réseaux, bases de données).
-                </p>
+                <p>Jeu en JavaScript pur réalisé dans le cadre de la spécialité NSI au lycée.</p>
+              </div>
+
+              <div class="timeline-item">
+                <h5>Multifighter – Jeu combat</h5>
+                <span>2024</span>
+                <p>Jeu de combat en Python avec interface graphique, développé en binôme.</p>
+              </div>
+
+              <div class="timeline-item">
+                <h5>TryHackMe / HackTheBox – CTF &amp; Pentest</h5>
+                <span>2022 – présent</span>
+                <p>Résolution de machines et salles CTF : énumération, exploitation, privilege escalation.</p>
               </div>
 
             </div>
           </div>
+        </div>
 
-          <!-- Languages -->
-          <div class="about-text-block">
-            <h4 data-en="Languages" data-fr="Langues">Langues</h4>
-            <div class="info-tags">
-              <span class="info-tag">🇫🇷 <span data-en="French – Native" data-fr="Français – Natif">Français – Natif</span></span>
-              <span class="info-tag">🇬🇧 <span data-en="English – Intermediate (B1/B2)" data-fr="Anglais – Intermédiaire (B1/B2)">Anglais – Intermédiaire (B1/B2)</span></span>
-            </div>
-          </div>
-
-          <!-- Certifications -->
-          <div class="about-text-block">
-            <h4 data-en="Certifications & Goals" data-fr="Certifications & Objectifs">Certifications &amp; Objectifs</h4>
-            <ul>
-              <li>🎯 <span data-en="Actively preparing for CompTIA Security+" data-fr="Préparation active CompTIA Security+">Préparation active CompTIA Security+</span></li>
-              <li>🎯 <span data-en="OSCP path in progress on TryHackMe" data-fr="Parcours OSCP en cours sur TryHackMe">Parcours OSCP en cours sur TryHackMe</span></li>
-              <li>🎯 <span data-en="Seeking apprenticeship in cybersecurity / IT 2025" data-fr="Recherche alternance cybersécurité / informatique 2025">Recherche alternance cybersécurité / informatique 2025</span></li>
-            </ul>
-          </div>
-
-        </div><!-- /right column -->
-      </div><!-- /about-columns -->
-
+      </div><!-- /.about-columns -->
     </div>
   </section>
 
   <!-- ══ CONTACT ══ -->
   <section class="contact section" id="contact">
+    <div class="background-bg">
+      <div class="overlay overlay-sm">
+        <img src="./img/shapes/half-circle.png" class="shape half-circle1" alt="" />
+        <img src="./img/shapes/half-circle.png" class="shape half-circle2" alt="" />
+        <img src="./img/shapes/square.png"      class="shape square"       alt="" />
+        <img src="./img/shapes/wave.png"        class="shape wave"         alt="" />
+        <img src="./img/shapes/circle.png"      class="shape circle"       alt="" />
+        <img src="./img/shapes/triangle.png"    class="shape triangle"     alt="" />
+        <img src="./img/shapes/x.png"           class="shape xshape"       alt="" />
+      </div>
+    </div>
     <div class="container">
-      <div class="contact-box">
-        <div class="contact-info">
-          <h3 class="title"
-              data-en="Get in touch"
-              data-fr="Me contacter">Me contacter</h3>
-          <div class="information-wrap">
-            <div class="information">
-              <div class="contact-icon"><i class="fas fa-map-marker-alt"></i></div>
-              <p class="info-text">Rennes, France</p>
+      <div class="section-header">
+        <h3 class="title">Contact</h3>
+      </div>
+      <div class="section-body grid-2">
+        <div class="column-1">
+          <h3 class="title-sm">Contactez-moi</h3>
+          <p class="text">N'hésitez pas à me contacter pour toute opportunité d'alternance ou de collaboration.</p>
+          <div class="contact-info">
+            <div class="info-wrap">
+              <i class="fas fa-envelope"></i>
+              <p class="text"><a href="mailto:y.poulain04@gmail.com">y.poulain04@gmail.com</a></p>
             </div>
-            <div class="information">
-              <div class="contact-icon"><i class="fas fa-envelope"></i></div>
-              <p class="info-text">y.poulain04@gmail.com</p>
+            <div class="info-wrap">
+              <i class="fas fa-phone"></i>
+              <p class="text"><a href="tel:0763531310">07 63 53 13 10</a></p>
             </div>
-            <div class="information">
-              <div class="contact-icon"><i class="fas fa-phone"></i></div>
-              <p class="info-text">07 63 53 13 10</p>
+            <div class="info-wrap">
+              <i class="fas fa-map-marker-alt"></i>
+              <p class="text">Rennes, France</p>
             </div>
           </div>
         </div>
-        <div class="contact-form">
-          <h3 class="title"
-              data-en="Send a message"
-              data-fr="Envoyer un message">Envoyer un message</h3>
-          <div class="row">
-            <input type="text" class="contact-input"
-                   data-placeholder-en="Name"
-                   data-placeholder-fr="Nom"
-                   placeholder="Nom" />
-            <input type="email" class="contact-input"
-                   data-placeholder-en="Email"
-                   data-placeholder-fr="Email"
-                   placeholder="Email" />
+        <div class="column-2">
+          <div class="contact-form">
+            <div class="inputs-wrap">
+              <input type="text" class="contact-input" placeholder="Nom" />
+              <input type="email" class="contact-input" placeholder="Email" />
+            </div>
+            <input type="text" class="contact-input" placeholder="Objet" />
+            <textarea id="msg" class="contact-input textarea" placeholder="Votre message..."></textarea>
+            <a href="#" class="btn" onclick="sendMessage()">Envoyer</a>
           </div>
-          <input type="text" class="contact-input"
-                 data-placeholder-en="Subject"
-                 data-placeholder-fr="Objet"
-                 placeholder="Objet" />
-          <textarea id="msg" class="contact-input textarea"
-                    data-placeholder-en="Your message..."
-                    data-placeholder-fr="Votre message..."
-                    placeholder="Votre message..."></textarea>
-          <a href="#" class="btn" onclick="sendMessage()"
-             data-en="Send message"
-             data-fr="Envoyer">Envoyer</a>
         </div>
       </div>
     </div>
@@ -842,7 +665,7 @@
     <div class="container">
       <div class="grid-4">
         <div class="grid-4-col footer-about">
-          <h3 class="title-sm" data-en="Contact" data-fr="Contact">Contact</h3>
+          <h3 class="title-sm">Contact</h3>
           <p class="text">
             <i class="fas fa-envelope" style="margin-right:6px;color:#a78bfa;"></i>
             <a href="mailto:y.poulain04@gmail.com" style="color:#ccc;">y.poulain04@gmail.com</a><br/>
@@ -852,14 +675,9 @@
           </p>
         </div>
         <div class="grid-4-col footer-newstletter">
-          <h3 class="title-sm"
-              data-en="Subscribe"
-              data-fr="S'abonner">S'abonner</h3>
+          <h3 class="title-sm">S'abonner</h3>
           <div class="footer-input-wrap">
-            <input type="email" class="footer-input"
-                   data-placeholder-en="Email"
-                   data-placeholder-fr="Email"
-                   placeholder="Email" />
+            <input type="email" class="footer-input" placeholder="Email" />
             <a href="#" class="input-arrow"><i class="fas fa-angle-right"></i></a>
           </div>
         </div>
@@ -869,21 +687,6 @@
           <p class="text">
             Copyright &copy; 2025 All rights reserved | Made by <span>Yanis Poulain</span>
           </p>
-        </div>
-        <div class="followme-wrap">
-          <div class="followme">
-            <h3 data-en="Follow me" data-fr="Suivre">Suivre</h3>
-            <span class="footer-line"></span>
-            <div class="social-media">
-              <a href="https://github.com/Goldenyan0" target="_blank"><i class="fab fa-github"></i></a>
-              <a href="https://tryhackme.com/p/Goldenyan.exe" target="_blank"><i class="fas fa-shield-alt"></i></a>
-              <a href="mailto:y.poulain04@gmail.com"><i class="fas fa-envelope"></i></a>
-              <a href="https://www.linkedin.com" target="_blank"><i class="fab fa-linkedin-in"></i></a>
-            </div>
-          </div>
-          <div class="back-btn-wrap">
-            <a href="#" class="back-btn"><i class="fas fa-chevron-up"></i></a>
-          </div>
         </div>
       </div>
     </div>
@@ -924,36 +727,6 @@
     });
   }
 })();
-
-/* ══════════════════════════════════════
-   LANGUAGE TOGGLE
-   - démarre en FR
-   - bascule tous les éléments data-en / data-fr
-   - gère aussi les placeholders
-══════════════════════════════════════ */
-let currentLang = 'fr'; // ← démarre en français
-
-function applyLang(lang) {
-  // Textes
-  document.querySelectorAll('[data-en][data-fr]').forEach(el => {
-    el.innerHTML = el.getAttribute('data-' + lang);
-  });
-  // Placeholders (inputs / textareas)
-  document.querySelectorAll('[data-placeholder-en][data-placeholder-fr]').forEach(el => {
-    el.placeholder = el.getAttribute('data-placeholder-' + lang);
-  });
-  // Bouton : affiche la langue OPPOSÉE (vers laquelle on peut basculer)
-  const btn = document.getElementById('langToggle');
-  btn.textContent = lang === 'fr' ? '🇬🇧 EN' : '🇫🇷 FR';
-}
-
-function toggleLang() {
-  currentLang = currentLang === 'fr' ? 'en' : 'fr';
-  applyLang(currentLang);
-}
-
-// Appliquer le français au chargement
-applyLang('fr');
 </script>
 </body>
 </html>
