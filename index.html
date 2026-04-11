@@ -482,203 +482,268 @@
   </section>
 
   <!-- ══ ABOUT ══ -->
-  <section class="about section" id="about">
-    <div class="container">
-      <div class="section-header">
-        <h3 class="title">À propos</h3>
-      </div>
+ <section class="about section" id="about">
+  <div class="container">
+    <div class="section-header">
+      <h3 class="title">À propos</h3>
+    </div>
 
-      <!-- Bio -->
+    <!-- Bio -->
+    <div class="about-text-block">
+      <h4>Qui suis-je ?</h4>
+      <p style="font-size:1rem; line-height:1.8; color:var(--text-color);">
+        Je suis <strong>Yanis Poulain</strong>, 21 ans, basé à <strong>Rennes</strong>.
+        Passionné d'informatique depuis l'enfance, je me forme activement en
+        <strong>cybersécurité, réseaux et développement</strong>. Curieux et autodidacte,
+        j'apprends aussi bien par la pratique — réparer des PC, créer des serveurs de jeu,
+        résoudre des challenges de sécurité — que par la théorie. En parallèle de
+        l'informatique, je suis passionné d'<strong>automobile</strong> (petites réparations
+        mécaniques, préparation de véhicules) et je pratique la
+        <strong>musculation et la natation</strong> régulièrement.
+        Français natif · Anglais <strong>B2</strong> · Permis B.
+      </p>
+      <div class="info-tags" style="margin-top:12px;">
+        <span class="info-tag"><i class="fas fa-map-marker-alt" style="margin-right:5px;"></i>Rennes, France</span>
+        <span class="info-tag"><i class="fas fa-envelope" style="margin-right:5px;"></i>y.poulain04@gmail.com</span>
+        <span class="info-tag"><i class="fas fa-phone" style="margin-right:5px;"></i>07 63 53 13 10</span>
+        <span class="info-tag"><i class="fas fa-car" style="margin-right:5px;"></i>Permis B</span>
+        <span class="info-tag"><i class="fas fa-briefcase" style="margin-right:5px;"></i>Disponible immédiatement</span>
+      </div>
+    </div>
+
+    <div class="about-columns">
+
+      <!-- ── LEFT ── -->
+      <div>
+
+        <!-- Compétences techniques -->
+        <div class="about-text-block">
+          <h4>Compétences Techniques</h4>
+          <div class="skills">
+            <div class="skills-grid">
+
+              <div class="skills-section-title">Langages de Programmation</div>
+              <div>
+                <div class="skill"><h3 class="skill-title">HTML / CSS</h3><div class="skill-bar"><div class="skill-progress" data-progress="85%"></div></div></div>
+                <div class="skill"><h3 class="skill-title">JavaScript</h3><div class="skill-bar"><div class="skill-progress" data-progress="70%"></div></div></div>
+                <div class="skill"><h3 class="skill-title">Python</h3><div class="skill-bar"><div class="skill-progress" data-progress="75%"></div></div></div>
+              </div>
+              <div>
+                <div class="skill"><h3 class="skill-title">Lua</h3><div class="skill-bar"><div class="skill-progress" data-progress="70%"></div></div></div>
+                <div class="skill"><h3 class="skill-title">Shell / Bash</h3><div class="skill-bar"><div class="skill-progress" data-progress="35%"></div></div></div>
+                <div class="skill"><h3 class="skill-title">SQL</h3><div class="skill-bar"><div class="skill-progress" data-progress="70%"></div></div></div>
+              </div>
+
+              <div class="skills-section-title">OS &amp; Systèmes</div>
+              <div>
+                <div class="skill"><h3 class="skill-title">Windows CLI &amp; Admin</h3><div class="skill-bar"><div class="skill-progress" data-progress="80%"></div></div></div>
+                <div class="skill"><h3 class="skill-title">Linux / Debian</h3><div class="skill-bar"><div class="skill-progress" data-progress="60%"></div></div></div>
+              </div>
+              <div>
+                <div class="skill"><h3 class="skill-title">Kali Linux</h3><div class="skill-bar"><div class="skill-progress" data-progress="55%"></div></div></div>
+                <div class="skill"><h3 class="skill-title">Bash / PowerShell</h3><div class="skill-bar"><div class="skill-progress" data-progress="45%"></div></div></div>
+              </div>
+
+              <div class="skills-section-title">Outils Cybersécurité</div>
+              <div>
+                <div class="skill"><h3 class="skill-title">Nmap</h3><div class="skill-bar"><div class="skill-progress" data-progress="55%"></div></div></div>
+                <div class="skill"><h3 class="skill-title">Wireshark</h3><div class="skill-bar"><div class="skill-progress" data-progress="50%"></div></div></div>
+                <div class="skill"><h3 class="skill-title">Metasploit</h3><div class="skill-bar"><div class="skill-progress" data-progress="40%"></div></div></div>
+              </div>
+              <div>
+                <div class="skill"><h3 class="skill-title">Burp Suite</h3><div class="skill-bar"><div class="skill-progress" data-progress="40%"></div></div></div>
+                <div class="skill"><h3 class="skill-title">Hashcat</h3><div class="skill-bar"><div class="skill-progress" data-progress="35%"></div></div></div>
+                <div class="skill"><h3 class="skill-title">Cisco Packet Tracer</h3><div class="skill-bar"><div class="skill-progress" data-progress="50%"></div></div></div>
+              </div>
+
+              <div class="skills-section-title">Réseaux &amp; Protocoles</div>
+              <div>
+                <div class="skill"><h3 class="skill-title">TCP/IP · DNS · DHCP · HTTP(S)</h3><div class="skill-bar"><div class="skill-progress" data-progress="60%"></div></div></div>
+                <div class="skill"><h3 class="skill-title">SSH / FTP / SMB</h3><div class="skill-bar"><div class="skill-progress" data-progress="55%"></div></div></div>
+              </div>
+              <div>
+                <div class="skill"><h3 class="skill-title">VPN / Firewall</h3><div class="skill-bar"><div class="skill-progress" data-progress="45%"></div></div></div>
+                <div class="skill"><h3 class="skill-title">VLAN / Routage</h3><div class="skill-bar"><div class="skill-progress" data-progress="40%"></div></div></div>
+              </div>
+
+              <div class="skills-section-title">Outils Dev &amp; Plateformes</div>
+              <div>
+                <div class="skill"><h3 class="skill-title">Git / GitHub</h3><div class="skill-bar"><div class="skill-progress" data-progress="75%"></div></div></div>
+                <div class="skill"><h3 class="skill-title">FiveM / GTA RP Dev</h3><div class="skill-bar"><div class="skill-progress" data-progress="75%"></div></div></div>
+              </div>
+              <div>
+                <div class="skill"><h3 class="skill-title">Node.js / Discord.js</h3><div class="skill-bar"><div class="skill-progress" data-progress="70%"></div></div></div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+        <!-- Plateformes -->
+        <div class="about-text-block">
+      <h4>Plateformes &amp; Formation autodidacte</h4>
+      <ul style="list-style:none; padding:0; margin:0;">
+        <li style="padding:8px 0; border-bottom:1px solid rgba(128,128,128,0.15); font-size:0.95rem; color:var(--title-color); line-height:1.6;">
+          🏆 <strong>TryHackMe</strong> <span style="color:var(--text-color); font-weight:400;">– Challenges CTF, parcours sécurité offensive/défensive</span>
+        </li>
+        <li style="padding:8px 0; border-bottom:1px solid rgba(128,128,128,0.15); font-size:0.95rem; color:var(--title-color); line-height:1.6;">
+          🏆 <strong>HackTheBox</strong> <span style="color:var(--text-color); font-weight:400;">– Résolution de machines, exploitation de vulnérabilités</span>
+        </li>
+        <li style="padding:8px 0; border-bottom:1px solid rgba(128,128,128,0.15); font-size:0.95rem; color:var(--title-color); line-height:1.6;">
+          🎓 <strong>Licence Informatique</strong> <span style="color:var(--text-color); font-weight:400;">– Université Rennes 1 (ISTIC)</span>
+        </li>
+        <li style="padding:8px 0; font-size:0.95rem; color:var(--title-color); line-height:1.6;">
+          📘 <strong>Bac Général</strong> <span style="color:var(--text-color); font-weight:400;">– Spécialités Mathématiques &amp; NSI (2023)</span>
+        </li>
+      </ul>
+    </div>
+
+
+        <!-- Soft Skills -->
+        <div class="about-text-block">
+          <h4>Qualités Personnelles</h4>
+          <div class="info-tags">
+            <span class="info-tag">🤝 Travail en équipe</span>
+            <span class="info-tag">⚡ Adaptabilité</span>
+            <span class="info-tag">🎯 Autonomie</span>
+            <span class="info-tag">⏰ Ponctualité &amp; Fiabilité</span>
+            <span class="info-tag">🔍 Curiosité intellectuelle</span>
+            <span class="info-tag">🛠️ Résolution de problèmes</span>
+            <span class="info-tag">📚 Apprentissage continu</span>
+          </div>
+        </div>
+
+      <!-- Langues -->
       <div class="about-text-block">
-        <h4>Qui suis-je ?</h4>
-        <p>
-          Je suis <strong>Yanis Poulain</strong>, étudiant en informatique de 21 ans à l'
-          <strong>Université de Rennes 1 – ISTIC</strong>. Passionné par la cybersécurité, les
-          réseaux et le développement depuis mes 11 ans, je recherche activement une
-          <strong>alternance en cybersécurité ou informatique</strong>.
-          Français natif, anglais intermédiaire (B1/B2). Permis B.
-        </p>
-        <div class="info-tags" style="margin-top:12px;">
-          <span class="info-tag"><i class="fas fa-map-marker-alt" style="margin-right:5px;"></i>Rennes, France</span>
-          <span class="info-tag"><i class="fas fa-envelope" style="margin-right:5px;"></i>y.poulain04@gmail.com</span>
-          <span class="info-tag"><i class="fas fa-phone" style="margin-right:5px;"></i>07 63 53 13 10</span>
-          <span class="info-tag"><i class="fas fa-car" style="margin-right:5px;"></i>Permis B</span>
-          <span class="info-tag"><i class="fas fa-graduation-cap" style="margin-right:5px;"></i>Informatique – Rennes 1</span>
-          <span class="info-tag"><i class="fas fa-briefcase" style="margin-right:5px;"></i>Disponible immédiatement</span>
+        <h4>Langues</h4>
+        <div class="info-tags">
+          <span class="info-tag">🇫🇷 Français – Natif</span>
+          <span class="info-tag">🇬🇧 Anglais – B2</span>
         </div>
       </div>
 
-      <div class="about-columns">
+      </div><!-- /left -->
 
-        <!-- ── LEFT : Skills ── -->
-        <div>
-          <div class="about-text-block">
-            <h4>Compétences Techniques</h4>
-            <div class="skills">
-              <div class="skills-grid">
+      <!-- ── RIGHT ── -->
+<div>
 
-                <div class="skills-section-title">Langages de Programmation</div>
-                <div>
-                  <div class="skill"><h3 class="skill-title">HTML / CSS</h3><div class="skill-bar"><div class="skill-progress" data-progress="90%"></div></div></div>
-                  <div class="skill"><h3 class="skill-title">JavaScript</h3><div class="skill-bar"><div class="skill-progress" data-progress="80%"></div></div></div>
-                  <div class="skill"><h3 class="skill-title">Python</h3><div class="skill-bar"><div class="skill-progress" data-progress="80%"></div></div></div>
-                </div>
-                <div>
-                  <div class="skill"><h3 class="skill-title">Lua</h3><div class="skill-bar"><div class="skill-progress" data-progress="75%"></div></div></div>
-                  <div class="skill"><h3 class="skill-title">Shell / Bash</h3><div class="skill-bar"><div class="skill-progress" data-progress="55%"></div></div></div>
-                  <div class="skill"><h3 class="skill-title">SQL</h3><div class="skill-bar"><div class="skill-progress" data-progress="50%"></div></div></div>
-                </div>
+  <!-- Expérience pro -->
+  <div class="about-text-block">
+    <h4>Expérience Professionnelle</h4>
+    <div class="timeline">
 
-                <div class="skills-section-title">OS &amp; Systèmes</div>
-                <div>
-                  <div class="skill"><h3 class="skill-title">Linux / Debian</h3><div class="skill-bar"><div class="skill-progress" data-progress="85%"></div></div></div>
-                  <div class="skill"><h3 class="skill-title">Windows CLI &amp; Admin</h3><div class="skill-bar"><div class="skill-progress" data-progress="90%"></div></div></div>
-                </div>
-                <div>
-                  <div class="skill"><h3 class="skill-title">Kali Linux</h3><div class="skill-bar"><div class="skill-progress" data-progress="70%"></div></div></div>
-                  <div class="skill"><h3 class="skill-title">Bash / PowerShell</h3><div class="skill-bar"><div class="skill-progress" data-progress="75%"></div></div></div>
-                </div>
+      <div class="timeline-item">
+        <h5 style="font-size:1rem; font-weight:700; color:var(--title-color); margin-bottom:4px;">Responsable Préparation Automobile</h5>
+        <span style="font-size:0.85rem; font-weight:600; color:var(--first-color);">AAA Locatour / Europcar – Rennes &nbsp;|&nbsp; Depuis février 2026</span>
+        <p style="font-size:0.92rem; color:var(--text-color); line-height:1.7; margin-top:6px;">
+          Planification des préparations selon réservations et retours clients, accueil et check-out véhicules, contrôle niveaux / carburant / pression, coordination avec l'atelier.
+        </p>
+      </div>
 
-                <div class="skills-section-title">Outils Cybersécurité</div>
-                <div>
-                  <div class="skill"><h3 class="skill-title">Nmap</h3><div class="skill-bar"><div class="skill-progress" data-progress="75%"></div></div></div>
-                  <div class="skill"><h3 class="skill-title">Wireshark</h3><div class="skill-bar"><div class="skill-progress" data-progress="70%"></div></div></div>
-                  <div class="skill"><h3 class="skill-title">Metasploit</h3><div class="skill-bar"><div class="skill-progress" data-progress="60%"></div></div></div>
-                </div>
-                <div>
-                  <div class="skill"><h3 class="skill-title">Burp Suite</h3><div class="skill-bar"><div class="skill-progress" data-progress="55%"></div></div></div>
-                  <div class="skill"><h3 class="skill-title">Hashcat / John</h3><div class="skill-bar"><div class="skill-progress" data-progress="55%"></div></div></div>
-                  <div class="skill"><h3 class="skill-title">Netcat / Gobuster</h3><div class="skill-bar"><div class="skill-progress" data-progress="60%"></div></div></div>
-                </div>
+      <div class="timeline-item">
+        <h5 style="font-size:1rem; font-weight:700; color:var(--title-color); margin-bottom:4px;">Agent de Préparation Véhicules</h5>
+        <span style="font-size:0.85rem; font-weight:600; color:var(--first-color);">Sixt / Group L – Rennes  &nbsp;|&nbsp; 2025</span>
+        <p style="font-size:0.92rem; color:var(--text-color); line-height:1.7; margin-top:6px;">
+          Contrôle visuel de l'état des véhicules, préparation et remise en main propre, convoyages inter-agences, travail en autonomie et en équipe.
+        </p>
+      </div>
 
-                <div class="skills-section-title">Réseaux &amp; Protocoles</div>
-                <div>
-                  <div class="skill"><h3 class="skill-title">TCP/IP · DNS · DHCP · HTTP(S)</h3><div class="skill-bar"><div class="skill-progress" data-progress="75%"></div></div></div>
-                  <div class="skill"><h3 class="skill-title">SSH / FTP / SMB</h3><div class="skill-bar"><div class="skill-progress" data-progress="70%"></div></div></div>
-                </div>
-                <div>
-                  <div class="skill"><h3 class="skill-title">VPN / Firewall</h3><div class="skill-bar"><div class="skill-progress" data-progress="60%"></div></div></div>
-                  <div class="skill"><h3 class="skill-title">CTF / Pentest</h3><div class="skill-bar"><div class="skill-progress" data-progress="65%"></div></div></div>
-                </div>
+      <div class="timeline-item">
+        <h5 style="font-size:1rem; font-weight:700; color:var(--title-color); margin-bottom:4px;">Équipier Polyvalent – Restauration Rapide</h5>
+        <span style="font-size:0.85rem; font-weight:600; color:var(--first-color);">McDonald's Pleumeleuc &nbsp;|&nbsp; 2025</span>
+        <p style="font-size:0.92rem; color:var(--text-color); line-height:1.7; margin-top:6px;">
+          Travail en forte affluence, formation et accompagnement de nouveaux équipiers, polyvalence cuisine / caisse / accueil.
+        </p>
+      </div>
 
-                <div class="skills-section-title">Outils Dev &amp; Plateformes</div>
-                <div>
-                  <div class="skill"><h3 class="skill-title">Git / GitHub</h3><div class="skill-bar"><div class="skill-progress" data-progress="80%"></div></div></div>
-                  <div class="skill"><h3 class="skill-title">VS Code</h3><div class="skill-bar"><div class="skill-progress" data-progress="90%"></div></div></div>
-                </div>
-                <div>
-                  <div class="skill"><h3 class="skill-title">Node.js / Discord.js</h3><div class="skill-bar"><div class="skill-progress" data-progress="75%"></div></div></div>
-                  <div class="skill"><h3 class="skill-title">FiveM / GTA RP Dev</h3><div class="skill-bar"><div class="skill-progress" data-progress="80%"></div></div></div>
-                </div>
+      <div class="timeline-item">
+        <h5 style="font-size:1rem; font-weight:700; color:var(--title-color); margin-bottom:4px;">Enquêteur Vacataire / Inventoriste</h5>
+        <span style="font-size:0.85rem; font-weight:600; color:var(--first-color);">RGIS Bretagne &nbsp;|&nbsp; 2024</span>
+        <p style="font-size:0.92rem; color:var(--text-color); line-height:1.7; margin-top:6px;">
+          Comptage et contrôle de stocks, travail de nuit et horaires décalés, utilisation de lecteurs codes-barres, déplacements d'équipe.
+        </p>
+      </div>
 
-              </div><!-- /.skills-grid -->
-            </div><!-- /.skills -->
-          </div>
+      <div class="timeline-item">
+        <h5 style="font-size:1rem; font-weight:700; color:var(--title-color); margin-bottom:4px;">Serveur GTA V Roleplay – Fondateur &amp; Développeur</h5>
+        <span style="font-size:0.85rem; font-weight:600; color:var(--first-color);">Iris RP &nbsp;|&nbsp; 2021 - 2023</span>
+        <p style="font-size:0.92rem; color:var(--text-color); line-height:1.7; margin-top:6px;">
+          Création et gestion complète d'un serveur FiveM RP : scripting Lua, architecture serveur, base de données MySQL, gestion de communauté (100+ joueurs actifs).
+        </p>
+      </div>
 
-          <!-- Platforms -->
-          <div class="about-text-block">
-            <h4>Plateformes &amp; Formation</h4>
-            <ul>
-              <li>🏆 <strong>TryHackMe</strong> – Profil classé actif (Goldenyan.exe) — salles CTF, parcours OSCP</li>
-              <li>🏆 <strong>HackTheBox</strong> – Résolution de machines, progression Pro Hacker</li>
-              <li>📚 <strong>Bac S</strong> – Baccalauréat scientifique avec spécialité NSI (Informatique)</li>
-              <li>🎓 <strong>BUT Informatique – Rennes 1 (ISTIC)</strong></li>
-            </ul>
-          </div>
+      <div class="timeline-item">
+        <h5 style="font-size:1rem; font-weight:700; color:var(--title-color); margin-bottom:4px;">Développeur Bot Discord</h5>
+        <p style="font-size:0.92rem; color:var(--text-color); line-height:1.7; margin-top:6px;">
+          Développement de bots (modération, musique, utilitaires) en Node.js / Discord.js, déployés et maintenus sur plusieurs serveurs actifs.
+        </p>
+      </div>
 
-          <!-- Soft Skills -->
-          <div class="about-text-block">
-            <h4>Qualités Personnelles</h4>
-            <div class="info-tags">
-              <span class="info-tag">Travail en équipe</span>
-              <span class="info-tag">Adaptabilité</span>
-              <span class="info-tag">Autonomie</span>
-              <span class="info-tag">Ponctualité</span>
-              <span class="info-tag">Résolution de problèmes</span>
-              <span class="info-tag">Curiosité</span>
-              <span class="info-tag">Jour / Soir / Nuit / Week-end</span>
-            </div>
-          </div>
-        </div><!-- /left column -->
-
-        <!-- ── RIGHT : Experience & Education ── -->
-        <div>
-
-          <!-- Experience -->
-          <div class="about-text-block">
-            <h4>Expérience Professionnelle</h4>
-            <div class="timeline">
-
-              <div class="timeline-item">
-                <h5>Agent Polyvalent – Logistique / Industrie / Services</h5>
-                <span>Missions diverses — Disponible immédiatement</span>
-                <p>Profil polyvalent : logistique, industrie, services. Jour, soir, nuit, week-end. Adaptabilité et esprit d'équipe.</p>
-              </div>
-
-              <div class="timeline-item">
-                <h5>Serveur GTA V Roleplay – Fondateur &amp; Développeur</h5>
-                <span>2021 – 2023</span>
-                <p>Création et gestion d'un serveur FiveM RP : scripting Lua, architecture serveur, gestion de communauté (100+ joueurs).</p>
-              </div>
-
-              <div class="timeline-item">
-                <h5>Développeur Bot Discord</h5>
-                <span>2020 – présent</span>
-                <p>Développement de bots de modération, musique et utilitaires en Node.js / Discord.js, déployés sur plusieurs serveurs.</p>
-              </div>
-
-            </div>
-          </div>
-
-          <!-- Education -->
-          <div class="about-text-block">
-            <h4>Formation</h4>
-            <div class="timeline">
-
-              <div class="timeline-item">
-                <h5>BUT Informatique</h5>
-                <span>Université Rennes 1 – ISTIC | 2023 – en cours</span>
-                <p>Réseaux, algorithmique, bases de données, développement web, génie logiciel.</p>
-              </div>
-
-              <div class="timeline-item">
-                <h5>Baccalauréat Scientifique – Spécialité NSI</h5>
-                <span>2023</span>
-                <p>Spécialité NSI (algorithmique, Python, réseaux, bases de données).</p>
-              </div>
-
-            </div>
-          </div>
-
-          <!-- Languages -->
-          <div class="about-text-block">
-            <h4>Langues</h4>
-            <div class="info-tags">
-              <span class="info-tag">🇫🇷 Français – Natif</span>
-              <span class="info-tag">🇬🇧 Anglais – Intermédiaire (B1/B2)</span>
-            </div>
-          </div>
-
-          <!-- Certifications -->
-          <div class="about-text-block">
-            <h4>Certifications &amp; Objectifs</h4>
-            <ul>
-              <li>🎯 Préparation active CompTIA Security+</li>
-              <li>🎯 Parcours OSCP en cours sur TryHackMe</li>
-              <li>🎯 Recherche alternance cybersécurité / informatique 2025</li>
-            </ul>
-          </div>
-
-        </div><!-- /right column -->
-      </div><!-- /about-columns -->
+      <div class="timeline-item">
+        <h5 style="font-size:1rem; font-weight:700; color:var(--title-color); margin-bottom:4px;">Technicien Hardware &amp; Software</h5>
+        <p style="font-size:0.92rem; color:var(--text-color); line-height:1.7; margin-top:6px;">
+          Diagnostic de pannes, réinstallation systèmes Windows, remplacement de composants (RAM, SSD, écrans) pour proches et connaissances.
+        </p>
+      </div>
 
     </div>
-  </section>
+  </div>
+
+  <!-- Formation -->
+  <div class="about-text-block">
+    <h4>Formation</h4>
+    <div class="timeline">
+
+      <div class="timeline-item">
+        <h5 style="font-size:1rem; font-weight:700; color:var(--title-color); margin-bottom:4px;">Licence Informatique – 1ère année</h5>
+        <span style="font-size:0.85rem; font-weight:600; color:var(--first-color);">Université Rennes 1 – ISTIC &nbsp;|&nbsp; 2024</span>
+        <p style="font-size:0.92rem; color:var(--text-color); line-height:1.7; margin-top:6px;">
+          Algorithmique, bases de données, développement web, réseaux, génie logiciel. Année effectuée, parcours réorienté vers les réseaux et systèmes embarqués.
+        </p>
+      </div>
+
+      <div class="timeline-item">
+        <h5 style="font-size:1rem; font-weight:700; color:var(--title-color); margin-bottom:4px;">Baccalauréat Général</h5>
+        <span style="font-size:0.85rem; font-weight:600; color:var(--first-color);">Lycée Victor et Hélène Basch – Rennes &nbsp;|&nbsp; 2023</span>
+        <p style="font-size:0.92rem; color:var(--text-color); line-height:1.7; margin-top:6px;">
+          Spécialités <strong>Mathématiques</strong> &amp; <strong>NSI</strong> (Numérique et Sciences Informatiques) — algorithmique, Python, réseaux, bases de données.
+        </p>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Centres d'intérêt -->
+  <div class="about-text-block">
+    <h4>Centres d'intérêt</h4>
+    <div class="info-tags">
+      <span class="info-tag">🚗 Automobile &amp; Mécanique</span>
+      <span class="info-tag">💻 Hardware PC &amp; Composants</span>
+      <span class="info-tag">🔐 Cybersécurité</span>
+      <span class="info-tag">🎮 Développement de jeux / Modding</span>
+      <span class="info-tag">🏊 Natation</span>
+      <span class="info-tag">💪 Musculation</span>
+      <span class="info-tag">🌐 Réseaux &amp; Systèmes</span>
+    </div>
+  </div>
+
+
+</div>
+    </div>
+
+  </div>
+</section>
+
 
   <!-- ══ CONTACT ══ -->
   <section class="contact section" id="contact">
     <div class="container">
-      <div class="contact-box">
+      <div class="contact-box" style="
+        box-shadow: 0 8px 40px rgba(108, 99, 255, 0.18);
+        border-radius: 24px;
+        border: 1.5px solid rgba(108, 99, 255, 0.15);
+        overflow: hidden;
+      ">
         <div class="contact-info">
           <h3 class="title">Me contacter</h3>
           <div class="information-wrap">
@@ -696,19 +761,25 @@
             </div>
           </div>
         </div>
-        <form class="contact-form" id="contactForm">
+        <form class="contact-form" id="contactForm" style="display: flex; flex-direction: column; gap: 14px;">
           <h3 class="title">Envoyer un message</h3>
-          <div class="row">
-            <input type="text" id="c-name" class="contact-input" placeholder="Nom" required />
-            <input type="email" id="c-email" class="contact-input" placeholder="Email" required />
+          <div class="row" style="display: flex; gap: 14px;">
+            <input type="text" id="c-name" class="contact-input" placeholder="Nom" required style="flex: 1;" />
+            <input type="email" id="c-email" class="contact-input" placeholder="Email" required style="flex: 1;" />
           </div>
-          <input type="text" id="c-subject" class="contact-input" placeholder="Objet" required />
-          <textarea id="c-msg" class="contact-input textarea" placeholder="Votre message..." required></textarea>
-          <button type="submit" class="btn" id="sendBtn">Envoyer</button>
+          <input type="text" id="c-subject" class="contact-input" placeholder="Objet" required style="width: 100%; box-sizing: border-box;" />
+          <textarea id="c-msg" class="contact-input textarea" placeholder="Votre message..." required style="width: 100%; box-sizing: border-box;"></textarea>
+          <button type="submit" class="btn" id="sendBtn" style="
+            width: 100%;
+            box-sizing: border-box;
+            cursor: pointer;
+            display: block;
+          ">Envoyer</button>
         </form>
       </div>
     </div>
   </section>
+
 
 
   <!-- ══ FOOTER ══ -->
