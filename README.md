@@ -75,14 +75,6 @@ Projets filtrables par catégorie :
 
 ### 👤 À propos
 
-**Informations personnelles :**
-- 📍 Rennes, France
-- 📧 y.poulain04@gmail.com
-- 📞 07 63 53 13 10
-- 🚗 Permis B
-- 🗣️ Français (natif) · Anglais (B2)
-- 💼 Disponible immédiatement
-
 **Compétences techniques :**
 
 ```
