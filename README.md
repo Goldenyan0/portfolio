@@ -5,22 +5,28 @@
 [![HTML](https://img.shields.io/badge/HTML5-E34F26?style=flat&logo=html5&logoColor=white)](https://developer.mozilla.org/fr/docs/Web/HTML)
 [![CSS](https://img.shields.io/badge/CSS3-1572B6?style=flat&logo=css3&logoColor=white)](https://developer.mozilla.org/fr/docs/Web/CSS)
 [![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=flat&logo=javascript&logoColor=black)](https://developer.mozilla.org/fr/docs/Web/JavaScript)
+[![Three.js](https://img.shields.io/badge/Three.js-000000?style=flat&logo=threedotjs&logoColor=white)](https://threejs.org/)
 [![TryHackMe](https://img.shields.io/badge/TryHackMe-212C42?style=flat&logo=tryhackme&logoColor=white)](https://tryhackme.com/p/Goldenyan.exe)
 
 ---
 
 ## 📌 Présentation
 
-Ce projet est mon **portfolio personnel** — une vitrine en ligne conçue pour présenter mon profil, mes compétences, mes projets et mon parcours dans le domaine de l'informatique.
+Ce projet est mon **portfolio personnel** : une vitrine en ligne qui présente mon profil, mon alternance, mes compétences, mes projets et mon parcours en informatique.
+
+Alternant en administration systèmes et réseaux à l'**Établissement Français du Sang**, en **BTS SIO** à MyDigitalSchool (2026-2028).
 
 ---
 
-## 🎯 Objectifs du site
+## 🗂️ Pages
 
-- Présenter mon profil et mon parcours
-- Mettre en avant mes projets (sites web, bots, outils, challenges de sécurité)
-- Afficher mes compétences techniques de manière claire et visuelle
-- Créer une présence en ligne professionnelle
+| Page | Contenu |
+|---|---|
+| `index.html` | Portfolio immersif : domaines, chiffres clés, « Pourquoi moi », projets, stack, parcours, contact |
+| `cv.html` | CV formel, imprimable / exportable en PDF |
+| `e39.html` | Projet BMW E39 520i (M54B22) : mécanique, diagnostic et documentation du moteur |
+
+Les trois pages partagent une seule feuille de style : `css/style.css`.
 
 ---
 
@@ -28,106 +34,55 @@ Ce projet est mon **portfolio personnel** — une vitrine en ligne conçue pour 
 
 | Technologie | Usage |
 |---|---|
-| HTML5 / CSS3 | Structure et mise en page |
-| JavaScript (ES6+) | Interactions et animations |
-| jQuery | Manipulation du DOM |
-| Isotope.js | Filtrage dynamique du portfolio |
-| Swiper.js | Slider / carousel |
-| Lightbox.js | Galerie d'images |
-| Font Awesome 5 | Icônes |
-| EmailJS | Envoi de formulaire de contact |
+| HTML5 / CSS3 / JavaScript vanilla | Structure, mise en page, animations — sans framework |
+| [Three.js](https://threejs.org/) | Réseau 3D interactif du hero (avec repli SVG si WebGL est indisponible) |
+| [Lenis](https://lenis.darkroom.engineering/) | Défilement fluide |
+| [EmailJS](https://www.emailjs.com/) | Envoi du formulaire de contact (avec champ piège anti-spam) |
+| Space Grotesk + Inter | Polices hébergées dans le dépôt (`fonts/`) |
+
+3 librairies externes au maximum, chargées depuis jsDelivr.
 
 ---
 
-## 🧩 Structure du site
+## ✨ Animations et interactions
 
-### 🏠 Header — Accueil
-- Présentation rapide
-- Effet **typing animé** (Étudiant en Informatique / Cybersécurité / Dev Web / Alternance)
-- Particules flottantes et animations d'entrée
-- Navigation sticky avec barre de contact en haut de page
+- Préchargeur (compteur + rideau), curseur personnalisé, boutons magnétiques
+- Hero en *scrollytelling* : le titre se réduit et s'efface, la caméra plonge dans le réseau 3D
+- Titres révélés mot à mot, transitions entre sections en volets (clip-path)
+- Section « Pourquoi moi » épinglée : une comparaison par écran
+- Projets en défilement horizontal piloté par le scroll (carrousel au doigt sur mobile), filtre animé, inclinaison 3D des cartes
+- Parallax multicouche, compteurs, barres de compétences, timelines qui se dessinent
 
----
-
-### 🧠 Mes Domaines
-
-| Domaine | Description |
-|---|---|
-| 🔐 Cybersécurité | Analyse de vulnérabilités, tests d'intrusion, surveillance réseau |
-| 💻 Développement Web | Conception et développement de sites et applications web |
-| 🖥️ Systèmes & Réseaux | Administration Linux, architecture réseau, dépannage matériel |
+**Accessibilité :** si « réduire les animations » est activé dans le système, le site s'affiche en version statique, sans mouvement. Mise en page pensée d'abord pour le mobile (vérifiée à 360 px).
 
 ---
 
-### 📁 Portfolio
-
-Projets filtrables par catégorie :
-
-| Catégorie | Projets |
-|---|---|
-| 🔐 Cybersécurité | Profil TryHackMe |
-| 💻 Dev Web | Site GTA RP, Projet scolaire, Portfolio |
-| 📱 Dev App | Bot Discord, Jeu Multifighter, Serveur GTA V RP, Profil GitHub |
-
-> Filtrage dynamique via **Isotope.js** — Galerie lightbox intégrée
-
----
-
-### 👤 À propos
-
-**Compétences techniques :**
+## 📁 Structure
 
 ```
-Langages          HTML/CSS ████████░░ 85%
-                  JavaScript ███████░░░ 70%
-                  Python ███████░░░ 75%
-                  Lua ███████░░░ 70%
-                  Shell/Bash ███░░░░░░░ 35%
-                  SQL ███████░░░ 70%
-
-Cybersécurité     Nmap / Wireshark / Metasploit
-                  TryHackMe · HackTheBox
-
-Systèmes          Linux/Debian · Windows
-                  VMware / VirtualBox
-
-Réseaux           TCP/IP · DNS · DHCP · HTTP(S)
-                  SSH / FTP / SMB · VPN / Firewall
+portfolio/
+├── index.html · cv.html · e39.html
+├── css/style.css          # feuille de style commune
+├── js/
+│   ├── commun.js          # comportements partagés (navigation, révélations, scroll…)
+│   ├── index.js           # page d'accueil
+│   └── reseau-3d.js       # fond 3D du hero (module Three.js)
+├── fonts/                 # polices auto-hébergées
+├── img/                   # images du site (projets, E39…)
+└── ref/ma-voiture/        # photos d'origine de la E39 (plaques floutées)
 ```
-
-**Expériences professionnelles :**
-- 🍔 **Équipier Polyvalent** — McDonald's Pleumeleuc *(2025)*
-- 📊 **Inventoriste / Enquêteur Vacataire** — RGIS Bretagne *(2024)*
-
-**Centres d'intérêt :** Automobile 🚗 · Musculation 💪 · Natation 🏊
-
----
-
-### 📩 Contact
-
-Formulaire de contact fonctionnel via **EmailJS** — messages envoyés directement sur y.poulain04@gmail.com.
-
----
-
-## ⚙️ Fonctionnalités
-
-- ✅ Design **responsive** (mobile, tablette, desktop)
-- ✅ Animations visuelles (particules, typing effect, hover)
-- ✅ Filtrage dynamique des projets (Isotope)
-- ✅ Galerie avec **Lightbox**
-- ✅ Barres de compétences animées au scroll
-- ✅ Barre de contact **sticky** (toujours visible)
-- ✅ Formulaire de contact opérationnel (EmailJS)
-- ✅ Navigation fluide avec scroll
 
 ---
 
 ## 🚀 Lancer le projet en local
 
+Le fond 3D est un module JavaScript : il faut passer par un petit serveur local (ouvrir `index.html` directement ne suffit pas).
+
 ```bash
 git clone https://github.com/Goldenyan0/portfolio
 cd portfolio
-# Ouvrir index.html dans votre navigateur
+python -m http.server 8000
+# puis ouvrir http://localhost:8000
 ```
 
 > ⚠️ Pour que le formulaire de contact fonctionne, un compte **EmailJS** configuré est nécessaire.
@@ -145,5 +100,5 @@ cd portfolio
 ---
 
 <p align="center">
-  Copyright © 2025 — Made by <strong>Yanis Poulain</strong>
+  Copyright © 2026 — Made by <strong>Yanis Poulain</strong>
 </p>

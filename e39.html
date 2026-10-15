@@ -1,0 +1,1075 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Projet automobile — BMW E39 520i (M54B22) · Yanis Poulain</title>
+  <meta name="description" content="Ma BMW E39 520i de 2002 : diagnostic d'un mélange pauvre, pompe à essence, débitmètre, refroidissement. Le moteur M54 en vue éclatée 3D, 17 fiches pour le comprendre et les vrais relevés." />
+  <meta name="author" content="Yanis Poulain" />
+  <meta name="theme-color" content="#fafaf9" />
+
+  <!-- Open Graph (aperçu lors d'un partage de lien) -->
+  <meta property="og:type" content="article" />
+  <meta property="og:locale" content="fr_FR" />
+  <meta property="og:site_name" content="Yanis Poulain" />
+  <meta property="og:title" content="Projet automobile — BMW E39 520i (M54B22)" />
+  <meta property="og:description" content="Mesure, hypothèse, vérification : le diagnostic et la remise en état de ma BMW E39, moteur M54 en 3D et relevés réels." />
+  <meta property="og:url" content="https://goldenyan0.github.io/portfolio/e39.html" />
+  <meta property="og:image" content="https://goldenyan0.github.io/portfolio/img/e39/e39-trois-quarts-avant-jour.jpg" />
+  <meta property="og:image:alt" content="BMW E39 bleue vue de trois quarts avant, plaque floutée" />
+  <meta name="twitter:card" content="summary_large_image" />
+
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%237c3aed'/><text x='50' y='67' font-size='52' font-family='Arial,sans-serif' font-weight='bold' fill='white' text-anchor='middle'>YP</text></svg>" />
+
+  <link rel="preload" href="fonts/space-grotesk-latin.woff2" as="font" type="font/woff2" crossorigin />
+  <link rel="preload" href="fonts/inter-latin.woff2" as="font" type="font/woff2" crossorigin />
+  <link rel="stylesheet" href="css/style.css" />
+
+  <script>
+    document.documentElement.classList.add('js');
+    if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) document.documentElement.classList.add('anime');
+  </script>
+
+  <!-- Correspondance des modules Three.js (le moteur 3D importe "three" et ses compléments) -->
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.min.js",
+        "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+      }
+    }
+  </script>
+</head>
+
+<body class="page-e39">
+
+  <svg width="0" height="0" class="visuellement-cache" aria-hidden="true">
+    <symbol id="i-fleche" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" d="M5 12h14M13 6l6 6-6 6"/></symbol>
+    <symbol id="i-fleche-retour" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" d="M19 12H5m6-6-6 6 6 6"/></symbol>
+    <symbol id="i-eclate" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M4 4h16v4H4zM4 10h16v4H4zM4 16h16v4H4zM12 1v2m0 18v2"/></symbol>
+    <symbol id="i-fermer" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" d="M6 6l12 12M18 6 6 18"/></symbol>
+  </svg>
+
+  <a class="lien-evitement" href="#contenu">Aller au contenu</a>
+
+  <div class="curseur" aria-hidden="true"></div>
+  <div class="curseur-anneau" aria-hidden="true"></div>
+
+  <!-- ══ Navigation ══ -->
+  <header class="nav" id="nav">
+    <div class="conteneur nav__interieur">
+      <a class="nav__logo" href="index.html" aria-label="Yanis Poulain, retour au portfolio">
+        <span class="nav__monogramme" aria-hidden="true">YP</span>
+        <span>Yanis Poulain</span>
+      </a>
+      <nav aria-label="Navigation principale">
+        <ul class="nav__liens">
+          <li><a href="#chantiers">Chantiers</a></li>
+          <li><a href="#moteur">Moteur 3D</a></li>
+          <li><a href="#documentation">Le M54 expliqué</a></li>
+          <li><a href="#releves">Relevés</a></li>
+          <li><a href="index.html">Portfolio</a></li>
+        </ul>
+      </nav>
+      <div class="nav__actions">
+        <a class="bouton bouton--petit nav__cv" href="cv.html"><span class="bouton__texte">Mon CV</span></a>
+        <button class="nav__burger" id="burger" type="button" aria-expanded="false" aria-controls="menu-mobile">
+          <span></span><span class="visuellement-cache">Ouvrir le menu</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <div class="menu-mobile" id="menu-mobile">
+    <a href="#chantiers">Chantiers</a>
+    <a href="#moteur">Moteur 3D</a>
+    <a href="#documentation">Le M54 expliqué</a>
+    <a href="#releves">Relevés</a>
+    <a href="index.html">Portfolio</a>
+  </div>
+
+  <main id="contenu" class="e39">
+
+    <!-- ══ Hero ══ -->
+    <section class="e39-hero" aria-labelledby="e39-titre">
+      <div class="conteneur e39-hero__grille">
+        <div>
+          <p class="surtitre" data-revele>Projet automobile · terminé</p>
+          <h1 class="e39-hero__titre" id="e39-titre" data-mots>BMW E39 <em>520i</em></h1>
+          <p class="e39-hero__texte" data-revele>
+            Une berline de 2002, achetée le 16 août 2026 à environ 164 000 km. Une base saine, de l'entretien à reprendre —
+            et un mélange pauvre à comprendre. Chaque intervention a été mesurée, raisonnée, puis vérifiée.
+          </p>
+          <ul class="fiche-technique" data-revele>
+            <li><span>Moteur</span>M54B22</li>
+            <li><span>Architecture</span>6 cylindres en ligne</li>
+            <li><span>Cylindrée</span>2,2 L</li>
+            <li><span>Puissance</span>170 ch</li>
+            <li><span>Gestion</span>Siemens MS43</li>
+            <li><span>Boîte</span>Manuelle</li>
+          </ul>
+        </div>
+        <div class="e39-hero__photos" aria-label="Photos de la voiture">
+          <img class="e39-hero__photo e39-hero__photo--1" data-parallax="0.08" src="img/e39/e39-face-avant-plaque-floutee.jpg" width="900" height="1196" alt="BMW E39 bleue vue de face sur du gravier, plaque floutée, phares à anneaux" />
+          <img class="e39-hero__photo e39-hero__photo--2" data-parallax="-0.06" src="img/e39/e39-nuit-angel-eyes-jaunes.jpg" width="900" height="1599" alt="La voiture de nuit, phares à anneaux jaunes et antibrouillards allumés" />
+        </div>
+      </div>
+    </section>
+
+    <!-- ══ Fil rouge ══ -->
+    <section class="section fil-rouge" id="fil-rouge" aria-labelledby="fil-titre">
+      <div class="conteneur">
+        <div class="entete-section">
+          <p class="surtitre" data-revele>La méthode</p>
+          <h2 class="titre-section" id="fil-titre" data-mots>Mesure, hypothèse, <em>vérification.</em></h2>
+          <p data-revele>Une seule modification à la fois, puis relecture des valeurs avant de conclure. C'est la règle qui évite de remplacer trois pièces pour une panne qui n'en demandait qu'une.</p>
+        </div>
+        <ol class="methode" data-cascade>
+          <li data-revele>
+            <span class="methode__etape">01 · Mesure</span>
+            <p>Le calculateur ajoute de l'essence des deux côtés : <strong>+7,0 % / +4,7 %</strong> au ralenti le 08/10, puis <strong>+8,6 % / +6,3 %</strong>. Codes P0171 et P0174 : mélange trop pauvre.</p>
+          </li>
+          <li data-revele>
+            <span class="methode__etape">02 · Hypothèse</span>
+            <p>Le banc 1 a environ 2 points d'avance : une <strong>prise d'air côté banc 1</strong>. Le débitmètre de 2001 sous-lit de 6 à 7 % à fort débit : un <strong>contributeur commun</strong>.</p>
+          </li>
+          <li data-revele>
+            <span class="methode__etape">03 · Vérification</span>
+            <p>Test fumée le 14/10 : la fuite est au <strong>manchon d'admission</strong>. Débitmètre neuf, joint DISA remplacé. Relevé après intervention : <strong>0 % / 0 %</strong>.</p>
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- ══ Les chantiers ══ -->
+    <section class="section chantiers volet" id="chantiers" data-volet aria-labelledby="chantiers-titre">
+      <span class="mot-fond" data-glisse="0.35" aria-hidden="true">Atelier</span>
+      <div class="conteneur">
+        <div class="entete-section">
+          <p class="surtitre" data-revele>Les chantiers</p>
+          <h2 class="titre-section" id="chantiers-titre" data-mots>Ce qui a été <em>fait.</em></h2>
+        </div>
+
+        <div class="timeline chantiers__liste" data-timeline>
+          <span class="timeline__trait" aria-hidden="true"></span>
+          <ol>
+
+            <!-- Pompe à essence -->
+            <li class="etape chantier" data-revele>
+              <p class="etape__date">03/10/2026</p>
+              <h3>Pompe à essence AEM 340 L/h</h3>
+              <div class="chantier__corps">
+                <div>
+                  <p>La pompe d'origine fatiguait : démarrages difficiles, plusieurs coups de clé, perte de puissance. Le diagnostic n'a pas été fait au doigt mouillé : la pression de rampe a été vérifiée au <strong>kit manomètre</strong> — trop basse.</p>
+                  <p>Remplacement par une AEM 340 L/h (réf. 50-1220), choisie pour sa compatibilité E85. Un calage juste après le montage venait des raccords sertis faits maison, pas de la pompe. Depuis : ralenti normal, reprises meilleures.</p>
+                  <p class="chantier__lecon"><strong>Leçon :</strong> jamais de raccordement sur le faisceau d'origine sans adaptateur — une polarité inversée fait tourner la pompe à l'envers.</p>
+                </div>
+                <ul class="chantier__refs" aria-label="Références">
+                  <li>AEM 340 L/h · 50-1220</li>
+                  <li>Pression attendue : ~3,5 bar (spécification)</li>
+                </ul>
+              </div>
+            </li>
+
+            <!-- Diagnostic mélange pauvre -->
+            <li class="etape chantier" data-revele>
+              <p class="etape__date">08 — 09/10/2026</p>
+              <h3>Diagnostic du mélange pauvre</h3>
+              <div class="chantier__corps chantier__corps--photo">
+                <div>
+                  <p>Log complet du calculateur (MS430DS0, environ 110 points) et lectures à la valise V519. Les corrections carburant montent des deux côtés, le banc 1 devant.</p>
+                  <ul class="chiffres-cles">
+                    <li><strong>42 %</strong><span>duty cycle injecteurs à 4 646 tr/min — sains, loin du seuil de 85 %</span></li>
+                    <li><strong>121 g/s</strong><span>débit d'air mesuré, contre 129 à 140 g/s attendus : le débitmètre sous-lit</span></li>
+                    <li><strong>+2 pts</strong><span>d'écart banc 1 / banc 2 : le signe d'une prise d'air localisée</span></li>
+                  </ul>
+                  <p>Les deux causes coexistent sans se contredire : une prise d'air côté banc 1 et un débitmètre vieilli. Le test fumée tranchera la première ; un débitmètre neuf, la seconde.</p>
+                </div>
+                <figure class="chantier__photo">
+                  <img src="img/e39/v519-p0171.jpg" width="640" height="1137" loading="lazy" alt="Valise OBD II V519 branchée sur la voiture, écran Code d'erreur : P0171 System Too Lean Bank 1" />
+                  <figcaption>Photo réelle : le code P0171 lu au V519.</figcaption>
+                </figure>
+              </div>
+            </li>
+
+            <!-- Débitmètre + DISA -->
+            <li class="etape chantier" data-revele>
+              <p class="etape__date">13/10/2026</p>
+              <h3>Débitmètre neuf et joint DISA</h3>
+              <div class="chantier__corps">
+                <div>
+                  <p>Le débitmètre d'origine Siemens 5WK9 605 (BMW 13 62 1 432 356), daté de 2001, est remplacé par un <strong>Pierburg 7.07759.09.0</strong>. Le même soir, le joint de la DISA — légèrement aplati — est changé.</p>
+                  <p>Relevé du jour : <strong>LTFT +3,1 % / 0,0 %</strong>. Le banc 2 est revenu à zéro, le banc 1 garde un reste : la prise d'air n'est pas encore trouvée.</p>
+                </div>
+                <ul class="chantier__refs" aria-label="Références">
+                  <li>Débitmètre neuf · Pierburg 7.07759.09.0</li>
+                  <li>Ancien · Siemens 5WK9 605 (2001)</li>
+                </ul>
+              </div>
+              <figure class="schema" data-revele>
+                <!-- Schéma A2 : admission et débitmètre -->
+                <svg class="sch sch-admission" viewBox="0 0 640 200" role="img" aria-label="Schéma animé de l'admission : l'air traverse le filtre, le débitmètre, le manchon, le papillon puis le collecteur vers les six cylindres">
+                  <path class="sch-conduit" d="M20 100 H600"/>
+                  <path class="sch-flux" d="M20 100 H600"/>
+                  <rect class="sch-piece" x="30" y="70" width="70" height="60" rx="8"/><text class="sch-texte" x="65" y="152">Filtre</text>
+                  <rect class="sch-piece sch-piece--accent" x="140" y="76" width="80" height="48" rx="8"/><path class="sch-film" d="M180 84 V116"/><text class="sch-texte" x="180" y="152">Débitmètre</text>
+                  <path class="sch-piece sch-manchon" d="M250 82 q20 -14 40 0 v36 q-20 14 -40 0 z"/><text class="sch-texte" x="270" y="152">Manchon</text>
+                  <circle class="sch-piece" cx="340" cy="100" r="24"/><path class="sch-papillon" d="M340 80 V120"/><text class="sch-texte" x="340" y="152">Papillon</text>
+                  <rect class="sch-piece" x="390" y="56" width="110" height="88" rx="10"/><text class="sch-texte" x="445" y="104">Collecteur</text>
+                  <g class="sch-cylindres"><rect x="520" y="40" width="14" height="22" rx="3"/><rect x="540" y="40" width="14" height="22" rx="3"/><rect x="560" y="40" width="14" height="22" rx="3"/><rect x="520" y="138" width="14" height="22" rx="3"/><rect x="540" y="138" width="14" height="22" rx="3"/><rect x="560" y="138" width="14" height="22" rx="3"/></g>
+                  <text class="sch-valeur" x="180" y="48" data-debit>3,0 g/s</text>
+                  <text class="sch-texte sch-texte--petit" x="180" y="26" data-debit-regime>au ralenti</text>
+                </svg>
+                <figcaption>Le débitmètre mesure la masse d'air : <strong>3,0 g/s</strong> au ralenti, <strong>121 g/s</strong> en pleine charge en 3<sup>e</sup> (relevés du 08/10, ancien débitmètre).</figcaption>
+              </figure>
+              <figure class="schema" data-revele>
+                <!-- Schéma A3 : la DISA -->
+                <svg class="sch sch-disa" viewBox="0 0 640 220" role="img" aria-label="Schéma animé de la DISA : le volet fermé impose un long chemin à l'air pour le couple à bas régime ; ouvert, il raccourcit le chemin pour la puissance à haut régime">
+                  <path class="sch-conduit" d="M40 110 H200 C260 110 260 30 320 30 H440 C500 30 500 110 560 110 H600"/>
+                  <path class="sch-conduit" d="M200 110 H560"/>
+                  <path class="sch-flux sch-flux--long" d="M40 110 H200 C260 110 260 30 320 30 H440 C500 30 500 110 560 110 H600"/>
+                  <path class="sch-flux sch-flux--court" d="M200 110 H560"/>
+                  <g class="sch-volet"><rect class="sch-piece sch-piece--accent" x="376" y="88" width="8" height="44" rx="3"/></g>
+                  <circle class="sch-axe" cx="380" cy="110" r="5"/>
+                  <text class="sch-texte" x="380" y="160">Volet DISA</text>
+                  <text class="sch-texte sch-disa__regime sch-disa__regime--bas" x="320" y="200">Volet fermé · bas régime · chemin long = couple</text>
+                  <text class="sch-texte sch-disa__regime sch-disa__regime--haut" x="320" y="200">Volet ouvert · vers 4 000 tr/min · chemin court = puissance</text>
+                </svg>
+                <figcaption>La DISA change la longueur du chemin de l'air. Son joint aplati était un candidat côté banc 1 : remplacé le 13/10.</figcaption>
+              </figure>
+            </li>
+
+            <!-- Test fumée -->
+            <li class="etape chantier" data-revele>
+              <p class="etape__date">14/10/2026</p>
+              <h3>Test fumée : la fuite est trouvée</h3>
+              <div class="chantier__corps">
+                <div>
+                  <p>Avec la machine à fumée d'un ami, moteur froid et arrêté, durite obturée côté filtre : la fumée suit le chemin de l'air et ressort là où l'air non mesuré entrait. Verdict : <strong>fuite au manchon d'admission</strong>.</p>
+                  <p>Le manchon d'admission et le raccord en F sont remplacés. L'air qui entrait sans passer par le débitmètre ne fausse plus le dosage.</p>
+                </div>
+                <ul class="chantier__refs" aria-label="Zones inspectées">
+                  <li>Manchon débitmètre → papillon : <strong>fuite</strong></li>
+                  <li>Joint DISA · durites CCV · bouchons du collecteur · tube de jauge</li>
+                </ul>
+              </div>
+            </li>
+
+            <!-- Refroidissement -->
+            <li class="etape chantier" data-revele>
+              <p class="etape__date">18/10/2026</p>
+              <h3>Réfection complète du refroidissement</h3>
+              <div class="chantier__corps">
+                <div>
+                  <p>Le 2 octobre, le liquide s'échappait par le bouchon à chaud : un bouchon neuf de 1,4 bar qui ventile, c'est une surpression réelle. Le radiateur fuyait — patch époxy le 6 octobre, en attendant les pièces.</p>
+                  <p>Le kit complet est monté : <strong>radiateur Nissens 60648A</strong>, <strong>pompe à eau Meyle 313 011 2001</strong>, <strong>thermostat Mahle TM 13 97</strong>, puis purge soigneuse du circuit.</p>
+                </div>
+                <ul class="chantier__refs" aria-label="Références">
+                  <li>Radiateur · Nissens 60648A</li>
+                  <li>Pompe à eau · Meyle 313 011 2001</li>
+                  <li>Thermostat · Mahle TM 13 97</li>
+                </ul>
+              </div>
+              <figure class="schema" data-revele>
+                <!-- Schéma A1 : circuit de refroidissement -->
+                <svg class="sch sch-refroidissement" viewBox="0 0 640 260" role="img" aria-label="Schéma animé du circuit de refroidissement : la pompe à eau envoie le liquide dans le moteur ; tant qu'il est froid, le thermostat reste fermé et le liquide tourne en petit circuit ; une fois chaud, le clapet s'ouvre et le liquide passe par le radiateur">
+                  <!-- Petit circuit (moteur froid) -->
+                  <path class="sch-conduit" d="M230 70 H330 V190 H230"/>
+                  <path class="sch-flux sch-flux--petit" d="M230 70 H330 V190 H230"/>
+                  <!-- Grand circuit vers le radiateur -->
+                  <path class="sch-conduit" d="M330 70 H470 M470 190 H330"/>
+                  <path class="sch-flux sch-flux--grand" d="M330 70 H470 M470 190 H330"/>
+                  <rect class="sch-piece" x="90" y="50" width="140" height="160" rx="14"/><text class="sch-texte" x="160" y="134">Moteur</text>
+                  <circle class="sch-piece" cx="160" cy="210" r="0"/>
+                  <g class="sch-pompe"><circle class="sch-piece sch-piece--accent" cx="230" cy="190" r="18"/><path class="sch-turbine" d="M230 176 V204 M216 190 H244"/></g>
+                  <text class="sch-texte" x="230" y="236">Pompe à eau</text>
+                  <rect class="sch-piece" x="312" y="52" width="36" height="36" rx="8"/><path class="sch-clapet" d="M318 70 H342"/>
+                  <text class="sch-texte" x="330" y="40">Thermostat</text>
+                  <rect class="sch-piece sch-radiateur" x="470" y="50" width="70" height="160" rx="10"/>
+                  <path class="sch-ailettes" d="M482 70 H528 M482 90 H528 M482 110 H528 M482 130 H528 M482 150 H528 M482 170 H528 M482 190 H528"/>
+                  <text class="sch-texte" x="505" y="236">Radiateur</text>
+                  <!-- Jauge de température -->
+                  <g class="sch-jauge" transform="translate(590 130)">
+                    <path class="sch-jauge__fond" d="M-34 0 A34 34 0 0 1 34 0"/>
+                    <path class="sch-jauge__aiguille" d="M0 0 L0 -28"/>
+                    <circle r="4" class="sch-axe"/>
+                    <text class="sch-texte sch-texte--petit" y="20">T° liquide</text>
+                  </g>
+                </svg>
+                <figcaption>Froid : clapet fermé, petit circuit. Chaud : la cire se dilate, le clapet s'ouvre, le radiateur entre en jeu. Sur le roulage du 08/10, le liquide est resté entre 83 et 98 °C.</figcaption>
+              </figure>
+            </li>
+          </ol>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══ Le résultat ══ -->
+    <section class="section resultat" id="resultat" aria-labelledby="resultat-titre">
+      <div class="conteneur resultat__grille">
+        <div>
+          <p class="surtitre" data-revele>Le résultat</p>
+          <h2 class="titre-section" id="resultat-titre" data-mots>Retour à <em>zéro.</em></h2>
+          <p class="resultat__texte" data-revele>Les corrections long terme (LTFT) disent combien d'essence le calculateur ajoute pour compenser. Après l'intervention, il n'a plus rien à corriger.</p>
+          <table class="historique-ltft" data-revele>
+            <caption class="visuellement-cache">Évolution des corrections long terme au ralenti</caption>
+            <thead><tr><th scope="col">Relevé</th><th scope="col">Banc 1</th><th scope="col">Banc 2</th></tr></thead>
+            <tbody>
+              <tr><th scope="row">08/10 · V519</th><td>+7,0 %</td><td>+4,7 %</td></tr>
+              <tr><th scope="row">V519 (photos du 09/10, mesure non datée)</th><td>+8,6 %</td><td>+6,3 %</td></tr>
+              <tr><th scope="row">13/10</th><td>+3,1 %</td><td>0,0 %</td></tr>
+              <tr class="historique-ltft__final"><th scope="row">Après intervention · relevé ponctuel</th><td>0 %</td><td>0 %</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <!-- Schéma A4 : jauges LTFT -->
+        <figure class="jauges" data-revele data-jauges>
+          <div class="jauge-ltft" data-depart="3.1" data-arrivee="0">
+            <svg viewBox="0 0 200 120" aria-hidden="true">
+              <path class="jauge-ltft__fond" d="M20 100 A80 80 0 0 1 180 100"/>
+              <path class="jauge-ltft__zone" d="M88 21.6 A80 80 0 0 1 112 21.6"/>
+              <line class="jauge-ltft__aiguille" x1="100" y1="100" x2="100" y2="34"/>
+              <circle cx="100" cy="100" r="6" class="jauge-ltft__axe"/>
+              <text x="20" y="116">−10</text><text x="100" y="12">0</text><text x="180" y="116">+10</text>
+            </svg>
+            <p class="jauge-ltft__valeur"><span data-valeur>+3,1</span> %</p>
+            <p class="jauge-ltft__nom">LTFT banc 1</p>
+          </div>
+          <div class="jauge-ltft" data-depart="0" data-arrivee="0">
+            <svg viewBox="0 0 200 120" aria-hidden="true">
+              <path class="jauge-ltft__fond" d="M20 100 A80 80 0 0 1 180 100"/>
+              <path class="jauge-ltft__zone" d="M88 21.6 A80 80 0 0 1 112 21.6"/>
+              <line class="jauge-ltft__aiguille" x1="100" y1="100" x2="100" y2="34"/>
+              <circle cx="100" cy="100" r="6" class="jauge-ltft__axe"/>
+              <text x="20" y="116">−10</text><text x="100" y="12">0</text><text x="180" y="116">+10</text>
+            </svg>
+            <p class="jauge-ltft__valeur"><span data-valeur>0,0</span> %</p>
+            <p class="jauge-ltft__nom">LTFT banc 2</p>
+          </div>
+          <figcaption>De +3,1 % / 0,0 % (13/10) à 0 % / 0 % après intervention — relevé ponctuel.</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <!-- ══ Le moteur en 3D ══ -->
+    <section class="section moteur" id="moteur" aria-labelledby="moteur-titre">
+      <div class="conteneur">
+        <div class="entete-section">
+          <p class="surtitre" data-revele>Le moteur</p>
+          <h2 class="titre-section" id="moteur-titre" data-mots>Le M54 <em>en pièces.</em></h2>
+          <p data-revele>Une maquette stylisée du six cylindres : faites-le tourner, ouvrez la vue éclatée, cliquez une pièce pour ouvrir sa fiche.</p>
+        </div>
+      </div>
+      <div class="conteneur conteneur--large">
+        <div class="moteur3d" id="moteur3d" data-revele>
+          <div class="moteur3d__scene" id="moteur-scene"></div>
+          <div class="moteur3d__etiquettes" id="moteur-etiquettes" aria-hidden="true"></div>
+          <p class="moteur3d__survol" id="moteur-survol" aria-live="polite"></p>
+          <div class="moteur3d__repli" id="moteur-repli">
+            <p>Chargement de la vue 3D…</p>
+          </div>
+          <div class="moteur3d__barre">
+            <button class="bouton magnetique" id="bouton-eclate" type="button" aria-pressed="false">
+              <span class="bouton__texte"><svg aria-hidden="true"><use href="#i-eclate"/></svg><span data-libelle>VUE ÉCLATÉE</span></span>
+            </button>
+            <p class="moteur3d__legende">M54B22 — 6 cylindres en ligne, 2.2L</p>
+            <p class="moteur3d__aide">Glissez pour tourner · survolez ou touchez une pièce</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══ Documentation : Le M54 expliqué ══ -->
+    <section class="section documentation volet" id="documentation" data-volet aria-labelledby="doc-titre">
+      <span class="mot-fond" data-glisse="-0.35" aria-hidden="true">M54</span>
+      <div class="conteneur">
+        <div class="entete-section">
+          <p class="surtitre" data-revele>Documentation</p>
+          <h2 class="titre-section" id="doc-titre" data-mots>Le M54 <em>expliqué.</em></h2>
+          <p data-revele>Dix fiches pour comprendre le moteur, sept pour aller plus loin. Chacune : son rôle, un schéma animé, une maquette 3D, les symptômes de panne et mes valeurs mesurées.</p>
+        </div>
+
+        <div class="fiches" data-cascade>
+
+          <!-- 01 Cycle 4 temps -->
+          <article class="fiche" id="fiche-cycle" data-fiche="cycle" data-revele>
+            <p class="fiche__numero">01</p>
+            <h3>Le cycle 4 temps</h3>
+            <p class="fiche__role">Admission, compression, combustion, échappement : chaque cylindre fait ces quatre temps en deux tours de vilebrequin. Sur un six cylindres en ligne, il y a une combustion tous les 120°, dans l'ordre 1-5-3-6-2-4 — d'où la douceur du M54.</p>
+            <button class="fiche__ouvrir" type="button">Ouvrir la fiche <svg class="icone" aria-hidden="true"><use href="#i-fleche"/></svg></button>
+            <div class="fiche__detail">
+              <figure class="fiche__schema">
+                <svg class="sch sch-cycle" viewBox="0 0 320 200" role="img" aria-label="Schéma animé du cycle 4 temps : le piston descend en admission, remonte en compression, la bougie s'allume, il redescend en détente puis remonte en échappement">
+                  <rect class="sch-piece" x="110" y="40" width="100" height="140" rx="6"/>
+                  <g class="sch-cycle__piston"><rect class="sch-piece sch-piece--accent" x="114" y="110" width="92" height="34" rx="4"/><path class="sch-trait" d="M160 144 V196"/></g>
+                  <path class="sch-cycle__soupape sch-cycle__soupape--adm sch-trait" d="M130 20 V42 M120 42 H140"/>
+                  <path class="sch-cycle__soupape sch-cycle__soupape--ech sch-trait" d="M190 20 V42 M180 42 H200"/>
+                  <path class="sch-cycle__etincelle" d="M160 30 l-6 10 h8 l-6 12"/>
+                  <text class="sch-texte sch-cycle__temps sch-cycle__temps--1" x="160" y="16">1 · Admission</text>
+                  <text class="sch-texte sch-cycle__temps sch-cycle__temps--2" x="160" y="16">2 · Compression</text>
+                  <text class="sch-texte sch-cycle__temps sch-cycle__temps--3" x="160" y="16">3 · Combustion-détente</text>
+                  <text class="sch-texte sch-cycle__temps sch-cycle__temps--4" x="160" y="16">4 · Échappement</text>
+                  <text class="sch-texte sch-texte--petit" x="60" y="34">Admission</text><text class="sch-texte sch-texte--petit" x="262" y="34">Échappement</text>
+                </svg>
+              </figure>
+              <div class="fiche__mini3d" data-mini3d="cycle"></div>
+              <div class="fiche__colonnes">
+                <div>
+                  <h4>Symptômes de panne</h4>
+                  <ul>
+                    <li>Perte de compression : ratés, ralenti irrégulier, manque de puissance.</li>
+                    <li>Segments ou soupapes fatigués : consommation d'huile, fumée bleue.</li>
+                  </ul>
+                </div>
+                <div>
+                  <h4>Mes valeurs mesurées</h4>
+                  <ul class="fiche__valeurs">
+                    <li>Ralenti : <strong>749 tr/min</strong> (V519, 08/10/2026) et <strong>752 tr/min</strong> (V519, relevé non daté).</li>
+                    <li>Le calcul du duty cycle s'appuie sur ce cycle : un injecteur s'ouvre une fois tous les 2 tours, d'où le diviseur 1200 de la formule.</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <!-- 02 Admission -->
+          <article class="fiche" id="fiche-admission" data-fiche="admission" data-revele>
+            <p class="fiche__numero">02</p>
+            <h3>L'admission</h3>
+            <p class="fiche__role">Amener au moteur un air propre et mesuré : filtre, débitmètre (MAF), manchon, papillon, collecteur avec DISA, et l'ICV qui dose l'air du ralenti en contournant le papillon. Chaque entrée d'air non mesurée fausse le dosage.</p>
+            <button class="fiche__ouvrir" type="button">Ouvrir la fiche <svg class="icone" aria-hidden="true"><use href="#i-fleche"/></svg></button>
+            <div class="fiche__detail">
+              <figure class="fiche__schema" data-schema-copie="sch-admission"></figure>
+              <div class="fiche__mini3d" data-mini3d="admission"></div>
+              <div class="fiche__colonnes">
+                <div>
+                  <h4>Symptômes de panne</h4>
+                  <ul>
+                    <li>Prise d'air (manchon fendu, joint DISA, bouchons) : mélange pauvre, codes P0171 / P0174.</li>
+                    <li>ICV encrassée : chutes de ralenti sous charge — <strong>environ 150 tr/min en butée de direction</strong> sur ma voiture.</li>
+                    <li>Débitmètre vieilli : sous-lecture à fort débit, corrections carburant positives.</li>
+                  </ul>
+                </div>
+                <div>
+                  <h4>Mes valeurs mesurées</h4>
+                  <ul class="fiche__valeurs">
+                    <li>Débit au ralenti : <strong>3,0 g/s</strong> (0,398 lb/min, V519) — normal.</li>
+                    <li>Pleine charge en 3<sup>e</sup> : <strong>121 g/s</strong> contre 129 à 140 g/s de référence (08/10/2026).</li>
+                    <li>Test fumée du 14/10/2026 : <strong>fuite au manchon d'admission</strong>.</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <!-- 03 Carburant -->
+          <article class="fiche" id="fiche-carburant" data-fiche="carburant" data-revele>
+            <p class="fiche__numero">03</p>
+            <h3>Le carburant</h3>
+            <p class="fiche__role">La pompe immergée débite en excès, le filtre retient les impuretés, son régulateur intégré fixe 3,5 bar et renvoie le surplus. La rampe alimente six injecteurs que le calculateur ouvre au bon moment.</p>
+            <button class="fiche__ouvrir" type="button">Ouvrir la fiche <svg class="icone" aria-hidden="true"><use href="#i-fleche"/></svg></button>
+            <div class="fiche__detail">
+              <figure class="fiche__schema">
+                <svg class="sch sch-carburant" viewBox="0 0 320 200" role="img" aria-label="Schéma animé du circuit carburant : la pompe envoie l'essence au filtre-régulateur, le surplus repart au réservoir, la rampe alimente les six injecteurs qui pulvérisent tour à tour">
+                  <rect class="sch-piece" x="14" y="120" width="70" height="60" rx="8"/><text class="sch-texte sch-texte--petit" x="49" y="194">Réservoir</text>
+                  <circle class="sch-piece sch-piece--accent" cx="49" cy="150" r="14"/><text class="sch-texte sch-texte--petit" x="49" y="154" fill="#fff">P</text>
+                  <path class="sch-conduit" d="M49 136 V90 H120"/><path class="sch-flux" d="M49 136 V90 H120"/>
+                  <rect class="sch-piece" x="120" y="76" width="50" height="28" rx="6"/><text class="sch-texte sch-texte--petit" x="145" y="68">Filtre + régul.</text>
+                  <path class="sch-conduit" d="M145 104 V160 H84"/><path class="sch-flux sch-flux--retour" d="M145 104 V160 H84"/><text class="sch-texte sch-texte--petit" x="118" y="176">retour</text>
+                  <path class="sch-conduit" d="M170 90 H200 V40 H300"/><path class="sch-flux" d="M170 90 H200 V40 H300"/>
+                  <text class="sch-texte sch-texte--petit" x="250" y="30">Rampe · 3,5 bar</text>
+                  <g class="sch-injecteurs">
+                    <g><rect x="206" y="44" width="10" height="20" rx="2"/><path d="M211 68 l-5 12 h10 z"/></g>
+                    <g><rect x="222" y="44" width="10" height="20" rx="2"/><path d="M227 68 l-5 12 h10 z"/></g>
+                    <g><rect x="238" y="44" width="10" height="20" rx="2"/><path d="M243 68 l-5 12 h10 z"/></g>
+                    <g><rect x="254" y="44" width="10" height="20" rx="2"/><path d="M259 68 l-5 12 h10 z"/></g>
+                    <g><rect x="270" y="44" width="10" height="20" rx="2"/><path d="M275 68 l-5 12 h10 z"/></g>
+                    <g><rect x="286" y="44" width="10" height="20" rx="2"/><path d="M291 68 l-5 12 h10 z"/></g>
+                  </g>
+                </svg>
+              </figure>
+              <div class="fiche__mini3d" data-mini3d="carburant"></div>
+              <div class="fiche__colonnes">
+                <div>
+                  <h4>Symptômes de panne</h4>
+                  <ul>
+                    <li>Pompe fatiguée : démarrages difficiles, plusieurs coups de clé, perte de puissance en charge.</li>
+                    <li>Injecteur qui goutte : odeur d'essence au démarrage, ralenti instable.</li>
+                    <li>Régulateur défaillant : pression instable ou qui chute en charge.</li>
+                  </ul>
+                </div>
+                <div>
+                  <h4>Mes valeurs mesurées</h4>
+                  <ul class="fiche__valeurs">
+                    <li>Duty cycle : <strong>42 %</strong> à 4 646 tr/min (10,90 ms d'ouverture), maximum observé sur 109 points (08/10/2026).</li>
+                    <li>Projection E85 : environ 59 %, sous le seuil de 85 %.</li>
+                    <li>Pompe d'origine : pression de rampe trop basse au kit manomètre — remplacée par l'AEM 340 L/h le 03/10/2026.</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <!-- 04 Allumage -->
+          <article class="fiche" id="fiche-allumage" data-fiche="allumage" data-revele>
+            <p class="fiche__numero">04</p>
+            <h3>L'allumage</h3>
+            <p class="fiche__role">Une bobine crayon par cylindre, posée directement sur la bougie. Le calculateur décide de l'instant exact de l'étincelle (l'avance) selon le régime, la charge et les capteurs de cliquetis.</p>
+            <button class="fiche__ouvrir" type="button">Ouvrir la fiche <svg class="icone" aria-hidden="true"><use href="#i-fleche"/></svg></button>
+            <div class="fiche__detail">
+              <figure class="fiche__schema">
+                <svg class="sch sch-allumage" viewBox="0 0 320 200" role="img" aria-label="Schéma animé de l'allumage : six bobines s'allument tour à tour dans l'ordre 1-5-3-6-2-4">
+                  <g class="sch-bobines">
+                    <g class="sch-bobine sch-bobine--1"><rect x="28" y="40" width="26" height="70" rx="5"/><path d="M41 110 V140"/><path class="sch-etincelle" d="M41 144 l-5 9 h8 l-5 10"/><text x="41" y="30">1</text></g>
+                    <g class="sch-bobine sch-bobine--2"><rect x="74" y="40" width="26" height="70" rx="5"/><path d="M87 110 V140"/><path class="sch-etincelle" d="M87 144 l-5 9 h8 l-5 10"/><text x="87" y="30">2</text></g>
+                    <g class="sch-bobine sch-bobine--3"><rect x="120" y="40" width="26" height="70" rx="5"/><path d="M133 110 V140"/><path class="sch-etincelle" d="M133 144 l-5 9 h8 l-5 10"/><text x="133" y="30">3</text></g>
+                    <g class="sch-bobine sch-bobine--4"><rect x="166" y="40" width="26" height="70" rx="5"/><path d="M179 110 V140"/><path class="sch-etincelle" d="M179 144 l-5 9 h8 l-5 10"/><text x="179" y="30">4</text></g>
+                    <g class="sch-bobine sch-bobine--5"><rect x="212" y="40" width="26" height="70" rx="5"/><path d="M225 110 V140"/><path class="sch-etincelle" d="M225 144 l-5 9 h8 l-5 10"/><text x="225" y="30">5</text></g>
+                    <g class="sch-bobine sch-bobine--6"><rect x="258" y="40" width="26" height="70" rx="5"/><path d="M271 110 V140"/><path class="sch-etincelle" d="M271 144 l-5 9 h8 l-5 10"/><text x="271" y="30">6</text></g>
+                  </g>
+                  <text class="sch-texte" x="160" y="190">Ordre d'allumage : 1 · 5 · 3 · 6 · 2 · 4</text>
+                </svg>
+              </figure>
+              <div class="fiche__mini3d" data-mini3d="allumage"></div>
+              <div class="fiche__colonnes">
+                <div>
+                  <h4>Symptômes de panne</h4>
+                  <ul>
+                    <li>Bobine défaillante : raté sur un cylindre, moteur qui tremble, voyant moteur.</li>
+                    <li>Bougies usées : démarrage difficile, consommation en hausse.</li>
+                  </ul>
+                </div>
+                <div>
+                  <h4>Mes valeurs mesurées</h4>
+                  <ul class="fiche__valeurs">
+                    <li>Avance au ralenti : <strong>2°</strong> (SPARKADV, V519, relevé non daté, 752 tr/min).</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <!-- 05 Distribution & double VANOS -->
+          <article class="fiche" id="fiche-distribution" data-fiche="distribution" data-revele>
+            <p class="fiche__numero">05</p>
+            <h3>Distribution &amp; double VANOS</h3>
+            <p class="fiche__role">Une chaîne entraîne les deux arbres à cames (admission et échappement, 24 soupapes). Le double VANOS décale chacun de quelques degrés pour plus de couple en bas et de puissance en haut, piloté en boucle fermée : consigne contre position réelle.</p>
+            <button class="fiche__ouvrir" type="button">Ouvrir la fiche <svg class="icone" aria-hidden="true"><use href="#i-fleche"/></svg></button>
+            <div class="fiche__detail">
+              <figure class="fiche__schema">
+                <!-- Schéma A5 : consigne et réel qui se tracent et se superposent (tracé par e39.js) -->
+                <svg class="sch sch-vanos-traces" viewBox="0 0 320 200" role="img" aria-label="Animation : la consigne VANOS échappement (pointillés) et la position réelle (trait plein) se tracent et se superposent, sur le roulage du 08/10/2026" data-traces-vanos></svg>
+                <figcaption>VANOS échappement, 08/10/2026 : la position réelle (trait plein) suit la consigne (pointillés).</figcaption>
+              </figure>
+              <div class="fiche__mini3d" data-mini3d="distribution"></div>
+              <div class="fiche__colonnes">
+                <div>
+                  <h4>Symptômes de panne</h4>
+                  <ul>
+                    <li>Joints de VANOS durcis : suivi paresseux, perte de couple à bas régime.</li>
+                    <li>Capteur d'arbre à cames contaminé par l'huile : signal qui décroche, VANOS en mode dégradé.</li>
+                  </ul>
+                </div>
+                <div>
+                  <h4>Mes valeurs mesurées</h4>
+                  <ul class="fiche__valeurs">
+                    <li>INPA, échappement : réel <strong>−105,38°</strong> pour une consigne de <strong>−105,00°</strong>.</li>
+                    <li>Log du 08/10/2026 (109 points) : la position réelle suit la consigne des deux côtés — VANOS sain.</li>
+                    <li>Capteur d'échappement remplacé : défaut INPA « 18 NW_A – kein Signal », sporadique, fréquence 255.</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <!-- 06 Échappement & dépollution -->
+          <article class="fiche" id="fiche-echappement" data-fiche="echappement" data-revele>
+            <p class="fiche__numero">06</p>
+            <h3>Échappement &amp; dépollution</h3>
+            <p class="fiche__role">Deux collecteurs (cylindres 1-3 et 4-6), deux catalyseurs et quatre sondes lambda : deux avant les catalyseurs pour régler le mélange, deux après pour surveiller les catalyseurs.</p>
+            <button class="fiche__ouvrir" type="button">Ouvrir la fiche <svg class="icone" aria-hidden="true"><use href="#i-fleche"/></svg></button>
+            <div class="fiche__detail">
+              <figure class="fiche__schema">
+                <svg class="sch sch-echappement" viewBox="0 0 320 200" role="img" aria-label="Schéma animé de l'échappement : les gaz des cylindres 1 à 3 et 4 à 6 traversent chacun un catalyseur, encadré par une sonde lambda amont et une sonde aval">
+                  <path class="sch-conduit" d="M20 60 H260 M20 140 H260"/>
+                  <path class="sch-flux sch-flux--gaz" d="M20 60 H260 M20 140 H260"/>
+                  <text class="sch-texte sch-texte--petit" x="40" y="44">Cyl. 1-3</text><text class="sch-texte sch-texte--petit" x="40" y="168">Cyl. 4-6</text>
+                  <rect class="sch-piece" x="130" y="42" width="60" height="36" rx="10"/><text class="sch-texte sch-texte--petit" x="160" y="64">Cata</text>
+                  <rect class="sch-piece" x="130" y="122" width="60" height="36" rx="10"/><text class="sch-texte sch-texte--petit" x="160" y="144">Cata</text>
+                  <g class="sch-sonde sch-sonde--amont"><circle cx="105" cy="60" r="7"/><circle cx="105" cy="140" r="7"/></g>
+                  <g class="sch-sonde sch-sonde--aval"><circle cx="220" cy="60" r="7"/><circle cx="220" cy="140" r="7"/></g>
+                  <text class="sch-texte sch-texte--petit" x="105" y="100">amont</text><text class="sch-texte sch-texte--petit" x="220" y="100">aval</text>
+                  <text class="sch-texte sch-texte--petit" x="290" y="104">→ sortie</text>
+                </svg>
+              </figure>
+              <div class="fiche__mini3d" data-mini3d="echappement"></div>
+              <div class="fiche__colonnes">
+                <div>
+                  <h4>Symptômes de panne</h4>
+                  <ul>
+                    <li>Catalyseur colmaté : perte de puissance en haut, chaleur sous la caisse.</li>
+                    <li>Sonde aval qui recopie la sonde amont : catalyseur usé, code d'efficacité.</li>
+                    <li>Fuite avant catalyseur : odeur de gaz, mesures lambda faussées.</li>
+                  </ul>
+                </div>
+                <div>
+                  <h4>Mes valeurs mesurées</h4>
+                  <ul class="fiche__valeurs">
+                    <li>Log du 08/10/2026 : les sondes aval oscillent presque autant que les sondes amont (écart-type ~0,32 V contre ~0,35 V). Une lecture ponctuelle au V519 (non datée) donnait ~0,435 V.</li>
+                    <li>Codes lus : P0171 et P0174 (mélange pauvre).</li>
+                    <li>Aucun code d'efficacité catalyseur lu.</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <!-- 07 Refroidissement -->
+          <article class="fiche" id="fiche-refroidissement" data-fiche="refroidissement" data-revele>
+            <p class="fiche__numero">07</p>
+            <h3>Le refroidissement</h3>
+            <p class="fiche__role">La pompe à eau fait circuler le liquide, le thermostat retient le moteur en petit circuit tant qu'il est froid, le radiateur évacue la chaleur, le vase absorbe la dilatation et le visco-coupleur pilote le ventilateur.</p>
+            <button class="fiche__ouvrir" type="button">Ouvrir la fiche <svg class="icone" aria-hidden="true"><use href="#i-fleche"/></svg></button>
+            <div class="fiche__detail">
+              <figure class="fiche__schema" data-schema-copie="sch-refroidissement"></figure>
+              <div class="fiche__mini3d" data-mini3d="refroidissement"></div>
+              <div class="fiche__colonnes">
+                <div>
+                  <h4>Symptômes de panne</h4>
+                  <ul>
+                    <li>Radiateur qui fuit : air dans le circuit, surpression, liquide qui sort par le bouchon.</li>
+                    <li>Thermostat bloqué ouvert : moteur qui ne chauffe pas ; bloqué fermé : surchauffe.</li>
+                    <li>Vase d'expansion fissuré : point faible connu de l'E39.</li>
+                  </ul>
+                </div>
+                <div>
+                  <h4>Mes valeurs mesurées</h4>
+                  <ul class="fiche__valeurs">
+                    <li>Liquide : <strong>83 à 98 °C</strong> sur le roulage du 08/10/2026 ; <strong>90 °C</strong> au V519.</li>
+                    <li>02/10/2026 : liquide qui sort par un bouchon 1,4 bar neuf — surpression réelle.</li>
+                    <li>Kit Nissens / Meyle / Mahle monté le 18/10/2026.</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <!-- 08 Lubrification -->
+          <article class="fiche" id="fiche-lubrification" data-fiche="lubrification" data-revele>
+            <p class="fiche__numero">08</p>
+            <h3>La lubrification</h3>
+            <p class="fiche__role">La pompe à huile aspire dans le carter à travers la crépine, pousse l'huile dans le filtre puis dans les galeries : vilebrequin, bielles, arbres à cames, VANOS. Un capteur surveille le niveau.</p>
+            <button class="fiche__ouvrir" type="button">Ouvrir la fiche <svg class="icone" aria-hidden="true"><use href="#i-fleche"/></svg></button>
+            <div class="fiche__detail">
+              <figure class="fiche__schema">
+                <svg class="sch sch-lubrification" viewBox="0 0 320 200" role="img" aria-label="Schéma animé de la lubrification : la pompe aspire l'huile du carter par la crépine, la pousse dans le filtre puis vers le vilebrequin et les arbres à cames, avant qu'elle ne retombe dans le carter">
+                  <path class="sch-piece" d="M40 140 H280 V180 Q160 196 40 180 Z"/>
+                  <path class="sch-huile" d="M44 160 H276 V178 Q160 192 44 178 Z"/>
+                  <text class="sch-texte sch-texte--petit" x="250" y="152">Carter</text>
+                  <path class="sch-conduit" d="M90 172 V120 H150 V60 H240 M150 90 H230"/>
+                  <path class="sch-flux sch-flux--huile" d="M90 172 V120 H150 V60 H240 M150 90 H230"/>
+                  <circle class="sch-piece" cx="90" cy="172" r="6"/><text class="sch-texte sch-texte--petit" x="68" y="194">Crépine</text>
+                  <circle class="sch-piece sch-piece--accent" cx="90" cy="120" r="12"/><text class="sch-texte sch-texte--petit" x="56" y="108">Pompe</text>
+                  <rect class="sch-piece" x="138" y="100" width="24" height="30" rx="5"/><text class="sch-texte sch-texte--petit" x="186" y="118">Filtre</text>
+                  <text class="sch-texte sch-texte--petit" x="270" y="64">Arbres à cames</text><text class="sch-texte sch-texte--petit" x="262" y="94">Vilebrequin</text>
+                  <path class="sch-gouttes" d="M240 70 v40 M230 100 v40"/>
+                </svg>
+              </figure>
+              <div class="fiche__mini3d" data-mini3d="lubrification"></div>
+              <div class="fiche__colonnes">
+                <div>
+                  <h4>Symptômes de panne</h4>
+                  <ul>
+                    <li>Pression d'huile faible : voyant d'huile, bruits de distribution à froid.</li>
+                    <li>Niveau qui baisse : fuite (joint de carter, filtre) ou consommation (souvent le CCV).</li>
+                  </ul>
+                </div>
+                <div>
+                  <h4>Mes valeurs mesurées</h4>
+                  <ul class="fiche__valeurs">
+                    <li>Huile (valeur modélisée par le calculateur) : <strong>99 à 102 °C</strong> sur le roulage du 08/10/2026.</li>
+                    <li>Vidange effectuée à <strong>164 292 km</strong>.</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <!-- 09 CCV -->
+          <article class="fiche" id="fiche-ccv" data-fiche="ccv" data-revele>
+            <p class="fiche__numero">09</p>
+            <h3>Le CCV (reniflard)</h3>
+            <p class="fiche__role">Une partie des gaz de combustion passe sous les pistons (blow-by). Le CCV les aspire, sépare l'huile qu'ils transportent, la renvoie au carter et réinjecte les gaz dans l'admission pour qu'ils soient brûlés.</p>
+            <button class="fiche__ouvrir" type="button">Ouvrir la fiche <svg class="icone" aria-hidden="true"><use href="#i-fleche"/></svg></button>
+            <div class="fiche__detail">
+              <figure class="fiche__schema">
+                <svg class="sch sch-ccv" viewBox="0 0 320 200" role="img" aria-label="Schéma animé du CCV : les gaz du carter montent vers le séparateur, l'huile retombe vers le carter et les gaz repartent vers l'admission">
+                  <rect class="sch-piece" x="30" y="110" width="110" height="70" rx="10"/><text class="sch-texte sch-texte--petit" x="85" y="150">Carter</text>
+                  <path class="sch-conduit" d="M110 110 V60 H170"/><path class="sch-flux sch-flux--gaz" d="M110 110 V60 H170"/>
+                  <circle class="sch-piece sch-piece--accent" cx="190" cy="60" r="22"/>
+                  <path class="sch-ccv__spirale" d="M190 46 a14 14 0 1 1 -14 14 a9 9 0 1 1 9 9"/>
+                  <text class="sch-texte sch-texte--petit" x="190" y="26">Séparateur</text>
+                  <path class="sch-conduit" d="M212 60 H290"/><path class="sch-flux sch-flux--gaz" d="M212 60 H290"/><text class="sch-texte sch-texte--petit" x="262" y="48">→ admission</text>
+                  <path class="sch-conduit" d="M190 82 V150 H140"/><path class="sch-flux sch-flux--huile" d="M190 82 V150 H140"/><text class="sch-texte sch-texte--petit" x="232" y="130">huile → carter</text>
+                </svg>
+              </figure>
+              <div class="fiche__mini3d" data-mini3d="ccv"></div>
+              <div class="fiche__colonnes">
+                <div>
+                  <h4>Symptômes de panne</h4>
+                  <ul>
+                    <li>Suspect n°1 de la consommation d'huile sur le M54 : séparateur colmaté, huile aspirée par l'admission.</li>
+                    <li>Durites cassantes et poreuses : prise d'air discrète, mélange pauvre.</li>
+                    <li>Surpression dans le carter : fuites aux joints, fumée bleue.</li>
+                  </ul>
+                </div>
+                <div>
+                  <h4>Mes valeurs mesurées</h4>
+                  <ul class="fiche__valeurs">
+                    <li>Pas de mesure spécifique : les durites du CCV faisaient partie des zones à inspecter au test fumée du 14/10/2026, où la fuite trouvée était au manchon d'admission.</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <!-- 10 Gestion électronique -->
+          <article class="fiche" id="fiche-gestion" data-fiche="gestion" data-revele>
+            <p class="fiche__numero">10</p>
+            <h3>La gestion électronique</h3>
+            <p class="fiche__role">Le calculateur Siemens MS43 (DME) lit en permanence ses capteurs — vilebrequin (PMH), arbres à cames, cliquetis, températures, débitmètre, sondes lambda — et commande injecteurs, bobines, VANOS et papillon.</p>
+            <button class="fiche__ouvrir" type="button">Ouvrir la fiche <svg class="icone" aria-hidden="true"><use href="#i-fleche"/></svg></button>
+            <div class="fiche__detail">
+              <figure class="fiche__schema">
+                <svg class="sch sch-gestion" viewBox="0 0 320 200" role="img" aria-label="Schéma animé de la gestion moteur : les signaux des capteurs convergent vers le calculateur MS43, qui envoie ses ordres aux actionneurs">
+                  <rect class="sch-piece sch-piece--accent" x="125" y="72" width="70" height="56" rx="10"/><text class="sch-texte" x="160" y="104" fill="#fff">MS43</text>
+                  <g class="sch-texte sch-texte--petit"><text x="40" y="34">PMH</text><text x="40" y="74">Arbres à cames</text><text x="40" y="114">Cliquetis</text><text x="40" y="154">Températures</text><text x="40" y="190">MAF · lambda</text></g>
+                  <path class="sch-conduit" d="M78 30 L125 82 M88 70 L125 92 M70 110 L125 102 M84 150 L125 112 M76 186 L125 122"/>
+                  <path class="sch-flux sch-flux--signal" d="M78 30 L125 82 M88 70 L125 92 M70 110 L125 102 M84 150 L125 112 M76 186 L125 122"/>
+                  <g class="sch-texte sch-texte--petit"><text x="280" y="44">Injecteurs</text><text x="280" y="84">Bobines</text><text x="280" y="124">VANOS</text><text x="280" y="164">Papillon</text></g>
+                  <path class="sch-conduit" d="M195 82 L246 40 M195 94 L246 80 M195 106 L246 120 M195 118 L246 160"/>
+                  <path class="sch-flux sch-flux--signal" d="M195 82 L246 40 M195 94 L246 80 M195 106 L246 120 M195 118 L246 160"/>
+                </svg>
+              </figure>
+              <div class="fiche__mini3d" data-mini3d="gestion"></div>
+              <div class="fiche__colonnes">
+                <div>
+                  <h4>Symptômes de panne</h4>
+                  <ul>
+                    <li>Capteur qui décroche : code défaut, mode dégradé, perte de souplesse.</li>
+                    <li>Mesure faussée (débitmètre, sonde) : le calculateur corrige à tort, corrections carburant qui dérivent.</li>
+                  </ul>
+                </div>
+                <div>
+                  <h4>Mes valeurs mesurées</h4>
+                  <ul class="fiche__valeurs">
+                    <li>Log complet MS430DS0 d'environ 110 points le 08/10/2026 ; lectures INPA par câble K+DCAN.</li>
+                    <li>LTFT : +7,0 / +4,7 % (08/10) → +3,1 / 0,0 % (13/10) → <strong>0 / 0 %</strong> après intervention.</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </article>
+        </div>
+
+        <!-- Systèmes détaillés -->
+        <h3 class="documentation__sous-titre" data-revele>Systèmes détaillés</h3>
+        <div class="fiches fiches--approfondies" data-cascade>
+
+          <!-- D1 VANOS -->
+          <article class="fiche fiche--approfondie" id="fiche-vanos" data-fiche="vanos" data-revele>
+            <p class="fiche__numero">Deep dive · 01</p>
+            <h3>Le VANOS</h3>
+            <p class="fiche__role">Un piston poussé par la pression d'huile glisse sur des cannelures hélicoïdales : en avançant, il fait tourner l'arbre à cames de quelques degrés par rapport à son pignon. Une électrovanne pilotée par le calculateur dose l'huile pour régler l'avance en continu.</p>
+            <button class="fiche__ouvrir" type="button">Ouvrir la fiche <svg class="icone" aria-hidden="true"><use href="#i-fleche"/></svg></button>
+            <div class="fiche__detail">
+              <figure class="fiche__schema">
+                <svg class="sch sch-vanos" viewBox="0 0 320 200" role="img" aria-label="Schéma animé du VANOS : la pression d'huile pousse un piston à cannelures hélicoïdales ; en avançant, il fait pivoter l'arbre à cames de quelques degrés par rapport à son pignon, dont le repère reste fixe">
+                  <!-- Arrivée d'huile -->
+                  <path class="sch-conduit" d="M8 100 H44"/><path class="sch-flux sch-flux--huile" d="M8 100 H44"/>
+                  <text class="sch-texte sch-texte--petit" x="26" y="88">huile</text>
+                  <!-- Corps du VANOS -->
+                  <rect class="sch-piece" x="44" y="62" width="140" height="76" rx="10"/>
+                  <!-- Piston à cannelures hélicoïdales (glisse vers la droite) -->
+                  <g class="sch-vanos__piston">
+                    <rect class="sch-piece sch-piece--accent" x="50" y="70" width="46" height="60" rx="6"/>
+                    <path class="sch-vanos__helices" d="M56 72 l12 56 M68 72 l12 56 M80 72 l12 56"/>
+                  </g>
+                  <!-- Arbre qui relie le VANOS à la came -->
+                  <path class="sch-trait" d="M184 100 H206"/>
+                  <!-- Pignon entraîné par la chaîne : fixe, avec son repère -->
+                  <circle class="sch-vanos__pignon" cx="250" cy="100" r="44"/>
+                  <path class="sch-vanos__repere" d="M250 50 V60"/>
+                  <!-- Arbre à cames : la came pivote par rapport au repère -->
+                  <g class="sch-vanos__rotor">
+                    <path class="sch-piece" d="M250 64 C272 64 282 84 282 102 C282 124 268 136 250 136 C232 136 218 124 218 102 C218 84 228 64 250 64 Z"/>
+                    <path class="sch-vanos__marque" d="M250 64 V80"/>
+                    <circle class="sch-axe" cx="250" cy="100" r="5"/>
+                  </g>
+                  <text class="sch-texte sch-texte--petit" x="114" y="158">Piston hélicoïdal</text>
+                  <text class="sch-texte sch-texte--petit" x="250" y="164">Arbre à cames</text>
+                  <text class="sch-texte sch-texte--petit" x="250" y="40">repère du pignon</text>
+                  <text class="sch-texte sch-texte--petit sch-vanos__avance" x="250" y="182">came en avance</text>
+                </svg>
+              </figure>
+              <div class="fiche__mini3d" data-mini3d="vanos"></div>
+              <h4>Pourquoi c'est malin</h4>
+              <p class="fiche__malin">Un simple déplacement en ligne droite, converti en rotation par des cannelures en spirale, suffit à décaler un arbre à cames qui tourne à plein régime.</p>
+              <ul class="fiche__valeurs">
+                <li>Sur ma voiture : suivi consigne / réel sain des deux côtés (log du 08/10/2026).</li>
+              </ul>
+            </div>
+          </article>
+
+          <!-- D2 DISA -->
+          <article class="fiche fiche--approfondie" id="fiche-disa" data-fiche="disa" data-revele>
+            <p class="fiche__numero">Deep dive · 02</p>
+            <h3>La DISA</h3>
+            <p class="fiche__role">Un volet dans le collecteur d'admission change la longueur du chemin de l'air. Fermé, les conduits longs renforcent les pulsations d'air et remplissent mieux les cylindres à bas régime ; ouvert vers 4 000 tr/min, le chemin court favorise la puissance.</p>
+            <button class="fiche__ouvrir" type="button">Ouvrir la fiche <svg class="icone" aria-hidden="true"><use href="#i-fleche"/></svg></button>
+            <div class="fiche__detail">
+              <figure class="fiche__schema" data-schema-copie="sch-disa"></figure>
+              <div class="fiche__mini3d" data-mini3d="disa"></div>
+              <h4>Pourquoi c'est malin</h4>
+              <p class="fiche__malin">Le moteur se sert des ondes de pression de l'air lui-même pour se gaver, avec une seule pièce mobile : le volet.</p>
+              <ul class="fiche__valeurs">
+                <li>Sur ma voiture : joint légèrement aplati (contrôle visuel et test de dépression), remplacé le 13/10/2026.</li>
+              </ul>
+            </div>
+          </article>
+
+          <!-- D3 Thermostat piloté -->
+          <article class="fiche fiche--approfondie" id="fiche-thermostat" data-fiche="thermostat" data-revele>
+            <p class="fiche__numero">Deep dive · 03</p>
+            <h3>Le thermostat piloté</h3>
+            <p class="fiche__role">Une capsule de cire ouvre le clapet quand le liquide est chaud. Sur le M54, une résistance chauffante commandée par le calculateur peut chauffer la cire pour ouvrir plus tôt : moteur plus frais en forte charge, plus chaud en croisière.</p>
+            <button class="fiche__ouvrir" type="button">Ouvrir la fiche <svg class="icone" aria-hidden="true"><use href="#i-fleche"/></svg></button>
+            <div class="fiche__detail">
+              <figure class="fiche__schema">
+                <svg class="sch sch-thermostat" viewBox="0 0 320 200" role="img" aria-label="Schéma animé du thermostat piloté : la résistance chauffante commandée par le calculateur chauffe la cire, qui se dilate et ouvre le clapet">
+                  <rect class="sch-piece" x="110" y="40" width="100" height="120" rx="12"/>
+                  <rect class="sch-thermostat__cire" x="140" y="90" width="40" height="50" rx="8"/>
+                  <path class="sch-thermostat__resistance" d="M146 130 l6 -8 l6 8 l6 -8 l6 8 l6 -8"/>
+                  <g class="sch-thermostat__clapet"><rect class="sch-piece sch-piece--accent" x="126" y="60" width="68" height="10" rx="4"/></g>
+                  <text class="sch-texte sch-texte--petit" x="160" y="30">Clapet → radiateur</text>
+                  <text class="sch-texte sch-texte--petit" x="250" y="120">Cire</text>
+                  <rect class="sch-piece" x="236" y="150" width="60" height="30" rx="6"/><text class="sch-texte sch-texte--petit" x="266" y="170">DME</text>
+                  <path class="sch-conduit" d="M236 165 H190 V140"/><path class="sch-flux sch-flux--signal" d="M236 165 H190 V140"/>
+                </svg>
+              </figure>
+              <div class="fiche__mini3d" data-mini3d="thermostat"></div>
+              <h4>Pourquoi c'est malin</h4>
+              <p class="fiche__malin">La cire suffit à faire le travail seule ; le calculateur n'intervient que pour anticiper — et si l'électronique lâche, le thermostat reste fonctionnel.</p>
+              <ul class="fiche__valeurs">
+                <li>Sur ma voiture : thermostat Mahle TM 13 97 neuf, monté le 18/10/2026.</li>
+              </ul>
+            </div>
+          </article>
+
+          <!-- D4 Pompe à air secondaire -->
+          <article class="fiche fiche--approfondie" id="fiche-air-secondaire" data-fiche="airsecondaire" data-revele>
+            <p class="fiche__numero">Deep dive · 04</p>
+            <h3>La pompe à air secondaire</h3>
+            <p class="fiche__role">Au démarrage à froid, une pompe électrique souffle de l'air frais juste derrière les soupapes d'échappement pendant les premières minutes. L'oxygène ajouté brûle les imbrûlés et réchauffe les catalyseurs plus vite.</p>
+            <button class="fiche__ouvrir" type="button">Ouvrir la fiche <svg class="icone" aria-hidden="true"><use href="#i-fleche"/></svg></button>
+            <div class="fiche__detail">
+              <figure class="fiche__schema">
+                <svg class="sch sch-air" viewBox="0 0 320 200" role="img" aria-label="Schéma animé de la pompe à air secondaire : moteur froid, la pompe envoie de l'air dans l'échappement ; une fois chaud, elle s'arrête">
+                  <circle class="sch-piece sch-piece--accent" cx="60" cy="60" r="22"/><text class="sch-texte sch-texte--petit" x="60" y="100">Pompe</text>
+                  <path class="sch-conduit" d="M82 60 H180 V110"/><path class="sch-flux sch-air__flux" d="M82 60 H180 V110"/>
+                  <rect class="sch-piece" x="150" y="40" width="40" height="30" rx="6"/><text class="sch-texte sch-texte--petit" x="170" y="30">Vanne</text>
+                  <path class="sch-conduit" d="M40 130 H300"/><path class="sch-flux sch-flux--gaz" d="M40 130 H300"/>
+                  <text class="sch-texte sch-texte--petit" x="80" y="152">Sorties d'échappement</text>
+                  <g class="sch-air__thermo" transform="translate(270 70)"><rect class="sch-piece" x="-6" y="-34" width="12" height="44" rx="6"/><rect class="sch-air__mercure" x="-3" y="-10" width="6" height="18" rx="3"/><circle class="sch-piece sch-piece--accent" r="9" cy="14"/></g>
+                  <text class="sch-texte sch-texte--petit sch-air__etat sch-air__etat--froid" x="200" y="186">Moteur froid : la pompe souffle</text>
+                  <text class="sch-texte sch-texte--petit sch-air__etat sch-air__etat--chaud" x="200" y="186">Moteur chaud : pompe à l'arrêt</text>
+                </svg>
+              </figure>
+              <div class="fiche__mini3d" data-mini3d="airsecondaire"></div>
+              <h4>Pourquoi c'est malin</h4>
+              <p class="fiche__malin">Elle transforme l'échappement en post-brûleur pendant les minutes les plus polluantes, celles où les catalyseurs sont encore froids.</p>
+              <ul class="fiche__valeurs">
+                <li>Sur ma voiture : pas de mesure spécifique.</li>
+              </ul>
+            </div>
+          </article>
+
+          <!-- D5 Sondes lambda -->
+          <article class="fiche fiche--approfondie" id="fiche-lambda" data-fiche="lambda" data-revele>
+            <p class="fiche__numero">Deep dive · 05</p>
+            <h3>Les sondes lambda</h3>
+            <p class="fiche__role">Elles mesurent l'oxygène restant dans les gaz. La sonde amont bascule sans cesse entre pauvre (~0,1 V) et riche (~0,9 V) : le calculateur corrige l'injection en boucle fermée. La sonde aval, derrière un catalyseur sain, reste stable.</p>
+            <button class="fiche__ouvrir" type="button">Ouvrir la fiche <svg class="icone" aria-hidden="true"><use href="#i-fleche"/></svg></button>
+            <div class="fiche__detail">
+              <figure class="fiche__schema">
+                <svg class="sch sch-lambda" viewBox="0 0 320 200" role="img" aria-label="Schéma animé des signaux lambda : la sonde amont oscille entre pauvre et riche, la sonde aval reste stable">
+                  <text class="sch-texte sch-texte--petit" x="40" y="22">Amont</text>
+                  <rect class="sch-cadre" x="20" y="30" width="280" height="60" rx="6"/>
+                  <g class="sch-lambda__defile"><path class="sch-lambda__signal" d="M20 80 L40 40 L60 80 L80 40 L100 80 L120 40 L140 80 L160 40 L180 80 L200 40 L220 80 L240 40 L260 80 L280 40 L300 80 L320 40 L340 80 L360 40 L380 80 L400 40 L420 80 L440 40 L460 80 L480 40 L500 80 L520 40 L540 80 L560 40 L580 80"/></g>
+                  <text class="sch-texte sch-texte--petit" x="40" y="116">Aval</text>
+                  <rect class="sch-cadre" x="20" y="124" width="280" height="60" rx="6"/>
+                  <path class="sch-lambda__signal sch-lambda__signal--aval" d="M20 156 C80 152 140 160 200 155 S280 156 300 155"/>
+                  <text class="sch-texte sch-texte--petit" x="270" y="146">~0,45 V</text>
+                </svg>
+              </figure>
+              <div class="fiche__mini3d" data-mini3d="lambda"></div>
+              <h4>Pourquoi c'est malin</h4>
+              <p class="fiche__malin">En comparant la sonde avant et la sonde après, le calculateur juge l'état du catalyseur en continu, sans aucun démontage.</p>
+              <ul class="fiche__valeurs">
+                <li>Sur ma voiture (log du 08/10/2026) : les sondes aval oscillent presque autant que les amont — écart-type ~0,32 V contre ~0,35 V. Les relevés sont présentés tels quels, sans conclusion sur l'état des catalyseurs.</li>
+              </ul>
+            </div>
+          </article>
+
+          <!-- D6 Papillon MDK -->
+          <article class="fiche fiche--approfondie" id="fiche-mdk" data-fiche="mdk" data-revele>
+            <p class="fiche__numero">Deep dive · 06</p>
+            <h3>Le papillon électronique MDK</h3>
+            <p class="fiche__role">Pas de câble entre la pédale et le papillon : la pédale envoie sa position au calculateur, qui commande un moteur électrique sur le papillon (drive-by-wire). Pédale et papillon ont chacun deux capteurs de position.</p>
+            <button class="fiche__ouvrir" type="button">Ouvrir la fiche <svg class="icone" aria-hidden="true"><use href="#i-fleche"/></svg></button>
+            <div class="fiche__detail">
+              <figure class="fiche__schema">
+                <svg class="sch sch-mdk" viewBox="0 0 320 200" role="img" aria-label="Schéma animé du papillon électronique : la pédale envoie deux signaux au calculateur, qui fait pivoter le papillon par un moteur électrique">
+                  <g class="sch-mdk__pedale" transform="translate(50 150)"><rect class="sch-piece" x="-8" y="-60" width="16" height="64" rx="5"/></g>
+                  <text class="sch-texte sch-texte--petit" x="50" y="180">Pédale</text>
+                  <path class="sch-conduit" d="M62 110 H130 M62 124 H130"/><path class="sch-flux sch-flux--signal" d="M62 110 H130 M62 124 H130"/>
+                  <rect class="sch-piece sch-piece--accent" x="130" y="96" width="60" height="40" rx="8"/><text class="sch-texte sch-texte--petit" x="160" y="120" fill="#fff">DME</text>
+                  <path class="sch-conduit" d="M190 116 H226"/><path class="sch-flux sch-flux--signal" d="M190 116 H226"/>
+                  <circle class="sch-piece" cx="260" cy="116" r="32"/>
+                  <g class="sch-mdk__papillon" transform="translate(260 116)"><rect class="sch-piece sch-piece--accent" x="-3" y="-30" width="6" height="60" rx="3"/></g>
+                  <text class="sch-texte sch-texte--petit" x="260" y="170">Papillon</text>
+                  <text class="sch-texte sch-texte--petit" x="96" y="96">2 capteurs</text>
+                </svg>
+              </figure>
+              <div class="fiche__mini3d" data-mini3d="mdk"></div>
+              <h4>Pourquoi c'est malin</h4>
+              <p class="fiche__malin">Les capteurs en double se surveillent l'un l'autre : à la moindre incohérence, le calculateur passe en mode secours plutôt que d'ouvrir le papillon à tort.</p>
+              <ul class="fiche__valeurs">
+                <li>Sur ma voiture : pas de mesure spécifique.</li>
+              </ul>
+            </div>
+          </article>
+
+          <!-- D7 Gicleurs d'huile -->
+          <article class="fiche fiche--approfondie" id="fiche-gicleurs" data-fiche="gicleurs" data-revele>
+            <p class="fiche__numero">Deep dive · 07</p>
+            <h3>Les gicleurs d'huile sous pistons</h3>
+            <p class="fiche__role">De petits gicleurs projettent un jet d'huile sous chaque piston. L'huile évacue la chaleur de la tête du piston, la pièce la plus sollicitée thermiquement du moteur. <span class="a-preciser">[À VÉRIFIER : présence de gicleurs sur le M54B22]</span></p>
+            <button class="fiche__ouvrir" type="button">Ouvrir la fiche <svg class="icone" aria-hidden="true"><use href="#i-fleche"/></svg></button>
+            <div class="fiche__detail">
+              <figure class="fiche__schema">
+                <svg class="sch sch-gicleurs" viewBox="0 0 320 200" role="img" aria-label="Schéma animé d'un gicleur : un jet d'huile monte sous le piston qui monte et descend">
+                  <rect class="sch-piece" x="100" y="20" width="120" height="160" rx="6"/>
+                  <g class="sch-gicleurs__piston"><rect class="sch-piece sch-piece--accent" x="104" y="50" width="112" height="40" rx="5"/></g>
+                  <path class="sch-piece" d="M60 190 H90 L120 170"/>
+                  <path class="sch-gicleurs__jet" d="M120 170 Q150 130 160 96"/>
+                  <text class="sch-texte sch-texte--petit" x="60" y="178">Gicleur</text>
+                </svg>
+              </figure>
+              <div class="fiche__mini3d" data-mini3d="gicleurs"></div>
+              <h4>Pourquoi c'est malin</h4>
+              <p class="fiche__malin">Le circuit d'huile, déjà sous pression pour graisser, sert aussi de circuit de refroidissement là où l'eau ne peut pas aller.</p>
+              <ul class="fiche__valeurs">
+                <li>Sur ma voiture : pas de mesure spécifique.</li>
+              </ul>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══ Les relevés, en vrai ══ -->
+    <section class="section releves" id="releves" aria-labelledby="releves-titre">
+      <div class="conteneur">
+        <div class="entete-section">
+          <p class="surtitre" data-revele>Les relevés</p>
+          <h2 class="titre-section" id="releves-titre" data-mots>Les relevés, <em>en vrai.</em></h2>
+          <p class="releves__avant" data-revele><strong>Données AVANT réparation</strong> — roulage du 08/10/2026, log MS430DS0. Valeurs approximatives, relevées sur les graphiques du carnet de bord.</p>
+        </div>
+
+        <div class="graphiques">
+          <figure class="graphique graphique--large" data-revele>
+            <figcaption><h3>Corrections carburant</h3><p>Positives = le calculateur ajoute de l'essence pour compenser un mélange pauvre.</p></figcaption>
+            <div class="graphique__zone" data-graphique="corrections"></div>
+          </figure>
+          <figure class="graphique graphique--large" data-revele>
+            <figcaption><h3>VANOS : consigne contre réel</h3><p>Admission et échappement, en degrés vilebrequin : la position réelle suit la consigne.</p></figcaption>
+            <div class="graphique__zone" data-graphique="vanos"></div>
+          </figure>
+          <figure class="graphique graphique--large" data-revele>
+            <figcaption><h3>Sondes lambda</h3><p>Tension des 4 sondes, en volts (VKAT = avant catalyseur, NKAT = après). Les sondes amont basculent entre pauvre et riche ; sur ce log, les sondes aval oscillent presque autant (écart-type ~0,32 V contre ~0,35 V). Les courbes sont présentées telles quelles, sans conclusion sur l'état des catalyseurs.</p></figcaption>
+            <div class="graphique__zone" data-graphique="lambda"></div>
+          </figure>
+          <figure class="graphique graphique--large" data-revele>
+            <figcaption><h3>Températures</h3><p>Liquide de refroidissement, huile (modélisée) et air admis, en °C.</p></figcaption>
+            <div class="graphique__zone" data-graphique="temperatures"></div>
+          </figure>
+          <figure class="graphique graphique--photo" data-revele>
+            <img src="img/e39/v519-longft.jpg" width="640" height="722" loading="lazy" alt="Écran Donnée Flux de la valise V519 : LONGFT1 8,6 %, SHRTFT2 2,3 %, LONGFT2 6,3 %, régime 752 tr/min, avance 2°" />
+            <figcaption><h3>La valise V519</h3><p>Photo réelle : LONGFT1 +8,6 %, LONGFT2 +6,3 % au ralenti (752 tr/min). La dérive continuait, banc 1 devant.</p></figcaption>
+          </figure>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══ Galerie ══ -->
+    <section class="section galerie volet" id="galerie" data-volet aria-labelledby="galerie-titre">
+      <div class="conteneur">
+        <div class="entete-section">
+          <p class="surtitre" data-revele>Galerie</p>
+          <h2 class="titre-section" id="galerie-titre" data-mots>Ma <em>voiture.</em></h2>
+        </div>
+        <div class="galerie__grille" data-cascade>
+          <figure data-revele><img src="img/e39/e39-trois-quarts-avant-jour.jpg" width="900" height="1599" loading="lazy" alt="Trois quarts avant, de jour, sur un parking arboré" /></figure>
+          <figure data-revele><img src="img/e39/e39-coucher-soleil-cesson.jpg" width="900" height="1370" loading="lazy" alt="Le capot sous un coucher de soleil rouge et orange, sur un parking à Cesson" /></figure>
+          <figure data-revele><img src="img/e39/e39-roazhon-park-nuit.jpg" width="1126" height="1900" loading="lazy" alt="De face, de nuit, phares à anneaux jaunes allumés devant le Roazhon Park" /></figure>
+          <figure data-revele><img src="img/e39/e39-arriere-porte-ouverte.jpg" width="900" height="1599" loading="lazy" alt="Vue arrière, portière conducteur ouverte, sur une route bordée de grands arbres" /></figure>
+          <figure data-revele><img src="img/e39/e39-face-avant-jour.jpg" width="900" height="1599" loading="lazy" alt="Face avant de jour, sous un bouleau, plaque floutée" /></figure>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══ Suite ══ -->
+    <section class="section e39-suite" aria-label="Suite de la visite">
+      <div class="conteneur e39-suite__contenu" data-revele>
+        <p class="pied__signature">Informatique &amp; automobile<span>.</span></p>
+        <div class="hero__actions">
+          <a class="bouton magnetique" href="index.html"><span class="bouton__texte"><svg aria-hidden="true"><use href="#i-fleche-retour"/></svg>Retour au portfolio</span></a>
+          <a class="bouton bouton--clair magnetique" href="cv.html"><span class="bouton__texte">Voir mon CV</span></a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Fenêtre d'une fiche (remplie par e39.js) -->
+  <dialog class="fiche-dialog" id="fiche-dialog">
+    <button class="fiche-dialog__fermer" type="button" data-fermer aria-label="Fermer la fiche"><svg class="icone" aria-hidden="true"><use href="#i-fermer"/></svg></button>
+    <div class="fiche-dialog__contenu" id="fiche-dialog-contenu"></div>
+  </dialog>
+
+  <footer class="pied">
+    <div class="conteneur">
+      <div class="pied__haut">
+        <p class="pied__signature">Yanis Poulain<span>.</span></p>
+        <ul class="pied__liens">
+          <li><a href="index.html">Portfolio</a></li>
+          <li><a href="cv.html">CV</a></li>
+          <li><a href="https://github.com/Goldenyan0" target="_blank" rel="noopener">GitHub</a></li>
+          <li><a href="mailto:y.poulain04@gmail.com">E-mail</a></li>
+        </ul>
+      </div>
+      <div class="pied__bas">
+        <p>© 2026 Yanis Poulain</p>
+        <p>Rennes, France</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Librairies externes : Lenis (défilement fluide) et Three.js (moteur 3D, via l'importmap). -->
+  <script src="https://cdn.jsdelivr.net/npm/lenis@1.1.13/dist/lenis.min.js" defer></script>
+  <script src="js/commun.js" defer></script>
+  <script src="js/donnees-releves.js" defer></script>
+  <script src="js/e39.js" defer></script>
+  <script type="module" src="js/moteur-3d.js"></script>
+</body>
+</html>
