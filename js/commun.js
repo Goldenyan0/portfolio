@@ -325,6 +325,29 @@
 
 
   /* ------------------------------------------------------------------
+     Timelines ([data-timeline]) : le trait violet se dessine de haut en bas
+     avec le scroll (utilisées par l'accueil et le CV)
+     ------------------------------------------------------------------ */
+  function gererTimelines() {
+    const timelines = document.querySelectorAll('[data-timeline]');
+    if (!timelines.length) return;
+
+    if (mouvementReduit) {
+      timelines.forEach(function (t) { t.style.setProperty('--progression', '1'); });
+      return;
+    }
+
+    window.Site.surScroll(function () {
+      const repere = window.innerHeight * 0.7; // le trait suit ce point de l'écran
+      timelines.forEach(function (t) {
+        const zone = t.getBoundingClientRect();
+        t.style.setProperty('--progression', window.Site.borner((repere - zone.top) / zone.height, 0, 1).toFixed(3));
+      });
+    });
+  }
+
+
+  /* ------------------------------------------------------------------
      7. Curseur personnalisé : un point + un anneau qui suit avec retard
      ------------------------------------------------------------------ */
   function gererCurseur() {
@@ -420,6 +443,7 @@
   decouperTitres();
   gererRevelations();
   gererEffetsScroll();
+  gererTimelines();
   gererCurseur();
   gererMagnetisme();
 })();

@@ -4,7 +4,7 @@
    - Hero en scrollytelling (le titre se réduit et s'efface, le fond 3D zoome)
    - "Pourquoi moi" épinglé : une comparaison par écran
    - Projets : défilement horizontal piloté par le scroll vertical
-   - Compteurs, barres de compétences, timelines
+   - Compteurs, barres de compétences (les timelines sont dans commun.js)
    - Filtre des projets (animation fluide) + inclinaison 3D des cartes
    - Formulaire de contact (EmailJS + champ piège anti-spam)
    Dépend de commun.js (objet window.Site).
@@ -425,29 +425,7 @@
 
 
   /* ------------------------------------------------------------------
-     9. Timelines : le trait violet se dessine de haut en bas avec le scroll
-     ------------------------------------------------------------------ */
-  function gererTimelines() {
-    const timelines = document.querySelectorAll('[data-timeline]');
-    if (!timelines.length) return;
-
-    if (mouvementReduit) {
-      timelines.forEach(function (t) { t.style.setProperty('--progression', '1'); });
-      return;
-    }
-
-    Site.surScroll(function () {
-      const repere = window.innerHeight * 0.7; // le trait suit ce point de l'écran
-      timelines.forEach(function (t) {
-        const zone = t.getBoundingClientRect();
-        t.style.setProperty('--progression', borner((repere - zone.top) / zone.height, 0, 1).toFixed(3));
-      });
-    });
-  }
-
-
-  /* ------------------------------------------------------------------
-     10. Formulaire de contact : EmailJS + champ piège anti-spam
+     9. Formulaire de contact : EmailJS + champ piège anti-spam
      ------------------------------------------------------------------ */
   function gererFormulaire() {
     const formulaire = document.getElementById('formulaire-contact');
@@ -530,6 +508,5 @@
   gererBarres();
   gererFiltre();
   gererInclinaison();
-  gererTimelines();
   gererFormulaire();
 })();

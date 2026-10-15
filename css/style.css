@@ -9,7 +9,8 @@
    4. Composants partagés (boutons, nav, curseur, préchargeur, titres, pied de page)
    5. Page d'accueil (hero, ticker, domaines, chiffres, pourquoi moi,
       projets, stack, parcours, à propos, contact)
-   6. Mouvement réduit
+   6. Page CV (+ impression)
+   7. Mouvement réduit
 
    Approche mobile-first : les styles de base visent 360 px,
    les @media (min-width) ajoutent la mise en page large.
@@ -1742,6 +1743,7 @@ html:not(.js) .timeline__trait { transform: none; }
   color: var(--violet);
 }
 .etape--actuelle .etape__date { color: #059669; }
+.etape h3,
 .etape h4 { margin-top: 6px; font-size: 1.25rem; letter-spacing: -0.02em; }
 .etape__lieu { margin-top: 2px; font-weight: 500; color: var(--encre-2); font-size: 0.95rem; }
 .etape p:not(.etape__lieu) { margin-top: 8px; color: var(--encre-2); font-size: 0.93rem; }
@@ -1871,7 +1873,174 @@ html:not(.js) .timeline__trait { transform: none; }
 
 
 /* ==========================================================================
-   6. Mouvement réduit
+   6. Page CV (+ impression)
+   Réutilise les composants partagés (timeline, badges, boutons, nav).
+   ========================================================================== */
+.cv { padding: calc(var(--hauteur-nav) + 40px) 0 96px; }
+
+.cv-entete {
+  padding-bottom: 40px;
+  margin-bottom: 48px;
+  border-bottom: 1px solid var(--ligne);
+}
+.cv-entete__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 40px;
+}
+.cv-entete__nom {
+  font-size: clamp(3rem, 14vw, 8rem);
+  line-height: 0.9;
+  letter-spacing: -0.05em;
+}
+.cv-entete__titre {
+  margin-top: 16px;
+  font-family: var(--police-titre);
+  font-size: clamp(1.25rem, 4.5vw, 2rem);
+  font-weight: 600;
+  color: var(--violet);
+}
+.cv-contacts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 24px;
+  margin-top: 28px;
+  font-size: 0.95rem;
+  color: var(--encre-2);
+}
+.cv-contacts li { display: inline-flex; align-items: center; gap: 8px; }
+.cv-contacts .icone { color: var(--violet); }
+.cv-contacts a { border-bottom: 1px solid transparent; transition: border-color 0.2s, color 0.2s; }
+.cv-contacts a:hover { color: var(--violet); border-color: currentColor; }
+
+.cv-grille { display: grid; gap: 56px; }
+@media (min-width: 1040px) { .cv-grille { grid-template-columns: 1.7fr 1fr; gap: 72px; } }
+
+.cv-section + .cv-section { margin-top: 48px; }
+.cv-section > h2 {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 24px;
+  font-size: clamp(1.5rem, 5vw, 2rem);
+}
+/* Petit trait violet devant chaque titre de section */
+.cv-section > h2::before {
+  content: "";
+  width: 28px;
+  height: 4px;
+  border-radius: 999px;
+  background: var(--violet);
+}
+.cv-profil { font-size: 1.08rem; color: var(--encre-2); max-width: 62ch; }
+
+.cv-puces { margin-top: 10px; display: grid; gap: 6px; }
+.cv-puces li {
+  position: relative;
+  padding-left: 18px;
+  font-size: 0.95rem;
+  color: var(--encre-2);
+}
+.cv-puces li::before {
+  content: "";
+  position: absolute;
+  left: 2px; top: 0.62em;
+  width: 6px; height: 6px;
+  border-radius: 2px;
+  background: var(--violet-clair);
+}
+.cv-puces strong { color: var(--encre); }
+
+.cv-projets { display: grid; gap: 14px; }
+.cv-projets li {
+  padding: 18px 20px;
+  border: 1px solid var(--ligne);
+  border-radius: 14px;
+  background: var(--surface);
+}
+.cv-projets h3 { font-size: 1.05rem; letter-spacing: -0.01em; line-height: 1.3; }
+.cv-projets p { margin-top: 6px; font-size: 0.93rem; color: var(--encre-2); }
+.cv-projets a { color: var(--violet); font-weight: 600; }
+
+.cv-groupe + .cv-groupe { margin-top: 22px; }
+.cv-groupe h3 {
+  margin-bottom: 10px;
+  font-family: var(--police-mono);
+  font-size: 0.76rem;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--encre-3);
+  line-height: 1.4;
+}
+.cv-groupe .badges li { padding: 6px 11px; font-size: 0.86rem; background: var(--surface); }
+
+.cv-liste { display: grid; gap: 8px; }
+.cv-liste li {
+  padding: 10px 14px;
+  border-radius: 10px;
+  background: var(--surface);
+  border: 1px solid var(--ligne);
+  font-size: 0.95rem;
+}
+
+/* --- Impression / export PDF ---
+   Une mise en page compacte sur A4 : on masque la navigation, les boutons
+   et tout ce qui est décoratif, et on affiche tout le contenu sans animation. */
+@page { size: A4; margin: 9mm 10mm; }
+
+@media print {
+  html { font-size: 11px; }
+  body { background: #fff; line-height: 1.32; }
+  .timeline { padding-left: 24px; }
+  .timeline::before, .timeline__trait { left: 5px; }
+  .etape::before { left: -24px; width: 12px; height: 12px; border-width: 2px; }
+  .etape.est-visible::before { box-shadow: none; }
+  .nav, .menu-mobile, .lien-evitement, .curseur, .curseur-anneau,
+  .cv-entete__actions, .pied, [data-imprimer] { display: none; }
+
+  /* Tout est visible, sans découpe ni décalage d'animation */
+  .js [data-revele],
+  .js [data-revele].est-visible { clip-path: none; transform: none; translate: none; }
+  .mot__interieur { transform: none; }
+  .timeline__trait { transform: none; }
+
+  .cv { padding: 0; }
+  .conteneur { max-width: none; padding: 0; }
+  .cv-entete { padding-bottom: 8px; margin-bottom: 10px; }
+  .cv-entete__nom { font-size: 30px; }
+  .cv-entete__titre { margin-top: 2px; font-size: 14px; }
+  .cv-contacts { margin-top: 6px; gap: 2px 14px; font-size: 10px; }
+  .cv-grille { grid-template-columns: 1.75fr 1fr; gap: 20px; }
+  .cv-section + .cv-section { margin-top: 9px; }
+  .cv-section > h2 { margin-bottom: 4px; font-size: 13.5px; gap: 8px; }
+  .cv-section > h2::before { width: 16px; height: 3px; }
+  .cv-profil { font-size: 10.5px; }
+  .etape { padding-bottom: 5px; break-inside: avoid; }
+  .etape h3 { font-size: 11.5px; margin-top: 0; }
+  .etape__date { font-size: 8.5px; }
+  .etape__lieu { font-size: 10px; margin-top: 0; }
+  .cv-puces { margin-top: 2px; gap: 0; }
+  .cv-puces li { font-size: 9.5px; padding-left: 12px; }
+  .cv-puces li::before { width: 4px; height: 4px; top: 0.6em; }
+  .cv-projets { gap: 5px; }
+  .cv-projets li { padding: 5px 8px; border-radius: 8px; break-inside: avoid; }
+  .cv-projets h3 { font-size: 10.5px; }
+  .cv-projets p { font-size: 9.5px; margin-top: 1px; }
+  .cv-groupe + .cv-groupe { margin-top: 7px; }
+  .cv-groupe h3 { font-size: 8px; margin-bottom: 3px; }
+  .cv-groupe .badges { gap: 3px; }
+  .cv-groupe .badges li { padding: 2px 6px; font-size: 9px; border-radius: 5px; }
+  .cv-liste { gap: 3px; }
+  .cv-liste li { padding: 2px 7px; font-size: 9.5px; border-radius: 6px; }
+  /* Les couleurs (violet, puces) sont conservées à l'impression */
+  * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+}
+
+
+/* ==========================================================================
+   7. Mouvement réduit
    Si l'utilisateur a demandé moins d'animations dans son système,
    on coupe toutes les animations et transitions, et on affiche tout directement.
    Les !important sont nécessaires ici pour l'emporter sur chaque règle d'animation.
