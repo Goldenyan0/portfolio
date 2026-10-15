@@ -11,10 +11,9 @@
    la vue éclatée s'ouvre sans transition.
    ========================================================================== */
 
-import * as THREE from 'three';
-import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
-import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js';
+// Three.js est importé dynamiquement (voir "Démarrage") : si le chargement échoue,
+// on peut l'attraper et afficher la vraie cause au lieu d'une page muette.
+let THREE, OrbitControls, RoomEnvironment, RoundedBoxGeometry;
 
 const mouvementReduit = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 const cadre = document.getElementById('moteur3d');
@@ -23,14 +22,45 @@ const zoneEtiquettes = document.getElementById('moteur-etiquettes');
 const zoneSurvol = document.getElementById('moteur-survol');
 const boutonEclate = document.getElementById('bouton-eclate');
 
-function webglDisponible() {
+// Teste WebGL 2 puis WebGL 1, sans option restrictive (pas de failIfMajorPerformanceCaveat).
+// Renvoie null si tout va bien, sinon la cause en clair.
+function diagnosticWebgl() {
   try {
     const essai = document.createElement('canvas');
-    return !!(window.WebGLRenderingContext && (essai.getContext('webgl2') || essai.getContext('webgl')));
+    const contexte = essai.getContext('webgl2') || essai.getContext('webgl') || essai.getContext('experimental-webgl');
+    if (contexte) {
+      // On libère tout de suite ce contexte de test
+      const ext = contexte.getExtension('WEBGL_lose_context');
+      if (ext) ext.loseContext();
+      return null;
+    }
+    return window.WebGLRenderingContext
+      ? 'WebGL absent : le navigateur le connaît mais refuse de créer un contexte (accélération matérielle désactivée ?)'
+      : 'WebGL absent : ce navigateur ne le prend pas en charge';
   } catch (e) {
-    return false;
+    return 'WebGL absent : ' + e.message;
   }
 }
+
+// Affiche la cause réelle dans le cadre de repli (et dans la console pour le débogage)
+function afficherEchec(cause) {
+  if (!cadre) return;
+  cadre.classList.remove('est-pret');
+  const repli = document.getElementById('moteur-repli');
+  if (repli) {
+    repli.innerHTML = '';
+    const p1 = document.createElement('p');
+    p1.textContent = 'La vue 3D ne peut pas s\'afficher.';
+    const p2 = document.createElement('p');
+    p2.className = 'moteur3d__cause';
+    p2.textContent = 'Cause : ' + cause;
+    const p3 = document.createElement('p');
+    p3.textContent = 'Toutes les fiches restent accessibles juste en dessous.';
+    repli.append(p1, p2, p3);
+  }
+  console.warn('[Moteur 3D] ' + cause);
+}
+window.afficherEchecMoteur = afficherEchec;
 
 
 /* ==========================================================================
@@ -84,7 +114,7 @@ const cylindre = (r, h, seg) => new THREE.CylinderGeometry(r, r, h, seg || 32);
 const ENTRAXE = 1.05;                                            // distance entre deux cylindres
 const X_CYL = [0, 1, 2, 3, 4, 5].map(i => (i - 2.5) * ENTRAXE);  // position X des 6 cylindres
 // Déphasage de chaque maneton : ordre d'allumage 1-5-3-6-2-4 (combustion tous les 120°)
-const PHASES = [0, 240, 120, 120, 240, 0].map(d => THREE.MathUtils.degToRad(d));
+const PHASES = [0, 240, 120, 120, 240, 0].map(d => d * Math.PI / 180);
 const COURSE = 0.42;                                             // demi-course des pistons
 
 function piece(id, nom, fiche, eclate) {
@@ -658,12 +688,35 @@ function brancherMiniMaquette(pieces) {
 /* ==========================================================================
    Démarrage
    ========================================================================== */
-if (cadre && webglDisponible()) {
+async function lancer() {
+  if (!cadre) return;
+  // 1. WebGL
+  const causeWebgl = diagnosticWebgl();
+  if (causeWebgl) { afficherEchec(causeWebgl); return; }
+
+  // 2. Librairie 3D
+  try {
+    const modules = await Promise.all([
+      import('three'),
+      import('three/addons/controls/OrbitControls.js'),
+      import('three/addons/environments/RoomEnvironment.js'),
+      import('three/addons/geometries/RoundedBoxGeometry.js')
+    ]);
+    THREE = modules[0];
+    OrbitControls = modules[1].OrbitControls;
+    RoomEnvironment = modules[2].RoomEnvironment;
+    RoundedBoxGeometry = modules[3].RoundedBoxGeometry;
+  } catch (e) {
+    afficherEchec('librairie 3D non chargée (' + e.message + ')');
+    return;
+  }
+
+  // 3. Construction de la scène
   try {
     const pieces = demarrer();
     brancherMiniMaquette(pieces);
   } catch (e) {
-    // Échec (pilote graphique…) : le message de repli reste affiché
-    cadre.classList.remove('est-pret');
+    afficherEchec('erreur JS : ' + e.message);
   }
 }
+lancer();

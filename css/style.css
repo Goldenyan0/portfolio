@@ -2492,14 +2492,18 @@ html:not(.js) .timeline__trait { transform: none; }
 .sch-gouttes { stroke: #d97706; stroke-width: 2; stroke-dasharray: 3 9; animation: sch-flux 0.9s linear infinite reverse; }
 .sch-ccv__spirale { fill: none; stroke: #fff; stroke-width: 2; transform-origin: center; animation: sch-tourne 1.6s linear infinite; }
 
-/* VANOS hélicoïdal */
+/* VANOS hélicoïdal (cycle de 5 s) : le piston avance, la came pivote, puis retour */
+.sch-vanos__helices { fill: none; stroke: #fff; stroke-width: 2; opacity: 0.8; }
 .sch-vanos__piston { animation: sch-vanos-piston 5s ease-in-out infinite; }
-@keyframes sch-vanos-piston { 0%, 15%, 100% { transform: none; } 45%, 70% { transform: translateX(90px); } }
-.sch-vanos__came { animation: none; }
-.sch-vanos__came > * { transform-origin: 0 0; }
-.sch-vanos__came .sch-trait { transform-box: view-box; transform-origin: 250px 100px; animation: sch-vanos-came 5s ease-in-out infinite; }
+@keyframes sch-vanos-piston { 0%, 15%, 100% { transform: none; } 45%, 70% { transform: translateX(80px); } }
+.sch-vanos__pignon { fill: none; stroke: var(--encre); stroke-width: 2; stroke-dasharray: 5 4; }
+.sch-vanos__repere { stroke: var(--encre); stroke-width: 3; stroke-linecap: round; }
+.sch-vanos__marque { stroke: var(--violet); stroke-width: 3; stroke-linecap: round; }
+/* Le groupe tourne autour du centre de sa propre boîte (= l'axe de la came) */
+.sch-vanos__rotor { transform-box: fill-box; transform-origin: center; animation: sch-vanos-came 5s ease-in-out infinite; }
 @keyframes sch-vanos-came { 0%, 15%, 100% { transform: none; } 45%, 70% { transform: rotate(25deg); } }
-
+.sch-vanos__avance { fill: var(--violet); opacity: 0; animation: sch-vanos-avance 5s ease-in-out infinite; }
+@keyframes sch-vanos-avance { 0%, 35%, 80%, 100% { opacity: 0; } 45%, 70% { opacity: 1; } }
 /* Thermostat piloté */
 .sch-thermostat__cire { fill: #fde7c4; stroke: var(--encre); stroke-width: 2; transform-origin: bottom; animation: sch-cire 6s ease-in-out infinite; }
 @keyframes sch-cire { 0%, 20%, 100% { transform: scaleY(1); } 50%, 80% { transform: scaleY(1.18); } }
@@ -2646,6 +2650,15 @@ html:not(.anime) .sch-trace--reel { stroke-dashoffset: 0; }
   color: var(--encre-2);
 }
 .moteur3d.est-pret .moteur3d__repli { display: none; }
+.moteur3d__repli p + p { margin-top: 8px; }
+.moteur3d__cause {
+  padding: 8px 12px;
+  border-radius: 10px;
+  background: #fff4d6;
+  color: #6b4600;
+  font-family: var(--police-mono);
+  font-size: 0.85rem;
+}
 .moteur3d:not(.est-pret) #bouton-eclate,
 .moteur3d:not(.est-pret) .moteur3d__aide { display: none; }
 

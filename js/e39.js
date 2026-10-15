@@ -422,8 +422,37 @@
 
 
   /* ------------------------------------------------------------------
+     7. Garde-fou du moteur 3D : si le module moteur-3d.js n'a même pas pu
+        s'exécuter (il signale lui-même les autres pannes), on l'explique ici.
+     ------------------------------------------------------------------ */
+  function surveillerMoteur() {
+    const cadre = document.getElementById('moteur3d');
+    if (!cadre) return;
+    setTimeout(function () {
+      if (cadre.classList.contains('est-pret') || cadre.querySelector('.moteur3d__cause')) return;
+      let cause;
+      if (location.protocol === 'file:') {
+        cause = 'page ouverte directement depuis le disque (file://) : le navigateur bloque les modules JavaScript. Ouvrez-la via un serveur local ou en ligne.';
+      } else if (!(window.HTMLScriptElement && HTMLScriptElement.supports && HTMLScriptElement.supports('importmap'))) {
+        cause = 'navigateur trop ancien : il ne gère pas les « import maps » nécessaires à la librairie 3D.';
+      } else {
+        cause = 'librairie 3D non chargée (réseau lent ou CDN jsDelivr bloqué).';
+      }
+      if (window.afficherEchecMoteur) {
+        window.afficherEchecMoteur(cause);
+      } else {
+        const repli = document.getElementById('moteur-repli');
+        repli.innerHTML = '<p>La vue 3D ne peut pas s\'afficher.</p><p class="moteur3d__cause"></p><p>Toutes les fiches restent accessibles juste en dessous.</p>';
+        repli.querySelector('.moteur3d__cause').textContent = 'Cause : ' + cause;
+      }
+    }, 12000);
+  }
+
+
+  /* ------------------------------------------------------------------
      Démarrage
      ------------------------------------------------------------------ */
+  surveillerMoteur();
   animerDebit();
   animerJauges();
   gererFiches();

@@ -366,7 +366,7 @@
           <div class="moteur3d__etiquettes" id="moteur-etiquettes" aria-hidden="true"></div>
           <p class="moteur3d__survol" id="moteur-survol" aria-live="polite"></p>
           <div class="moteur3d__repli" id="moteur-repli">
-            <p>La vue 3D a besoin de WebGL, indisponible sur cet appareil. Toutes les fiches restent accessibles juste en dessous.</p>
+            <p>Chargement de la vue 3D…</p>
           </div>
           <div class="moteur3d__barre">
             <button class="bouton magnetique" id="bouton-eclate" type="button" aria-pressed="false">
@@ -615,9 +615,9 @@
                 <div>
                   <h4>Mes valeurs mesurées</h4>
                   <ul class="fiche__valeurs">
-                    <li>Sondes aval stables autour de <strong>0,435 V</strong> (V519, relevé non daté).</li>
-                    <li>Codes lus : P0171 et P0174 (mélange pauvre), aucun code d'efficacité catalyseur.</li>
-                    <li>0 à 100 km/h en moins de 10 s (retour conducteur) : pas de signe de catalyseur bouché.</li>
+                    <li>Log du 08/10/2026 : les sondes aval oscillent presque autant que les sondes amont (écart-type ~0,32 V contre ~0,35 V). Une lecture ponctuelle au V519 (non datée) donnait ~0,435 V.</li>
+                    <li>Codes lus : P0171 et P0174 (mélange pauvre).</li>
+                    <li>Aucun code d'efficacité catalyseur lu.</li>
                   </ul>
                 </div>
               </div>
@@ -784,16 +784,32 @@
             <button class="fiche__ouvrir" type="button">Ouvrir la fiche <svg class="icone" aria-hidden="true"><use href="#i-fleche"/></svg></button>
             <div class="fiche__detail">
               <figure class="fiche__schema">
-                <svg class="sch sch-vanos" viewBox="0 0 320 200" role="img" aria-label="Schéma animé du VANOS : la pression d'huile pousse un piston à cannelures hélicoïdales qui, en avançant, fait pivoter l'arbre à cames">
-                  <rect class="sch-piece" x="40" y="60" width="150" height="80" rx="10"/>
-                  <path class="sch-trait sch-vanos__helices" d="M70 64 l20 72 M95 64 l20 72 M120 64 l20 72 M145 64 l20 72"/>
-                  <g class="sch-vanos__piston"><rect class="sch-piece sch-piece--accent" x="48" y="72" width="40" height="56" rx="6"/></g>
-                  <path class="sch-flux sch-flux--huile" d="M20 100 H48"/><text class="sch-texte sch-texte--petit" x="30" y="86">huile</text>
-                  <g class="sch-vanos__came" transform="translate(250 100)">
-                    <circle class="sch-piece" r="40"/><path class="sch-trait" d="M0 -40 V-24"/><circle class="sch-axe" r="5"/>
+                <svg class="sch sch-vanos" viewBox="0 0 320 200" role="img" aria-label="Schéma animé du VANOS : la pression d'huile pousse un piston à cannelures hélicoïdales ; en avançant, il fait pivoter l'arbre à cames de quelques degrés par rapport à son pignon, dont le repère reste fixe">
+                  <!-- Arrivée d'huile -->
+                  <path class="sch-conduit" d="M8 100 H44"/><path class="sch-flux sch-flux--huile" d="M8 100 H44"/>
+                  <text class="sch-texte sch-texte--petit" x="26" y="88">huile</text>
+                  <!-- Corps du VANOS -->
+                  <rect class="sch-piece" x="44" y="62" width="140" height="76" rx="10"/>
+                  <!-- Piston à cannelures hélicoïdales (glisse vers la droite) -->
+                  <g class="sch-vanos__piston">
+                    <rect class="sch-piece sch-piece--accent" x="50" y="70" width="46" height="60" rx="6"/>
+                    <path class="sch-vanos__helices" d="M56 72 l12 56 M68 72 l12 56 M80 72 l12 56"/>
                   </g>
-                  <text class="sch-texte sch-texte--petit" x="250" y="160">Arbre à cames</text>
-                  <text class="sch-texte sch-texte--petit" x="115" y="160">Piston hélicoïdal</text>
+                  <!-- Arbre qui relie le VANOS à la came -->
+                  <path class="sch-trait" d="M184 100 H206"/>
+                  <!-- Pignon entraîné par la chaîne : fixe, avec son repère -->
+                  <circle class="sch-vanos__pignon" cx="250" cy="100" r="44"/>
+                  <path class="sch-vanos__repere" d="M250 50 V60"/>
+                  <!-- Arbre à cames : la came pivote par rapport au repère -->
+                  <g class="sch-vanos__rotor">
+                    <path class="sch-piece" d="M250 64 C272 64 282 84 282 102 C282 124 268 136 250 136 C232 136 218 124 218 102 C218 84 228 64 250 64 Z"/>
+                    <path class="sch-vanos__marque" d="M250 64 V80"/>
+                    <circle class="sch-axe" cx="250" cy="100" r="5"/>
+                  </g>
+                  <text class="sch-texte sch-texte--petit" x="114" y="158">Piston hélicoïdal</text>
+                  <text class="sch-texte sch-texte--petit" x="250" y="164">Arbre à cames</text>
+                  <text class="sch-texte sch-texte--petit" x="250" y="40">repère du pignon</text>
+                  <text class="sch-texte sch-texte--petit sch-vanos__avance" x="250" y="182">came en avance</text>
                 </svg>
               </figure>
               <div class="fiche__mini3d" data-mini3d="vanos"></div>
@@ -900,7 +916,7 @@
               <h4>Pourquoi c'est malin</h4>
               <p class="fiche__malin">En comparant la sonde avant et la sonde après, le calculateur juge l'état du catalyseur en continu, sans aucun démontage.</p>
               <ul class="fiche__valeurs">
-                <li>Sur ma voiture : sondes aval autour de 0,435 V au V519 (relevé non daté).</li>
+                <li>Sur ma voiture (log du 08/10/2026) : les sondes aval oscillent presque autant que les amont — écart-type ~0,32 V contre ~0,35 V. Les relevés sont présentés tels quels, sans conclusion sur l'état des catalyseurs.</li>
               </ul>
             </div>
           </article>
@@ -981,7 +997,7 @@
             <div class="graphique__zone" data-graphique="vanos"></div>
           </figure>
           <figure class="graphique graphique--large" data-revele>
-            <figcaption><h3>Sondes lambda</h3><p>Tension des 4 sondes, en volts. <span class="a-preciser">[À VÉRIFIER : sur ce log, les courbes « post-catalyseur » oscillent autant que les « pré-catalyseur » — étiquetage du log à confirmer ; la lecture V519 donnait des sondes aval stables vers 0,435 V.]</span></p></figcaption>
+            <figcaption><h3>Sondes lambda</h3><p>Tension des 4 sondes, en volts (VKAT = avant catalyseur, NKAT = après). Les sondes amont basculent entre pauvre et riche ; sur ce log, les sondes aval oscillent presque autant (écart-type ~0,32 V contre ~0,35 V). Les courbes sont présentées telles quelles, sans conclusion sur l'état des catalyseurs.</p></figcaption>
             <div class="graphique__zone" data-graphique="lambda"></div>
           </figure>
           <figure class="graphique graphique--large" data-revele>
