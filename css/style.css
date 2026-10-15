@@ -2847,8 +2847,6 @@ html:not(.anime) .sch-trace--reel { stroke-dashoffset: 0; }
 .galerie__grille figure:first-child img { aspect-ratio: 4 / 3; }
 @media (min-width: 1040px) { .galerie__grille figure:first-child img { aspect-ratio: auto; } }
 .galerie__grille figure:hover img { transform: scale(1.05); }
-/* On rogne le bas de cette photo (mention « Contenu généré par l'IA » du téléphone) */
-.galerie__rognee { object-position: 50% 30%; }
 
 /* --- Suite de la visite --- */
 .e39-suite { text-align: center; }
