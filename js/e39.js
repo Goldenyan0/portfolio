@@ -1,0 +1,431 @@
+/* ==========================================================================
+   e39.js — page "Projet automobile"
+   - Copie des schémas partagés dans les fiches ([data-schema-copie])
+   - Débit du débitmètre qui alterne ralenti / pleine charge (schéma A2)
+   - Tracés VANOS consigne / réel (schéma A5)
+   - Jauges LTFT animées (schéma A4)
+   - Fenêtre des fiches "Le M54 expliqué" (ouverte aussi depuis le moteur 3D)
+   - Graphiques natifs SVG des relevés du 08/10/2026, animés au scroll,
+     avec infobulle au survol et tableau des valeurs
+   Dépend de commun.js (window.Site) et donnees-releves.js (window.RELEVES).
+   ========================================================================== */
+
+(function () {
+  'use strict';
+
+  const Site = window.Site;
+  const mouvementReduit = Site.mouvementReduit;
+  const SVG = 'http://www.w3.org/2000/svg';
+
+  // Crée un élément SVG avec ses attributs
+  function svg(nom, attributs, parent) {
+    const el = document.createElementNS(SVG, nom);
+    Object.keys(attributs || {}).forEach(function (k) { el.setAttribute(k, attributs[k]); });
+    if (parent) parent.appendChild(el);
+    return el;
+  }
+
+  // Nombre au format français : 3.1 → "3,1"
+  function fr(n, decimales) {
+    return n.toFixed(decimales === undefined ? 1 : decimales).replace('.', ',');
+  }
+
+  // Appelle "action" une fois quand l'élément arrive à l'écran.
+  // (On n'utilise pas IntersectionObserver : il ignore les éléments encore
+  // repliés par le clip-path des animations d'entrée.)
+  function quandVisible(el, action) {
+    let fait = false;
+    Site.surScroll(function () {
+      if (fait) return;
+      const zone = el.getBoundingClientRect();
+      if (zone.top < window.innerHeight * 0.85 && zone.bottom > 0) {
+        fait = true;
+        action();
+      }
+    });
+  }
+
+
+  /* ------------------------------------------------------------------
+     1. Schémas réutilisés dans les fiches : copie du schéma d'origine
+     ------------------------------------------------------------------ */
+  document.querySelectorAll('[data-schema-copie]').forEach(function (figure) {
+    const source = document.querySelector('.' + figure.dataset.schemaCopie);
+    if (source) figure.appendChild(source.cloneNode(true));
+  });
+
+
+  /* ------------------------------------------------------------------
+     2. Débitmètre : la valeur alterne entre ralenti et pleine charge
+     ------------------------------------------------------------------ */
+  function animerDebit() {
+    const etats = [
+      { valeur: '3,0 g/s', regime: 'au ralenti' },
+      { valeur: '121 g/s', regime: 'pleine charge, 3e' }
+    ];
+    let i = 0;
+    if (mouvementReduit) return;
+    setInterval(function () {
+      i = (i + 1) % etats.length;
+      document.querySelectorAll('.sch-admission').forEach(function (s) {
+        const v = s.querySelector('[data-debit]');
+        const r = s.querySelector('[data-debit-regime]');
+        v.textContent = etats[i].valeur;
+        r.textContent = etats[i].regime;
+        s.classList.remove('est-pulse');
+        void s.getBoundingClientRect(); // relance l'animation CSS
+        s.classList.add('est-pulse');
+        s.classList.toggle('est-charge', i === 1);
+      });
+    }, 2600);
+  }
+
+
+  /* ------------------------------------------------------------------
+     3. Schéma A5 : consigne et réel VANOS qui se tracent et se superposent
+     ------------------------------------------------------------------ */
+  function tracerVanos(cible) {
+    const donnees = window.RELEVES['vanos-ech'];
+    const n = 70; // les 70 premiers échantillons du roulage
+    const min = -107, max = -83;
+    const x = function (i) { return 20 + (i / (n - 1)) * 280; };
+    const y = function (v) { return 170 - ((v - min) / (max - min)) * 140; };
+    function chemin(valeurs) {
+      return valeurs.slice(0, n).map(function (v, i) { return (i ? 'L' : 'M') + x(i).toFixed(1) + ' ' + y(v).toFixed(1); }).join(' ');
+    }
+    svg('rect', { class: 'sch-cadre', x: 14, y: 22, width: 292, height: 156, rx: 6 }, cible);
+    svg('path', { class: 'sch-trace sch-trace--consigne', d: chemin(donnees.consigne), pathLength: 1 }, cible);
+    svg('path', { class: 'sch-trace sch-trace--reel', d: chemin(donnees.reel), pathLength: 1 }, cible);
+    const legende = svg('g', { class: 'sch-texte sch-texte--petit' }, cible);
+    svg('text', { x: 70, y: 14 }, legende).textContent = '- - consigne';
+    svg('text', { x: 200, y: 14 }, legende).textContent = '— réel';
+  }
+  document.querySelectorAll('[data-traces-vanos]').forEach(tracerVanos);
+
+
+  /* ------------------------------------------------------------------
+     4. Jauges LTFT : l'aiguille passe de la valeur de départ à 0 %
+     ------------------------------------------------------------------ */
+  function animerJauges() {
+    const bloc = document.querySelector('[data-jauges]');
+    if (!bloc) return;
+    const jauges = bloc.querySelectorAll('.jauge-ltft');
+
+    function placer(jauge, valeur) {
+      // −10 % → −90°, 0 % → 0°, +10 % → +90°
+      jauge.querySelector('.jauge-ltft__aiguille').setAttribute('transform', 'rotate(' + (valeur * 9).toFixed(2) + ' 100 100)');
+      jauge.querySelector('[data-valeur]').textContent = (valeur > 0.04 ? '+' : '') + fr(Math.abs(valeur) < 0.04 ? 0 : valeur);
+    }
+
+    jauges.forEach(function (j) { placer(j, parseFloat(j.dataset.depart)); });
+    if (mouvementReduit) {
+      jauges.forEach(function (j) { placer(j, parseFloat(j.dataset.arrivee)); });
+      return;
+    }
+
+    quandVisible(bloc, function () {
+      const debut = performance.now() + 700; // petit temps de lecture de la valeur de départ
+      (function etape(maintenant) {
+        const t = Math.min(Math.max((maintenant - debut) / 2200, 0), 1);
+        const adouci = 1 - Math.pow(1 - t, 3);
+        jauges.forEach(function (j) {
+          const a = parseFloat(j.dataset.depart), b = parseFloat(j.dataset.arrivee);
+          placer(j, a + (b - a) * adouci);
+        });
+        if (t < 1) requestAnimationFrame(etape);
+        else bloc.classList.add('est-zero');
+      })(performance.now());
+    });
+  }
+
+
+  /* ------------------------------------------------------------------
+     5. Fenêtre des fiches
+     ------------------------------------------------------------------ */
+  function gererFiches() {
+    const dialogue = document.getElementById('fiche-dialog');
+    const contenu = document.getElementById('fiche-dialog-contenu');
+    if (!dialogue || typeof dialogue.showModal !== 'function') return; // sans support : les fiches restent dépliées
+
+    document.documentElement.classList.add('fiches-repliables');
+    let declencheur = null;
+
+    function ouvrir(id) {
+      const article = document.querySelector('.fiche[data-fiche="' + id + '"]');
+      if (!article) return;
+      declencheur = document.activeElement;
+
+      const copie = article.cloneNode(true);
+      copie.removeAttribute('id');
+      copie.classList.add('est-visible');
+      copie.querySelectorAll('[data-revele]').forEach(function (el) { el.classList.add('est-visible'); });
+      const bouton = copie.querySelector('.fiche__ouvrir');
+      if (bouton) bouton.remove();
+      const titre = copie.querySelector('h3');
+      titre.id = 'fiche-dialog-titre';
+      dialogue.setAttribute('aria-labelledby', 'fiche-dialog-titre');
+
+      contenu.innerHTML = '';
+      contenu.appendChild(copie);
+      dialogue.showModal();
+      contenu.scrollTop = 0;
+      if (Site.lenis) Site.lenis.stop();
+
+      // Le moteur 3D affiche la mini-maquette dans la zone prévue
+      document.dispatchEvent(new CustomEvent('fiche:ouverte', {
+        detail: { systeme: id, conteneur: copie.querySelector('[data-mini3d]') }
+      }));
+    }
+
+    function fermer() {
+      dialogue.close();
+    }
+
+    dialogue.addEventListener('close', function () {
+      contenu.innerHTML = '';
+      if (Site.lenis) Site.lenis.start();
+      document.dispatchEvent(new CustomEvent('fiche:fermee'));
+      if (declencheur && declencheur.focus) declencheur.focus();
+    });
+    dialogue.querySelector('[data-fermer]').addEventListener('click', fermer);
+    // Clic sur le fond assombri : fermeture
+    dialogue.addEventListener('click', function (e) {
+      if (e.target === dialogue) fermer();
+    });
+
+    document.querySelectorAll('.fiche').forEach(function (article) {
+      article.querySelector('.fiche__ouvrir').addEventListener('click', function () {
+        ouvrir(article.dataset.fiche);
+      });
+    });
+
+    // Utilisé par moteur-3d.js quand on clique une pièce
+    window.ouvrirFiche = ouvrir;
+  }
+
+
+  /* ------------------------------------------------------------------
+     6. Graphiques des relevés
+     ------------------------------------------------------------------ */
+
+  // Infobulle partagée par tous les graphiques
+  const infobulle = document.createElement('div');
+  infobulle.className = 'infobulle';
+  infobulle.setAttribute('role', 'status');
+  document.body.appendChild(infobulle);
+
+  function montrerInfobulle(e, html) {
+    infobulle.innerHTML = html;
+    infobulle.classList.add('est-visible');
+    const l = infobulle.offsetWidth;
+    const x = Math.min(e.clientX + 16, window.innerWidth - l - 12);
+    infobulle.style.transform = 'translate(' + x + 'px,' + (e.clientY + 16) + 'px)';
+  }
+  function cacherInfobulle() { infobulle.classList.remove('est-visible'); }
+
+  // Tableau des valeurs (alternative accessible au graphique)
+  function tableau(zone, entetes, lignes) {
+    const details = document.createElement('details');
+    details.className = 'graphique__table';
+    details.innerHTML = '<summary>Voir le tableau des valeurs</summary>';
+    const boite = document.createElement('div');
+    boite.className = 'graphique__defilement';
+    boite.setAttribute('data-lenis-prevent', '');
+    const table = document.createElement('table');
+    table.innerHTML = '<thead><tr>' + entetes.map(function (t) { return '<th scope="col">' + t + '</th>'; }).join('') + '</tr></thead>' +
+      '<tbody>' + lignes.map(function (l) { return '<tr>' + l.map(function (c, i) { return i ? '<td>' + c + '</td>' : '<th scope="row">' + c + '</th>'; }).join('') + '</tr>'; }).join('') + '</tbody>';
+    boite.appendChild(table);
+    details.appendChild(boite);
+    zone.appendChild(details);
+  }
+
+  // Légende (toujours présente dès 2 séries)
+  function legende(zone, series) {
+    const ul = document.createElement('ul');
+    ul.className = 'graphique__legende';
+    series.forEach(function (s) {
+      ul.insertAdjacentHTML('beforeend', '<li><span class="graphique__puce' + (s.pointilles ? ' graphique__puce--pointilles' : '') + '" style="--couleur:' + s.couleur + '"></span>' + s.nom + '</li>');
+    });
+    zone.appendChild(ul);
+  }
+
+  /* --- Graphique en barres : corrections carburant --- */
+  function graphiqueBarres(zone) {
+    const barres = [
+      { nom: 'Banc 1', groupe: 'LTFT ralenti', valeur: 7.0, couleur: 'var(--serie-1)' },
+      { nom: 'Banc 2', groupe: 'LTFT ralenti', valeur: 4.7, couleur: 'var(--serie-1)' },
+      { nom: 'Banc 1', groupe: 'MUL en charge', valeur: 7.1, couleur: 'var(--serie-2)' },
+      { nom: 'Banc 2', groupe: 'MUL en charge', valeur: 5.2, couleur: 'var(--serie-2)' }
+    ];
+    const L = 640, H = 300, g = 48, d = 16, h = 24, b = 56;
+    const largeurUtile = L - g - d, hauteurUtile = H - h - b;
+    const y = function (v) { return h + hauteurUtile - (v / 8) * hauteurUtile; };
+
+    legende(zone, [{ nom: 'LTFT au ralenti', couleur: 'var(--serie-1)' }, { nom: 'MUL en charge', couleur: 'var(--serie-2)' }]);
+    const s = svg('svg', { viewBox: '0 0 ' + L + ' ' + H, class: 'graphique__svg', role: 'img', 'aria-label': 'Corrections carburant du 08/10/2026 : LTFT au ralenti +7,0 % banc 1 et +4,7 % banc 2 ; MUL en charge +7,1 % banc 1 et +5,2 % banc 2' });
+    zone.appendChild(s);
+
+    // Grille et axe
+    [0, 2, 4, 6, 8].forEach(function (v) {
+      svg('line', { class: 'graphique__grille', x1: g, x2: L - d, y1: y(v), y2: y(v) }, s);
+      svg('text', { class: 'graphique__axe', x: g - 10, y: y(v) + 4, 'text-anchor': 'end' }, s).textContent = v + ' %';
+    });
+
+    const largeurGroupe = largeurUtile / 2;
+    const largeurBarre = Math.min(70, largeurGroupe / 3);
+    barres.forEach(function (barre, i) {
+      const groupe = Math.floor(i / 2);
+      const cx = g + largeurGroupe * groupe + largeurGroupe / 2 + (i % 2 ? 1 : -1) * (largeurBarre / 2 + 4);
+      const haut = y(barre.valeur);
+      // Barre arrondie en haut seulement (4 px), ancrée sur la ligne de base
+      const r = 4, x0 = cx - largeurBarre / 2, x1 = cx + largeurBarre / 2, y0 = y(0);
+      const rect = svg('path', {
+        class: 'graphique__barre',
+        d: 'M' + x0 + ' ' + y0 + ' V' + (haut + r) + ' Q' + x0 + ' ' + haut + ' ' + (x0 + r) + ' ' + haut + ' H' + (x1 - r) + ' Q' + x1 + ' ' + haut + ' ' + x1 + ' ' + (haut + r) + ' V' + y0 + ' Z',
+        style: 'fill:' + barre.couleur + ';transform-origin:' + cx + 'px ' + y0 + 'px'
+      }, s);
+      svg('text', { class: 'graphique__etiquette', x: cx, y: haut - 8, 'text-anchor': 'middle' }, s).textContent = '+' + fr(barre.valeur) + ' %';
+      svg('text', { class: 'graphique__axe', x: cx, y: H - b + 20, 'text-anchor': 'middle' }, s).textContent = barre.nom;
+      // Zone de survol plus large que la barre
+      const cible = svg('rect', { x: cx - largeurBarre / 2 - 6, y: h, width: largeurBarre + 12, height: hauteurUtile, fill: 'transparent' }, s);
+      cible.addEventListener('pointermove', function (e) {
+        montrerInfobulle(e, '<strong>' + barre.groupe + ' · ' + barre.nom + '</strong><br>+' + fr(barre.valeur) + ' %');
+        rect.classList.add('est-survol');
+      });
+      cible.addEventListener('pointerleave', function () { cacherInfobulle(); rect.classList.remove('est-survol'); });
+    });
+    ['LTFT au ralenti', 'MUL en charge'].forEach(function (t, i) {
+      svg('text', { class: 'graphique__groupe', x: g + largeurGroupe * i + largeurGroupe / 2, y: H - b + 44, 'text-anchor': 'middle' }, s).textContent = t;
+    });
+    svg('line', { class: 'graphique__base', x1: g, x2: L - d, y1: y(0), y2: y(0) }, s);
+
+    tableau(zone, ['Mesure', 'Banc 1', 'Banc 2'], [['LTFT au ralenti', '+7,0 %', '+4,7 %'], ['MUL en charge', '+7,1 %', '+5,2 %']]);
+    quandVisible(zone, function () { s.classList.add('est-anime'); });
+  }
+
+  /* --- Graphique en courbes (un ou plusieurs panneaux) --- */
+  function graphiqueCourbes(zone, options) {
+    const L = 640, H = options.hauteur || 280, g = 52, d = 18, h = 18, b = 34;
+    const largeurUtile = L - g - d, hauteurUtile = H - h - b;
+    const n = options.series[0].valeurs.length;
+    const x = function (i) { return g + (i / (n - 1)) * largeurUtile; };
+    const y = function (v) { return h + hauteurUtile - ((v - options.min) / (options.max - options.min)) * hauteurUtile; };
+
+    if (options.titre) {
+      const t = document.createElement('p');
+      t.className = 'graphique__panneau';
+      t.textContent = options.titre;
+      zone.appendChild(t);
+    }
+    if (options.legende !== false) legende(zone, options.series);
+    const s = svg('svg', { viewBox: '0 0 ' + L + ' ' + H, class: 'graphique__svg', role: 'img', 'aria-label': options.description });
+    zone.appendChild(s);
+
+    // Grille, axes
+    for (let v = options.min; v <= options.max + 1e-9; v += options.pas) {
+      svg('line', { class: 'graphique__grille', x1: g, x2: L - d, y1: y(v), y2: y(v) }, s);
+      svg('text', { class: 'graphique__axe', x: g - 8, y: y(v) + 4, 'text-anchor': 'end' }, s).textContent = fr(v, options.decimales || 0);
+    }
+    [0, 20, 40, 60, 80, 100].forEach(function (i) {
+      svg('text', { class: 'graphique__axe', x: x(i), y: H - b + 20, 'text-anchor': 'middle' }, s).textContent = i;
+    });
+    svg('text', { class: 'graphique__axe', x: L - d, y: H - 4, 'text-anchor': 'end' }, s).textContent = 'échantillons';
+
+    // Courbes (2 px)
+    options.series.forEach(function (serie) {
+      const dChemin = serie.valeurs.map(function (v, i) { return (i ? 'L' : 'M') + x(i).toFixed(1) + ' ' + y(v).toFixed(1); }).join(' ');
+      svg('path', { class: 'graphique__courbe' + (serie.pointilles ? ' graphique__courbe--pointilles' : ''), d: dChemin, pathLength: 1, style: 'stroke:' + serie.couleur }, s);
+    });
+
+    // Réticule + infobulle au survol
+    const reticule = svg('line', { class: 'graphique__reticule', x1: 0, x2: 0, y1: h, y2: h + hauteurUtile }, s);
+    const zoneSurvol = svg('rect', { x: g, y: h, width: largeurUtile, height: hauteurUtile, fill: 'transparent' }, s);
+    zoneSurvol.addEventListener('pointermove', function (e) {
+      const boite = s.getBoundingClientRect();
+      const px = (e.clientX - boite.left) / boite.width * L;
+      const i = Math.round(Math.min(Math.max((px - g) / largeurUtile, 0), 1) * (n - 1));
+      reticule.setAttribute('x1', x(i));
+      reticule.setAttribute('x2', x(i));
+      reticule.classList.add('est-visible');
+      montrerInfobulle(e, '<strong>Échantillon ' + i + '</strong>' + options.series.map(function (serie) {
+        return '<br><span class="infobulle__puce" style="--couleur:' + serie.couleur + '"></span>' + serie.nom + ' : ' + fr(serie.valeurs[i], options.decimalesValeur || 1) + ' ' + options.unite;
+      }).join(''));
+    });
+    zoneSurvol.addEventListener('pointerleave', function () { reticule.classList.remove('est-visible'); cacherInfobulle(); });
+
+    quandVisible(zone, function () { s.classList.add('est-anime'); });
+    return s;
+  }
+
+  function graphiquesReleves() {
+    const R = window.RELEVES;
+    if (!R) return;
+
+    const corrections = document.querySelector('[data-graphique="corrections"]');
+    if (corrections) graphiqueBarres(corrections);
+
+    const vanos = document.querySelector('[data-graphique="vanos"]');
+    if (vanos) {
+      const series = function (cle) {
+        return [
+          { nom: 'Consigne (SOLL)', valeurs: R[cle].consigne, couleur: 'var(--serie-neutre)', pointilles: true },
+          { nom: 'Réel (IST)', valeurs: R[cle].reel, couleur: 'var(--serie-1)' }
+        ];
+      };
+      graphiqueCourbes(vanos, { titre: 'Admission', series: series('vanos-adm'), min: 80, max: 115, pas: 5, unite: '°', hauteur: 230, description: 'VANOS admission le 08/10/2026 : la position réelle suit la consigne entre 85 et 113 degrés' });
+      graphiqueCourbes(vanos, { titre: 'Échappement', series: series('vanos-ech'), min: -110, max: -80, pas: 5, unite: '°', hauteur: 230, legende: false, description: 'VANOS échappement le 08/10/2026 : la position réelle suit la consigne entre −106 et −84 degrés' });
+      tableau(vanos, ['Échantillon', 'Adm. consigne', 'Adm. réel', 'Éch. consigne', 'Éch. réel'], R['vanos-adm'].reel.map(function (_, i) {
+        return [i, fr(R['vanos-adm'].consigne[i]), fr(R['vanos-adm'].reel[i]), fr(R['vanos-ech'].consigne[i]), fr(R['vanos-ech'].reel[i])];
+      }));
+    }
+
+    const lambda = document.querySelector('[data-graphique="lambda"]');
+    if (lambda) {
+      // Deux panneaux sur la même échelle : sondes avant puis après les catalyseurs
+      const bancs = function (a, b) {
+        return [
+          { nom: 'Banc 1', valeurs: a, couleur: 'var(--serie-1)' },
+          { nom: 'Banc 2', valeurs: b, couleur: 'var(--serie-2)' }
+        ];
+      };
+      graphiqueCourbes(lambda, {
+        titre: 'Pré-catalyseur (amont)', series: bancs(R.lambda.pre1, R.lambda.pre2),
+        min: 0, max: 1, pas: 0.2, decimales: 1, decimalesValeur: 2, unite: 'V', hauteur: 220,
+        description: 'Sondes lambda amont le 08/10/2026 : tension entre 0 et 0,9 volt, bancs 1 et 2'
+      });
+      graphiqueCourbes(lambda, {
+        titre: 'Post-catalyseur (aval)', series: bancs(R.lambda.post1, R.lambda.post2), legende: false,
+        min: 0, max: 1, pas: 0.2, decimales: 1, decimalesValeur: 2, unite: 'V', hauteur: 220,
+        description: 'Sondes lambda aval le 08/10/2026 : tension entre 0 et 0,9 volt, bancs 1 et 2'
+      });
+      tableau(lambda, ['Échantillon', 'Pré B1', 'Pré B2', 'Post B1', 'Post B2'], R.lambda.pre1.map(function (_, i) {
+        return [i, fr(R.lambda.pre1[i], 2), fr(R.lambda.pre2[i], 2), fr(R.lambda.post1[i], 2), fr(R.lambda.post2[i], 2)];
+      }));
+    }
+
+    const temperatures = document.querySelector('[data-graphique="temperatures"]');
+    if (temperatures) {
+      graphiqueCourbes(temperatures, {
+        series: [
+          { nom: 'Liquide', valeurs: R.temperatures.liquide, couleur: 'var(--serie-1)' },
+          { nom: 'Huile (modélisée)', valeurs: R.temperatures.huile, couleur: 'var(--serie-2)' },
+          { nom: 'Air admis', valeurs: R.temperatures.air, couleur: 'var(--serie-3)' }
+        ],
+        min: 20, max: 110, pas: 10, unite: '°C',
+        description: 'Températures le 08/10/2026 : liquide entre 83 et 98 °C, huile entre 99 et 102 °C, air admis entre 25 et 61 °C'
+      });
+      tableau(temperatures, ['Échantillon', 'Liquide', 'Huile', 'Air'], R.temperatures.liquide.map(function (_, i) {
+        return [i, fr(R.temperatures.liquide[i]) + ' °C', fr(R.temperatures.huile[i]) + ' °C', fr(R.temperatures.air[i]) + ' °C'];
+      }));
+    }
+  }
+
+
+  /* ------------------------------------------------------------------
+     Démarrage
+     ------------------------------------------------------------------ */
+  animerDebit();
+  animerJauges();
+  gererFiches();
+  graphiquesReleves();
+})();
