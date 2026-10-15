@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Yanis Poulain — Alternant informatique · BTS SIO</title>
-  <meta name="description" content="Portfolio de Yanis Poulain, 21 ans, Rennes. Alternant informatique à l'Établissement Français du Sang et étudiant en BTS SIO à MyDigitalSchool : cybersécurité, réseaux, développement et IA générative." />
+  <meta name="description" content="Portfolio de Yanis Poulain, 21 ans, Rennes. Alternant en administration systèmes et réseaux à l'Établissement Français du Sang, étudiant en BTS SIO à MyDigitalSchool : cybersécurité, réseaux, développement et IA générative." />
   <meta name="author" content="Yanis Poulain" />
   <meta name="theme-color" content="#fafaf9" />
 
@@ -13,7 +13,7 @@
   <meta property="og:locale" content="fr_FR" />
   <meta property="og:site_name" content="Yanis Poulain" />
   <meta property="og:title" content="Yanis Poulain — Alternant informatique · BTS SIO" />
-  <meta property="og:description" content="Alternant informatique à l'EFS, BTS SIO à MyDigitalSchool. Cybersécurité, réseaux, développement et IA générative." />
+  <meta property="og:description" content="Alternant systèmes et réseaux à l'EFS, BTS SIO à MyDigitalSchool. Cybersécurité, réseaux, développement et IA générative." />
   <meta property="og:url" content="https://goldenyan0.github.io/portfolio/" />
   <meta property="og:image" content="https://goldenyan0.github.io/portfolio/img/logo.png" />
   <meta property="og:image:alt" content="Monogramme YP blanc et bleu sur fond sombre" />
@@ -21,15 +21,17 @@
 
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%237c3aed'/><text x='50' y='67' font-size='52' font-family='Arial,sans-serif' font-weight='bold' fill='white' text-anchor='middle'>YP</text></svg>" />
 
-  <!-- Polices : Space Grotesk (titres) + Inter (texte) -->
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap" />
-
+  <!-- Polices hébergées dans le dépôt (fonts/) : préchargées pour éviter le saut de texte -->
+  <link rel="preload" href="fonts/space-grotesk-latin.woff2" as="font" type="font/woff2" crossorigin />
+  <link rel="preload" href="fonts/inter-latin.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="stylesheet" href="css/style.css" />
 
-  <!-- Signale que JavaScript est actif : les animations d'entrée ne masquent le contenu que dans ce cas -->
-  <script>document.documentElement.classList.add('js');</script>
+  <!-- "js" : JavaScript est actif (les animations d'entrée ne masquent le contenu que dans ce cas).
+       "anime" : le visiteur accepte les animations → mises en page épinglées et scrollytelling. -->
+  <script>
+    document.documentElement.classList.add('js');
+    if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) document.documentElement.classList.add('anime');
+  </script>
 </head>
 
 <body class="page-accueil">
@@ -101,135 +103,145 @@
 
   <main id="contenu">
 
-    <!-- ══ Hero ══ -->
-    <section class="hero" id="accueil" aria-labelledby="hero-titre">
+    <!-- ══ Hero ══
+         La "scène" est plus haute que l'écran : pendant qu'on la traverse, le hero reste
+         épinglé (position: sticky) et se transforme selon la progression du scroll. -->
+    <div class="hero-scene" id="hero-scene">
+      <section class="hero" id="accueil" aria-labelledby="hero-titre">
 
-      <!-- Fond : réseau 3D (Three.js) ; le SVG ci-dessous sert de repli si WebGL est indisponible -->
-      <div class="hero__fond" id="hero-fond" aria-hidden="true">
-        <svg class="hero__repli" viewBox="0 0 1200 800" preserveAspectRatio="xMidYMid slice">
-          <line x1="140" y1="180" x2="320" y2="120"/><line x1="320" y1="120" x2="470" y2="230"/>
-          <line x1="470" y1="230" x2="380" y2="380"/><line x1="140" y1="180" x2="230" y2="340"/>
-          <line x1="230" y1="340" x2="380" y2="380"/><line x1="380" y1="380" x2="300" y2="560"/>
-          <line x1="230" y1="340" x2="120" y2="520"/><line x1="120" y1="520" x2="300" y2="560"/>
-          <line x1="300" y1="560" x2="460" y2="660"/><line x1="470" y1="230" x2="660" y2="160"/>
-          <line x1="660" y1="160" x2="820" y2="90"/><line x1="660" y1="160" x2="760" y2="320"/>
-          <line x1="760" y1="320" x2="940" y2="250"/><line x1="820" y1="90" x2="940" y2="250"/>
-          <line x1="940" y1="250" x2="1080" y2="150"/><line x1="940" y1="250" x2="1060" y2="420"/>
-          <line x1="760" y1="320" x2="880" y2="500"/><line x1="880" y1="500" x2="1060" y2="420"/>
-          <line x1="880" y1="500" x2="720" y2="620"/><line x1="720" y1="620" x2="460" y2="660"/>
-          <line x1="1060" y1="420" x2="1110" y2="640"/><line x1="880" y1="500" x2="1110" y2="640"/>
-          <line x1="380" y1="380" x2="760" y2="320"/><line x1="720" y1="620" x2="900" y2="720"/>
-          <circle cx="140" cy="180" r="4"/><circle cx="320" cy="120" r="5"/><circle cx="470" cy="230" r="6"/>
-          <circle cx="380" cy="380" r="4"/><circle cx="230" cy="340" r="5"/><circle cx="300" cy="560" r="4"/>
-          <circle cx="120" cy="520" r="3"/><circle cx="460" cy="660" r="5"/><circle cx="660" cy="160" r="4"/>
-          <circle cx="820" cy="90" r="3"/><circle cx="760" cy="320" r="7"/><circle cx="940" cy="250" r="5"/>
-          <circle cx="1080" cy="150" r="4"/><circle cx="1060" cy="420" r="5"/><circle cx="880" cy="500" r="6"/>
-          <circle cx="720" cy="620" r="4"/><circle cx="1110" cy="640" r="3"/><circle cx="900" cy="720" r="4"/>
-        </svg>
-      </div>
-
-      <!-- Formes décoratives en parallax (animation 13) -->
-      <div class="hero__formes" aria-hidden="true">
-        <span class="forme forme--anneau" data-profondeur="0.25"></span>
-        <span class="forme forme--points" data-profondeur="-0.15"></span>
-        <span class="forme forme--carre" data-profondeur="0.4"></span>
-        <svg class="forme forme--croix" data-profondeur="-0.3" viewBox="0 0 24 24"><path d="M4 4l16 16M20 4 4 20" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></svg>
-      </div>
-
-      <div class="conteneur hero__grille">
-        <div class="hero__contenu" id="hero-contenu">
-          <p class="badge cascade cascade--1"><span class="badge__point" aria-hidden="true"></span>Alternant informatique · Établissement Français du Sang</p>
-
-          <h1 class="hero__titre cascade cascade--2" id="hero-titre"><span>Yanis</span><span>Poulain</span></h1>
-
-          <p class="hero__typing cascade cascade--3" aria-label="Alternant informatique, étudiant BTS SIO, cybersécurité et réseaux, développeur web et Lua, IA générative au quotidien">
-            <span class="hero__typing-prefixe" aria-hidden="true">&gt; </span><span id="typing" aria-hidden="true">Alternant informatique</span><span class="hero__curseur" aria-hidden="true"></span>
-          </p>
-
-          <p class="hero__texte cascade cascade--4">
-            21 ans, Rennes. En apprentissage à l'<strong>Établissement Français du Sang</strong>, en <strong>BTS SIO</strong> à MyDigitalSchool.
-            J'apprends en faisant : serveurs, CTF, scripts — et le diagnostic de ma BMW E39.
-          </p>
-
-          <ul class="hero__tags cascade cascade--5" aria-label="Domaines">
-            <li>Cybersécurité</li>
-            <li>Systèmes &amp; réseaux</li>
-            <li>Dev web</li>
-            <li>IA générative</li>
-          </ul>
-
-          <div class="hero__actions cascade cascade--6">
-            <a class="bouton magnetique" href="cv.html">
-              <span class="bouton__texte"><svg aria-hidden="true"><use href="#i-telecharger"/></svg>Télécharger mon CV</span>
-            </a>
-            <a class="bouton bouton--clair magnetique" href="e39.html">
-              <span class="bouton__texte"><svg aria-hidden="true"><use href="#i-voiture"/></svg>Voir mon projet auto</span>
-            </a>
-          </div>
+        <!-- Couche 1 : réseau 3D (Three.js) ; le SVG sert de repli si WebGL est indisponible -->
+        <div class="hero__fond" id="hero-fond" aria-hidden="true">
+          <svg class="hero__repli" viewBox="0 0 1200 800" preserveAspectRatio="xMidYMid slice">
+            <line x1="140" y1="180" x2="320" y2="120"/><line x1="320" y1="120" x2="470" y2="230"/>
+            <line x1="470" y1="230" x2="380" y2="380"/><line x1="140" y1="180" x2="230" y2="340"/>
+            <line x1="230" y1="340" x2="380" y2="380"/><line x1="380" y1="380" x2="300" y2="560"/>
+            <line x1="230" y1="340" x2="120" y2="520"/><line x1="120" y1="520" x2="300" y2="560"/>
+            <line x1="300" y1="560" x2="460" y2="660"/><line x1="470" y1="230" x2="660" y2="160"/>
+            <line x1="660" y1="160" x2="820" y2="90"/><line x1="660" y1="160" x2="760" y2="320"/>
+            <line x1="760" y1="320" x2="940" y2="250"/><line x1="820" y1="90" x2="940" y2="250"/>
+            <line x1="940" y1="250" x2="1080" y2="150"/><line x1="940" y1="250" x2="1060" y2="420"/>
+            <line x1="760" y1="320" x2="880" y2="500"/><line x1="880" y1="500" x2="1060" y2="420"/>
+            <line x1="880" y1="500" x2="720" y2="620"/><line x1="720" y1="620" x2="460" y2="660"/>
+            <line x1="1060" y1="420" x2="1110" y2="640"/><line x1="880" y1="500" x2="1110" y2="640"/>
+            <line x1="380" y1="380" x2="760" y2="320"/><line x1="720" y1="620" x2="900" y2="720"/>
+            <circle cx="140" cy="180" r="4"/><circle cx="320" cy="120" r="5"/><circle cx="470" cy="230" r="6"/>
+            <circle cx="380" cy="380" r="4"/><circle cx="230" cy="340" r="5"/><circle cx="300" cy="560" r="4"/>
+            <circle cx="120" cy="520" r="3"/><circle cx="460" cy="660" r="5"/><circle cx="660" cy="160" r="4"/>
+            <circle cx="820" cy="90" r="3"/><circle cx="760" cy="320" r="7"/><circle cx="940" cy="250" r="5"/>
+            <circle cx="1080" cy="150" r="4"/><circle cx="1060" cy="420" r="5"/><circle cx="880" cy="500" r="6"/>
+            <circle cx="720" cy="620" r="4"/><circle cx="1110" cy="640" r="3"/><circle cx="900" cy="720" r="4"/>
+          </svg>
         </div>
 
-        <div class="hero__visuel" id="hero-visuel">
-          <div class="cascade cascade--7">
-            <div class="hero__carte">
-              <img src="img/person.png" width="512" height="512" alt="Illustration d'un CV avec photo de profil affiché sur l'écran d'un ordinateur portable" />
+        <!-- Couche 2 : formes décoratives en parallax (animation 13) -->
+        <div class="hero__formes" aria-hidden="true">
+          <span class="forme forme--anneau" data-profondeur="0.25"></span>
+          <span class="forme forme--points" data-profondeur="-0.15"></span>
+          <span class="forme forme--carre" data-profondeur="0.4"></span>
+          <svg class="forme forme--croix" data-profondeur="-0.3" viewBox="0 0 24 24"><path d="M4 4l16 16M20 4 4 20" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></svg>
+        </div>
+
+        <!-- Couche 3 : contenu -->
+        <div class="conteneur hero__grille">
+          <div class="hero__contenu">
+            <div class="hero__haut" id="hero-haut">
+              <p class="badge cascade cascade--1"><span class="badge__point" aria-hidden="true"></span>Alternant informatique · Établissement Français du Sang</p>
             </div>
-            <div class="hero__ombre" aria-hidden="true"></div>
+
+            <h1 class="hero__titre cascade cascade--2" id="hero-titre"><span class="hero__ligne" id="hero-ligne-1">Yanis</span><span class="hero__ligne" id="hero-ligne-2">Poulain</span></h1>
+
+            <div class="hero__suite" id="hero-suite">
+              <p class="hero__typing cascade cascade--3" aria-label="Alternant informatique, étudiant BTS SIO, cybersécurité et réseaux, développeur web et Lua, IA générative au quotidien">
+                <span class="hero__typing-prefixe" aria-hidden="true">&gt; </span><span id="typing" aria-hidden="true">Alternant informatique</span><span class="hero__curseur" aria-hidden="true"></span>
+              </p>
+
+              <p class="hero__texte cascade cascade--4">
+                21 ans, Rennes. En apprentissage à l'<strong>Établissement Français du Sang</strong>, en <strong>BTS SIO</strong> à MyDigitalSchool.
+                J'apprends en faisant : serveurs, CTF, scripts — et le diagnostic de ma BMW E39.
+              </p>
+
+              <ul class="hero__tags cascade cascade--5" aria-label="Domaines">
+                <li>Cybersécurité</li>
+                <li>Systèmes &amp; réseaux</li>
+                <li>Dev web</li>
+                <li>IA générative</li>
+              </ul>
+
+              <div class="hero__actions cascade cascade--6">
+                <a class="bouton magnetique" href="cv.html">
+                  <span class="bouton__texte"><svg aria-hidden="true"><use href="#i-telecharger"/></svg>Télécharger mon CV</span>
+                </a>
+                <a class="bouton bouton--clair magnetique" href="e39.html">
+                  <span class="bouton__texte"><svg aria-hidden="true"><use href="#i-voiture"/></svg>Voir mon projet auto</span>
+                </a>
+              </div>
+            </div>
+          </div>
+
+          <div class="hero__visuel" id="hero-visuel">
+            <div class="cascade cascade--7">
+              <div class="hero__carte">
+                <img src="img/person.png" width="512" height="512" alt="Illustration d'un CV avec photo de profil affiché sur l'écran d'un ordinateur portable" />
+              </div>
+              <div class="hero__ombre" aria-hidden="true"></div>
+            </div>
           </div>
         </div>
-      </div>
 
-      <a class="indicateur-scroll" id="indicateur-scroll" href="#domaines" aria-label="Descendre vers la suite">
-        <span class="indicateur-scroll__souris" aria-hidden="true"><span class="indicateur-scroll__molette"></span></span>
-        <span aria-hidden="true">Scroll</span>
-      </a>
-    </section>
+        <a class="indicateur-scroll" id="indicateur-scroll" href="#domaines" aria-label="Descendre vers la suite">
+          <span class="indicateur-scroll__souris" aria-hidden="true"><span class="indicateur-scroll__molette"></span></span>
+          <span aria-hidden="true">Scroll</span>
+        </a>
+      </section>
+    </div>
 
     <!-- ══ Ticker des technos (animation 11) ══ -->
     <div class="ticker" aria-label="Technologies utilisées">
       <div class="ticker__piste">
         <ul class="ticker__liste">
-          <li>HTML / CSS</li><li>JavaScript</li><li>Python</li><li>Lua</li><li>SQL</li><li>Node.js</li>
-          <li>Linux</li><li>PowerShell</li><li>TCP/IP</li><li>DNS · DHCP</li><li>SSH</li>
-          <li>Nmap</li><li>Wireshark</li><li>Burp Suite</li><li>Claude</li><li>ChatGPT</li>
+          <li>Active Directory</li><li>PowerShell</li><li>Hyper-V</li><li>Veeam</li><li>GLPI</li><li>Microsoft 365</li>
+          <li>Linux</li><li>TCP/IP</li><li>Nmap</li><li>Wireshark</li><li>JavaScript</li><li>Python</li><li>Lua</li><li>SQL</li>
+          <li>Claude</li><li>ChatGPT</li>
         </ul>
         <!-- Copie identique pour une boucle sans couture (ignorée par les lecteurs d'écran) -->
         <ul class="ticker__liste" aria-hidden="true">
-          <li>HTML / CSS</li><li>JavaScript</li><li>Python</li><li>Lua</li><li>SQL</li><li>Node.js</li>
-          <li>Linux</li><li>PowerShell</li><li>TCP/IP</li><li>DNS · DHCP</li><li>SSH</li>
-          <li>Nmap</li><li>Wireshark</li><li>Burp Suite</li><li>Claude</li><li>ChatGPT</li>
+          <li>Active Directory</li><li>PowerShell</li><li>Hyper-V</li><li>Veeam</li><li>GLPI</li><li>Microsoft 365</li>
+          <li>Linux</li><li>TCP/IP</li><li>Nmap</li><li>Wireshark</li><li>JavaScript</li><li>Python</li><li>Lua</li><li>SQL</li>
+          <li>Claude</li><li>ChatGPT</li>
         </ul>
       </div>
     </div>
 
     <!-- ══ Domaines (animation 5) ══ -->
     <section class="section" id="domaines" aria-labelledby="domaines-titre">
+      <span class="mot-fond" data-glisse="0.35" aria-hidden="true">Domaines</span>
       <div class="conteneur">
         <div class="entete-section">
           <p class="surtitre" data-revele>Ce que je fais</p>
-          <h2 class="titre-section" id="domaines-titre" data-revele>Quatre terrains, <em>une méthode.</em></h2>
+          <h2 class="titre-section" id="domaines-titre" data-mots>Quatre terrains, <em>une méthode.</em></h2>
           <p data-revele>Comprendre comment ça marche, le casser proprement, le réparer, le documenter.</p>
         </div>
 
         <div class="cartes-domaines" data-cascade>
-          <article class="carte-domaine" data-revele>
+          <article class="carte-domaine" data-revele data-parallax="0.04">
             <span class="carte-domaine__numero">01</span>
             <div class="carte-domaine__icone" aria-hidden="true"><svg><use href="#i-bouclier"/></svg></div>
             <h3>Cybersécurité</h3>
             <p>Machines et challenges CTF sur TryHackMe et HackTheBox. Vulnérabilités web et système, sécurité offensive et défensive.</p>
           </article>
-          <article class="carte-domaine" data-revele>
+          <article class="carte-domaine" data-revele data-parallax="0.1">
             <span class="carte-domaine__numero">02</span>
             <div class="carte-domaine__icone" aria-hidden="true"><svg><use href="#i-reseau"/></svg></div>
             <h3>Systèmes &amp; réseaux</h3>
-            <p>Linux (Debian, Kali), Windows, PowerShell. TCP/IP, DNS, DHCP, SSH. Machines virtuelles et Cisco Packet Tracer.</p>
+            <p>En alternance à l'EFS : Active Directory, GPO, sauvegardes Veeam, Hyper-V, GLPI, support utilisateurs. Linux, TCP/IP, DNS, DHCP, SSH.</p>
           </article>
-          <article class="carte-domaine" data-revele>
+          <article class="carte-domaine" data-revele data-parallax="0.04">
             <span class="carte-domaine__numero">03</span>
             <div class="carte-domaine__icone" aria-hidden="true"><svg><use href="#i-code"/></svg></div>
             <h3>Développement</h3>
-            <p>HTML, CSS, JavaScript, Python, Lua, SQL. Bots Node.js / Discord.js, scripts FiveM, jeux.</p>
+            <p>HTML, CSS, JavaScript, Python, Lua, SQL, scripts PowerShell. Bots Node.js / Discord.js, scripts FiveM, jeux.</p>
           </article>
-          <article class="carte-domaine" data-revele>
+          <article class="carte-domaine" data-revele data-parallax="0.1">
             <span class="carte-domaine__numero">04</span>
             <div class="carte-domaine__icone" aria-hidden="true"><svg><use href="#i-ia"/></svg></div>
             <h3>IA générative</h3>
@@ -239,8 +251,8 @@
       </div>
     </section>
 
-    <!-- ══ Chiffres clés (animation 9) ══ -->
-    <section class="chiffres" aria-label="Chiffres clés">
+    <!-- ══ Chiffres clés (animation 9) — bande sombre qui s'ouvre en volet ══ -->
+    <section class="chiffres volet" data-volet aria-label="Chiffres clés">
       <div class="conteneur chiffres__grille" data-cascade>
         <div class="chiffre" data-revele>
           <span class="chiffre__valeur"><span class="compteur" data-cible="100">100</span><sup>+</sup></span>
@@ -261,187 +273,272 @@
       </div>
     </section>
 
-    <!-- ══ Pourquoi moi (animation 10) ══ -->
-    <section class="section" id="pourquoi" aria-labelledby="pourquoi-titre">
-      <div class="conteneur">
-        <div class="entete-section">
-          <p class="surtitre" data-revele>Pourquoi moi</p>
-          <h2 class="titre-section" id="pourquoi-titre" data-revele>Oubliez <em>les clichés.</em></h2>
-        </div>
+    <!-- ══ Pourquoi moi (animation 10) — section épinglée :
+         chaque comparaison occupe l'écran, la suivante arrive en volet depuis le bas ══ -->
+    <section class="pourquoi" id="pourquoi" aria-labelledby="pourquoi-titre">
+      <div class="pourquoi__scene" id="pourquoi-scene">
+        <div class="pourquoi__ecran">
+          <div class="conteneur pourquoi__entete">
+            <div>
+              <p class="surtitre">Pourquoi moi</p>
+              <h2 class="pourquoi__titre" id="pourquoi-titre" data-mots>Oubliez les clichés.</h2>
+            </div>
+            <p class="pourquoi__compteur" aria-hidden="true"><span id="pourquoi-index">01</span> / 04</p>
+          </div>
 
-        <div class="comparaisons">
-          <div class="comparaison" data-revele>
-            <p class="comparaison__cliche"><s class="comparaison__rature">Étudiant sans expérience</s></p>
-            <p class="comparaison__contre"><span class="comparaison__fleche" aria-hidden="true"><svg><use href="#i-fleche"/></svg></span>Serveur FiveM de 100+ joueurs géré 2 ans.</p>
+          <div class="comparaisons" id="comparaisons">
+            <div class="comparaison" data-revele>
+              <div class="conteneur">
+                <p class="comparaison__cliche"><s class="comparaison__rature">Étudiant sans expérience</s></p>
+                <p class="comparaison__contre"><span class="comparaison__fleche" aria-hidden="true"><svg><use href="#i-fleche"/></svg></span>Serveur FiveM de 100+ joueurs géré 2 ans.</p>
+              </div>
+            </div>
+            <div class="comparaison" data-revele>
+              <div class="conteneur">
+                <p class="comparaison__cliche"><s class="comparaison__rature">Compétences théoriques</s></p>
+                <p class="comparaison__contre"><span class="comparaison__fleche" aria-hidden="true"><svg><use href="#i-fleche"/></svg></span>Des CTF résolus chaque semaine.</p>
+              </div>
+            </div>
+            <div class="comparaison" data-revele>
+              <div class="conteneur">
+                <p class="comparaison__cliche"><s class="comparaison__rature">Découvre le monde de l'entreprise</s></p>
+                <p class="comparaison__contre"><span class="comparaison__fleche" aria-hidden="true"><svg><use href="#i-fleche"/></svg></span>En poste à l'EFS depuis août 2026 — et 4 expériences avant.</p>
+              </div>
+            </div>
+            <div class="comparaison" data-revele>
+              <div class="conteneur">
+                <p class="comparaison__cliche"><s class="comparaison__rature">L'IA ? Il en a entendu parler</s></p>
+                <p class="comparaison__contre"><span class="comparaison__fleche" aria-hidden="true"><svg><use href="#i-fleche"/></svg></span>Claude, ChatGPT et Muse en production.</p>
+              </div>
+            </div>
           </div>
-          <div class="comparaison" data-revele>
-            <p class="comparaison__cliche"><s class="comparaison__rature">Compétences théoriques</s></p>
-            <p class="comparaison__contre"><span class="comparaison__fleche" aria-hidden="true"><svg><use href="#i-fleche"/></svg></span>Des CTF résolus chaque semaine.</p>
-          </div>
-          <div class="comparaison" data-revele>
-            <p class="comparaison__cliche"><s class="comparaison__rature">Découvre le monde de l'entreprise</s></p>
-            <p class="comparaison__contre"><span class="comparaison__fleche" aria-hidden="true"><svg><use href="#i-fleche"/></svg></span>En poste à l'EFS depuis août 2026 — et 4 expériences avant.</p>
-          </div>
-          <div class="comparaison" data-revele>
-            <p class="comparaison__cliche"><s class="comparaison__rature">L'IA ? Il en a entendu parler</s></p>
-            <p class="comparaison__contre"><span class="comparaison__fleche" aria-hidden="true"><svg><use href="#i-fleche"/></svg></span>Claude, ChatGPT et Muse en production.</p>
-          </div>
+
+          <div class="pourquoi__progression" aria-hidden="true"><span id="pourquoi-barre"></span></div>
         </div>
       </div>
     </section>
 
-    <!-- ══ Projets (animation 6 + tilt 3D) ══ -->
-    <section class="section" id="projets" aria-labelledby="projets-titre">
-      <div class="conteneur">
-        <div class="entete-section">
-          <p class="surtitre" data-revele>Projets</p>
-          <h2 class="titre-section" id="projets-titre" data-revele>Fait, <em>pas juste lu.</em></h2>
-        </div>
-
-        <div class="filtres" role="group" aria-label="Filtrer les projets" data-revele>
-          <button class="filtre" type="button" data-filtre="tout" aria-pressed="true">Tout</button>
-          <button class="filtre" type="button" data-filtre="dev" aria-pressed="false">Développement</button>
-          <button class="filtre" type="button" data-filtre="jeux" aria-pressed="false">Jeux &amp; serveurs</button>
-          <button class="filtre" type="button" data-filtre="cyber" aria-pressed="false">Cybersécurité</button>
-          <button class="filtre" type="button" data-filtre="auto" aria-pressed="false">Auto</button>
-        </div>
-
-        <div class="grille-projets" id="grille-projets" data-cascade>
-
-          <article class="projet projet--iris" data-categories="jeux dev" data-revele>
-            <div class="projet__carte">
-              <div class="projet__media">
-                <img src="img/projets/iris-rp.jpg" width="960" height="540" loading="lazy" alt="Écran de chargement FiveM d'un serveur GTA V roleplay, avec le logo GoldenCity RP et la présentation de l'équipe" />
-              </div>
-              <div class="projet__corps">
-                <p class="projet__meta"><span>Serveur FiveM</span><time>2021-2023</time></p>
-                <h3>Iris RP</h3>
-                <p>Création et gestion complète d'un serveur GTA V roleplay : scripting Lua, architecture serveur, base MySQL, communauté de 100+ joueurs actifs.</p>
-                <ul class="projet__tags"><li>Lua</li><li>MySQL</li><li>FiveM</li></ul>
-              </div>
+    <!-- ══ Projets (animation 6 + tilt 3D) — scroll horizontal piloté par le scroll vertical ══ -->
+    <section class="projets" id="projets" aria-labelledby="projets-titre">
+      <div class="projets__scene" id="projets-scene">
+        <div class="projets__ecran">
+          <div class="conteneur projets__entete">
+            <div>
+              <p class="surtitre" data-revele>Projets</p>
+              <h2 class="titre-section" id="projets-titre" data-mots>Fait, <em>pas juste lu.</em></h2>
             </div>
-          </article>
-
-          <article class="projet projet--e39" data-categories="auto" data-revele>
-            <div class="projet__carte">
-              <div class="projet__media">
-                <img src="img/e39/e39-trois-quarts-avant-jour.jpg" width="900" height="1599" loading="lazy" alt="BMW E39 bleu topaze vue de trois quarts avant, garée sur un parking, plaque floutée" />
-                <div class="projet__voile" aria-hidden="true"><span>Voir le projet <svg class="icone"><use href="#i-fleche"/></svg></span></div>
-              </div>
-              <div class="projet__corps">
-                <p class="projet__meta"><span>Mécanique &amp; diagnostic</span><time>2026</time></p>
-                <h3>BMW E39 520i</h3>
-                <p>M54B22 de 2002. Logs MS43, corrections carburant, test fumée : un diagnostic mené comme un incident — mesure, hypothèse, vérification.</p>
-                <ul class="projet__tags"><li>INPA</li><li>OBD II</li><li>Mécanique</li></ul>
-              </div>
-              <a class="projet__lien" href="e39.html"><span class="visuellement-cache">Voir le projet BMW E39</span></a>
+            <div class="filtres" role="group" aria-label="Filtrer les projets" data-revele>
+              <button class="filtre" type="button" data-filtre="tout" aria-pressed="true">Tout</button>
+              <button class="filtre" type="button" data-filtre="infra" aria-pressed="false">Systèmes &amp; réseaux</button>
+              <button class="filtre" type="button" data-filtre="dev" aria-pressed="false">Développement</button>
+              <button class="filtre" type="button" data-filtre="jeux" aria-pressed="false">Jeux &amp; serveurs</button>
+              <button class="filtre" type="button" data-filtre="cyber" aria-pressed="false">Cybersécurité</button>
+              <button class="filtre" type="button" data-filtre="auto" aria-pressed="false">Auto</button>
             </div>
-          </article>
+          </div>
 
-          <article class="projet projet--bots" data-categories="dev jeux" data-revele>
-            <div class="projet__carte">
-              <div class="projet__media">
-                <img src="img/projets/bot-discord.jpg" width="523" height="457" loading="lazy" alt="Message d'aide de Golden Bot sur Discord listant les commandes staff, statistiques, musique et fun" />
-              </div>
-              <div class="projet__corps">
-                <p class="projet__meta"><span>Bots Discord</span><time>Node.js</time></p>
-                <h3>Bots Discord</h3>
-                <p>Bots multifonctions en Node.js / Discord.js : modération, musique, commandes personnalisées, déployés sur plusieurs serveurs.</p>
-                <ul class="projet__tags"><li>Node.js</li><li>Discord.js</li><li>JavaScript</li></ul>
-              </div>
+          <div class="projets__fenetre">
+            <div class="grille-projets" id="grille-projets" data-cascade>
+
+              <article class="projet projet--mdd" data-categories="infra" data-revele>
+                <div class="projet__carte">
+                  <div class="projet__media projet__media--schema">
+                    <!-- Schéma animé : le site relié au réseau, aux postes, imprimantes et automates -->
+                    <svg class="schema-site" viewBox="0 0 320 200" role="img" aria-labelledby="schema-mdd-titre">
+                      <title id="schema-mdd-titre">Schéma du déploiement informatique d'un nouveau site : un cœur de réseau relié aux postes de travail, aux imprimantes et aux automates</title>
+                      <path class="schema-site__lien" d="M160 100 L60 50"/><path class="schema-site__lien" d="M160 100 L260 50"/>
+                      <path class="schema-site__lien" d="M160 100 L60 155"/><path class="schema-site__lien" d="M160 100 L260 155"/>
+                      <path class="schema-site__flux" d="M160 100 L60 50"/><path class="schema-site__flux" d="M160 100 L260 50"/>
+                      <path class="schema-site__flux" d="M160 100 L60 155"/><path class="schema-site__flux" d="M160 100 L260 155"/>
+                      <!-- Cœur de réseau (switch) -->
+                      <rect class="schema-site__coeur" x="128" y="86" width="64" height="28" rx="6"/>
+                      <circle class="schema-site__led" cx="142" cy="100" r="2.5"/><circle class="schema-site__led" cx="152" cy="100" r="2.5"/>
+                      <circle class="schema-site__led" cx="162" cy="100" r="2.5"/><circle class="schema-site__led" cx="172" cy="100" r="2.5"/>
+                      <!-- Postes de travail -->
+                      <g class="schema-site__noeud"><rect x="36" y="32" width="48" height="30" rx="4"/><path d="M52 68h16M60 62v6"/></g>
+                      <!-- Imprimante -->
+                      <g class="schema-site__noeud"><rect x="236" y="38" width="48" height="22" rx="4"/><path d="M244 38v-8h32v8M244 60v8h32v-8"/></g>
+                      <!-- Réseau / brassage -->
+                      <g class="schema-site__noeud"><rect x="36" y="142" width="48" height="26" rx="4"/><path d="M44 155h4M52 155h4M60 155h4M68 155h4"/></g>
+                      <!-- Automate -->
+                      <g class="schema-site__noeud"><rect x="238" y="136" width="44" height="38" rx="5"/><rect x="246" y="144" width="28" height="12" rx="2"/><circle cx="252" cy="166" r="2.5"/><circle cx="268" cy="166" r="2.5"/></g>
+                      <text x="60" y="84">Postes</text><text x="260" y="84">Imprimantes</text>
+                      <text x="60" y="190">Réseau</text><text x="260" y="194">Automates</text>
+                    </svg>
+                  </div>
+                  <div class="projet__corps">
+                    <p class="projet__meta"><span>Chef de projet IT · EFS</span><time>Alternance</time></p>
+                    <h3>Maison du Don Rennes Longchamps</h3>
+                    <p>Chef de projet du volet informatique — ouverture du nouveau site : déploiement des postes de travail, imprimantes, réseau et automates ; coordination des prestataires et des équipes ; suivi des commandes, directives, recettes et mise en service.</p>
+                    <ul class="projet__tags"><li>Déploiement</li><li>Réseau</li><li>Coordination</li><li>Recette</li></ul>
+                  </div>
+                </div>
+              </article>
+
+              <article class="projet projet--iris" data-categories="jeux dev" data-revele>
+                <div class="projet__carte">
+                  <div class="projet__media">
+                    <img src="img/projets/iris-rp.jpg" width="960" height="540" loading="lazy" alt="Écran de chargement FiveM du serveur sous son ancien nom GoldenCity RP, avec le logo et la présentation de l'équipe" />
+                  </div>
+                  <div class="projet__corps">
+                    <p class="projet__meta"><span>Serveur FiveM</span><time>2021-2023</time></p>
+                    <h3>Iris RP</h3>
+                    <p>Création et gestion complète d'un serveur GTA V roleplay : scripting Lua, architecture serveur, base MySQL, communauté de 100+ joueurs actifs.</p>
+                    <ul class="projet__tags"><li>Lua</li><li>MySQL</li><li>FiveM</li></ul>
+                  </div>
+                </div>
+              </article>
+
+              <article class="projet projet--e39" data-categories="auto" data-revele>
+                <div class="projet__carte">
+                  <div class="projet__media">
+                    <img src="img/e39/e39-trois-quarts-avant-jour.jpg" width="900" height="1599" loading="lazy" alt="BMW E39 bleu topaze vue de trois quarts avant, garée sur un parking, plaque floutée" />
+                    <div class="projet__voile" aria-hidden="true"><span>Voir le projet <svg class="icone"><use href="#i-fleche"/></svg></span></div>
+                  </div>
+                  <div class="projet__corps">
+                    <p class="projet__meta"><span>Mécanique &amp; diagnostic</span><time>2026</time></p>
+                    <h3>BMW E39 520i</h3>
+                    <p>M54B22 de 2002. Logs MS43, corrections carburant, test fumée : un diagnostic mené comme un incident — mesure, hypothèse, vérification.</p>
+                    <ul class="projet__tags"><li>INPA</li><li>OBD II</li><li>Mécanique</li></ul>
+                  </div>
+                  <a class="projet__lien" href="e39.html"><span class="visuellement-cache">Voir le projet BMW E39</span></a>
+                </div>
+              </article>
+
+              <article class="projet projet--bots" data-categories="dev jeux" data-revele>
+                <div class="projet__carte">
+                  <div class="projet__media">
+                    <img src="img/projets/bot-discord.jpg" width="523" height="457" loading="lazy" alt="Message d'aide de Golden Bot sur Discord listant les commandes staff, statistiques, musique et fun" />
+                  </div>
+                  <div class="projet__corps">
+                    <p class="projet__meta"><span>Bots Discord</span><time>Node.js</time></p>
+                    <h3>Bots Discord</h3>
+                    <p>Bots multifonctions en Node.js / Discord.js : modération, musique, commandes personnalisées, déployés sur plusieurs serveurs.</p>
+                    <ul class="projet__tags"><li>Node.js</li><li>Discord.js</li><li>JavaScript</li></ul>
+                  </div>
+                </div>
+              </article>
+
+              <article class="projet projet--thm" data-categories="cyber" data-revele>
+                <div class="projet__carte">
+                  <div class="projet__media">
+                    <img src="img/projets/tryhackme.jpg" width="960" height="496" loading="lazy" alt="Profil TryHackMe Goldenyan.exe avec la liste des salles terminées : Intro to LAN, Linux, DNS in detail, Nmap, OpenVPN" />
+                    <div class="projet__voile" aria-hidden="true"><span>Voir le profil <svg class="icone"><use href="#i-fleche"/></svg></span></div>
+                  </div>
+                  <div class="projet__corps">
+                    <p class="projet__meta"><span>Cybersécurité</span><time>CTF</time></p>
+                    <h3>TryHackMe &amp; HackTheBox</h3>
+                    <p>Salles CTF et machines : réseau, Linux, Nmap, chiffrement, pentest. Classement actif sous le pseudo Goldenyan.exe.</p>
+                    <ul class="projet__tags"><li>Nmap</li><li>Burp Suite</li><li>Linux</li></ul>
+                  </div>
+                  <a class="projet__lien" href="https://tryhackme.com/p/Goldenyan.exe" target="_blank" rel="noopener"><span class="visuellement-cache">Voir le profil TryHackMe (nouvel onglet)</span></a>
+                </div>
+              </article>
+
+              <article class="projet projet--nsi" data-categories="dev jeux" data-revele>
+                <div class="projet__carte">
+                  <div class="projet__media">
+                    <img src="img/projets/jeu-nsi.jpg" width="960" height="540" loading="lazy" alt="Bureau virtuel du jeu navigateur NSI : icônes Docs, Jeux, Musique, Terminal sur fond de code binaire vert" />
+                    <div class="projet__voile" aria-hidden="true"><span>Jouer <svg class="icone"><use href="#i-fleche"/></svg></span></div>
+                  </div>
+                  <div class="projet__corps">
+                    <p class="projet__meta"><span>Projet NSI</span><time>Lycée</time></p>
+                    <h3>Jeu navigateur</h3>
+                    <p>Jeu en JavaScript pur, réalisé dans le cadre de la spécialité NSI.</p>
+                    <ul class="projet__tags"><li>JavaScript</li><li>HTML</li><li>CSS</li></ul>
+                  </div>
+                  <a class="projet__lien" href="https://goldenyan0.github.io/Nsi-Game-JS/" target="_blank" rel="noopener"><span class="visuellement-cache">Jouer au jeu NSI (nouvel onglet)</span></a>
+                </div>
+              </article>
+
+              <article class="projet projet--multifighter" data-categories="dev jeux" data-revele>
+                <div class="projet__carte">
+                  <div class="projet__media">
+                    <img src="img/projets/multifighter.jpg" width="960" height="539" loading="lazy" alt="Capture de Multifighter : deux combattants en pixel art face à face devant une cascade, barres de vie en haut" />
+                    <div class="projet__voile" aria-hidden="true"><span>Voir le code <svg class="icone"><use href="#i-fleche"/></svg></span></div>
+                  </div>
+                  <div class="projet__corps">
+                    <p class="projet__meta"><span>Jeu de combat</span><time>En binôme</time></p>
+                    <h3>Multifighter</h3>
+                    <p>Jeu de combat en Python avec interface graphique, développé en binôme.</p>
+                    <ul class="projet__tags"><li>Python</li><li>Jeu 2D</li></ul>
+                  </div>
+                  <a class="projet__lien" href="https://github.com/Goldenyan0/multifighter" target="_blank" rel="noopener"><span class="visuellement-cache">Voir Multifighter sur GitHub (nouvel onglet)</span></a>
+                </div>
+              </article>
+
+              <article class="projet projet--site" data-categories="dev" data-revele>
+                <div class="projet__carte">
+                  <div class="projet__media">
+                    <img src="img/projets/site-gta-rp.jpg" width="960" height="545" loading="lazy" alt="Page d'accueil du site GoldenCity, ancien nom d'Iris RP : logo aigle orange, menu Accueil, Informations, Boutique, Images" />
+                    <div class="projet__voile" aria-hidden="true"><span>Voir le site <svg class="icone"><use href="#i-fleche"/></svg></span></div>
+                  </div>
+                  <div class="projet__corps">
+                    <p class="projet__meta"><span>Site web</span><time>HTML/CSS/JS</time></p>
+                    <h3>Site du serveur Iris RP</h3>
+                    <p>Site vitrine responsive du serveur FiveM roleplay, publié sous son ancien nom GoldenCity.</p>
+                    <ul class="projet__tags"><li>HTML</li><li>CSS</li><li>JavaScript</li></ul>
+                  </div>
+                  <a class="projet__lien" href="https://goldenyan0.github.io/goldencity/" target="_blank" rel="noopener"><span class="visuellement-cache">Voir le site GoldenCity (nouvel onglet)</span></a>
+                </div>
+              </article>
+
+              <article class="projet projet--github" data-categories="dev" data-revele>
+                <div class="projet__carte">
+                  <div class="projet__media">
+                    <img src="img/projets/github.jpg" width="960" height="503" loading="lazy" alt="Profil GitHub Goldenyan0 : dépôts Reedeem-Bot, nsi-game, GoldenCityRP, goldenbot, Nsi-Game-JS, goldencity" />
+                    <div class="projet__voile" aria-hidden="true"><span>Voir GitHub <svg class="icone"><use href="#i-fleche"/></svg></span></div>
+                  </div>
+                  <div class="projet__corps">
+                    <p class="projet__meta"><span>Open source</span><time>GitHub</time></p>
+                    <h3>Profil GitHub</h3>
+                    <p>Mes projets publics : bots, jeux, sites web et outils.</p>
+                    <ul class="projet__tags"><li>JavaScript</li><li>Python</li><li>Lua</li></ul>
+                  </div>
+                  <a class="projet__lien" href="https://github.com/Goldenyan0" target="_blank" rel="noopener"><span class="visuellement-cache">Voir le profil GitHub (nouvel onglet)</span></a>
+                </div>
+              </article>
+
             </div>
-          </article>
+          </div>
 
-          <article class="projet projet--thm" data-categories="cyber" data-revele>
-            <div class="projet__carte">
-              <div class="projet__media">
-                <img src="img/projets/tryhackme.jpg" width="960" height="496" loading="lazy" alt="Profil TryHackMe Goldenyan.exe avec la liste des salles terminées : Intro to LAN, Linux, DNS in detail, Nmap, OpenVPN" />
-                <div class="projet__voile" aria-hidden="true"><span>Voir le profil <svg class="icone"><use href="#i-fleche"/></svg></span></div>
-              </div>
-              <div class="projet__corps">
-                <p class="projet__meta"><span>Cybersécurité</span><time>CTF</time></p>
-                <h3>TryHackMe &amp; HackTheBox</h3>
-                <p>Salles CTF et machines : réseau, Linux, Nmap, chiffrement, pentest. Classement actif sous le pseudo Goldenyan.exe.</p>
-                <ul class="projet__tags"><li>Nmap</li><li>Burp Suite</li><li>Linux</li></ul>
-              </div>
-              <a class="projet__lien" href="https://tryhackme.com/p/Goldenyan.exe" target="_blank" rel="noopener"><span class="visuellement-cache">Voir le profil TryHackMe (nouvel onglet)</span></a>
-            </div>
-          </article>
-
-          <article class="projet projet--nsi" data-categories="dev jeux" data-revele>
-            <div class="projet__carte">
-              <div class="projet__media">
-                <img src="img/projets/jeu-nsi.jpg" width="960" height="540" loading="lazy" alt="Bureau virtuel du jeu navigateur NSI : icônes Docs, Jeux, Musique, Terminal sur fond de code binaire vert" />
-                <div class="projet__voile" aria-hidden="true"><span>Jouer <svg class="icone"><use href="#i-fleche"/></svg></span></div>
-              </div>
-              <div class="projet__corps">
-                <p class="projet__meta"><span>Projet NSI</span><time>Lycée</time></p>
-                <h3>Jeu navigateur</h3>
-                <p>Jeu en JavaScript pur, réalisé dans le cadre de la spécialité NSI.</p>
-                <ul class="projet__tags"><li>JavaScript</li><li>HTML</li><li>CSS</li></ul>
-              </div>
-              <a class="projet__lien" href="https://goldenyan0.github.io/Nsi-Game-JS/" target="_blank" rel="noopener"><span class="visuellement-cache">Jouer au jeu NSI (nouvel onglet)</span></a>
-            </div>
-          </article>
-
-          <article class="projet projet--multifighter" data-categories="dev jeux" data-revele>
-            <div class="projet__carte">
-              <div class="projet__media">
-                <img src="img/projets/multifighter.jpg" width="960" height="539" loading="lazy" alt="Capture de Multifighter : deux combattants en pixel art face à face devant une cascade, barres de vie en haut" />
-                <div class="projet__voile" aria-hidden="true"><span>Voir le code <svg class="icone"><use href="#i-fleche"/></svg></span></div>
-              </div>
-              <div class="projet__corps">
-                <p class="projet__meta"><span>Jeu de combat</span><time>En binôme</time></p>
-                <h3>Multifighter</h3>
-                <p>Jeu de combat en Python avec interface graphique, développé en binôme.</p>
-                <ul class="projet__tags"><li>Python</li><li>Jeu 2D</li></ul>
-              </div>
-              <a class="projet__lien" href="https://github.com/Goldenyan0/multifighter" target="_blank" rel="noopener"><span class="visuellement-cache">Voir Multifighter sur GitHub (nouvel onglet)</span></a>
-            </div>
-          </article>
-
-          <article class="projet projet--site" data-categories="dev" data-revele>
-            <div class="projet__carte">
-              <div class="projet__media">
-                <img src="img/projets/site-gta-rp.jpg" width="960" height="545" loading="lazy" alt="Page d'accueil du site GoldenCity : logo aigle orange, menu Accueil, Informations, Boutique, Images" />
-                <div class="projet__voile" aria-hidden="true"><span>Voir le site <svg class="icone"><use href="#i-fleche"/></svg></span></div>
-              </div>
-              <div class="projet__corps">
-                <p class="projet__meta"><span>Site web</span><time>HTML/CSS/JS</time></p>
-                <h3>Site serveur GTA V RP</h3>
-                <p>Site vitrine responsive pour un serveur FiveM roleplay.</p>
-                <ul class="projet__tags"><li>HTML</li><li>CSS</li><li>JavaScript</li></ul>
-              </div>
-              <a class="projet__lien" href="https://goldenyan0.github.io/goldencity/" target="_blank" rel="noopener"><span class="visuellement-cache">Voir le site GoldenCity (nouvel onglet)</span></a>
-            </div>
-          </article>
-
-          <article class="projet projet--github" data-categories="dev" data-revele>
-            <div class="projet__carte">
-              <div class="projet__media">
-                <img src="img/projets/github.jpg" width="960" height="503" loading="lazy" alt="Profil GitHub Goldenyan0 : dépôts Reedeem-Bot, nsi-game, GoldenCityRP, goldenbot, Nsi-Game-JS, goldencity" />
-                <div class="projet__voile" aria-hidden="true"><span>Voir GitHub <svg class="icone"><use href="#i-fleche"/></svg></span></div>
-              </div>
-              <div class="projet__corps">
-                <p class="projet__meta"><span>Open source</span><time>GitHub</time></p>
-                <h3>Profil GitHub</h3>
-                <p>Mes projets publics : bots, jeux, sites web et outils.</p>
-                <ul class="projet__tags"><li>JavaScript</li><li>Python</li><li>Lua</li></ul>
-              </div>
-              <a class="projet__lien" href="https://github.com/Goldenyan0" target="_blank" rel="noopener"><span class="visuellement-cache">Voir le profil GitHub (nouvel onglet)</span></a>
-            </div>
-          </article>
-
+          <div class="conteneur projets__pied" aria-hidden="true">
+            <span class="projets__aide">Continuez à défiler</span>
+            <span class="projets__progression"><span id="projets-barre"></span></span>
+          </div>
         </div>
       </div>
     </section>
 
     <!-- ══ Stack technique (badges + animation 7) ══ -->
-    <section class="section stack" id="stack" aria-labelledby="stack-titre">
+    <section class="section stack volet" id="stack" data-volet aria-labelledby="stack-titre">
+      <span class="mot-fond" data-glisse="-0.35" aria-hidden="true">Stack</span>
       <div class="conteneur">
         <div class="entete-section">
           <p class="surtitre" data-revele>Stack technique</p>
-          <h2 class="titre-section" id="stack-titre" data-revele>Mes <em>outils.</em></h2>
+          <h2 class="titre-section" id="stack-titre" data-mots>Mes <em>outils.</em></h2>
+        </div>
+
+        <!-- Catégorie mise en avant : le quotidien de l'alternance -->
+        <div class="stack__alternance" data-revele>
+          <h3>Administration systèmes &amp; réseaux <span>alternance EFS</span></h3>
+          <ul class="badges">
+            <li>Active Directory (droits, OU, GPO)</li>
+            <li>Sauvegardes serveurs Veeam</li>
+            <li>Déploiement de postes (MDT)</li>
+            <li>Hyper-V / virtualisation</li>
+            <li>Microsoft 365 (comptes, licences)</li>
+            <li>Prise en main à distance (RCP)</li>
+            <li>Wallix (PAM)</li>
+            <li>GLPI (tickets et parc)</li>
+            <li>Sophos Mobile</li>
+            <li>Brassage / câblage réseau</li>
+            <li>Imprimantes réseau</li>
+            <li>Scripts PowerShell</li>
+            <li>Plans de maintenance</li>
+            <li>Support utilisateurs N1</li>
+            <li>Outils métiers EFS et automates</li>
+          </ul>
         </div>
 
         <div class="stack__grille">
@@ -492,81 +589,82 @@
 
     <!-- ══ Parcours (animation 8) ══ -->
     <section class="section" id="parcours" aria-labelledby="parcours-titre">
+      <span class="mot-fond" data-glisse="0.35" aria-hidden="true">Parcours</span>
       <div class="conteneur">
         <div class="entete-section">
           <p class="surtitre" data-revele>Parcours</p>
-          <h2 class="titre-section" id="parcours-titre" data-revele>D'où je viens, <em>où j'en suis.</em></h2>
+          <h2 class="titre-section" id="parcours-titre" data-mots>D'où je viens, <em>où j'en suis.</em></h2>
         </div>
 
         <div class="parcours__grille">
-          <div class="parcours__colonne">
+          <div class="parcours__colonne" data-parallax="0.03">
             <h3 data-revele>Expérience</h3>
             <div class="timeline" data-timeline>
               <span class="timeline__trait" aria-hidden="true"></span>
               <ol>
-              <li class="etape etape--actuelle" data-revele>
-                <p class="etape__date">Depuis août 2026</p>
-                <h4>Alternant informatique</h4>
-                <p class="etape__lieu">Établissement Français du Sang</p>
-                <p>En apprentissage depuis le 10 août 2026, en parallèle du BTS SIO.</p>
-              </li>
-              <li class="etape" data-revele>
-                <p class="etape__date">Depuis février 2026</p>
-                <h4>Responsable préparation automobile</h4>
-                <p class="etape__lieu">AAA Locatour / Europcar — Rennes</p>
-                <p>Accueil et check-out clients, contrôle des véhicules (niveaux, carburant, pression), suivi des immobilisations et coordination avec l'atelier.</p>
-              </li>
-              <li class="etape" data-revele>
-                <p class="etape__date">2025</p>
-                <h4>Agent de préparation véhicules</h4>
-                <p class="etape__lieu">Sixt / Group L — Rennes Gare</p>
-                <p>Contrôle et préparation des véhicules de location, remise en main propre, convoyages inter-agences.</p>
-              </li>
-              <li class="etape" data-revele>
-                <p class="etape__date">2025</p>
-                <h4>Équipier polyvalent</h4>
-                <p class="etape__lieu">McDonald's — Pleumeleuc</p>
-                <p>Travail en forte affluence, normes d'hygiène et de sécurité, accompagnement des nouveaux équipiers.</p>
-              </li>
-              <li class="etape" data-revele>
-                <p class="etape__date">2024</p>
-                <h4>Enquêteur vacataire / inventoriste</h4>
-                <p class="etape__lieu">RGIS — Bretagne</p>
-                <p>Comptage et contrôle de stocks avec lecteurs codes-barres et logiciels dédiés.</p>
-              </li>
-              <li class="etape" data-revele>
-                <p class="etape__date">2021 — 2023</p>
-                <h4>Fondateur &amp; développeur</h4>
-                <p class="etape__lieu">Iris RP — serveur FiveM</p>
-                <p>Scripting Lua, architecture serveur, base MySQL, gestion d'une communauté de 100+ joueurs.</p>
-              </li>
+                <li class="etape etape--actuelle" data-revele>
+                  <p class="etape__date">Depuis août 2026</p>
+                  <h4>Alternant informatique</h4>
+                  <p class="etape__lieu">Établissement Français du Sang</p>
+                  <p>Administration systèmes et réseaux : Active Directory, sauvegardes Veeam, déploiement de postes, GLPI, support utilisateurs N1. Chef de projet du volet informatique de l'ouverture de la Maison du Don Rennes Longchamps.</p>
+                </li>
+                <li class="etape" data-revele>
+                  <p class="etape__date">Depuis février 2026</p>
+                  <h4>Responsable préparation automobile</h4>
+                  <p class="etape__lieu">AAA Locatour / Europcar — Rennes</p>
+                  <p>Accueil et check-out clients, contrôle des véhicules (niveaux, carburant, pression), suivi des immobilisations et coordination avec l'atelier.</p>
+                </li>
+                <li class="etape" data-revele>
+                  <p class="etape__date">2025</p>
+                  <h4>Agent de préparation véhicules</h4>
+                  <p class="etape__lieu">Sixt / Group L — Rennes Gare</p>
+                  <p>Contrôle et préparation des véhicules de location, remise en main propre, convoyages inter-agences.</p>
+                </li>
+                <li class="etape" data-revele>
+                  <p class="etape__date">2025</p>
+                  <h4>Équipier polyvalent</h4>
+                  <p class="etape__lieu">McDonald's — Pleumeleuc</p>
+                  <p>Travail en forte affluence, normes d'hygiène et de sécurité, accompagnement des nouveaux équipiers.</p>
+                </li>
+                <li class="etape" data-revele>
+                  <p class="etape__date">2024</p>
+                  <h4>Enquêteur vacataire / inventoriste</h4>
+                  <p class="etape__lieu">RGIS — Bretagne</p>
+                  <p>Comptage et contrôle de stocks avec lecteurs codes-barres et logiciels dédiés.</p>
+                </li>
+                <li class="etape" data-revele>
+                  <p class="etape__date">2021 — 2023</p>
+                  <h4>Fondateur &amp; développeur</h4>
+                  <p class="etape__lieu">Iris RP — serveur FiveM</p>
+                  <p>Scripting Lua, architecture serveur, base MySQL, gestion d'une communauté de 100+ joueurs.</p>
+                </li>
               </ol>
             </div>
           </div>
 
-          <div class="parcours__colonne">
+          <div class="parcours__colonne" data-parallax="0.09">
             <h3 data-revele>Formation</h3>
             <div class="timeline" data-timeline>
               <span class="timeline__trait" aria-hidden="true"></span>
               <ol>
-              <li class="etape etape--actuelle" data-revele>
-                <p class="etape__date">2026 — 2028</p>
-                <h4>BTS SIO</h4>
-                <p class="etape__lieu">MyDigitalSchool — en alternance</p>
-                <p>Services informatiques aux organisations, en alternance à l'Établissement Français du Sang.</p>
-              </li>
-              <li class="etape" data-revele>
-                <p class="etape__date">2024</p>
-                <h4>Licence informatique, 1<sup>re</sup> année</h4>
-                <p class="etape__lieu">Université de Rennes 1 — ISTIC</p>
-                <p>Algorithmique, bases de données, développement web, réseaux, génie logiciel.</p>
-              </li>
-              <li class="etape" data-revele>
-                <p class="etape__date">2023</p>
-                <h4>Bac général Maths / NSI</h4>
-                <p class="etape__lieu">Lycée Victor et Hélène Basch — Rennes</p>
-                <p>Spécialités Mathématiques et Numérique et sciences informatiques : algorithmique, Python, réseaux, bases de données.</p>
-              </li>
+                <li class="etape etape--actuelle" data-revele>
+                  <p class="etape__date">2026 — 2028</p>
+                  <h4>BTS SIO</h4>
+                  <p class="etape__lieu">MyDigitalSchool — en alternance</p>
+                  <p>Services informatiques aux organisations, en alternance à l'Établissement Français du Sang.</p>
+                </li>
+                <li class="etape" data-revele>
+                  <p class="etape__date">2024</p>
+                  <h4>Licence informatique, 1<sup>re</sup> année</h4>
+                  <p class="etape__lieu">Université de Rennes 1 — ISTIC</p>
+                  <p>Algorithmique, bases de données, développement web, réseaux, génie logiciel.</p>
+                </li>
+                <li class="etape" data-revele>
+                  <p class="etape__date">2023</p>
+                  <h4>Bac général Maths / NSI</h4>
+                  <p class="etape__lieu">Lycée Victor et Hélène Basch — Rennes</p>
+                  <p>Spécialités Mathématiques et Numérique et sciences informatiques : algorithmique, Python, réseaux, bases de données.</p>
+                </li>
               </ol>
             </div>
           </div>
@@ -575,11 +673,12 @@
     </section>
 
     <!-- ══ À propos ══ -->
-    <section class="section apropos" id="apropos" aria-labelledby="apropos-titre">
+    <section class="section apropos volet" id="apropos" data-volet aria-labelledby="apropos-titre">
+      <span class="mot-fond" data-glisse="-0.35" aria-hidden="true">À propos</span>
       <div class="conteneur">
         <div class="entete-section">
           <p class="surtitre" data-revele>À propos</p>
-          <h2 class="titre-section" id="apropos-titre" data-revele>En <em>bref.</em></h2>
+          <h2 class="titre-section" id="apropos-titre" data-mots>En <em>bref.</em></h2>
         </div>
 
         <div class="apropos__grille" data-cascade>
@@ -587,7 +686,7 @@
             <h3>Qui je suis</h3>
             <p>21 ans, Rennes. Passionné d'informatique depuis l'âge de 11 ans. Aujourd'hui <strong>alternant à l'EFS</strong> et en <strong>BTS SIO</strong>.</p>
           </article>
-          <article class="bloc" data-revele>
+          <article class="bloc" data-revele data-parallax="0.06">
             <h3>Comment j'apprends</h3>
             <p>Par la pratique : serveurs de jeu, challenges de sécurité, dépannage de PC pour mes proches. Curieux et autonome.</p>
           </article>
@@ -595,7 +694,7 @@
             <h3>IA générative</h3>
             <p>Usage avancé de Claude, ChatGPT et Muse en production : contenus TikTok, game design Roblox, scripting, refonte de ce site. Veille techno active.</p>
           </article>
-          <article class="bloc" data-revele>
+          <article class="bloc" data-revele data-parallax="0.06">
             <h3>Hors écran</h3>
             <p>Mécanique sur ma BMW E39, natation, musculation.</p>
             <ul><li>Mécanique</li><li>Natation</li><li>Musculation</li></ul>
@@ -608,12 +707,12 @@
       </div>
     </section>
 
-    <!-- ══ Contact ══ -->
-    <section class="section" id="contact" aria-labelledby="contact-titre">
+    <!-- ══ Contact — s'ouvre en cercle depuis le bas ══ -->
+    <section class="section contact volet volet--cercle" id="contact" data-volet aria-labelledby="contact-titre">
       <div class="conteneur contact__grille">
         <div>
           <p class="surtitre" data-revele>Contact</p>
-          <h2 class="titre-section" id="contact-titre" data-revele>On en <em>parle ?</em></h2>
+          <h2 class="titre-section" id="contact-titre" data-mots>On en <em>parle ?</em></h2>
           <div class="contact__liens" data-cascade>
             <a class="contact__lien" href="mailto:y.poulain04@gmail.com" data-revele>
               <svg class="icone" aria-hidden="true"><use href="#i-mail"/></svg>
@@ -650,7 +749,7 @@
           </div>
           <div class="champ champ--large">
             <label for="c-message">Message</label>
-            <textarea id="c-message" name="message" required></textarea>
+            <textarea id="c-message" name="message" required data-lenis-prevent></textarea>
           </div>
           <div class="champ champ--piege" aria-hidden="true">
             <label for="c-site">Ne pas remplir ce champ</label>
@@ -685,8 +784,9 @@
     </div>
   </footer>
 
-  <!-- Scripts : EmailJS (formulaire), commun.js (toutes les pages), index.js (cette page),
-       reseau-3d.js (fond Three.js, chargé en module) -->
+  <!-- Scripts. Librairies externes (3 au total) : Lenis (défilement fluide), EmailJS (formulaire),
+       Three.js (fond 3D, importé par reseau-3d.js). -->
+  <script src="https://cdn.jsdelivr.net/npm/lenis@1.1.13/dist/lenis.min.js" defer></script>
   <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4.4.1/dist/email.min.js" defer></script>
   <script src="js/commun.js" defer></script>
   <script src="js/index.js" defer></script>

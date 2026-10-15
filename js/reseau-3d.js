@@ -204,10 +204,15 @@ async function demarrer() {
       sourisY = Math.cos(temps * 0.00027) * 0.4;
     }
 
+    // Scrollytelling : en descendant dans le hero, la caméra plonge dans le réseau
+    // (progression fournie par index.js, de 0 à 1)
+    const plongee = (window.Site && window.Site.progressionHero) || 0;
+    camera.position.z = 650 - plongee * 440;
+
     // Le réseau pivote doucement vers la souris + une lente dérive continue
-    rotationY += ((sourisX * 0.3 + temps * 0.00004) - rotationY) * 0.05;
+    rotationY += ((sourisX * 0.3 + temps * 0.00004 + plongee * 0.9) - rotationY) * 0.05;
     rotationX += ((-sourisY * 0.18) - rotationX) * 0.05;
-    groupe.rotation.set(rotationX, rotationY, 0);
+    groupe.rotation.set(rotationX, rotationY, plongee * 0.25);
     groupe.updateMatrixWorld();
 
     // Éclat de chaque nœud selon sa distance (à l'écran) à la souris

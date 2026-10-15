@@ -1,11 +1,11 @@
 /* ==========================================================================
    index.js — animations et interactions de la page d'accueil
    - Effet machine à écrire du hero
-   - Parallax du hero (formes décoratives + contenu)
-   - Compteurs "chiffres clés"
-   - Barres de compétences
+   - Hero en scrollytelling (le titre se réduit et s'efface, le fond 3D zoome)
+   - "Pourquoi moi" épinglé : une comparaison par écran
+   - Projets : défilement horizontal piloté par le scroll vertical
+   - Compteurs, barres de compétences, timelines
    - Filtre des projets (animation fluide) + inclinaison 3D des cartes
-   - Timelines qui se dessinent au scroll
    - Formulaire de contact (EmailJS + champ piège anti-spam)
    Dépend de commun.js (objet window.Site).
    ========================================================================== */
@@ -13,8 +13,19 @@
 (function () {
   'use strict';
 
-  const mouvementReduit = window.Site.mouvementReduit;
-  const sourisFine = window.Site.sourisFine;
+  const Site = window.Site;
+  const mouvementReduit = Site.mouvementReduit;
+  const sourisFine = Site.sourisFine;
+  const borner = Site.borner;
+  const racine = document.documentElement;
+
+  // Progression (0 → 1) d'une "scène" épinglée : 0 quand son haut touche le haut
+  // de l'écran, 1 quand son bas touche le bas de l'écran.
+  function progressionScene(scene) {
+    const zone = scene.getBoundingClientRect();
+    const course = zone.height - window.innerHeight;
+    return course > 0 ? borner(-zone.top / course, 0, 1) : 0;
+  }
 
 
   /* ------------------------------------------------------------------
@@ -27,8 +38,8 @@
     const phrases = [
       'Alternant informatique',
       'Étudiant BTS SIO',
-      'Cybersécurité & réseaux',
-      'Développeur web & Lua',
+      'Systèmes & réseaux',
+      'Cybersécurité',
       'IA générative au quotidien'
     ];
     let indexPhrase = 0;
@@ -36,10 +47,9 @@
     let efface = true;
 
     function etape() {
-      const phrase = phrases[indexPhrase];
       if (efface) {
         indexLettre--;
-        cible.textContent = phrase.slice(0, indexLettre);
+        cible.textContent = phrases[indexPhrase].slice(0, indexLettre);
         if (indexLettre === 0) {
           efface = false;
           indexPhrase = (indexPhrase + 1) % phrases.length;
@@ -64,53 +74,174 @@
 
 
   /* ------------------------------------------------------------------
-     2. Parallax du hero : les formes bougent à des vitesses différentes
-        selon le scroll et la position de la souris
+     2. Hero en scrollytelling
+        Pendant la traversée de la scène (hero épinglé) :
+        - les deux lignes du nom s'écartent, rétrécissent et s'effacent
+        - le reste du contenu monte et disparaît, le visuel s'envole
+        - le fond 3D zoome (reseau-3d.js lit Site.progressionHero)
+        - en fin de course, le hero se détache comme une carte
      ------------------------------------------------------------------ */
-  function gererParallax() {
-    if (mouvementReduit) return;
-    const formes = document.querySelectorAll('.hero__formes [data-profondeur]');
-    const contenu = document.getElementById('hero-contenu');
+  function gererHero() {
+    const scene = document.getElementById('hero-scene');
+    if (!scene || mouvementReduit) return;
+
+    const hero = document.getElementById('accueil');
+    const grille = hero.querySelector('.hero__grille');
+    const ligne1 = document.getElementById('hero-ligne-1');
+    const ligne2 = document.getElementById('hero-ligne-2');
+    const haut = document.getElementById('hero-haut');
+    const suite = document.getElementById('hero-suite');
     const visuel = document.getElementById('hero-visuel');
     const indicateur = document.getElementById('indicateur-scroll');
+    const formes = hero.querySelectorAll('[data-profondeur]');
 
+    // Sur un écran trop petit pour tout le contenu, le hero n'est pas épinglé
+    function verifierPlace() {
+      const besoin = grille.offsetHeight + 200; // marges haute (navigation) et basse
+      racine.classList.toggle('hero-libre', besoin > window.innerHeight);
+    }
+    verifierPlace();
+    window.addEventListener('resize', verifierPlace);
+
+    // Position de la souris (-0,5 → 0,5) pour décaler les formes décoratives
     let sourisX = 0, sourisY = 0;
-    let enAttente = false;
-
-    function appliquer() {
-      const y = window.scrollY;
-      enAttente = false;
-      if (indicateur) indicateur.classList.toggle('est-masque', y > 60);
-      if (y > window.innerHeight * 1.2) return; // hero hors écran : inutile de calculer
-
-      formes.forEach(function (forme) {
-        const p = parseFloat(forme.dataset.profondeur);
-        forme.style.transform =
-          'translate3d(' + sourisX * p * 60 + 'px,' + (y * p + sourisY * p * 60) + 'px,0)';
-      });
-      if (contenu) {
-        contenu.style.transform = 'translate3d(0,' + y * 0.18 + 'px,0)';
-        contenu.style.opacity = String(Math.max(0, 1 - y / (window.innerHeight * 0.9)));
-      }
-      if (visuel) visuel.style.transform = 'translate3d(0,' + y * 0.3 + 'px,0)';
-    }
-
-    function demander() {
-      if (!enAttente) {
-        enAttente = true;
-        requestAnimationFrame(appliquer);
-      }
-    }
-
-    window.addEventListener('scroll', demander, { passive: true });
     if (sourisFine) {
       window.addEventListener('pointermove', function (e) {
-        // Position de la souris ramenée entre -0,5 et 0,5
         sourisX = e.clientX / window.innerWidth - 0.5;
         sourisY = e.clientY / window.innerHeight - 0.5;
-        demander();
+        Site.rafraichir();
       }, { passive: true });
     }
+
+    Site.surScroll(function () {
+      const p = racine.classList.contains('hero-libre')
+        ? borner(window.scrollY / window.innerHeight, 0, 1)
+        : progressionScene(scene);
+      Site.progressionHero = p;
+      const vw = window.innerWidth / 100;
+
+      // Le nom : les deux lignes s'écartent, rétrécissent et s'effacent
+      const echelle = 1 - p * 0.45;
+      const opaciteTitre = String(borner(1 - p * 1.5, 0, 1));
+      ligne1.style.transform = 'translate3d(' + (-p * 22 * vw) + 'px,' + (-p * 40) + 'px,0) scale(' + echelle + ')';
+      ligne2.style.transform = 'translate3d(' + (p * 22 * vw) + 'px,' + (-p * 40) + 'px,0) scale(' + echelle + ')';
+      ligne1.style.opacity = opaciteTitre;
+      ligne2.style.opacity = opaciteTitre;
+
+      // Le reste du contenu part plus vite (effet de profondeur)
+      haut.style.transform = 'translate3d(0,' + (-p * 140) + 'px,0)';
+      haut.style.opacity = String(borner(1 - p * 2.5, 0, 1));
+      suite.style.transform = 'translate3d(0,' + (-p * 180) + 'px,0)';
+      suite.style.opacity = String(borner(1 - p * 2.2, 0, 1));
+      visuel.style.transform = 'translate3d(0,' + (-p * 260) + 'px,0) scale(' + (1 + p * 0.25) + ') rotate(' + p * 10 + 'deg)';
+      visuel.style.opacity = String(borner(1 - p * 1.6, 0, 1));
+
+      // Formes décoratives : vitesses différentes + suivi de la souris
+      formes.forEach(function (forme) {
+        const prof = parseFloat(forme.dataset.profondeur);
+        forme.style.transform = 'translate3d(' + sourisX * prof * 60 + 'px,' +
+          (-p * prof * 900 + sourisY * prof * 60) + 'px,0)';
+      });
+
+      // Fin de course : le hero se détache comme une carte qui s'éloigne
+      const k = borner((p - 0.7) / 0.3, 0, 1);
+      hero.style.transform = k ? 'scale(' + (1 - k * 0.07) + ')' : '';
+      hero.style.borderRadius = k ? (k * 40) + 'px' : '';
+
+      if (indicateur) indicateur.classList.toggle('est-masque', p > 0.02);
+    });
+  }
+
+
+  /* ------------------------------------------------------------------
+     3. "Pourquoi moi" épinglé : 4 comparaisons, une par écran.
+        La suivante recouvre la précédente en volet depuis le bas ;
+        la rature se dessine avec le scroll, puis la contre-valeur apparaît.
+     ------------------------------------------------------------------ */
+  function gererPourquoi() {
+    const scene = document.getElementById('pourquoi-scene');
+    if (!scene || !racine.classList.contains('anime')) return;
+
+    const comparaisons = Array.from(document.querySelectorAll('#comparaisons .comparaison'));
+    const index = document.getElementById('pourquoi-index');
+    const barre = scene.querySelector('.pourquoi__progression');
+    const n = comparaisons.length;
+
+    Site.surScroll(function () {
+      const p = progressionScene(scene);
+      const t = p * n; // de 0 à n
+      const active = Math.min(Math.floor(t), n - 1);
+
+      comparaisons.forEach(function (comp, i) {
+        // Volet d'entrée : la comparaison i arrive entre t = i - 0,3 et t = i
+        const entree = i === 0 ? 1 : borner((t - i + 0.3) / 0.3, 0, 1);
+        // Recul quand la suivante la recouvre
+        const suivante = i + 1 < n ? borner((t - i - 0.7) / 0.3, 0, 1) : 0;
+        comp.style.setProperty('--entree', entree.toFixed(3));
+        comp.style.setProperty('--recul', (1 - suivante * 0.06).toFixed(3));
+        comp.style.setProperty('--rature', borner((t - i) / 0.35, 0, 1).toFixed(3));
+        comp.classList.toggle('est-contre', t - i > 0.4);
+      });
+
+      index.textContent = String(active + 1).padStart(2, '0');
+      barre.style.setProperty('--progression', p.toFixed(3));
+    });
+  }
+
+
+  /* ------------------------------------------------------------------
+     4. Projets : sur grand écran, la section est épinglée et la rangée
+        de cartes défile horizontalement pendant qu'on scrolle verticalement.
+     ------------------------------------------------------------------ */
+  let reglerProjets = function () {};
+
+  function gererProjetsHorizontaux() {
+    const scene = document.getElementById('projets-scene');
+    const piste = document.getElementById('grille-projets');
+    const ecran = scene && scene.querySelector('.projets__ecran');
+    const barre = scene && scene.querySelector('.projets__progression');
+    if (!scene || !racine.classList.contains('anime')) return;
+
+    let debordement = 0;
+
+    // Calcule la hauteur de la scène = hauteur d'écran + longueur à faire défiler
+    reglerProjets = function () {
+      const actif = window.innerWidth >= 720;
+      racine.classList.toggle('projets-horizontal', actif);
+      if (!actif) { scene.style.removeProperty('--hauteur-scene'); return; }
+
+      // Si les cartes ne tiennent pas en hauteur (petit écran), on revient à la grille
+      if (ecran.scrollHeight > ecran.clientHeight + 2) {
+        racine.classList.remove('projets-horizontal');
+        scene.style.removeProperty('--hauteur-scene');
+        return;
+      }
+      debordement = Math.max(0, piste.scrollWidth - window.innerWidth);
+      scene.style.setProperty('--hauteur-scene', (window.innerHeight + debordement) + 'px');
+      Site.rafraichir();
+    };
+
+    reglerProjets();
+    window.addEventListener('resize', reglerProjets);
+    if (document.fonts) document.fonts.ready.then(reglerProjets);
+
+    const medias = piste.querySelectorAll('.projet__media img');
+
+    Site.surScroll(function () {
+      if (!racine.classList.contains('projets-horizontal')) return;
+      const p = progressionScene(scene);
+      piste.style.setProperty('--tx', (-p * debordement).toFixed(1) + 'px');
+      barre.style.setProperty('--progression', p.toFixed(3));
+
+      // Parallax des images : chacune glisse un peu à contre-sens de sa carte
+      const milieu = window.innerWidth / 2;
+      medias.forEach(function (img) {
+        const zone = img.parentElement.getBoundingClientRect();
+        if (zone.right < 0 || zone.left > window.innerWidth) return;
+        const ecart = (zone.left + zone.width / 2 - milieu) / milieu; // -1 → 1
+        img.style.setProperty('--ix', (-ecart * 28).toFixed(1) + 'px');
+      });
+    });
   }
 
 
@@ -130,7 +261,7 @@
 
 
   /* ------------------------------------------------------------------
-     3. Compteurs : de 0 à la valeur cible, avec ralentissement à la fin
+     5. Compteurs : de 0 à la valeur cible, avec ralentissement à la fin
      ------------------------------------------------------------------ */
   function gererCompteurs() {
     if (mouvementReduit) return; // les valeurs finales sont déjà dans le HTML
@@ -155,7 +286,7 @@
 
 
   /* ------------------------------------------------------------------
-     4. Barres de compétences : se remplissent quand le bloc apparaît
+     6. Barres de compétences : se remplissent quand le bloc apparaît
      ------------------------------------------------------------------ */
   function gererBarres() {
     const bloc = document.getElementById('competences');
@@ -173,7 +304,7 @@
 
 
   /* ------------------------------------------------------------------
-     5. Filtre des projets, avec animation "FLIP" :
+     7. Filtre des projets, avec animation "FLIP" :
         on mémorise la position des cartes, on filtre, puis on anime
         chaque carte de son ancienne position vers la nouvelle.
      ------------------------------------------------------------------ */
@@ -188,13 +319,18 @@
       return filtre === 'tout' || projet.dataset.categories.split(' ').indexOf(filtre) !== -1;
     }
 
+    function appliquer(filtre) {
+      projets.forEach(function (p) {
+        p.classList.toggle('est-filtre', !correspond(p, filtre));
+        p.classList.add('est-visible');
+      });
+    }
+
     function filtrer(filtre) {
       // Version sans animation
       if (mouvementReduit || !Element.prototype.animate) {
-        projets.forEach(function (p) {
-          p.classList.toggle('est-filtre', !correspond(p, filtre));
-          p.classList.add('est-visible');
-        });
+        appliquer(filtre);
+        reglerProjets();
         return;
       }
       if (enCours) return;
@@ -218,11 +354,8 @@
         });
 
         // On applique le filtre (Last)
-        projets.forEach(function (p) {
-          p.getAnimations().forEach(function (a) { a.cancel(); });
-          p.classList.toggle('est-filtre', !correspond(p, filtre));
-          p.classList.add('est-visible');
-        });
+        projets.forEach(function (p) { p.getAnimations().forEach(function (a) { a.cancel(); }); });
+        appliquer(filtre);
 
         // Étape 3 : on anime de l'ancienne position vers la nouvelle (Invert + Play)
         const animations = [];
@@ -248,7 +381,11 @@
           }
         });
         return Promise.all(animations);
-      }).then(function () { enCours = false; });
+      }).then(function () {
+        enCours = false;
+        // La rangée a changé de longueur : on recalcule le défilement horizontal
+        reglerProjets();
+      });
     }
 
     boutons.forEach(function (bouton) {
@@ -262,7 +399,7 @@
 
 
   /* ------------------------------------------------------------------
-     6. Inclinaison 3D des cartes projets selon la position de la souris
+     8. Inclinaison 3D des cartes projets selon la position de la souris
      ------------------------------------------------------------------ */
   function gererInclinaison() {
     if (!sourisFine || mouvementReduit) return;
@@ -288,7 +425,7 @@
 
 
   /* ------------------------------------------------------------------
-     7. Timelines : le trait violet se dessine de haut en bas avec le scroll
+     9. Timelines : le trait violet se dessine de haut en bas avec le scroll
      ------------------------------------------------------------------ */
   function gererTimelines() {
     const timelines = document.querySelectorAll('[data-timeline]');
@@ -299,29 +436,18 @@
       return;
     }
 
-    let enAttente = false;
-    function mettreAJour() {
-      enAttente = false;
+    Site.surScroll(function () {
       const repere = window.innerHeight * 0.7; // le trait suit ce point de l'écran
       timelines.forEach(function (t) {
         const zone = t.getBoundingClientRect();
-        const progression = Math.min(Math.max((repere - zone.top) / zone.height, 0), 1);
-        t.style.setProperty('--progression', progression.toFixed(3));
+        t.style.setProperty('--progression', borner((repere - zone.top) / zone.height, 0, 1).toFixed(3));
       });
-    }
-    window.addEventListener('scroll', function () {
-      if (!enAttente) {
-        enAttente = true;
-        requestAnimationFrame(mettreAJour);
-      }
-    }, { passive: true });
-    window.addEventListener('resize', mettreAJour);
-    mettreAJour();
+    });
   }
 
 
   /* ------------------------------------------------------------------
-     8. Formulaire de contact : EmailJS + champ piège anti-spam
+     10. Formulaire de contact : EmailJS + champ piège anti-spam
      ------------------------------------------------------------------ */
   function gererFormulaire() {
     const formulaire = document.getElementById('formulaire-contact');
@@ -397,7 +523,9 @@
   document.addEventListener('site:pret', lancerTyping, { once: true });
   if (document.body.classList.contains('hero-pret')) lancerTyping();
 
-  gererParallax();
+  gererHero();
+  gererPourquoi();
+  gererProjetsHorizontaux();
   gererCompteurs();
   gererBarres();
   gererFiltre();

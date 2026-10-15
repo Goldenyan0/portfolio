@@ -17,6 +17,26 @@
 
 
 /* ==========================================================================
+   0. Polices hébergées dans le dépôt (sous-ensemble latin, accents compris)
+   Polices variables : un seul fichier couvre toutes les graisses.
+   ========================================================================== */
+@font-face {
+  font-family: "Space Grotesk";
+  src: url("../fonts/space-grotesk-latin.woff2") format("woff2");
+  font-weight: 500 700;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Inter";
+  src: url("../fonts/inter-latin.woff2") format("woff2");
+  font-weight: 400 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+
+/* ==========================================================================
    1. Variables
    ========================================================================== */
 :root {
@@ -88,6 +108,13 @@ body {
 /* Bloque le scroll pendant le préchargeur et quand le menu mobile est ouvert */
 body.scroll-bloque { overflow: hidden; }
 
+/* Défilement fluide Lenis : réglages recommandés par la librairie */
+html.lenis,
+html.lenis body { height: auto; }
+.lenis.lenis-smooth { scroll-behavior: auto; }
+.lenis.lenis-smooth [data-lenis-prevent] { overscroll-behavior: contain; }
+.lenis.lenis-stopped { overflow: hidden; }
+
 h1, h2, h3, h4 {
   margin: 0;
   font-family: var(--police-titre);
@@ -145,7 +172,7 @@ button { font: inherit; color: inherit; cursor: pointer; }
 }
 .lien-evitement:focus { top: 12px; }
 
-.section { padding-block: 96px; position: relative; }
+.section { padding-block: 96px; position: relative; overflow-x: clip; }
 @media (min-width: 1040px) { .section { padding-block: 140px; } }
 
 /* Petit libellé au-dessus des titres de section */
@@ -166,16 +193,82 @@ button { font: inherit; color: inherit; cursor: pointer; }
   background: currentColor;
 }
 
-/* --- Révélation au scroll ---
+/* --- Révélation au scroll : volet qui se lève (pas un simple fondu) ---
    Les éléments [data-revele] sont masqués uniquement si JS est actif (classe .js
-   posée sur <html>), puis commun.js ajoute .est-visible quand ils entrent à l'écran. */
+   posée sur <html>), puis commun.js ajoute .est-visible quand ils entrent à l'écran.
+   Le clip-path découpe l'élément par le bas ; à la fin, la découpe déborde de 60 px
+   pour ne pas rogner les ombres et les effets de survol. */
 .js [data-revele] {
-  opacity: 0;
-  transform: translateY(32px);
-  transition: opacity 0.9s var(--ease-sortie), transform 0.9s var(--ease-sortie);
-  transition-delay: calc(var(--rang, 0) * 0.12s);
+  clip-path: inset(0 0 100% 0);
+  transform: translateY(48px);
+  transition: clip-path 1.1s var(--ease-rideau), transform 1.1s var(--ease-sortie);
+  transition-delay: calc(var(--rang, 0) * 0.1s);
 }
-.js [data-revele].est-visible { opacity: 1; transform: none; }
+.js [data-revele].est-visible {
+  clip-path: inset(-60px -60px -60px -60px);
+  transform: none;
+}
+
+/* --- Titres révélés mot à mot (split-text) ---
+   commun.js découpe les titres [data-mots] en <span class="mot"> ;
+   chaque mot monte depuis sous sa ligne, avec un décalage (--i). */
+.mot {
+  display: inline-block;
+  overflow: hidden;
+  vertical-align: top;
+  /* marge interne pour ne pas couper les jambages (j, p, g) */
+  padding-bottom: 0.12em;
+  margin-bottom: -0.12em;
+}
+.mot__interieur {
+  display: inline-block;
+  transform: translateY(110%) rotate(4deg);
+  transform-origin: left bottom;
+  transition: transform 1s var(--ease-sortie);
+  transition-delay: calc(var(--i, 0) * 0.07s);
+}
+.est-visible .mot__interieur { transform: none; }
+
+/* --- Grands mots en fond, qui glissent horizontalement (parallax multicouche) --- */
+.mot-fond {
+  position: absolute;
+  top: 40px;
+  left: 0;
+  z-index: 0;
+  font-family: var(--police-titre);
+  font-weight: 700;
+  font-size: clamp(6rem, 22vw, 20rem);
+  line-height: 1;
+  letter-spacing: -0.05em;
+  white-space: nowrap;
+  color: transparent;
+  -webkit-text-stroke: 1.5px var(--ligne);
+  pointer-events: none;
+  user-select: none;
+  will-change: transform;
+}
+.section > .conteneur { position: relative; z-index: 1; }
+
+/* --- Parallax d'éléments : décalage vertical calculé par commun.js (--py).
+   On utilise la propriété "translate", indépendante de "transform",
+   pour ne pas écraser les effets de survol et de révélation. --- */
+[data-parallax] { translate: 0 var(--py, 0px); }
+.mot-fond { translate: var(--gx, 0px) 0; }
+
+/* --- Transitions entre sections : volet en clip-path piloté par le scroll ---
+   commun.js fait varier --volet de 0 (section qui arrive) à 1 (section en place). */
+.anime .volet {
+  --volet: 0;
+  clip-path: inset(
+    0 calc((1 - var(--volet)) * 9%)
+    0 calc((1 - var(--volet)) * 9%)
+    round calc((1 - var(--volet)) * 56px)
+  );
+}
+/* Variante : ouverture en cercle depuis le bas */
+.anime .volet--cercle {
+  clip-path: circle(calc(25% + var(--volet) * 120%) at 50% 100%);
+}
 
 /* Rang de cascade : les enfants d'un groupe apparaissent l'un après l'autre */
 [data-cascade] > :nth-child(1) { --rang: 0; }
@@ -561,7 +654,13 @@ html:not(.js) .titre-section em::after { transform: scaleX(1); }
    5. Page d'accueil
    ========================================================================== */
 
-/* --- 5.1 Hero --- */
+/* --- 5.1 Hero (scrollytelling) ---
+   .hero-scene est plus haute que l'écran ; le hero y reste épinglé (sticky)
+   pendant qu'index.js le transforme selon la progression du scroll. */
+.hero-scene { position: relative; }
+.anime:not(.hero-libre) .hero-scene { height: 180vh; }
+@media (min-width: 1040px) { .anime:not(.hero-libre) .hero-scene { height: 220vh; } }
+
 .hero {
   position: relative;
   min-height: 100svh;
@@ -569,6 +668,7 @@ html:not(.js) .titre-section em::after { transform: scaleX(1); }
   align-items: center;
   padding: calc(var(--hauteur-nav) + 32px) 0 120px;
   overflow: hidden;
+  transform-origin: 50% 0;
   background:
     radial-gradient(60% 50% at 80% 30%, rgba(167, 139, 250, 0.16), transparent 70%),
     radial-gradient(40% 40% at 10% 90%, rgba(124, 58, 237, 0.08), transparent 70%),
@@ -695,8 +795,19 @@ html:not(.js) .titre-section em::after { transform: scaleX(1); }
   line-height: 0.88;
   letter-spacing: -0.055em;
 }
-.hero__titre span { display: block; }
-.hero__titre span:last-child { color: var(--violet); }
+.hero__ligne { display: block; will-change: transform, opacity; }
+.hero__ligne:last-child { color: var(--violet); }
+.hero__haut,
+.hero__suite { will-change: transform, opacity; }
+
+/* Hero épinglé pendant la traversée de la scène.
+   Si le contenu ne tient pas dans l'écran (petit téléphone), index.js pose .hero-libre
+   et le hero redevient un bloc normal, pour ne rien couper. */
+.anime:not(.hero-libre) .hero {
+  position: sticky;
+  top: 0;
+  height: 100svh;
+}
 
 /* Effet machine à écrire */
 .hero__typing {
@@ -998,19 +1109,37 @@ html:not(.js) .titre-section em::after { transform: scaleX(1); }
 }
 
 
-/* --- 5.5 Pourquoi moi (animation 10 : cliché barré puis contre-valeur) --- */
-.comparaisons { display: grid; gap: 0; border-top: 1px solid var(--ligne); }
+/* --- 5.5 Pourquoi moi (animation 10 : cliché barré puis contre-valeur) ---
+   Version de base (sans JS ou mouvement réduit) : une liste.
+   Version animée (.anime sur <html>) : section épinglée, une comparaison par écran,
+   chaque nouvelle comparaison recouvre la précédente en volet depuis le bas. */
+.pourquoi { position: relative; background: var(--fond); }
+.pourquoi__scene { padding-block: 96px; }
+.pourquoi__entete {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 40px;
+}
+.pourquoi__titre {
+  font-size: clamp(2.4rem, 9vw, 5.5rem);
+  letter-spacing: -0.035em;
+}
+.pourquoi__compteur,
+.pourquoi__progression { display: none; }
+
+.comparaisons { border-top: 1px solid var(--ligne); }
 .comparaison {
-  display: grid;
-  gap: 14px;
   padding: 36px 0;
   border-bottom: 1px solid var(--ligne);
 }
+.comparaison > .conteneur { display: grid; gap: 14px; }
 @media (min-width: 1040px) {
-  .comparaison { grid-template-columns: 1fr 1.2fr; align-items: center; gap: 48px; padding: 44px 0; }
+  .comparaison > .conteneur { grid-template-columns: 1fr 1.2fr; align-items: center; gap: 48px; }
 }
 .comparaison__cliche {
-  position: relative;
   justify-self: start;
   font-family: var(--police-titre);
   font-size: clamp(1.5rem, 6vw, 2.6rem);
@@ -1019,12 +1148,9 @@ html:not(.js) .titre-section em::after { transform: scaleX(1); }
   line-height: 1.15;
   color: var(--encre-3);
 }
-.comparaison__cliche::before {
-  content: "« ";
-}
-.comparaison__cliche::after {
-  content: " »";
-}
+.comparaison__cliche::before { content: "« "; }
+.comparaison__cliche::after { content: " »"; }
+
 /* Le trait de rature, dessiné de gauche à droite.
    C'est un dégradé en arrière-plan d'un élément en ligne : si le cliché tient
    sur deux lignes, le trait barre la 1re ligne puis continue sur la 2e. */
@@ -1069,13 +1195,192 @@ html:not(.js) .comparaison__rature { background-size: 100% 0.11em; }
 }
 .js .comparaison.est-visible .comparaison__contre { opacity: 1; transform: none; }
 
+/* --- Version épinglée --- */
+.anime .pourquoi__scene { height: 420vh; padding: 0; }
+.anime .pourquoi__ecran {
+  position: sticky;
+  top: 0;
+  height: 100svh;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  padding: calc(var(--hauteur-nav) + 16px) 0 28px;
+  overflow: hidden;
+}
+.anime .pourquoi__entete { margin-bottom: 0; }
+.anime .pourquoi__titre { font-size: clamp(1.8rem, 6vw, 3.6rem); }
+.anime .pourquoi__compteur {
+  display: block;
+  font-family: var(--police-mono);
+  font-size: 0.9rem;
+  color: var(--encre-3);
+}
+.anime .pourquoi__compteur span { color: var(--violet); font-weight: 700; }
+.anime .pourquoi__progression {
+  display: block;
+  height: 3px;
+  margin-inline: var(--gouttiere);
+  background: var(--ligne);
+  border-radius: 999px;
+  overflow: hidden;
+}
+.anime .pourquoi__progression span {
+  display: block;
+  height: 100%;
+  background: var(--violet);
+  transform: scaleX(var(--progression, 0));
+  transform-origin: left;
+}
 
-/* --- 5.6 Projets (animation 6 : cascade + filtre + survol ; tilt 3D) --- */
+.anime .comparaisons { position: relative; border: 0; }
+/* Chaque comparaison occupe tout l'écran ; --entree (0 → 1) pilote le volet,
+   --recul fait légèrement reculer celle qui se fait recouvrir */
+.anime .comparaisons .comparaison {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  padding: 0;
+  border: 0;
+  background: var(--fond);
+  clip-path: inset(calc((1 - var(--entree, 0)) * 100%) 0 0 0);
+  transform: scale(var(--recul, 1));
+  transform-origin: 50% 0;
+  transition: none;
+}
+.anime .comparaisons .comparaison:first-child { --entree: 1; }
+.anime .comparaison > .conteneur { grid-template-columns: 1fr; gap: clamp(20px, 4vh, 40px); }
+.anime .comparaison__cliche { font-size: clamp(2rem, 8.5vw, 6.2rem); line-height: 1.02; }
+.anime .comparaison__contre { font-size: clamp(1.6rem, 5.8vw, 4.2rem); line-height: 1.05; }
+/* La rature suit le scroll (--rature de 0 à 1) */
+.anime .comparaisons .comparaison .comparaison__rature { background-size: calc(var(--rature, 0) * 100%) 0.1em; transition: none; }
+/* La contre-valeur apparaît en "pop" quand la rature est finie */
+.anime .comparaisons .comparaison .comparaison__contre { transition-delay: 0s; }
+.anime .comparaisons .comparaison:not(.est-contre) .comparaison__contre { opacity: 0; transform: scale(0.85) translateY(12px); }
+.anime .comparaisons .comparaison.est-contre .comparaison__contre { opacity: 1; transform: none; }
+
+/* --- 5.6 Projets (animation 6 : cascade + filtre + survol ; tilt 3D) ---
+   Mobile : carrousel horizontal au doigt (aimanté sur chaque carte).
+   ≥ 720 px avec animations (.projets-horizontal sur <html>) : section épinglée,
+   la rangée de cartes défile horizontalement quand on scrolle verticalement. */
+.projets { position: relative; }
+.projets__scene { padding-block: 96px; }
+.projets__entete { margin-bottom: 32px; }
+.projets__entete .filtres { margin-top: 28px; }
+.projets__pied { display: none; }
+/* Grille de repli : alignée sur le conteneur de la page */
+.projets__fenetre {
+  max-width: var(--largeur-max);
+  margin-inline: auto;
+  padding-inline: var(--gouttiere);
+}
+@media (max-width: 719px) { .projets__fenetre { padding-inline: 0; } }
+.projets-horizontal .projets__fenetre { max-width: none; padding-inline: 0; }
+
 .filtres {
   display: flex;
-  flex-wrap: wrap;
   gap: 8px;
-  margin-bottom: 36px;
+  /* Sur mobile, les filtres tiennent sur une ligne qui défile au doigt */
+  overflow-x: auto;
+  scrollbar-width: none;
+  margin-inline: calc(var(--gouttiere) * -1);
+  padding-inline: var(--gouttiere);
+}
+.filtres::-webkit-scrollbar { display: none; }
+.filtre { flex-shrink: 0; white-space: nowrap; }
+@media (min-width: 720px) {
+  .filtres { flex-wrap: wrap; overflow: visible; margin-inline: 0; padding-inline: 0; }
+}
+
+/* Carrousel mobile */
+@media (max-width: 719px) {
+  .grille-projets {
+    display: flex;
+    gap: 14px;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    padding: 8px var(--gouttiere) 24px;
+  }
+  .grille-projets::-webkit-scrollbar { display: none; }
+  .grille-projets .projet {
+    flex: 0 0 84vw;
+    scroll-snap-align: center;
+  }
+}
+
+/* Version épinglée à défilement horizontal */
+.projets-horizontal .projets__scene { height: var(--hauteur-scene, 300vh); padding: 0; }
+.projets-horizontal .projets__ecran {
+  position: sticky;
+  top: 0;
+  height: 100svh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 24px;
+  padding: calc(var(--hauteur-nav) + 8px) 0 24px;
+  overflow: hidden;
+}
+.projets-horizontal .projets__entete {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 28px 32px;
+  margin-bottom: 0;
+}
+.projets-horizontal .projets__entete .titre-section { font-size: clamp(2.2rem, 4.4vw, 4rem); max-width: none; }
+.projets-horizontal .filtres { margin-top: 0; }
+.projets-horizontal .filtre { min-height: 38px; padding: 0 15px; font-size: 0.86rem; }
+/* Cartes plus compactes pour tenir dans la hauteur de l'écran */
+.projets-horizontal .projet__corps { padding: 20px; gap: 9px; }
+.projets-horizontal .projet__corps h3 { font-size: 1.3rem; }
+.projets-horizontal .projet__corps p:not(.projet__meta) { font-size: 0.9rem; line-height: 1.55; }
+@media (max-height: 860px) {
+  .projets-horizontal .projets__entete .surtitre { display: none; }
+  .projets-horizontal .projet__media { aspect-ratio: 2 / 1; }
+}
+@media (max-height: 800px) {
+  .projets-horizontal .projets__ecran { gap: 14px; padding-top: calc(var(--hauteur-nav) - 8px); padding-bottom: 14px; }
+  .projets-horizontal .projet__media { aspect-ratio: 5 / 2; }
+  .projets-horizontal .projet__corps { padding: 16px 18px; gap: 7px; }
+  .projets-horizontal .projets__pied { display: none; }
+}
+.projets-horizontal .grille-projets {
+  display: flex;
+  align-items: stretch;
+  gap: 24px;
+  width: max-content;
+  /* La rangée démarre alignée sur le conteneur de la page */
+  padding-left: max(var(--gouttiere), calc((100vw - var(--largeur-max)) / 2 + var(--gouttiere)));
+  padding-right: var(--gouttiere);
+  translate: var(--tx, 0px) 0;
+}
+.projets-horizontal .projet { width: clamp(300px, 29vw, 410px); flex-shrink: 0; }
+.projets-horizontal .projet__media { aspect-ratio: 16 / 9; }
+.projets-horizontal .projets__pied {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  font-family: var(--police-mono);
+  font-size: 0.78rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--encre-3);
+}
+.projets__progression {
+  flex: 1;
+  height: 3px;
+  background: var(--ligne);
+  border-radius: 999px;
+  overflow: hidden;
+}
+.projets__progression span {
+  display: block;
+  height: 100%;
+  background: var(--violet);
+  transform: scaleX(var(--progression, 0));
+  transform-origin: left;
 }
 .filtre {
   position: relative;
@@ -1092,11 +1397,8 @@ html:not(.js) .comparaison__rature { background-size: 100% 0.11em; }
 .filtre:hover { border-color: var(--violet); color: var(--violet); }
 .filtre[aria-pressed="true"] { background: var(--encre); border-color: var(--encre); color: #fff; }
 
-.grille-projets {
-  display: grid;
-  gap: 20px;
-}
-@media (min-width: 720px) { .grille-projets { grid-template-columns: repeat(2, 1fr); } }
+/* Grille classique (≥ 720 px sans animations) */
+@media (min-width: 720px) { .grille-projets { display: grid; gap: 20px; grid-template-columns: repeat(2, 1fr); } }
 @media (min-width: 1200px) { .grille-projets { grid-template-columns: repeat(3, 1fr); gap: 24px; } }
 
 .projet {
@@ -1206,7 +1508,53 @@ html:not(.js) .comparaison__rature { background-size: 100% 0.11em; }
 .projet__lien { position: absolute; inset: 0; z-index: 3; }
 .projet__lien:focus-visible { outline-offset: -4px; border-radius: var(--rayon); }
 
+/* Parallax des images dans la rangée horizontale : l'image glisse moins vite que sa carte */
+.projets-horizontal .projet__media img { scale: 1.2; translate: var(--ix, 0px) 0; }
+
+/* Visuel SVG du projet Maison du Don : schéma réseau animé */
+.projet__media--schema {
+  display: grid;
+  place-items: center;
+  background:
+    radial-gradient(circle at 50% 50%, color-mix(in srgb, var(--accent) 12%, transparent), transparent 70%),
+    var(--fond);
+}
+.schema-site { width: 100%; height: 100%; padding: 6%; }
+.schema-site__lien { fill: none; stroke: var(--ligne); stroke-width: 2; }
+/* Les "paquets" qui circulent du cœur de réseau vers les équipements */
+.schema-site__flux {
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  stroke-dasharray: 6 18;
+  animation: flux 1.4s linear infinite;
+}
+@keyframes flux { to { stroke-dashoffset: -24; } }
+.schema-site__coeur { fill: var(--accent); }
+.schema-site__led { fill: #fff; animation: led 1.2s steps(2) infinite; }
+.schema-site__led:nth-of-type(2) { animation-delay: 0.3s; }
+.schema-site__led:nth-of-type(3) { animation-delay: 0.6s; }
+.schema-site__led:nth-of-type(4) { animation-delay: 0.9s; }
+@keyframes led { 50% { opacity: 0.3; } }
+.schema-site__noeud rect,
+.schema-site__noeud path,
+.schema-site__noeud circle {
+  fill: var(--surface);
+  stroke: var(--encre);
+  stroke-width: 2;
+  stroke-linejoin: round;
+}
+.schema-site__noeud path { fill: none; }
+.schema-site text {
+  font-family: var(--police-mono);
+  font-size: 10px;
+  fill: var(--encre-2);
+  text-anchor: middle;
+}
+
 /* Couleur d'accent propre à chaque projet */
+.projet--mdd { --accent: #be123c; }
 .projet--iris { --accent: #ea580c; }
 .projet--bots { --accent: #4f46e5; }
 .projet--nsi { --accent: #0d9488; }
@@ -1218,7 +1566,45 @@ html:not(.js) .comparaison__rature { background-size: 100% 0.11em; }
 
 
 /* --- 5.7 Stack technique (badges + animation 7 : barres avec brillance) --- */
-.stack { background: var(--surface); }
+.stack { background: var(--surface-2); }
+
+/* Catégorie mise en avant : l'administration systèmes & réseaux de l'alternance */
+.stack__alternance {
+  margin-bottom: 56px;
+  padding: 28px;
+  border-radius: var(--rayon);
+  background: var(--encre);
+  color: #fff;
+}
+.stack__alternance h3 {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 8px 14px;
+  margin-bottom: 20px;
+  font-size: clamp(1.4rem, 4.5vw, 2rem);
+}
+.stack__alternance h3 span {
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: var(--violet);
+  font-family: var(--police-mono);
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.stack__alternance .badges li {
+  border-color: rgba(255, 255, 255, 0.14);
+  background: rgba(255, 255, 255, 0.06);
+  color: #fff;
+}
+.stack__alternance .badges li:hover {
+  border-color: var(--violet-clair);
+  background: rgba(167, 139, 250, 0.18);
+  color: #fff;
+}
+@media (min-width: 1040px) { .stack__alternance { padding: 40px; margin-bottom: 80px; } }
 .stack__grille { display: grid; gap: 48px; }
 @media (min-width: 1040px) { .stack__grille { grid-template-columns: 1fr 1fr; gap: 80px; } }
 
@@ -1412,6 +1798,7 @@ html:not(.js) .timeline__trait { transform: none; }
 
 
 /* --- 5.10 Contact --- */
+.contact { background: var(--violet-pale); }
 .contact__grille { display: grid; gap: 48px; }
 @media (min-width: 1040px) { .contact__grille { grid-template-columns: 1fr 1fr; gap: 80px; } }
 
@@ -1504,7 +1891,10 @@ html:not(.js) .timeline__trait { transform: none; }
 
   .js [data-revele],
   .js .cascade,
-  .js .comparaison__contre { opacity: 1; transform: none; }
+  .js .comparaison__contre { opacity: 1; transform: none; clip-path: none; }
+  .mot__interieur { transform: none; }
+  [data-parallax],
+  .mot-fond { translate: none; }
 
   /* Le ticker devient une liste statique qui passe à la ligne */
   .ticker__piste { width: auto; animation: none; }

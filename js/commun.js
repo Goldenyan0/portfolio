@@ -1,11 +1,15 @@
 /* ==========================================================================
    commun.js — comportements partagés par les 3 pages
+   - Défilement fluide (Lenis) + liens d'ancre
    - Préchargeur (si présent dans la page)
    - Navigation : flou au scroll, masquée en descendant, menu mobile
+   - Titres découpés mot à mot ([data-mots])
    - Révélations au scroll ([data-revele] → .est-visible)
-   - Curseur personnalisé (souris uniquement)
-   - Boutons magnétiques (.magnetique)
-   Tout respecte prefers-reduced-motion.
+   - Moteur de scroll partagé : volets entre sections ([data-volet]),
+     parallax ([data-parallax]) et grands mots de fond ([data-glisse])
+   - Curseur personnalisé (souris uniquement) et boutons magnétiques
+   Tout respecte prefers-reduced-motion : dans ce cas, rien ne bouge
+   et la classe .anime n'est pas posée sur <html> (voir le <head>).
    ========================================================================== */
 
 (function () {
@@ -16,12 +20,56 @@
   // L'appareil a-t-il une vraie souris (pas un écran tactile) ?
   const sourisFine = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
 
-  // Petit outil exposé aux scripts de page (index.js, cv.js, e39.js)
-  window.Site = { mouvementReduit: mouvementReduit, sourisFine: sourisFine };
+  // Fonctions de scroll enregistrées par les scripts de page (index.js…)
+  const ecouteursScroll = [];
+
+  // Outils exposés aux scripts de page
+  window.Site = {
+    mouvementReduit: mouvementReduit,
+    sourisFine: sourisFine,
+    lenis: null,
+    progressionHero: 0,
+    // Enregistre une fonction appelée à chaque image où la page défile
+    surScroll: function (fn) { ecouteursScroll.push(fn); fn(); },
+    // Force un recalcul (après un changement de mise en page)
+    rafraichir: function () { demanderMiseAJour(); },
+    // Borne une valeur entre min et max
+    borner: function (v, min, max) { return Math.min(Math.max(v, min), max); }
+  };
 
 
   /* ------------------------------------------------------------------
-     1. Préchargeur : compteur 0 → 100 %, barre, puis rideau vers le haut
+     1. Défilement fluide avec Lenis (désactivé si mouvement réduit)
+     ------------------------------------------------------------------ */
+  function lancerLenis() {
+    if (mouvementReduit || typeof window.Lenis === 'undefined') return;
+
+    const lenis = new window.Lenis({ lerp: 0.09, smoothWheel: true });
+    window.Site.lenis = lenis;
+
+    function boucle(temps) {
+      lenis.raf(temps);
+      requestAnimationFrame(boucle);
+    }
+    requestAnimationFrame(boucle);
+
+    // Les liens internes (#section) défilent en douceur au lieu de sauter
+    document.addEventListener('click', function (e) {
+      const lien = e.target.closest('a[href^="#"]');
+      if (!lien) return;
+      const id = lien.getAttribute('href');
+      if (id === '#' || id === '#contenu') return; // le lien d'évitement garde son comportement natif
+      const cible = document.querySelector(id);
+      if (!cible) return;
+      e.preventDefault();
+      // Le hero est épinglé : pour y revenir, on remonte tout en haut
+      lenis.scrollTo(id === '#accueil' ? 0 : cible, { duration: 1.4 });
+    });
+  }
+
+
+  /* ------------------------------------------------------------------
+     2. Préchargeur : compteur 0 → 100 %, barre, puis rideau vers le haut
      ------------------------------------------------------------------ */
   function lancerPrechargeur() {
     const prechargeur = document.getElementById('prechargeur');
@@ -36,6 +84,7 @@
     const valeur = document.getElementById('prechargeur-valeur');
     const barre = document.getElementById('prechargeur-barre');
     document.body.classList.add('scroll-bloque');
+    if (window.Site.lenis) window.Site.lenis.stop();
 
     // Durée minimale pour que le compteur soit lisible ; la page doit aussi être chargée
     const dureeMin = mouvementReduit ? 0 : 1400;
@@ -71,6 +120,7 @@
       setTimeout(function () {
         prechargeur.classList.add('est-termine');
         document.body.classList.remove('scroll-bloque');
+        if (window.Site.lenis) window.Site.lenis.start();
         // La cascade du hero démarre pendant que le rideau se lève
         setTimeout(function () {
           document.body.classList.add('hero-pret');
@@ -91,16 +141,14 @@
 
 
   /* ------------------------------------------------------------------
-     2. Navigation : flou après 40 px, cachée en descendant, visible en remontant
+     3. Navigation : flou après 40 px, cachée en descendant, visible en remontant
      ------------------------------------------------------------------ */
   function gererNavigation() {
     const nav = document.getElementById('nav');
     if (!nav) return;
 
     let dernierY = window.scrollY;
-    let enAttente = false;
-
-    function mettreAJour() {
+    window.Site.surScroll(function () {
       const y = window.scrollY;
       nav.classList.toggle('nav--floue', y > 40);
 
@@ -112,16 +160,7 @@
         nav.classList.remove('nav--cachee');
       }
       dernierY = y;
-      enAttente = false;
-    }
-
-    window.addEventListener('scroll', function () {
-      if (!enAttente) {
-        enAttente = true;
-        requestAnimationFrame(mettreAJour);
-      }
-    }, { passive: true });
-    mettreAJour();
+    });
 
     // Menu mobile
     const burger = document.getElementById('burger');
@@ -134,6 +173,7 @@
       menu.classList.toggle('est-ouvert', ouvrir);
       document.body.classList.toggle('menu-ouvert', ouvrir);
       document.body.classList.toggle('scroll-bloque', ouvrir);
+      if (window.Site.lenis) ouvrir ? window.Site.lenis.stop() : window.Site.lenis.start();
     }
 
     burger.addEventListener('click', function () {
@@ -154,33 +194,138 @@
 
 
   /* ------------------------------------------------------------------
-     3. Révélations au scroll : ajoute .est-visible aux [data-revele]
-        (+ titres .titre-section pour le soulignement qui se dessine)
+     4. Titres découpés mot à mot : chaque mot est enveloppé dans
+        <span class="mot"><span class="mot__interieur">…</span></span>
+        (les balises internes comme <em> sont conservées)
      ------------------------------------------------------------------ */
-  function gererRevelations() {
-    const elements = document.querySelectorAll('[data-revele]');
+  function decouperTitres() {
+    if (mouvementReduit) return;
 
-    if (mouvementReduit || !('IntersectionObserver' in window)) {
-      elements.forEach(function (el) { el.classList.add('est-visible'); });
-      return;
-    }
+    document.querySelectorAll('[data-mots]').forEach(function (titre) {
+      // Les lecteurs d'écran lisent le titre entier, pas mot par mot
+      titre.setAttribute('aria-label', titre.textContent.replace(/\s+/g, ' ').trim());
+      let rang = 0;
 
-    const observateur = new IntersectionObserver(function (entrees) {
-      entrees.forEach(function (entree) {
-        if (entree.isIntersecting) {
-          entree.target.classList.add('est-visible');
-          // L'élément est montré une seule fois
-          observateur.unobserve(entree.target);
-        }
-      });
-    }, { threshold: 0.15, rootMargin: '0px 0px -8% 0px' });
-
-    elements.forEach(function (el) { observateur.observe(el); });
+      function traiter(noeud) {
+        Array.from(noeud.childNodes).forEach(function (enfant) {
+          if (enfant.nodeType === Node.TEXT_NODE) {
+            const morceaux = enfant.textContent.split(/(\s+)/);
+            const fragment = document.createDocumentFragment();
+            morceaux.forEach(function (morceau) {
+              if (morceau === '') return;
+              if (/^\s+$/.test(morceau)) {
+                fragment.appendChild(document.createTextNode(' '));
+                return;
+              }
+              const mot = document.createElement('span');
+              mot.className = 'mot';
+              mot.setAttribute('aria-hidden', 'true');
+              const interieur = document.createElement('span');
+              interieur.className = 'mot__interieur';
+              interieur.style.setProperty('--i', rang++);
+              interieur.textContent = morceau;
+              mot.appendChild(interieur);
+              fragment.appendChild(mot);
+            });
+            enfant.replaceWith(fragment);
+          } else if (enfant.nodeType === Node.ELEMENT_NODE) {
+            traiter(enfant);
+          }
+        });
+      }
+      traiter(titre);
+    });
   }
 
 
   /* ------------------------------------------------------------------
-     4. Curseur personnalisé : un point + un anneau qui suit avec retard
+     5. Révélations au scroll : ajoute .est-visible aux [data-revele] et [data-mots]
+     ------------------------------------------------------------------ */
+  function gererRevelations() {
+    const elements = Array.from(document.querySelectorAll('[data-revele], [data-mots]'));
+
+    if (mouvementReduit) {
+      elements.forEach(function (el) { el.classList.add('est-visible'); });
+      return;
+    }
+
+    // Remarque : on n'utilise pas IntersectionObserver ici, car il tient compte
+    // du clip-path — un élément encore "replié" (clip-path à 100 %) n'est jamais vu.
+    // getBoundingClientRect, lui, donne la vraie place de l'élément.
+    let enAttente = elements;
+    window.Site.surScroll(function () {
+      if (!enAttente.length) return;
+      const h = window.innerHeight;
+      const l = window.innerWidth;
+      enAttente = enAttente.filter(function (el) {
+        const zone = el.getBoundingClientRect();
+        const visible = zone.top < h * 0.9 && zone.bottom > 0 && zone.left < l && zone.right > 0;
+        // L'élément est montré une seule fois
+        if (visible) el.classList.add('est-visible');
+        return !visible;
+      });
+    });
+  }
+
+
+  /* ------------------------------------------------------------------
+     6. Moteur de scroll partagé
+        Une seule boucle par image : toutes les fonctions enregistrées
+        avec Site.surScroll() sont appelées quand la page défile.
+     ------------------------------------------------------------------ */
+  let miseAJourDemandee = false;
+  function demanderMiseAJour() {
+    if (miseAJourDemandee) return;
+    miseAJourDemandee = true;
+    requestAnimationFrame(function () {
+      miseAJourDemandee = false;
+      ecouteursScroll.forEach(function (fn) { fn(); });
+    });
+  }
+  window.addEventListener('scroll', demanderMiseAJour, { passive: true });
+  window.addEventListener('resize', demanderMiseAJour);
+
+  function gererEffetsScroll() {
+    if (mouvementReduit) return;
+    const borner = window.Site.borner;
+
+    // Volets : --volet passe de 0 à 1 pendant que la section entre dans l'écran
+    const volets = document.querySelectorAll('[data-volet]');
+    // Parallax : décalage vertical proportionnel à la distance au centre de l'écran
+    const parallaxes = document.querySelectorAll('[data-parallax]');
+    // Grands mots de fond : glissent horizontalement pendant la traversée de leur section
+    const glisses = document.querySelectorAll('[data-glisse]');
+
+    window.Site.surScroll(function () {
+      const h = window.innerHeight;
+
+      volets.forEach(function (el) {
+        const haut = el.getBoundingClientRect().top;
+        el.style.setProperty('--volet', borner((h - haut) / (h * 0.75), 0, 1).toFixed(3));
+      });
+
+      parallaxes.forEach(function (el) {
+        // On retire le décalage déjà appliqué pour mesurer la position "naturelle"
+        const actuel = parseFloat(el.dataset.decalage || '0');
+        const zone = el.getBoundingClientRect();
+        const centre = zone.top - actuel + zone.height / 2;
+        const decalage = (h / 2 - centre) * parseFloat(el.dataset.parallax);
+        el.dataset.decalage = decalage.toFixed(1);
+        el.style.setProperty('--py', decalage.toFixed(1) + 'px');
+      });
+
+      glisses.forEach(function (el) {
+        const zone = el.parentElement.getBoundingClientRect();
+        const traversee = borner((h - zone.top) / (h + zone.height), 0, 1); // 0 → 1
+        const decalage = (0.5 - traversee) * parseFloat(el.dataset.glisse) * window.innerWidth;
+        el.style.setProperty('--gx', decalage.toFixed(1) + 'px');
+      });
+    });
+  }
+
+
+  /* ------------------------------------------------------------------
+     7. Curseur personnalisé : un point + un anneau qui suit avec retard
      ------------------------------------------------------------------ */
   function gererCurseur() {
     if (!sourisFine) return;
@@ -234,7 +379,7 @@
 
 
   /* ------------------------------------------------------------------
-     5. Boutons magnétiques : le bouton est attiré vers la souris
+     8. Boutons magnétiques : le bouton est attiré vers la souris
      ------------------------------------------------------------------ */
   function gererMagnetisme() {
     if (!sourisFine || mouvementReduit) return;
@@ -269,9 +414,12 @@
   /* ------------------------------------------------------------------
      Démarrage
      ------------------------------------------------------------------ */
+  lancerLenis();
   lancerPrechargeur();
   gererNavigation();
+  decouperTitres();
   gererRevelations();
+  gererEffetsScroll();
   gererCurseur();
   gererMagnetisme();
 })();
