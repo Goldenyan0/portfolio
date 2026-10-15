@@ -1799,6 +1799,158 @@ html:not(.js) .timeline__trait { transform: none; }
 }
 
 
+/* Lien dans un texte courant */
+.lien-texte {
+  color: var(--violet);
+  font-weight: 600;
+  background: linear-gradient(currentColor, currentColor) no-repeat 0 100% / 0% 1.5px;
+  transition: background-size 0.4s var(--ease-sortie);
+}
+.lien-texte:hover { background-size: 100% 1.5px; }
+
+
+/* --- 5.9 bis Mon rapport à l'IA --- */
+.rapport-ia__grille { display: grid; gap: 56px; align-items: center; }
+@media (min-width: 1040px) { .rapport-ia__grille { grid-template-columns: 1.3fr 1fr; gap: 80px; } }
+
+.convictions { display: grid; gap: 28px; margin-top: 48px; }
+.convictions li {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 20px;
+  align-items: baseline;
+  padding-top: 24px;
+  border-top: 1px solid var(--ligne);
+}
+.convictions__numero {
+  font-family: var(--police-mono);
+  font-size: 0.9rem;
+  color: var(--violet);
+}
+.convictions p {
+  font-family: var(--police-titre);
+  font-size: clamp(1.35rem, 4.6vw, 2.1rem);
+  font-weight: 500;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+}
+.convictions strong { color: var(--violet); font-weight: 700; }
+
+/* Le socle : trois couches empilées, l'IA posée au-dessus et qui flotte */
+.socle {
+  margin: 0;
+  display: grid;
+  gap: 10px;
+  max-width: 440px;
+  justify-self: center;
+  width: 100%;
+}
+.socle__couche {
+  padding: 22px 24px;
+  border-radius: 16px;
+  border: 1px solid var(--ligne);
+  background: var(--surface);
+  font-family: var(--police-titre);
+  font-weight: 600;
+  font-size: 1.1rem;
+  text-align: center;
+  box-shadow: var(--ombre);
+}
+.socle__couche--base {
+  padding-block: 30px;
+  background: var(--encre);
+  border-color: var(--encre);
+  color: #fff;
+}
+.socle__couche--ia {
+  margin-bottom: 18px;
+  background: var(--violet);
+  border-color: var(--violet);
+  color: #fff;
+  box-shadow: 0 24px 50px var(--violet-ombre);
+}
+.anime .socle__couche--ia.est-visible { animation: flotte 5s ease-in-out 1.2s infinite; }
+@keyframes flotte {
+  0%, 100% { translate: 0 0; }
+  50% { translate: 0 -10px; }
+}
+/* Dans le socle, les couches arrivent de haut en bas comme si on les posait */
+.js .socle [data-revele] { transform: translateY(-40px); }
+.js .socle [data-revele].est-visible { transform: none; }
+
+
+/* --- 5.9 ter Comment ce site a été créé --- */
+.creation { background: var(--surface); }
+.etapes-creation {
+  display: grid;
+  gap: 16px;
+  counter-reset: etape;
+}
+@media (min-width: 720px) { .etapes-creation { grid-template-columns: repeat(2, 1fr); } }
+@media (min-width: 1200px) { .etapes-creation { grid-template-columns: repeat(5, 1fr); } }
+.etapes-creation li {
+  padding: 24px;
+  border: 1px solid var(--ligne);
+  border-radius: var(--rayon);
+  background: var(--fond);
+  transition: border-color 0.3s, transform 0.5s var(--ease-sortie);
+}
+.etapes-creation li:hover { border-color: var(--violet); transform: translateY(-6px); }
+.etapes-creation__numero {
+  display: inline-grid;
+  place-items: center;
+  width: 40px; height: 40px;
+  border-radius: 12px;
+  background: var(--violet-pale);
+  color: var(--violet);
+  font-family: var(--police-mono);
+  font-weight: 700;
+  font-size: 0.85rem;
+}
+.etapes-creation h3 { margin-top: 18px; font-size: 1.2rem; }
+.etapes-creation p { margin-top: 8px; font-size: 0.93rem; color: var(--encre-2); }
+
+.creation__sous-titre {
+  margin: 80px 0 32px;
+  font-size: clamp(1.6rem, 5vw, 2.4rem);
+}
+.versions { display: grid; gap: 32px; }
+@media (min-width: 1040px) { .versions { grid-template-columns: repeat(3, 1fr); gap: 24px; } }
+.version figure { margin: 0; }
+/* Capture présentée dans un cadre de navigateur */
+.version__cadre {
+  position: relative;
+  padding-top: 26px;
+  border: 1px solid var(--ligne);
+  border-radius: 14px;
+  background: var(--surface-2);
+  overflow: hidden;
+  box-shadow: var(--ombre);
+}
+.version__cadre::before {
+  content: "";
+  position: absolute;
+  top: 9px; left: 12px;
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: #f87171;
+  box-shadow: 14px 0 0 #fbbf24, 28px 0 0 #34d399;
+}
+.version__cadre img { width: 100%; transition: transform 0.9s var(--ease-sortie); }
+.version:hover .version__cadre img { transform: scale(1.04); }
+.version--actuelle .version__cadre { border-color: var(--violet); box-shadow: 0 20px 50px var(--violet-ombre); }
+.version figcaption { margin-top: 18px; }
+.version__date {
+  font-family: var(--police-mono);
+  font-size: 0.78rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--violet);
+}
+.version h4 { margin-top: 6px; font-size: 1.3rem; }
+.version figcaption p:last-child { margin-top: 8px; font-size: 0.95rem; color: var(--encre-2); }
+
+
 /* --- 5.10 Contact --- */
 .contact { background: var(--violet-pale); }
 .contact__grille { display: grid; gap: 48px; }
@@ -1874,131 +2026,154 @@ html:not(.js) .timeline__trait { transform: none; }
 
 /* ==========================================================================
    6. Page CV (+ impression)
-   Réutilise les composants partagés (timeline, badges, boutons, nav).
+   La "feuille" reprend la structure du CV d'origine (CV_yanis.pdf) :
+   colonne de gauche (photo, coordonnées, compétences, langues, intérêts)
+   et colonne de droite (nom, titre, profil, projets, expériences, formations),
+   avec de grandes formes douces en fond et des titres à empattements.
+   Couleur du CV : une seule variable, --cv-accent (bleu d'origine : #2f5fdc).
    ========================================================================== */
-.cv { padding: calc(var(--hauteur-nav) + 40px) 0 96px; }
+.cv { padding: calc(var(--hauteur-nav) + 32px) 0 96px; }
 
-.cv-entete {
-  padding-bottom: 40px;
-  margin-bottom: 48px;
-  border-bottom: 1px solid var(--ligne);
-}
-.cv-entete__actions {
+.cv-actions {
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
-  margin-bottom: 40px;
+  margin-bottom: 28px;
 }
-.cv-entete__nom {
-  font-size: clamp(3rem, 14vw, 8rem);
-  line-height: 0.9;
-  letter-spacing: -0.05em;
-}
-.cv-entete__titre {
-  margin-top: 16px;
-  font-family: var(--police-titre);
-  font-size: clamp(1.25rem, 4.5vw, 2rem);
-  font-weight: 600;
-  color: var(--violet);
-}
-.cv-contacts {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px 24px;
-  margin-top: 28px;
-  font-size: 0.95rem;
-  color: var(--encre-2);
-}
-.cv-contacts li { display: inline-flex; align-items: center; gap: 8px; }
-.cv-contacts .icone { color: var(--violet); }
-.cv-contacts a { border-bottom: 1px solid transparent; transition: border-color 0.2s, color 0.2s; }
-.cv-contacts a:hover { color: var(--violet); border-color: currentColor; }
 
-.cv-grille { display: grid; gap: 56px; }
-@media (min-width: 1040px) { .cv-grille { grid-template-columns: 1.7fr 1fr; gap: 72px; } }
-
-.cv-section + .cv-section { margin-top: 48px; }
-.cv-section > h2 {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  margin-bottom: 24px;
-  font-size: clamp(1.5rem, 5vw, 2rem);
+.cv-feuille {
+  --cv-accent: var(--violet);
+  --cv-pale: var(--violet-pale);
+  --cv-serif: Georgia, "Times New Roman", serif;
+  position: relative;
+  display: grid;
+  gap: 36px;
+  grid-template-areas: "titre" "identite" "principal" "lateral";
+  padding: 32px 20px;
+  border: 1px solid var(--ligne);
+  border-radius: 24px;
+  background: var(--surface);
+  box-shadow: var(--ombre);
+  overflow: hidden;
+  isolation: isolate;
 }
-/* Petit trait violet devant chaque titre de section */
-.cv-section > h2::before {
+@media (min-width: 1040px) {
+  .cv-feuille {
+    grid-template-columns: minmax(260px, 0.75fr) 1.7fr;
+    grid-template-areas: "identite titre" "lateral principal";
+    gap: 40px 64px;
+    padding: 56px;
+  }
+}
+/* Les grandes formes douces du CV d'origine */
+.cv-feuille::before,
+.cv-feuille::after {
   content: "";
-  width: 28px;
-  height: 4px;
-  border-radius: 999px;
-  background: var(--violet);
+  position: absolute;
+  z-index: -1;
+  background: var(--cv-pale);
+  border-radius: 50%;
 }
-.cv-profil { font-size: 1.08rem; color: var(--encre-2); max-width: 62ch; }
+.cv-feuille::before { top: -18%; right: -22%; width: 75%; height: 55%; transform: rotate(-18deg); }
+.cv-feuille::after { bottom: -20%; left: -30%; width: 70%; height: 50%; transform: rotate(22deg); }
 
-.cv-puces { margin-top: 10px; display: grid; gap: 6px; }
+.cv-identite { grid-area: identite; }
+.cv-titre { grid-area: titre; }
+.cv-lateral { grid-area: lateral; }
+.cv-principal { grid-area: principal; }
+
+.cv-photo {
+  width: 150px;
+  height: 150px;
+  object-fit: cover;
+  border-radius: 12px;
+  box-shadow: var(--ombre);
+}
+.cv-contacts { display: grid; gap: 8px; margin-top: 24px; font-size: 0.93rem; }
+.cv-contacts li { display: flex; align-items: center; gap: 10px; word-break: break-word; }
+.cv-contacts .icone { color: var(--encre); }
+.cv-contacts a:hover { color: var(--cv-accent); }
+
+.cv-titre__nom {
+  font-family: var(--cv-serif);
+  font-size: clamp(1.9rem, 7vw, 2.8rem);
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  line-height: 1.1;
+}
+.cv-titre__poste {
+  margin-top: 10px;
+  font-size: clamp(1.4rem, 5vw, 2.1rem);
+  font-weight: 400;
+  line-height: 1.2;
+  color: var(--cv-accent);
+}
+.cv-titre__profil { margin-top: 18px; color: var(--encre-2); max-width: 62ch; }
+@media (min-width: 1040px) {
+  .cv-titre { text-align: right; }
+  .cv-titre__profil { margin-left: auto; }
+}
+
+.cv-section + .cv-section { margin-top: 36px; }
+.cv-section > h2 {
+  margin-bottom: 16px;
+  font-family: var(--cv-serif);
+  font-size: clamp(1.4rem, 4.5vw, 1.75rem);
+  font-weight: 700;
+  letter-spacing: 0;
+  color: var(--cv-accent);
+}
+
+.cv-groupe + .cv-groupe { margin-top: 16px; }
+.cv-groupe h3 { font-family: var(--police-texte); font-size: 0.95rem; font-weight: 600; letter-spacing: 0; line-height: 1.35; }
+.cv-groupe__liste { margin-top: 6px; padding-left: 18px; list-style: disc; font-size: 0.93rem; color: var(--encre-2); }
+.cv-groupe__liste--double { columns: 2; column-gap: 20px; }
+.cv-groupe__liste li { break-inside: avoid; }
+
+.cv-langues { display: grid; gap: 6px; }
+.cv-langues strong { margin-right: 6px; }
+.cv-interets { display: grid; gap: 8px; }
+.cv-interets li { font-size: 0.93rem; color: var(--encre-2); }
+.cv-interets strong { display: block; color: var(--encre); font-weight: 600; }
+
+.cv-projets { display: grid; gap: 14px; }
+.cv-projets h3 { font-family: var(--police-texte); font-size: 1rem; font-weight: 700; letter-spacing: 0; line-height: 1.35; }
+.cv-projets p { margin-top: 3px; font-size: 0.95rem; color: var(--encre-2); }
+
+/* Dans le CV, la date et l'organisme partagent une ligne, comme sur l'original */
+.cv .etape h3 { margin-top: 0; font-family: var(--police-texte); font-size: 1rem; font-weight: 700; letter-spacing: 0; }
+.cv .etape__lieu .etape__date { margin-right: 8px; font-family: var(--police-texte); font-size: 0.9rem; letter-spacing: 0; text-transform: none; color: var(--encre-3); }
+.cv .etape--actuelle .etape__lieu .etape__date { color: #059669; }
+.cv .etape { padding-bottom: 24px; }
+.cv .etape:last-child { padding-bottom: 0; }
+.etape__texte { margin-top: 4px; font-size: 0.93rem; color: var(--encre-2); }
+
+.cv-puces { margin-top: 6px; display: grid; gap: 4px; }
 .cv-puces li {
   position: relative;
-  padding-left: 18px;
-  font-size: 0.95rem;
+  padding-left: 16px;
+  font-size: 0.93rem;
   color: var(--encre-2);
 }
 .cv-puces li::before {
   content: "";
   position: absolute;
   left: 2px; top: 0.62em;
-  width: 6px; height: 6px;
-  border-radius: 2px;
-  background: var(--violet-clair);
+  width: 5px; height: 5px;
+  border-radius: 50%;
+  background: var(--encre-3);
 }
 .cv-puces strong { color: var(--encre); }
 
-.cv-projets { display: grid; gap: 14px; }
-.cv-projets li {
-  padding: 18px 20px;
-  border: 1px solid var(--ligne);
-  border-radius: 14px;
-  background: var(--surface);
-}
-.cv-projets h3 { font-size: 1.05rem; letter-spacing: -0.01em; line-height: 1.3; }
-.cv-projets p { margin-top: 6px; font-size: 0.93rem; color: var(--encre-2); }
-.cv-projets a { color: var(--violet); font-weight: 600; }
-
-.cv-groupe + .cv-groupe { margin-top: 22px; }
-.cv-groupe h3 {
-  margin-bottom: 10px;
-  font-family: var(--police-mono);
-  font-size: 0.76rem;
-  font-weight: 500;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--encre-3);
-  line-height: 1.4;
-}
-.cv-groupe .badges li { padding: 6px 11px; font-size: 0.86rem; background: var(--surface); }
-
-.cv-liste { display: grid; gap: 8px; }
-.cv-liste li {
-  padding: 10px 14px;
-  border-radius: 10px;
-  background: var(--surface);
-  border: 1px solid var(--ligne);
-  font-size: 0.95rem;
-}
-
-/* --- Impression / export PDF ---
-   Une mise en page compacte sur A4 : on masque la navigation, les boutons
-   et tout ce qui est décoratif, et on affiche tout le contenu sans animation. */
-@page { size: A4; margin: 9mm 10mm; }
+/* --- Impression / export PDF : une page A4, fidèle au CV d'origine --- */
+@page { size: A4; margin: 0; }
 
 @media print {
-  html { font-size: 11px; }
-  body { background: #fff; line-height: 1.32; }
-  .timeline { padding-left: 24px; }
-  .timeline::before, .timeline__trait { left: 5px; }
-  .etape::before { left: -24px; width: 12px; height: 12px; border-width: 2px; }
-  .etape.est-visible::before { box-shadow: none; }
+  html { font-size: 10.2px; }
+  body { background: #fff; line-height: 1.42; }
   .nav, .menu-mobile, .lien-evitement, .curseur, .curseur-anneau,
-  .cv-entete__actions, .pied, [data-imprimer] { display: none; }
+  .cv-actions, .pied, [data-imprimer] { display: none; }
 
   /* Tout est visible, sans découpe ni décalage d'animation */
   .js [data-revele],
@@ -2007,37 +2182,63 @@ html:not(.js) .timeline__trait { transform: none; }
   .timeline__trait { transform: none; }
 
   .cv { padding: 0; }
-  .conteneur { max-width: none; padding: 0; }
-  .cv-entete { padding-bottom: 8px; margin-bottom: 10px; }
-  .cv-entete__nom { font-size: 30px; }
-  .cv-entete__titre { margin-top: 2px; font-size: 14px; }
-  .cv-contacts { margin-top: 6px; gap: 2px 14px; font-size: 10px; }
-  .cv-grille { grid-template-columns: 1.75fr 1fr; gap: 20px; }
-  .cv-section + .cv-section { margin-top: 9px; }
-  .cv-section > h2 { margin-bottom: 4px; font-size: 13.5px; gap: 8px; }
-  .cv-section > h2::before { width: 16px; height: 3px; }
-  .cv-profil { font-size: 10.5px; }
-  .etape { padding-bottom: 5px; break-inside: avoid; }
-  .etape h3 { font-size: 11.5px; margin-top: 0; }
-  .etape__date { font-size: 8.5px; }
-  .etape__lieu { font-size: 10px; margin-top: 0; }
-  .cv-puces { margin-top: 2px; gap: 0; }
-  .cv-puces li { font-size: 9.5px; padding-left: 12px; }
-  .cv-puces li::before { width: 4px; height: 4px; top: 0.6em; }
-  .cv-projets { gap: 5px; }
-  .cv-projets li { padding: 5px 8px; border-radius: 8px; break-inside: avoid; }
-  .cv-projets h3 { font-size: 10.5px; }
-  .cv-projets p { font-size: 9.5px; margin-top: 1px; }
-  .cv-groupe + .cv-groupe { margin-top: 7px; }
-  .cv-groupe h3 { font-size: 8px; margin-bottom: 3px; }
-  .cv-groupe .badges { gap: 3px; }
-  .cv-groupe .badges li { padding: 2px 6px; font-size: 9px; border-radius: 5px; }
-  .cv-liste { gap: 3px; }
-  .cv-liste li { padding: 2px 7px; font-size: 9.5px; border-radius: 6px; }
-  /* Les couleurs (violet, puces) sont conservées à l'impression */
+  .cv > .conteneur { max-width: none; padding: 0; }
+  .cv-feuille {
+    width: 210mm;
+    height: 296mm;
+    grid-template-columns: 34% 1fr;
+    /* Les deux colonnes s'enchaînent indépendamment : les projets démarrent
+       juste sous le profil, les compétences juste sous les coordonnées */
+    grid-template-rows: auto auto 1fr;
+    grid-template-areas: "identite titre" "identite principal" "lateral principal";
+    align-content: start;
+    gap: 6mm 8mm;
+    padding: 11mm 11mm 9mm;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+  }
+  .cv-feuille::before { top: -14%; right: -18%; width: 70%; height: 46%; }
+  .cv-feuille::after { bottom: -16%; left: -26%; width: 62%; height: 44%; }
+
+  .cv-photo { width: 33mm; height: 33mm; box-shadow: none; }
+  .cv-contacts { margin-top: 5mm; gap: 1.6mm; font-size: 1rem; }
+
+  .cv-titre { text-align: right; }
+  .cv-titre__nom { font-size: 2.4rem; }
+  .cv-titre__poste { margin-top: 2mm; font-size: 2.1rem; }
+  .cv-titre__profil { margin: 3mm 0 0 auto; font-size: 1.05rem; }
+
+  .cv-section + .cv-section { margin-top: 4.5mm; }
+  .cv-section > h2 { margin-bottom: 2.2mm; font-size: 1.75rem; }
+  .cv-groupe + .cv-groupe { margin-top: 2.4mm; }
+  .cv-groupe h3 { font-size: 1.05rem; }
+  .cv-groupe__liste { margin-top: 0.8mm; padding-left: 4mm; font-size: 1rem; columns: 2; column-gap: 4mm; }
+  .cv-groupe__liste:has(> li:only-child) { columns: 1; }
+  .cv-langues, .cv-interets { gap: 1mm; font-size: 1rem; }
+  .cv-interets li { font-size: 1rem; }
+
+  .cv-projets { gap: 2mm; }
+  .cv-projets h3 { font-size: 1.1rem; }
+  .cv-projets p { font-size: 1rem; margin-top: 0.4mm; }
+
+  .timeline { padding-left: 6mm; }
+  .timeline::before, .timeline__trait { left: 1.2mm; width: 1.5px; background: var(--encre); }
+  .etape::before { left: -6mm; top: 0.8mm; width: 3mm; height: 3mm; border: 0; background: var(--encre); box-shadow: none; }
+  .etape.est-visible::before, .etape--actuelle.est-visible::before { background: var(--encre); box-shadow: none; }
+  .cv .etape { padding-bottom: 2.6mm; break-inside: avoid; }
+  .cv .etape h3 { font-size: 1.1rem; }
+  .cv .etape__lieu { font-size: 1rem; margin-top: 0; }
+  .cv .etape__lieu .etape__date { font-size: 1rem; }
+  .cv .etape--actuelle .etape__lieu .etape__date { color: var(--encre-3); }
+  .etape__texte { font-size: 1rem; margin-top: 0.4mm; }
+  .cv-puces { margin-top: 0.8mm; gap: 0.4mm; }
+  .cv-puces li { font-size: 1rem; padding-left: 3.2mm; }
+  .cv-puces li::before { width: 1.2mm; height: 1.2mm; top: 0.55em; }
+
+  /* Les couleurs et les formes de fond sont conservées à l'impression */
   * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
 }
-
 
 /* ==========================================================================
    7. Mouvement réduit
