@@ -2833,3 +2833,272 @@ html:not(.anime) .sch-trace--reel { stroke-dashoffset: 0; }
   .competence__remplissage::after { display: none; }
   .badge__point::after { display: none; }
 }
+
+
+/* ==========================================================================
+   8. Espace 3D (espace-3d.js) : on traverse le réseau en faisant défiler
+   ========================================================================== */
+.espace {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 1.4s ease;
+}
+.espace.est-pret { opacity: 1; }
+.espace canvas { width: 100%; height: 100%; display: block; }
+.espace-actif main,
+.espace-actif .pied { position: relative; z-index: 1; }
+/* Les fonds de section s'effacent : on voit l'espace entre les panneaux */
+.espace-actif :is(.section, .pourquoi, .chiffres, .projets, .hero, .e39-hero, .documentation, .stack, .apropos, .creation, .contact, .chantiers) { background: transparent; }
+.espace-actif .hero__fond { display: none; }
+.espace-actif .ticker,
+.espace-actif .pied { background: rgba(255, 255, 255, 0.72); }
+.anime.espace-actif .pourquoi__ecran { background: rgba(250, 250, 249, 0.6); }
+
+/* --- Panneaux flottants : le contenu des sections posé dans l'espace ---
+   --approche (commun.js) : 0 au centre de l'écran, ±1 quand le panneau arrive ou s'éloigne */
+.js .panneau:not(.cv-feuille, .cv-actions) {
+  width: min(var(--largeur-max), calc(100% - 20px));
+  padding-block: clamp(28px, 5vw, 64px);
+  border: 1px solid rgba(124, 58, 237, 0.12);
+  border-radius: 32px;
+  background: rgba(255, 255, 255, 0.88);
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.8) inset, 0 40px 90px -45px rgba(76, 29, 149, 0.38);
+}
+@media (min-width: 720px) {
+  .espace-actif .panneau:not(.cv-feuille, .cv-actions) {
+    background: rgba(255, 255, 255, 0.72);
+    -webkit-backdrop-filter: blur(16px) saturate(1.2);
+    backdrop-filter: blur(16px) saturate(1.2);
+  }
+}
+.js .chiffres > .panneau { background: rgba(17, 16, 24, 0.92); border-color: rgba(255, 255, 255, 0.08); }
+.anime .panneau {
+  --a: var(--approche, 0);
+  --a-abs: max(var(--a), calc(var(--a) * -1));
+  transform: perspective(1600px)
+    translate3d(0, calc(var(--a) * 50px), calc(var(--a-abs) * -320px))
+    rotateX(calc(var(--a) * -8deg))
+    rotateY(calc(var(--a) * var(--cote, 1) * 5deg));
+  opacity: calc(1 - var(--a-abs) * 0.5);
+  will-change: transform, opacity;
+}
+.section:has(> .panneau) { padding-block: 72px; }
+@media (min-width: 1040px) { .section:has(> .panneau) { padding-block: 110px; } }
+
+/* --- Repères : rail des étapes (bureau), jauge de progression, annonce de l'étape --- */
+.reperes { display: none; }
+@media (min-width: 1040px) {
+  .reperes {
+    display: block;
+    position: fixed;
+    right: 14px;
+    top: 50%;
+    z-index: 40;
+    transform: translateY(-50%);
+    transition: opacity 0.4s;
+  }
+  .reperes ol { position: relative; z-index: 1; display: grid; gap: 2px; }
+  .reperes__bouton {
+    display: flex;
+    flex-direction: row-reverse;
+    align-items: center;
+    gap: 10px;
+    margin-left: auto;
+    padding: 4px 6px;
+    border: 0;
+    background: none;
+    color: var(--encre-2);
+    font-size: 0.74rem;
+    font-weight: 600;
+  }
+  .reperes__point {
+    flex-shrink: 0;
+    width: 10px; height: 10px;
+    border: 2px solid var(--violet-clair);
+    border-radius: 50%;
+    background: var(--fond);
+    transition: background 0.3s, border-color 0.3s, box-shadow 0.3s;
+  }
+  .reperes__nom {
+    padding: 3px 10px;
+    border: 1px solid var(--ligne);
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.92);
+    white-space: nowrap;
+    opacity: 0;
+    transform: translateX(6px);
+    transition: opacity 0.25s, transform 0.25s;
+  }
+  .reperes__bouton:hover .reperes__nom,
+  .reperes__bouton:focus-visible .reperes__nom { opacity: 1; transform: none; }
+  .reperes__bouton.est-passee .reperes__point { background: var(--violet-clair); }
+  .reperes__bouton.est-active .reperes__point { background: var(--violet); border-color: var(--violet); box-shadow: 0 0 0 5px rgba(124, 58, 237, 0.18); }
+  .reperes__trace { position: absolute; top: 12px; bottom: 12px; right: 16px; width: 2px; background: var(--ligne); }
+  .reperes__trace span { display: block; height: 100%; background: var(--violet); transform: scaleY(0); transform-origin: top; transition: transform 0.6s var(--ease-sortie); }
+  .maquette-active .reperes { opacity: 0; pointer-events: none; }
+}
+.reperes__jauge { position: fixed; top: 0; left: 0; right: 0; z-index: 120; height: 3px; pointer-events: none; }
+.reperes__jauge span { display: block; height: 100%; background: linear-gradient(90deg, var(--violet-clair), var(--violet)); transform: scaleX(0); transform-origin: left; }
+.reperes__annonce {
+  position: fixed;
+  left: 50%; bottom: 26px;
+  z-index: 40;
+  padding: 10px 18px;
+  border-radius: 999px;
+  background: var(--encre);
+  color: #fff;
+  font-family: var(--police-mono);
+  font-size: 0.8rem;
+  letter-spacing: 0.06em;
+  opacity: 0;
+  transform: translate(-50%, 12px);
+  transition: opacity 0.3s, transform 0.3s;
+  pointer-events: none;
+}
+.reperes__annonce::before { content: "◆ "; color: var(--violet-clair); }
+.reperes__annonce.est-visible { opacity: 1; transform: translate(-50%, 0); }
+.visite-active .reperes__annonce,
+.maquette-active .reperes__annonce { display: none; }
+
+
+/* ==========================================================================
+   9. Visite guidée de la E39 : la voiture reste à l'écran pendant les fiches
+   ========================================================================== */
+.visite, .visite__passer { display: none; }
+.visite-3d .visite {
+  display: block;
+  position: sticky;
+  top: 0;
+  z-index: 0;
+  height: 100svh;
+  margin-bottom: -100svh;
+  pointer-events: none;
+}
+.visite__scene { position: absolute; inset: 0; }
+.visite__scene canvas { width: 100%; height: 100%; display: block; }
+.visite__hud {
+  position: absolute;
+  top: calc(var(--hauteur-nav) + 12px);
+  left: 50%;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  width: max-content;
+  max-width: calc(100% - 24px);
+  transform: translateX(-50%);
+}
+.visite__piece, .visite__compteur {
+  padding: 6px 14px;
+  border: 1px solid var(--ligne);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.9);
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+.visite__piece:empty, .visite__compteur:empty { display: none; }
+.visite__piece { color: var(--violet-fonce); border-color: rgba(124, 58, 237, 0.3); }
+.visite__compteur { font-family: var(--police-mono); color: var(--encre-2); }
+.visite-3d .documentation { background: transparent; padding-bottom: 30svh; }
+.visite-3d .documentation > .conteneur { position: relative; z-index: 1; }
+.visite-3d .documentation > .mot-fond { display: none; }
+.visite-3d .documentation .entete-section,
+.visite-3d .documentation__sous-titre {
+  width: fit-content;
+  max-width: min(560px, 100%);
+  margin-bottom: 70svh;
+  padding: clamp(22px, 4vw, 36px);
+  border: 1px solid rgba(124, 58, 237, 0.14);
+  border-radius: 28px;
+  background: rgba(255, 255, 255, 0.86);
+  box-shadow: 0 30px 80px -40px rgba(76, 29, 149, 0.35);
+}
+.visite-3d .documentation__sous-titre { margin-top: 0; }
+.visite-3d .visite__passer {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 18px;
+  color: var(--violet);
+  font-weight: 600;
+}
+.visite-3d .fiches { display: block; }
+.visite-3d .fiche {
+  width: min(440px, 100%);
+  margin: 0 0 72svh;
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 30px 70px -40px rgba(76, 29, 149, 0.4);
+  opacity: 0.55;
+  transition: opacity 0.4s, transform 0.5s var(--ease-sortie), box-shadow 0.4s, border-color 0.4s;
+}
+.visite-3d .fiche.est-active {
+  opacity: 1;
+  border-color: rgba(124, 58, 237, 0.45);
+  box-shadow: 0 0 0 4px rgba(124, 58, 237, 0.12), 0 40px 90px -40px rgba(76, 29, 149, 0.5);
+}
+.anime.visite-3d .fiche:not(.est-active) { transform: perspective(1200px) translateZ(-80px) rotateY(calc(var(--cote-fiche, 1) * 6deg)); }
+.visite-3d .fiches > .fiche:nth-child(even) { --cote-fiche: -1; }
+@media (min-width: 720px) {
+  .visite-3d .fiche { -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px); background: rgba(255, 255, 255, 0.8); }
+}
+@media (min-width: 1040px) {
+  .visite-3d .fiches > .fiche:nth-child(even) { margin-left: auto; }
+}
+@media (max-width: 719px) {
+  .visite-3d .fiche { margin-bottom: 85svh; }
+}
+
+
+/* ==========================================================================
+   10. Maquette : panneau « Affichage », légende complétée
+   ========================================================================== */
+.moteur3d__calques { position: absolute; left: 16px; top: 62px; z-index: 3; max-width: calc(100% - 90px); }
+.moteur3d__calques summary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  border: 1px solid var(--ligne);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.92);
+  font-size: 0.8rem;
+  font-weight: 600;
+  list-style: none;
+  cursor: pointer;
+}
+.moteur3d__calques summary::-webkit-details-marker { display: none; }
+.moteur3d__calques summary svg { width: 16px; height: 16px; }
+.moteur3d__calques[open] summary { border-color: var(--violet); color: var(--violet-fonce); }
+.moteur3d__calques fieldset {
+  display: grid;
+  gap: 6px;
+  min-width: 220px;
+  margin: 8px 0 0;
+  padding: 12px 14px;
+  border: 1px solid var(--ligne);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.96);
+  box-shadow: var(--ombre);
+}
+.moteur3d__calques label { display: flex; align-items: center; gap: 8px; font-size: 0.82rem; cursor: pointer; }
+.moteur3d__calques input { width: 16px; height: 16px; accent-color: var(--violet); }
+.moteur3d__calques-separateur { height: 1px; margin: 4px 0; background: var(--ligne); }
+.moteur3d__simulation { top: 16px; left: auto; right: 16px; }
+.moteur3d__fluides { top: auto; bottom: 150px; }
+.moteur3d__fluide--retour { --couleur: #fdba74; }
+.moteur3d__fluides-note { max-width: 230px; font-size: 0.7rem; font-weight: 400; color: var(--encre-3); }
+@media (max-width: 719px) {
+  .moteur3d__calques { top: 52px; left: 12px; }
+  .moteur3d__calques fieldset { min-width: 0; max-height: calc(var(--scene-h) - 120px); overflow: auto; }
+  .moteur3d__simulation { top: calc(var(--scene-h) - 76px); right: 10px; left: auto; width: 150px; }
+  .moteur3d__fluides { top: calc(var(--scene-h) - 132px); bottom: auto; font-size: 0.68rem; }
+}
+
+/* Impression : ni espace 3D, ni repères, ni effets de panneau */
+@media print {
+  .espace, .reperes, .reperes__jauge, .reperes__annonce, .visite { display: none !important; }
+  .panneau { transform: none !important; opacity: 1 !important; box-shadow: none !important; -webkit-backdrop-filter: none !important; backdrop-filter: none !important; }
+}

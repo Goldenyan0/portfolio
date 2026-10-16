@@ -102,7 +102,7 @@
     <!-- ══ Hero ══
          La "scène" est plus haute que l'écran : pendant qu'on la traverse, le hero reste
          épinglé (position: sticky) et se transforme selon la progression du scroll. -->
-    <div class="hero-scene" id="hero-scene">
+    <div class="hero-scene" id="hero-scene" data-etape="Accueil">
       <section class="hero" id="accueil" aria-labelledby="hero-titre">
 
         <!-- Couche 1 : réseau 3D (Three.js) ; le SVG sert de repli si WebGL est indisponible -->
@@ -209,7 +209,7 @@
     </div>
 
     <!-- ══ Domaines (animation 5) ══ -->
-    <section class="section" id="domaines" aria-labelledby="domaines-titre">
+    <section class="section" id="domaines" data-etape="Ce que je fais" aria-labelledby="domaines-titre">
       <span class="mot-fond" data-glisse="0.35" aria-hidden="true">Domaines</span>
       <div class="conteneur">
         <div class="entete-section">
@@ -248,7 +248,7 @@
     </section>
 
     <!-- ══ Chiffres clés (animation 9) — bande sombre qui s'ouvre en volet ══ -->
-    <section class="chiffres volet" data-volet aria-label="Chiffres clés">
+    <section class="chiffres volet" data-volet data-etape="Chiffres clés" aria-label="Chiffres clés">
       <div class="conteneur chiffres__grille" data-cascade>
         <div class="chiffre" data-revele>
           <span class="chiffre__valeur"><span class="compteur" data-cible="15">15</span></span>
@@ -271,7 +271,7 @@
 
     <!-- ══ Pourquoi moi (animation 10) — section épinglée :
          chaque comparaison occupe l'écran, la suivante arrive en volet depuis le bas ══ -->
-    <section class="pourquoi" id="pourquoi" aria-labelledby="pourquoi-titre">
+    <section class="pourquoi" id="pourquoi" data-etape="Pourquoi moi" aria-labelledby="pourquoi-titre">
       <div class="pourquoi__scene" id="pourquoi-scene">
         <div class="pourquoi__ecran">
           <div class="conteneur pourquoi__entete">
@@ -315,7 +315,7 @@
     </section>
 
     <!-- ══ Projets (animation 6 + tilt 3D) — grille 1 / 2 / 3 colonnes ══ -->
-    <section class="projets" id="projets" aria-labelledby="projets-titre">
+    <section class="projets" id="projets" data-etape="Projets" aria-labelledby="projets-titre">
       <div class="projets__scene" id="projets-scene">
         <div class="projets__ecran">
           <div class="conteneur projets__entete">
@@ -502,7 +502,7 @@
     </section>
 
     <!-- ══ Stack technique (badges + animation 7) ══ -->
-    <section class="section stack volet" id="stack" data-volet aria-labelledby="stack-titre">
+    <section class="section stack volet" id="stack" data-volet data-etape="Stack technique" aria-labelledby="stack-titre">
       <span class="mot-fond" data-glisse="-0.35" aria-hidden="true">Stack</span>
       <div class="conteneur">
         <div class="entete-section">
@@ -579,7 +579,7 @@
     </section>
 
     <!-- ══ Parcours (animation 8) ══ -->
-    <section class="section" id="parcours" aria-labelledby="parcours-titre">
+    <section class="section" id="parcours" data-etape="Parcours" aria-labelledby="parcours-titre">
       <span class="mot-fond" data-glisse="0.35" aria-hidden="true">Parcours</span>
       <div class="conteneur">
         <div class="entete-section">
@@ -664,7 +664,7 @@
     </section>
 
     <!-- ══ À propos ══ -->
-    <section class="section apropos volet" id="apropos" data-volet aria-labelledby="apropos-titre">
+    <section class="section apropos volet" id="apropos" data-volet data-etape="À propos" aria-labelledby="apropos-titre">
       <span class="mot-fond" data-glisse="-0.35" aria-hidden="true">À propos</span>
       <div class="conteneur">
         <div class="entete-section">
@@ -700,7 +700,7 @@
     </section>
 
     <!-- ══ Mon rapport à l'IA ══ -->
-    <section class="section rapport-ia" id="rapport-ia" aria-labelledby="ia-titre">
+    <section class="section rapport-ia" id="rapport-ia" data-etape="Mon rapport à l'IA" aria-labelledby="ia-titre">
       <span class="mot-fond" data-glisse="0.35" aria-hidden="true">IA</span>
       <div class="conteneur rapport-ia__grille">
         <div>
@@ -729,7 +729,7 @@
     </section>
 
     <!-- ══ Comment ce site a été créé ══ -->
-    <section class="section creation volet" id="creation" data-volet aria-labelledby="creation-titre">
+    <section class="section creation volet" id="creation" data-volet data-etape="Comment ce site a été créé" aria-labelledby="creation-titre">
       <span class="mot-fond" data-glisse="-0.35" aria-hidden="true">Ce site</span>
       <div class="conteneur">
         <div class="entete-section">
@@ -802,7 +802,7 @@
     </section>
 
     <!-- ══ Contact — s'ouvre en cercle depuis le bas ══ -->
-    <section class="section contact volet volet--cercle" id="contact" data-volet aria-labelledby="contact-titre">
+    <section class="section contact volet volet--cercle" id="contact" data-volet data-etape="Contact" aria-labelledby="contact-titre">
       <div class="conteneur contact__grille">
         <div>
           <p class="surtitre" data-revele>Contact</p>
@@ -885,6 +885,6 @@
   <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4.4.1/dist/email.min.js" defer></script>
   <script src="js/commun.js" defer></script>
   <script src="js/index.js" defer></script>
-  <script type="module" src="js/reseau-3d.js"></script>
+  <script type="module" src="js/espace-3d.js"></script>
 </body>
 </html>

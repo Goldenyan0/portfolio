@@ -115,7 +115,7 @@
         </div>
 
         <!-- Droite, haut : nom, titre, profil -->
-        <header class="cv-titre">
+        <header class="cv-titre" data-etape="Yanis Poulain">
           <h1 class="cv-titre__nom" data-mots>Yanis Poulain</h1>
           <p class="cv-titre__poste" data-revele>BTS SIO – Alternant informatique</p>
           <p class="cv-titre__profil" data-revele>
@@ -127,7 +127,7 @@
 
         <!-- Gauche, bas : compétences, langues, centres d'intérêt -->
         <aside class="cv-lateral" aria-label="Compétences et informations">
-          <section class="cv-section" aria-labelledby="cv-competences">
+          <section class="cv-section" data-etape="Compétences IT" aria-labelledby="cv-competences">
             <h2 id="cv-competences" data-revele>Compétences IT</h2>
             <div class="cv-groupe" data-revele>
               <h3>Administration systèmes &amp; réseaux (alternance EFS)</h3>
@@ -178,7 +178,7 @@
 
         <!-- Droite, bas : projets, expériences, formations -->
         <div class="cv-principal">
-          <section class="cv-section" aria-labelledby="cv-projets">
+          <section class="cv-section" data-etape="Projets" aria-labelledby="cv-projets">
             <h2 id="cv-projets" data-revele>Projets</h2>
             <ul class="cv-projets">
               <li data-revele>
@@ -192,7 +192,7 @@
             </ul>
           </section>
 
-          <section class="cv-section" aria-labelledby="cv-experience">
+          <section class="cv-section" data-etape="Expériences professionnelles" aria-labelledby="cv-experience">
             <h2 id="cv-experience" data-revele>Expériences professionnelles</h2>
             <div class="timeline" data-timeline>
               <span class="timeline__trait" aria-hidden="true"></span>
@@ -234,7 +234,7 @@
             </div>
           </section>
 
-          <section class="cv-section" aria-labelledby="cv-formation">
+          <section class="cv-section" data-etape="Diplômes et formations" aria-labelledby="cv-formation">
             <h2 id="cv-formation" data-revele>Diplômes et formations</h2>
             <div class="timeline" data-timeline>
               <span class="timeline__trait" aria-hidden="true"></span>
@@ -283,5 +283,6 @@
   <script src="https://cdn.jsdelivr.net/npm/lenis@1.1.13/dist/lenis.min.js" defer></script>
   <script src="js/commun.js" defer></script>
   <script src="js/cv.js" defer></script>
+  <script type="module" src="js/espace-3d.js"></script>
 </body>
 </html>

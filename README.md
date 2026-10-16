@@ -35,7 +35,7 @@ Les trois pages partagent une seule feuille de style : `css/style.css`.
 | Technologie | Usage |
 |---|---|
 | HTML5 / CSS3 / JavaScript vanilla | Structure, mise en page, animations — sans framework |
-| [Three.js](https://threejs.org/) | Réseau 3D interactif du hero (avec repli SVG si WebGL est indisponible) et maquette 3D de la E39 (moteur, transmission, carrosserie, fluides) sur `e39.html` |
+| [Three.js](https://threejs.org/) | Espace 3D parcouru au défilement sur les 3 pages (repli : site classique si WebGL est indisponible) et E39 en 3D sur `e39.html` (visite guidée, maquette, fluides) |
 | [Lenis](https://lenis.darkroom.engineering/) | Défilement fluide |
 | [EmailJS](https://www.emailjs.com/) | Envoi du formulaire de contact (avec champ piège anti-spam) |
 | Space Grotesk + Inter | Polices hébergées dans le dépôt (`fonts/`) |
@@ -46,8 +46,11 @@ Les trois pages partagent une seule feuille de style : `css/style.css`.
 
 ## ✨ Animations et interactions
 
+- Navigation 3D sur tout le site : le défilement fait avancer une caméra dans le réseau 3D ; chaque section est un point violet (waypoint) où la caméra marque une pause, et son contenu s'affiche dans un panneau flottant
+- Repères de parcours : rail des étapes cliquable, jauge de progression, annonce de l'étape atteinte
+- Page E39 : visite guidée — la voiture reste à l'écran et la caméra rejoint la pièce de chaque fiche ; la maquette 3D complète (vue éclatée, accélération, fluides, panneau d'affichage) clôt le parcours
 - Préchargeur (compteur + rideau), boutons magnétiques (curseur natif du système)
-- Hero en *scrollytelling* : le titre se réduit et s'efface, la caméra plonge dans le réseau 3D
+- Hero en *scrollytelling* : le titre se réduit et s'efface pendant que la caméra entre dans le réseau
 - Titres révélés mot à mot, transitions entre sections en volets (clip-path)
 - Section « Pourquoi moi » épinglée : une comparaison par écran
 - Projets en grille (3 colonnes sur desktop, 2 sur tablette, 1 sur mobile), filtre animé par catégorie, inclinaison 3D des cartes
@@ -64,9 +67,11 @@ portfolio/
 ├── index.html · cv.html · e39.html
 ├── css/style.css          # feuille de style commune
 ├── js/
-│   ├── commun.js          # comportements partagés (navigation, révélations, scroll…)
+│   ├── commun.js          # comportements partagés (navigation, révélations, panneaux, scroll…)
 │   ├── index.js           # page d'accueil
-│   └── reseau-3d.js       # fond 3D du hero (module Three.js)
+│   ├── espace-3d.js       # espace 3D commun aux 3 pages (module Three.js)
+│   ├── moteur-3d.js       # E39 en 3D : visite guidée et maquette (module Three.js)
+│   └── e39.js · cv.js     # pages projet automobile et CV
 ├── fonts/                 # polices auto-hébergées
 ├── img/                   # images du site (projets, E39…)
 └── ref/ma-voiture/        # photos d'origine de la E39 (plaques floutées)

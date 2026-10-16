@@ -7,6 +7,7 @@
    - Révélations au scroll ([data-revele] → .est-visible)
    - Moteur de scroll partagé : volets entre sections ([data-volet]),
      parallax ([data-parallax]) et grands mots de fond ([data-glisse])
+   - Panneaux flottants (le contenu des sections dans l'espace 3D)
    - Boutons magnétiques (souris uniquement ; curseur natif du système)
    Tout respecte prefers-reduced-motion : dans ce cas, rien ne bouge
    et la classe .anime n'est pas posée sur <html> (voir le <head>).
@@ -348,6 +349,43 @@
 
 
   /* ------------------------------------------------------------------
+     Panneaux flottants : le contenu des sections (et la feuille du CV)
+     devient un panneau de verre posé dans l'espace 3D (voir espace-3d.js).
+     --approche varie de -1 (panneau qui s'éloigne, au-dessus) à 1 (panneau
+     qui arrive, en dessous) ; il vaut 0 tant que le panneau occupe le centre
+     de l'écran. Le CSS en tire profondeur, inclinaison et transparence.
+     ------------------------------------------------------------------ */
+  function gererPanneaux() {
+    const selecteur = '.section > .conteneur, .chiffres > .conteneur, .projets__ecran, .cv-feuille, .cv-actions';
+    // Exclus : scènes épinglées, maquette 3D, visite guidée et éléments qui ont déjà leur propre animation d'entrée
+    const exclus = '.hero-scene, .pourquoi, .moteur, .documentation, .e39-hero';
+    const panneaux = Array.from(document.querySelectorAll(selecteur)).filter(function (el) {
+      return !el.closest(exclus) && !el.hasAttribute('data-revele');
+    });
+    panneaux.forEach(function (p, i) {
+      p.classList.add('panneau');
+      p.style.setProperty('--cote', i % 2 ? '1' : '-1');
+    });
+    if (!panneaux.length || mouvementReduit) return;
+
+    const borner = window.Site.borner;
+    window.Site.surScroll(function () {
+      const h = window.innerHeight;
+      panneaux.forEach(function (p) {
+        const zone = p.getBoundingClientRect();
+        let a = 0;
+        if (zone.top > h * 0.62) a = (zone.top - h * 0.62) / h;
+        else if (zone.bottom < h * 0.38) a = (zone.bottom - h * 0.38) / h;
+        a = borner(a, -1, 1);
+        if (Math.abs(a - (p.approche || 0)) < 0.002) return;
+        p.approche = a;
+        p.style.setProperty('--approche', a.toFixed(3));
+      });
+    });
+  }
+
+
+  /* ------------------------------------------------------------------
      7. Boutons magnétiques : le bouton est attiré vers la souris
      ------------------------------------------------------------------ */
   function gererMagnetisme() {
@@ -390,5 +428,6 @@
   gererRevelations();
   gererEffetsScroll();
   gererTimelines();
+  gererPanneaux();
   gererMagnetisme();
 })();

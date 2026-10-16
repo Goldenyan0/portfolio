@@ -9,8 +9,11 @@
    - Transmission (propulsion) : volant moteur, embrayage, boîte manuelle,
      arbre de transmission, pont arrière, demi-arbres, roues motrices
    - Carburant : réservoir, pompe immergée AEM 340, filtre-régulateur, durites
+   - Visite guidée : pendant les fiches de la documentation, la voiture reste à l'écran
+     et la caméra rejoint la pièce de chaque fiche ; la maquette complète vient ensuite
    - Boutons : vue éclatée (voiture comprise), voiture affichée / masquée,
-     mode accélération (pièces animées selon le régime), fluides animés + légende
+     mode accélération (moteur à l'arrêt au chargement), fluides animés + légende ;
+     panneau « Affichage » pour montrer ou masquer chaque groupe d'éléments
    - Zoom à la molette (après un clic dans la vue) ou au pincement, boutons + / −
    - Survol : nom de la pièce ; clic : ouverture de la fiche correspondante
    - Mini-maquette 3D dans chaque fiche ouverte (événement "fiche:ouverte")
@@ -102,9 +105,11 @@ const MATERIAUX = {
   liquide: { color: 0x0891b2, metalness: 0, roughness: 0.3, transparent: true, opacity: 0.8 },
   violet: { color: 0x7c3aed, metalness: 0.3, roughness: 0.35 },
   cuivre: { color: 0xc07a45, metalness: 0.9, roughness: 0.3 },
-  // Carrosserie : bleu topaze métallisé, en transparence pour voir la mécanique
-  peinture: { color: 0x1f3d86, metalness: 0.55, roughness: 0.28, transparent: true, opacity: 0.5, depthWrite: false, side: 2 },
-  vitre: { color: 0x9db3c9, metalness: 0.2, roughness: 0.05, transparent: true, opacity: 0.18, depthWrite: false, side: 2 },
+  // Carrosserie : bleu topaze métallisé sous vernis (opaque ; transparence en option)
+  peinture: { color: 0x1d3c8c, metalness: 0.45, roughness: 0.32, clearcoat: 1, clearcoatRoughness: 0.06, side: 2, physique: true },
+  vitre: { color: 0x101820, metalness: 0.3, roughness: 0.04, transparent: true, opacity: 0.55, depthWrite: false, side: 2 },
+  plaque: { color: 0xf4f4f2, metalness: 0, roughness: 0.6 },
+  cuir: { color: 0x2a2a30, metalness: 0, roughness: 0.75 },
   optique: { color: 0xe8eef5, metalness: 0.3, roughness: 0.05, transparent: true, opacity: 0.5, depthWrite: false },
   feuRouge: { color: 0xc81e1e, metalness: 0.2, roughness: 0.3, transparent: true, opacity: 0.85 },
   feuBlanc: { color: 0xf3f4f6, metalness: 0.2, roughness: 0.3, transparent: true, opacity: 0.85 },
@@ -115,7 +120,8 @@ const MATERIAUX = {
 // Chaque maillage reçoit sa propre copie du matériau : on peut ainsi
 // en éclairer un seul au survol sans toucher aux autres.
 function materiau(nom) {
-  return new THREE.MeshStandardMaterial(MATERIAUX[nom]);
+  const { physique, ...reglages } = MATERIAUX[nom];
+  return physique ? new THREE.MeshPhysicalMaterial(reglages) : new THREE.MeshStandardMaterial(reglages);
 }
 
 function maillage(geometrie, nomMateriau) {
@@ -810,14 +816,14 @@ function construireMaquette() {
   });
 
   // --- Alternateur (entraîné par la courroie) ---
-  const alternateur = ajouter(piece('alternateur', 'Alternateur', null, [-1.6, 0, 2.4]));
+  const alternateur = ajouter(piece('alternateur', 'Alternateur', 'alternateur', [-1.6, 0, 2.4]));
   alternateur.add(place(maillage(axeX(cylindre(0.5, 1.0, 32)), 'alu'), -3.4, 0, 1.9));
   [-3.7, -3.5, -3.3, -3.1].forEach((x) => alternateur.add(place(maillage(toreX(0.5, 0.025), 'alu'), x, 0, 1.9)));
   alternateur.add(place(maillage(axeX(cylindre(0.38, 0.12, 24)), 'noir'), -2.86, 0, 1.9));
   alternateur.add(place(maillage(boite(0.5, 0.2, 0.4, 0.04), 'alu'), -3.3, -0.5, 1.45));
 
   // --- Pompe de direction assistée (entraînée par la courroie) ---
-  const pompeDA = ajouter(piece('pompeDA', 'Pompe de direction assistée', null, [-1.6, -0.4, -2.4]));
+  const pompeDA = ajouter(piece('pompeDA', 'Pompe de direction assistée', 'direction', [-1.6, -0.4, -2.4]));
   pompeDA.add(place(maillage(axeX(cylindre(0.5, 0.9, 32)), 'alu'), -3.45, -0.4, -2.0));
   pompeDA.add(place(maillage(cylindre(0.3, 0.55, 24), 'noir'), -3.4, 0.35, -2.0));
   pompeDA.add(tuyau([[-3.2, -0.8, -2.0], [-3.2, -1.6, -2.3], [-3.3, -1.95, -2.6]], 0.07, 'caoutchouc'));
@@ -835,7 +841,7 @@ function construireMaquette() {
   pompeAir.add(place(maillage(boite(0.3, 0.3, 0.3, 0.05), 'noir'), -3.2, 1.45, -1.4));
 
   // --- Démarreur (côté admission, engrène sur la couronne du volant moteur) ---
-  const demarreur = ajouter(piece('demarreur', 'Démarreur', null, [-0.8, -1.4, 2.2]));
+  const demarreur = ajouter(piece('demarreur', 'Démarreur', 'demarreur', [-0.8, -1.4, 2.2]));
   demarreur.add(place(maillage(axeX(cylindre(0.42, 1.4, 32)), 'noir'), 2.75, -1.65, 1.65));
   demarreur.add(place(maillage(axeX(cylindre(0.2, 0.8, 20)), 'acier'), 2.65, -1.12, 1.65));
   demarreur.add(place(maillage(denture(0.14, 10, 0.04, 0.12), 'acier'), 3.55, -1.65, 1.65));
@@ -1054,33 +1060,33 @@ function construireMaquette() {
   }
   roue('roueArG', 'Roue arrière gauche (motrice)', 'transmission', X_AR, 1, [7.5, 0, 4]);
   roue('roueArD', 'Roue arrière droite (motrice)', 'transmission', X_AR, -1, [7.5, 0, -4]);
-  roue('roueAvG', 'Roue avant gauche', null, X_AV, 1, [0, 0, 5]);
-  roue('roueAvD', 'Roue avant droite', null, X_AV, -1, [0, 0, -5]);
+  roue('roueAvG', 'Roue avant gauche', 'freinage', X_AV, 1, [0, 0, 5]);
+  roue('roueAvD', 'Roue avant droite', 'freinage', X_AV, -1, [0, 0, -5]);
 
 
   /* ---------------- Châssis ---------------- */
 
   // --- Train avant : berceau, supports moteur, bras, jambes de force McPherson ---
-  const trainAv = ajouter(piece('trainAv', 'Train avant (berceau, jambes de force)', null, [0, -0.2, 0]));
+  const trainAv = ajouter(piece('trainAv', 'Train avant (berceau, jambes de force)', 'suspension', [0, -0.2, 0]));
   trainAv.add(place(maillage(boite(0.8, 0.7, 10.8, 0.1), 'acier'), -2.3, -3.0, 0));
   [-1, 1].forEach((s) => {
     trainAv.add(place(maillage(cylindre(0.3, 0.75, 20), 'caoutchouc'), -1.8, -2.27, s * 1.6));
     trainAv.add(barre([-2.3, -2.95, s * 5.3], [X_AV, -2.7, s * (Z_AV - 1.1)], 0.18, 'acier'));
     trainAv.add(barre([-0.6, -2.95, s * 4.6], [X_AV + 0.1, -2.75, s * (Z_AV - 1.15)], 0.15, 'acier'));
     // Jambe de force : amortisseur, tige, ressort et coupelle supérieure
-    const bas = [X_AV + 0.15, -1.2, s * (Z_AV - 1.25)], haut = [X_AV + 0.6, 4.4, s * (Z_AV - 2.3)];
-    trainAv.add(barre(bas, [X_AV + 0.5, 2.6, s * (Z_AV - 2.05)], 0.3, 'acier'));
-    trainAv.add(barre([X_AV + 0.5, 2.6, s * (Z_AV - 2.05)], haut, 0.1, 'acier'));
-    const ress = ressort(0.62, 2.6, 6, 0.08, 'noir');
+    const bas = [X_AV + 0.15, -1.2, s * (Z_AV - 1.25)], haut = [X_AV + 0.55, 3.45, s * (Z_AV - 2.2)];
+    trainAv.add(barre(bas, [X_AV + 0.45, 2.0, s * (Z_AV - 1.95)], 0.3, 'acier'));
+    trainAv.add(barre([X_AV + 0.45, 2.0, s * (Z_AV - 1.95)], haut, 0.1, 'acier'));
+    const ress = ressort(0.62, 2.2, 6, 0.08, 'noir');
     const axe = v3(haut).sub(v3(bas)).normalize();
-    ress.position.copy(v3(bas)).addScaledVector(axe, 2.4);
+    ress.position.copy(v3(bas)).addScaledVector(axe, 2.1);
     ress.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), axe);
     trainAv.add(ress);
     trainAv.add(place(maillage(cylindre(0.7, 0.12, 32), 'acier'), haut[0], haut[1], haut[2]));
   });
 
   // --- Direction : boîtier, barre et biellettes, colonne et volant (conduite à gauche) ---
-  const direction = ajouter(piece('direction', 'Direction (boîtier, colonne, volant)', null, [0, 2.5, 4.5]));
+  const direction = ajouter(piece('direction', 'Direction (boîtier, colonne, volant)', 'direction', [0, 2.5, 4.5]));
   direction.add(place(maillage(boite(0.7, 0.8, 0.7, 0.1), 'noir'), -3.3, -1.9, 2.6));
   direction.add(barre([-3.6, -2.4, -5.0], [-3.6, -2.4, 5.0], 0.12, 'acier'));
   [-1, 1].forEach((s) => direction.add(barre([-3.6, -2.4, s * 5.0], [X_AV - 0.9, -2.3, s * (Z_AV - 1.3)], 0.09, 'acier')));
@@ -1099,7 +1105,7 @@ function construireMaquette() {
   direction.add(volantDirection);
 
   // --- Train arrière : berceau, bras, ressorts et amortisseurs ---
-  const trainAr = ajouter(piece('trainAr', 'Train arrière (berceau, ressorts, amortisseurs)', null, [7.5, 3.0, 0]));
+  const trainAr = ajouter(piece('trainAr', 'Train arrière (berceau, ressorts, amortisseurs)', 'suspension', [7.5, 3.0, 0]));
   [X_AR - 2.2, X_AR + 2.0].forEach((x) => trainAr.add(barre([x, -0.6, -5.2], [x, -0.6, 5.2], 0.3, 'acier')));
   [-1, 1].forEach((s) => {
     trainAr.add(barre([X_AR - 2.2, -0.6, s * 4.6], [X_AR + 2.0, -0.6, s * 4.6], 0.26, 'acier'));
@@ -1152,7 +1158,10 @@ function construireMaquette() {
 
   // --- Durites de carburant : départ pompe → filtre → rampe, retour du régulateur au réservoir ---
   const duriteEssence = ajouter(piece('duriteEssence', 'Durites de carburant', 'carburant', [0, 0, 2.5]));
-  [LIGNE_POMPE_FILTRE, LIGNE_FILTRE_RAMPE, LIGNE_RETOUR].forEach((l) => duriteEssence.add(tuyau(l, 0.055, 'acier')));
+  [LIGNE_POMPE_FILTRE, LIGNE_FILTRE_RAMPE].forEach((l) => duriteEssence.add(tuyau(l, 0.055, 'acier')));
+  // Retour du régulateur vers le réservoir : conduite distincte (plus épaisse) qui replonge dans la cuve
+  duriteEssence.add(tuyau(LIGNE_RETOUR, 0.075, 'cuivre'));
+  duriteEssence.add(place(maillage(cylindre(0.075, 1.6, 12), 'cuivre'), X_POMPE + 0.4, -0.3, Z_POMPE + 0.35));
 
 
   /* ---------------- Carrosserie (E39 berline, bleu topaze) ---------------- */
@@ -1234,31 +1243,55 @@ function section(x) {
     if (dx < 400) b = Math.max(b, 327 + Math.sqrt(400 * 400 - dx * dx));      // passage de roue
   });
   const hb = gabarit('hb', x), ht = gabarit('ht', x), wb = gabarit('wb', x), wt = gabarit('wt', x);
+  // Bossage central du capot (les « nervures » qui prolongent la calandre)
+  const bossage = x > 230 && x < 1650 ? 14 * Math.sin(Math.PI * (x - 230) / 1420) : 0;
   const flanc = (f) => b + (hb - 20 - b) * f;
   const p6 = [wb - 70, hb + 10];
   const p7 = [Math.min(wt + 40, p6[0] - 20), Math.max(hb + 15, ht - 60)];
   const p8 = [Math.min(wt - 40, p7[0] - 20), Math.max(hb + 20, ht - 10)];
-  return [[0, b], [wb - 120, b], [wb - 25, flanc(0.15)], [wb, flanc(0.45)], [wb, flanc(0.8)], [wb - 20, hb - 20],
-    p6, p7, p8, [p8[0] * 0.5, ht], [0, ht + 5]];
+  return [[0, b], [wb - 140, b], [wb - 45, flanc(0.12)], [wb - 6, flanc(0.45)], [wb, flanc(0.8)], [wb - 20, hb - 20],
+    p6, p7, p8, [p8[0] * 0.5, ht + bossage * 0.6], [0, ht + 5 + bossage]];
 }
 
+// Courbe d'une section (mise en cache : chaque section sert à plusieurs panneaux)
+const cacheSections = new Map();
 function courbeSection(x) {
-  return new THREE.CatmullRomCurve3(section(x).map(([z, y]) => new THREE.Vector3(z, y, 0)), false, 'centripetal');
+  const cle = Math.round(x * 2);
+  if (!cacheSections.has(cle)) {
+    cacheSections.set(cle, new THREE.CatmullRomCurve3(section(x).map(([z, y]) => new THREE.Vector3(z, y, 0)), false, 'centripetal'));
+  }
+  return cacheSections.get(cle);
 }
 
-// Panneau de carrosserie entre les abscisses x0 et x1 (mm), sur la portion [i0, i1] de la section.
+// Point de la surface (unités de la maquette) à l'abscisse x (mm), à l'indice i de la section,
+// décalé de "decalage" mm vers l'extérieur
+function surface(x, i, cote, decalage) {
+  const courbe = courbeSection(x);
+  const t = Math.min(1, Math.max(0, i / 10));
+  const p = courbe.getPoint(t), d = courbe.getTangent(t);
+  const nz = d.y, ny = -d.x;                         // normale extérieure de la demi-section
+  return new THREE.Vector3(caisseX(x), caisseY(p.y + ny * (decalage || 0)), cote * mm(p.x + nz * (decalage || 0)));
+}
+
+// Panneau de carrosserie entre les abscisses x0 et x1 (mm), sur la portion [i0, i1] de la section
+// (i0 et i1 peuvent être des fonctions de x : vitres à contour courbe).
 // cote : 1 = gauche, -1 = droite, 0 = panneau symétrique qui passe par le sommet (i1 = 10)
 function panneau(x0, x1, i0, i1, cote, nomMateriau) {
-  const nx = Math.max(2, Math.ceil((x1 - x0) / 60) + 1);
-  const nt = Math.max(2, Math.ceil((i1 - i0) * 3) + 1);
-  const ts = [];
-  for (let k = 0; k < nt; k++) ts.push((i0 + (i1 - i0) * k / (nt - 1)) / 10);
-  const colonnes = cote === 0
-    ? ts.map((t) => [t, -1]).concat(ts.slice(0, -1).reverse().map((t) => [t, 1]))
-    : ts.map((t) => [t, cote]);
-  const pos = [], idx = [], nc = colonnes.length;
+  const borne = (v, x) => (typeof v === 'function' ? v(x) : v);
+  const nx = Math.max(2, Math.ceil((x1 - x0) / 50) + 1);
+  const ecart = Math.abs(borne(i1, x0) - borne(i0, x0)) + Math.abs(borne(i1, x1) - borne(i0, x1));
+  const nt = Math.max(3, Math.ceil(ecart * 1.6) + 1);
+  const pos = [], idx = [];
+  let nc = 0;
   for (let i = 0; i < nx; i++) {
     const x = x0 + (x1 - x0) * i / (nx - 1);
+    const a = borne(i0, x), b = borne(i1, x);
+    const ts = [];
+    for (let k = 0; k < nt; k++) ts.push((a + (b - a) * k / (nt - 1)) / 10);
+    const colonnes = cote === 0
+      ? ts.map((t) => [t, -1]).concat(ts.slice(0, -1).reverse().map((t) => [t, 1]))
+      : ts.map((t) => [t, cote]);
+    nc = colonnes.length;
     const courbe = courbeSection(x);
     colonnes.forEach(([t, s]) => {
       const p = courbe.getPoint(t);
@@ -1278,6 +1311,17 @@ function panneau(x0, x1, i0, i1, cote, nomMateriau) {
   return maillage(g, nomMateriau);
 }
 
+// Jonc qui suit la carrosserie le long de l'indice i (fonction de x possible), de x0 à x1 (mm)
+function jonc(x0, x1, i, cote, r, nomMateriau, decalage) {
+  const points = [];
+  const n = Math.max(3, Math.ceil((x1 - x0) / 80));
+  for (let k = 0; k <= n; k++) {
+    const x = x0 + (x1 - x0) * k / n;
+    points.push(surface(x, typeof i === 'function' ? i(x) : i, cote, decalage === undefined ? 6 : decalage).toArray());
+  }
+  return tuyau(points, r, nomMateriau, { cotes: 8 });
+}
+
 // Face pleine (avant ou arrière) à l'abscisse x
 function face(x, nomMateriau) {
   const demi = section(x).slice(1);
@@ -1287,97 +1331,162 @@ function face(x, nomMateriau) {
   return place(maillage(g, nomMateriau), caisseX(x), 0, 0);
 }
 
+// Bas de la vitre arrière : il remonte vers l'arrière en formant le « coude Hofmeister » des BMW
+const COUDE_DEBUT = 3330, COUDE_FIN = 3520;
+const basVitreArriere = (x) => (x <= COUDE_DEBUT ? 5 : 5 + 2.7 * Math.pow((x - COUDE_DEBUT) / (COUDE_FIN - COUDE_DEBUT), 1.7));
+
 function construireCarrosserie(ajouter) {
-  const panneauDe = (id, nom, eclate) => ajouter(piece(id, nom, null, eclate, true));
+  const panneauDe = (id, nom, eclate) => ajouter(piece(id, nom, 'carrosserie', eclate, true));
   const posCaisse = (x, y, z) => [caisseX(x), caisseY(y), mm(z)];
 
-  // Face avant : bouclier, calandre à double haricot chromé, projecteurs à anneaux (angel eyes), antibrouillards
+  // Face avant : bouclier, calandre à double haricot chromé, projecteurs à anneaux (angel eyes),
+  // clignotants blancs (phase 2), antibrouillards, prise d'air et plaque
   const faceAv = panneauDe('faceAvant', 'Face avant (pare-chocs, calandre, phares)', [-12, 0, 0]);
   faceAv.add(panneau(0, 230, 1, 10, 0, 'peinture'));
   faceAv.add(face(0, 'peinture'));
   [-1, 1].forEach((s) => {
     const [x, y, z] = posCaisse(-4, 650, s * 105);
-    faceAv.add(place(maillage(boite(0.2, 1.3, 1.55, 0.3), 'acier'), x, y, z));
+    faceAv.add(place(maillage(boite(0.2, 1.3, 1.55, 0.3), 'chrome'), x, y, z));
     faceAv.add(place(maillage(boite(0.22, 1.1, 1.35, 0.25), 'garniture'), x + 0.03, y, z));
     for (let k = -3; k <= 3; k++) faceAv.add(place(maillage(boite(0.06, 1.0, 0.05, 0.02), 'acier'), x - 0.09, y, z + k * 0.17));
-    // Bloc optique : deux anneaux lumineux (angel eyes) et leurs projecteurs, clignotant blanc à l'extérieur
+    // Bloc optique : glace claire, deux anneaux lumineux et leurs projecteurs, clignotant blanc à l'extérieur
     const [xo, yo, zo] = posCaisse(-2, 640, s * 455);
-    faceAv.add(place(maillage(boite(0.25, 1.35, 4.6, 0.25), 'optique'), xo, yo, zo));
+    faceAv.add(place(maillage(boite(0.3, 1.25, 4.5, 0.25), 'garniture'), xo + 0.1, yo, zo));
+    faceAv.add(place(maillage(boite(0.12, 1.35, 4.6, 0.25), 'optique'), xo - 0.18, yo, zo));
     [s * 350, s * 545].forEach((zp) => {
       const [, , zz] = posCaisse(0, 0, zp);
-      faceAv.add(place(maillage(toreX(0.6, 0.06), 'angelEyes'), xo - 0.14, yo, zz));
+      faceAv.add(place(maillage(toreX(0.6, 0.06), 'angelEyes'), xo - 0.1, yo, zz));
       faceAv.add(place(maillage(axeX(cylindre(0.36, 0.2, 24)), 'chrome'), xo - 0.02, yo, zz));
     });
     const [, , zc] = posCaisse(0, 0, s * 655);
-    faceAv.add(place(maillage(boite(0.27, 0.9, 0.75, 0.15), 'feuBlanc'), xo + 0.02, yo, zc));
+    faceAv.add(place(maillage(boite(0.2, 0.9, 0.75, 0.15), 'feuBlanc'), xo - 0.05, yo, zc));
     const [xf, yf, zf] = posCaisse(-2, 330, s * 640);
     faceAv.add(place(maillage(axeX(cylindre(0.5, 0.2, 24)), 'optique'), xf, yf, zf));
+    faceAv.add(place(maillage(axeX(tubeOuvert(0.56, 0.24, 24)), 'garniture'), xf + 0.02, yf, zf));
   });
-  const [xg, yg] = posCaisse(-3, 330, 0);
+  const [xg, yg] = posCaisse(-3, 300, 0);
   faceAv.add(place(maillage(boite(0.25, 1.4, 6.5, 0.2), 'garniture'), xg, yg, 0));
+  faceAv.add(place(maillage(boite(0.1, 1.27, 6.0, 0.06), 'plaque'), xg - 0.12, yg + 0.75, 0));
+  // Baguettes de pare-chocs (couleur carrosserie, filet chromé)
+  [1, -1].forEach((s) => faceAv.add(jonc(20, 230, 3.1, s, 0.07, 'peinture', 10)));
 
   const capot = panneauDe('capot', 'Capot', [-3, 12, 0]);
   capot.add(panneau(230, 1650, 5, 10, 0, 'peinture'));
+  // Essuie-glaces au pied du pare-brise
+  [-1, 1].forEach((s) => {
+    capot.add(barre(surface(1672, s > 0 ? 9.9 : 9.0, s, 14).toArray(), surface(1672, s > 0 ? 7.3 : 6.6, s, 14).toArray(), 0.05, 'garniture'));
+  });
 
   [[1, 'G', 'gauche'], [-1, 'D', 'droite']].forEach(([s, l, nom]) => {
     const aile = panneauDe('aileAv' + l, 'Aile avant ' + nom, [-2, 1, s * 11]);
     aile.add(panneau(230, 1720, 1, 5, s, 'peinture'));
+    aile.add(jonc(300, 1720, 4.72, s, 0.035, 'peinture', 4));                      // nervure d'épaule
+    aile.add(jonc(1270, 1720, 3.1, s, 0.07, 'peinture', 10));                      // baguette
+    const rep = surface(1380, 3.9, s, 8);
+    aile.add(place(maillage(boite(0.5, 0.18, 0.08, 0.04), 'feuBlanc'), rep.x, rep.y, rep.z));
 
     const porteAv = panneauDe('porteAv' + l, 'Porte avant ' + nom, [0, 0.5, s * 14]);
     porteAv.add(panneau(1720, 2780, 1, 5, s, 'peinture'));
-    porteAv.add(panneau(1720, 2250, 5, 6.2, s, 'vitre'));
+    porteAv.add(panneau(1720, 2250, 5, 7.25, s, 'vitre'));
     porteAv.add(panneau(2250, 2780, 5, 8, s, 'vitre'));
-    const [xr, yr, zr] = posCaisse(1790, 975, s * 960);
+    porteAv.add(jonc(1720, 2780, 4.72, s, 0.035, 'peinture', 4));
+    porteAv.add(jonc(1720, 2780, 3.1, s, 0.07, 'peinture', 10));
+    porteAv.add(jonc(1720, 2780, 3.1, s, 0.018, 'chrome', 16));
+    porteAv.add(jonc(1720, 2780, 5, s, 0.05, 'garniture', 3));                       // joint de vitre
+    porteAv.add(jonc(2250, 2780, 8, s, 0.05, 'garniture', 3));
+    // Rétroviseur (coque couleur carrosserie) et poignée couleur carrosserie (phase 2)
+    const [xr, yr, zr] = posCaisse(1800, 975, s * 960);
     porteAv.add(place(maillage(boite(0.9, 1.0, 1.5, 0.3), 'peinture'), xr, yr, zr));
     porteAv.add(place(maillage(boite(0.1, 0.8, 1.2, 0.2), 'vitre'), xr + 0.45, yr, zr));
-    const [xp, yp, zp] = posCaisse(2420, 860, s * 905);
-    porteAv.add(place(maillage(boite(1.2, 0.18, 0.12, 0.05), 'chrome'), xp, yp, zp));
+    const poignee = surface(2420, 4.35, s, 10);
+    porteAv.add(place(maillage(boite(1.2, 0.2, 0.14, 0.06), 'peinture'), poignee.x, poignee.y, poignee.z));
 
     const porteAr = panneauDe('porteAr' + l, 'Porte arrière ' + nom, [2, 0.5, s * 14]);
     porteAr.add(panneau(2780, 3600, 1, 5, s, 'peinture'));
-    porteAr.add(panneau(2780, 3500, 5, 8, s, 'vitre'));
-    const [xq, yq, zq] = posCaisse(3330, 870, s * 905);
-    porteAr.add(place(maillage(boite(1.2, 0.18, 0.12, 0.05), 'chrome'), xq, yq, zq));
+    porteAr.add(panneau(2780, COUDE_FIN, basVitreArriere, 8, s, 'vitre'));
+    porteAr.add(jonc(2780, 3600, 4.72, s, 0.035, 'peinture', 4));
+    porteAr.add(jonc(2780, 3290, 3.1, s, 0.07, 'peinture', 10));
+    porteAr.add(jonc(2780, 3290, 3.1, s, 0.018, 'chrome', 16));
+    porteAr.add(jonc(2780, COUDE_FIN, basVitreArriere, s, 0.05, 'garniture', 3));
+    porteAr.add(jonc(2780, COUDE_FIN - 30, 8, s, 0.05, 'garniture', 3));
+    const poigneeAr = surface(3330, 4.35, s, 10);
+    porteAr.add(place(maillage(boite(1.2, 0.2, 0.14, 0.06), 'peinture'), poigneeAr.x, poigneeAr.y, poigneeAr.z));
 
     const custode = panneauDe('custode' + l, 'Aile arrière ' + nom, [3, 1, s * 11]);
     custode.add(panneau(3600, 4540, 1, 5, s, 'peinture'));
-    custode.add(panneau(3500, 3900, 5, 8, s, 'peinture'));
+    custode.add(panneau(COUDE_DEBUT, COUDE_FIN, 5, basVitreArriere, s, 'peinture'));    // montant sous le coude
+    custode.add(panneau(COUDE_FIN, 3900, 5, 8, s, 'peinture'));
+    custode.add(jonc(3600, 4540, 4.72, s, 0.035, 'peinture', 4));
+    custode.add(jonc(4090, 4540, 3.1, s, 0.07, 'peinture', 10));
   });
 
   const pareBrise = panneauDe('pareBrise', 'Pare-brise', [-2, 9, 0]);
-  pareBrise.add(panneau(1650, 2250, 7.6, 10, 0, 'vitre'));
+  pareBrise.add(panneau(1650, 2250, 7.65, 10, 0, 'vitre'));
 
   const toit = panneauDe('toit', 'Pavillon et montants', [0, 15, 0]);
   toit.add(panneau(2250, 3300, 8, 10, 0, 'peinture'));
   [1, -1].forEach((s) => {
-    toit.add(panneau(1650, 2250, 6.2, 7.6, s, 'peinture'));
-    toit.add(panneau(2760, 2800, 5, 8, s, 'garniture'));
+    toit.add(panneau(1650, 2250, 7.25, 7.65, s, 'peinture'));
+    toit.add(panneau(2760, 2800, 5, 8, s, 'garniture'));                          // montant central noir
   });
 
   const lunette = panneauDe('lunette', 'Lunette arrière', [3, 10, 0]);
   lunette.add(panneau(3300, 3900, 7.8, 10, 0, 'vitre'));
+  const [x3, y3] = posCaisse(3860, 1050, 0);
+  lunette.add(place(maillage(boite(0.25, 0.14, 2.6, 0.05), 'feuRouge'), x3, y3, 0));   // troisième feu stop
 
+  // Coffre : capot de malle, jonc chromé et plaque entre les feux
   const coffre = panneauDe('coffre', 'Coffre', [6, 12, 0]);
   coffre.add(panneau(3900, 4540, 5, 10, 0, 'peinture'));
 
   // Feux arrière (phase 2) : partie rouge et partie blanche, sur l'aile et sur le coffre
   const feux = panneauDe('feuxAr', 'Feux arrière', [11, 3, 0]);
   [-1, 1].forEach((s) => {
-    const [x, y, z] = posCaisse(4705, 900, s * 700);
+    const [x, y, z] = posCaisse(4712, 905, s * 705);
     feux.add(place(maillage(boite(0.5, 1.3, 2.6, 0.2), 'feuRouge'), x, y, z));
-    feux.add(place(maillage(boite(0.52, 0.55, 1.0, 0.12), 'feuBlanc'), x, y - 0.1, z - s * 0.4));
-    const [x2, y2, z2] = posCaisse(4650, 950, s * 520);
-    feux.add(place(maillage(boite(0.5, 0.9, 1.6, 0.18), 'feuRouge'), x2, y2, z2));
+    feux.add(place(maillage(boite(0.52, 0.5, 1.15, 0.12), 'feuBlanc'), x, y - 0.18, z - s * 0.45));
+    const [x2, y2, z2] = posCaisse(4672, 940, s * 515);
+    feux.add(place(maillage(boite(0.5, 0.95, 1.7, 0.18), 'feuRouge'), x2, y2, z2));
+    feux.add(place(maillage(boite(0.52, 0.32, 1.0, 0.1), 'feuBlanc'), x2, y2 - 0.22, z2 + s * 0.25));
   });
 
-  // Face arrière : bouclier, attelage
-  const faceAr = panneauDe('faceArriere', 'Face arrière (pare-chocs, attelage)', [13, 0, 0]);
+  // Face arrière : bouclier, baguette, plaque, jonc chromé, attelage
+  const faceAr = panneauDe('faceArriere', 'Face arrière (pare-chocs, plaque, attelage)', [13, 0, 0]);
   faceAr.add(panneau(4540, 4775, 1, 10, 0, 'peinture'));
   faceAr.add(face(4775, 'peinture'));
+  const [xp, yp] = posCaisse(4782, 845, 0);
+  faceAr.add(place(maillage(boite(0.1, 1.27, 6.0, 0.06), 'plaque'), xp, yp, 0));
+  faceAr.add(place(maillage(boite(0.08, 0.1, 9.5, 0.04), 'chrome'), xp, yp + 0.9, 0));
+  [1, -1].forEach((s) => faceAr.add(jonc(4545, 4770, 3.1, s, 0.07, 'peinture', 10)));
   const [xa, ya] = posCaisse(4830, 380, 0);
   faceAr.add(place(maillage(boite(1.4, 0.3, 0.4, 0.08), 'garniture'), xa - 0.5, ya - 0.2, 0));
   faceAr.add(barre([xa - 0.2, ya - 0.2, 0], [xa + 0.4, ya + 0.5, 0], 0.15, 'garniture'));
   faceAr.add(place(maillage(new THREE.SphereGeometry(0.28, 20, 14), 'chrome'), xa + 0.45, ya + 0.7, 0));
+
+  // Habitacle (visible à travers les vitres) : plancher et tunnel, tablier, planche de bord,
+  // console, sièges avant et banquette
+  const habitacle = panneauDe('habitacle', 'Habitacle', [0, 4, 0]);
+  const pc = (x0, x1, y0, y1, z0, z1, mat, r) => {
+    const [ax, ay, az] = posCaisse(x0, y0, z0), [bx, by, bz] = posCaisse(x1, y1, z1);
+    return place(maillage(boite(bx - ax, by - ay, bz - az, r || 0.05), mat), (ax + bx) / 2, (ay + by) / 2, (az + bz) / 2);
+  };
+  [1, -1].forEach((s) => habitacle.add(pc(1650, 2900, 245, 275, s * 260, s * 800, 'cuir')));
+  habitacle.add(pc(1650, 2900, 540, 570, -260, 260, 'cuir'));                       // dessus du tunnel
+  habitacle.add(pc(2900, 3700, 540, 570, -800, 800, 'cuir'));                       // plancher arrière, au-dessus du réservoir
+  habitacle.add(pc(1600, 1640, 560, 900, -760, 760, 'cuir'));                       // tablier
+  [1, -1].forEach((s) => habitacle.add(pc(1600, 1640, 275, 560, s * 260, s * 760, 'cuir')));
+  habitacle.add(pc(1700, 2080, 690, 860, -780, 780, 'cuir', 0.3));                   // planche de bord
+  habitacle.add(pc(1950, 2650, 570, 640, -170, 170, 'cuir', 0.15));                  // console
+  [1, -1].forEach((s) => {
+    habitacle.add(pc(2500, 3000, 300, 470, s * 160, s * 640, 'cuir', 0.3));          // assise
+    const dossier = pc(2930, 3030, 470, 1060, s * 170, s * 630, 'cuir', 0.3);
+    dossier.rotation.z = -0.22;
+    habitacle.add(dossier);
+  });
+  habitacle.add(pc(3350, 3800, 560, 700, -720, 720, 'cuir', 0.3));                   // banquette
+  const dossierAr = pc(3740, 3850, 700, 1120, -720, 720, 'cuir', 0.3);
+  dossierAr.rotation.z = -0.3;
+  habitacle.add(dossierAr);
 }
 
 
@@ -1387,6 +1496,7 @@ function construireCarrosserie(ajouter) {
 const FLUIDES = {
   refroidissement: { couleur: 0x0891b2, vitesse: 'moteur' },
   carburant: { couleur: 0xea580c, vitesse: 'carburant' },
+  retour: { couleur: 0xfdba74, vitesse: 'carburant' },
   huile: { couleur: 0x713f12, vitesse: 'moteur' }
 };
 
@@ -1411,7 +1521,8 @@ function construireFluides(t) {
   const groupe = new THREE.Group();
   groupe.visible = false;
   const base = textureFlux();
-  const textures = { refroidissement: [], carburant: [], huile: [] };
+  const textures = { refroidissement: [], carburant: [], retour: [], huile: [] };
+  const parType = {};
 
   // droit = true : tracé en lignes brisées (galeries internes), sinon courbe douce (durites)
   function flux(type, points, r, options) {
@@ -1430,8 +1541,9 @@ function construireFluides(t) {
     tex.repeat.set(Math.max(1, longueur / 0.9), 1);
     const m = new THREE.Mesh(geo, new THREE.MeshBasicMaterial({ color: FLUIDES[type].couleur, map: tex, transparent: true, opacity: 0.92, depthWrite: false }));
     m.renderOrder = 2;
-    textures[type].push({ tex: tex, facteur: o.lent ? 0.5 : 1 });
-    groupe.add(m);
+    textures[type].push({ tex: tex, facteur: o.lent ? 0.6 : 1 });
+    if (!parType[type]) { parType[type] = new THREE.Group(); groupe.add(parType[type]); }
+    parType[type].add(m);
   }
 
   // Liquide de refroidissement : pompe → chemises du bloc → culasse → durite haute → radiateur
@@ -1454,7 +1566,8 @@ function construireFluides(t) {
   flux('carburant', t.LIGNE_FILTRE_RAMPE, 0.09);
   flux('carburant', [[3.25, 2.42, 1.06], [-3.2, 2.42, 1.06]], 0.11, { droit: true });
   X_CYL.forEach((x) => flux('carburant', [[x, 2.33, 1.08], [x, 1.82, 1.22]], 0.05, { droit: true }));
-  flux('carburant', t.LIGNE_RETOUR, 0.08, { lent: true });
+  flux('retour', t.LIGNE_RETOUR, 0.12, { lent: true });
+  flux('retour', [t.LIGNE_RETOUR[t.LIGNE_RETOUR.length - 1], [t.X_POMPE + 0.4, -1.1, t.Z_POMPE + 0.35], [t.X_POMPE + 0.4, -2.2, t.Z_POMPE + 0.35]], 0.1, { droit: true, lent: true });
 
   // Huile : puisard → crépine → pompe → filtre → galerie principale → paliers et gicleurs ;
   // montée vers la culasse (arbres à cames, VANOS) puis retour au carter
@@ -1467,7 +1580,7 @@ function construireFluides(t) {
   flux('huile', [[-3.2, 2.05, 0], [-3.75, 2.3, 0]], 0.05, { droit: true });
   flux('huile', [[3.25, 2.0, -0.8], [3.25, -1.0, -1.0], [3.0, -2.8, -0.6], [2.0, -3.15, -0.2]], 0.06, { droit: true });
 
-  return { groupe: groupe, textures: textures };
+  return { groupe: groupe, textures: textures, parType: parType };
 }
 
 
@@ -1520,8 +1633,38 @@ const PIECES_PAR_FICHE = {
   airsecondaire: ['pompeAir', 'collecteurEch'],
   lambda: ['sondes', 'collecteurEch'],
   mdk: ['papillon'],
-  gicleurs: ['pistons', 'vilebrequin', 'pompeHuile']
+  gicleurs: ['pistons', 'vilebrequin', 'pompeHuile'],
+  demarreur: ['demarreur', 'volant'],
+  alternateur: ['alternateur', 'poulies'],
+  direction: ['pompeDA', 'direction'],
+  suspension: ['trainAv', 'trainAr'],
+  freinage: ['roueAvG', 'roueAvD', 'roueArG', 'roueArD'],
+  carrosserie: ['faceAvant', 'capot', 'aileAvG', 'aileAvD', 'porteAvG', 'porteAvD', 'porteArG', 'porteArD',
+    'custodeG', 'custodeD', 'pareBrise', 'toit', 'lunette', 'coffre', 'feuxAr', 'faceArriere']
 };
+
+// Groupes d'éléments du panneau « Affichage » de la maquette
+const GROUPES = {
+  carrosserie: PIECES_PAR_FICHE.carrosserie.concat(['habitacle']),
+  moteur: ['bloc', 'pistons', 'vilebrequin', 'culasse', 'soupapes', 'aac', 'vanos', 'cache', 'bougies', 'bobines',
+    'cacheBobines', 'carter', 'pompeHuile', 'filtreHuile', 'ccv', 'dme'],
+  admission: ['boiteAir', 'collecteurAdm', 'disa', 'papillon'],
+  refroidissement: ['radiateur', 'vase', 'durites', 'pompeEau', 'thermostat', 'ventilateur'],
+  echappement: ['collecteurEch', 'ligneEch', 'sondes', 'pompeAir'],
+  transmission: ['volant', 'embrayage', 'boite', 'arbre', 'pont', 'demiArbres'],
+  carburant: ['reservoir', 'pompeEssence', 'filtreEssence', 'duriteEssence', 'rampe', 'injecteurs'],
+  chassis: ['trainAv', 'trainAr', 'direction', 'roueAvG', 'roueAvD', 'roueArG', 'roueArD'],
+  accessoires: ['poulies', 'alternateur', 'pompeDA', 'demarreur']
+};
+
+// Visite guidée : fluides montrés et mécanique en mouvement selon la fiche
+const FLUIDES_PAR_FICHE = {
+  refroidissement: ['refroidissement'], thermostat: ['refroidissement'],
+  carburant: ['carburant', 'retour'], gestion: ['carburant'],
+  lubrification: ['huile'], gicleurs: ['huile']
+};
+const FICHES_MOTEUR_TOURNANT = ['cycle', 'distribution', 'vanos', 'allumage', 'lubrification', 'gicleurs',
+  'refroidissement', 'thermostat', 'alternateur', 'direction', 'demarreur', 'admission', 'echappement', 'transmission'];
 
 
 /* ==========================================================================
@@ -1539,18 +1682,25 @@ const MONTEE = [3000, 2100, 1500, 1100, 800];      // montée en régime (tr/min
 // Position du levier dans la grille en H : [avant/arrière, gauche/droite]
 const GRILLE = [[0, 0], [0.22, 0.2], [-0.22, 0.2], [0.22, 0], [-0.22, 0], [0.22, -0.2]];
 
+// Au chargement, le moteur est à l'arrêt : il ne tourne qu'avec le mode accélération
+// (lancement au démarreur, ralenti, accélération rapport par rapport, puis arrêt et nouveau cycle)
 function creerSimulation() {
-  const s = { actif: false, phase: 'ralenti', t: 0, regime: RALENTI, rapport: 0, embraye: true, roues: 0, charge: 0 };
+  const s = { actif: false, phase: 'arret-moteur', t: 0, regime: 0, rapport: 0, embraye: true, roues: 0, charge: 0 };
   const angles = { moteur: 0, disque: 0, arbre: 0, roues: 0, levier: [0, 0] };
 
   function etape(dt) {
     s.t += dt;
     const rapportTotal = s.rapport ? RAPPORTS[s.rapport - 1] * PONT : 0;
     if (!s.actif) {
-      // Ralenti au point mort, voiture arrêtée (les roues finissent de s'arrêter)
-      s.regime += (RALENTI - s.regime) * Math.min(1, dt * 2);
+      // Contact coupé : le moteur s'arrête et la voiture finit de ralentir
+      s.regime = Math.max(0, s.regime - Math.max(400, s.regime * 1.5) * dt);
       s.roues = Math.max(0, s.roues - dt * 3);
-      s.rapport = 0; s.embraye = true; s.charge = 0;
+      s.rapport = 0; s.embraye = true; s.charge = 0; s.phase = 'arret-moteur';
+    } else if (s.phase === 'arret-moteur' || s.phase === 'lancement') {
+      // Lancement : le démarreur entraîne le moteur (~250 tr/min), puis il démarre et monte au ralenti
+      s.phase = 'lancement';
+      s.regime = s.t < 0.7 ? Math.min(250, s.regime + 900 * dt) : s.regime + (RALENTI * 1.15 - s.regime) * Math.min(1, dt * 5);
+      if (s.t > 1.3) { s.phase = 'ralenti'; s.t = 0; }
     } else if (s.phase === 'ralenti') {
       s.regime += (RALENTI - s.regime) * Math.min(1, dt * 3);
       s.roues = Math.max(0, s.roues - dt * 3);
@@ -1643,11 +1793,17 @@ function preparerRendu(conteneur, ombres) {
 
 
 /* ==========================================================================
-   9. Vue principale
+   9. Vue principale — un seul moteur de rendu, deux usages :
+   - « visite » : pendant les fiches de la documentation, la voiture reste à l'écran
+     (scène épinglée) et la caméra rejoint la pièce de la fiche au centre de l'écran
+   - « maquette » : la maquette interactive complète, à la fin du parcours
+   Le canvas passe de l'un à l'autre selon la section visible.
    ========================================================================== */
 function demarrer() {
   const { rendu, scene } = preparerRendu(zoneScene, true);
   const camera = new THREE.PerspectiveCamera(35, 1, 0.3, 800);
+  const racineHtml = document.documentElement;
+  const petitEcran = () => window.innerWidth < 720;
 
   const { racine, pieces, meca, fluides } = construireMaquette();
   const monde = new THREE.Group();
@@ -1666,24 +1822,29 @@ function demarrer() {
   scene.add(sol);
   monde.updateMatrixWorld(true);
 
-  // Matériaux d'origine de chaque maillage (pour la vue « fantôme » des fluides et le fondu de la caisse)
+  // Matériaux d'origine de chaque maillage (vues « fantôme », transparence et fondu de la caisse)
   racine.traverse((o) => {
     if (o.isMesh) o.userData.base = { opacite: o.material.opacity, transparent: o.material.transparent, depthWrite: o.material.depthWrite };
   });
 
-  // Sphères englobantes : assemblé / éclaté, avec ou sans carrosserie (servent au cadrage)
-  function mesurer(t, avecCaisse) {
+  // Boîtes et sphères mesurées sur la maquette assemblée (ou éclatée)
+  function boiteDe(ids, t) {
     const boite = new THREE.Box3();
-    listePieces.forEach((p) => {
-      if (p.userData.carrosserie && !avecCaisse) return;
-      p.position.copy(p.userData.eclate).multiplyScalar(t);
-      p.updateMatrixWorld(true);
-      boite.union(new THREE.Box3().setFromObject(p));
-    });
-    return boite.getBoundingSphere(new THREE.Sphere());
+    const sauve = listePieces.map((p) => p.position.clone());
+    listePieces.forEach((p) => { p.position.copy(p.userData.eclate).multiplyScalar(t || 0); });
+    monde.updateMatrixWorld(true);
+    ids.forEach((p) => { boite.union(new THREE.Box3().setFromObject(p)); });
+    listePieces.forEach((p, i) => p.position.copy(sauve[i]));
+    monde.updateMatrixWorld(true);
+    return boite;
   }
-  const vues = { a0: mesurer(0, false), a1: mesurer(0, true), e0: mesurer(1, false), e1: mesurer(1, true) };
-  listePieces.forEach((p) => p.position.set(0, 0, 0));
+  const sansCaisse = listePieces.filter((p) => !p.userData.carrosserie);
+  const vues = {
+    a0: boiteDe(sansCaisse, 0).getBoundingSphere(new THREE.Sphere()),
+    a1: boiteDe(listePieces, 0).getBoundingSphere(new THREE.Sphere()),
+    e0: boiteDe(sansCaisse, 1).getBoundingSphere(new THREE.Sphere()),
+    e1: boiteDe(listePieces, 1).getBoundingSphere(new THREE.Sphere())
+  };
 
   // Caméra placée devant, à gauche et au-dessus, à une distance qui fait tenir toute la voiture
   const DIRECTION = new THREE.Vector3(-11, 6.2, 13).normalize();
@@ -1709,25 +1870,31 @@ function demarrer() {
 
   // La molette ne zoome qu'après un clic dans la vue : sinon elle fait défiler la page
   function activerZoom(actif) {
-    controles.enableZoom = actif;
-    zoneScene.toggleAttribute('data-lenis-prevent', actif);
+    controles.enableZoom = actif && mode === 'maquette';
+    zoneScene.toggleAttribute('data-lenis-prevent', controles.enableZoom);
   }
   rendu.domElement.addEventListener('pointerdown', () => activerZoom(true));
   rendu.domElement.addEventListener('pointerleave', () => activerZoom(false));
 
-  /* ---------- État de la vue ---------- */
+  /* ---------- État ---------- */
+  let mode = 'aucun';                         // 'maquette', 'visite' ou 'aucun'
   let eclate = 0, cibleEclate = 0;            // 0 = assemblé, 1 = éclaté (valeurs animées)
-  let caisse = 1, cibleCaisse = 1;            // 1 = voiture affichée
-  let fluidesActifs = false;
+  let caisse = 1, cibleCaisse = 1;            // 1 = carrosserie affichée
+  let transparence = false;                   // carrosserie en transparence (maquette)
+  let fluidesActifs = false;                  // fluides affichés (maquette)
+  const masques = new Set();                  // pièces masquées par le panneau « Affichage »
   const sim = creerSimulation();
+  const demo = { moteur: 0, disque: 0, arbre: 0, roues: 0, levier: GRILLE[0] };   // mécanique de la visite
   const douce = (t) => t * t * (3 - 2 * t);
+  const cibleEclateCourante = () => (mode === 'visite' ? 0 : cibleEclate);
+  const cibleCaisseCourante = () => (mode === 'visite' ? 1 : cibleCaisse);
 
-  /* ---------- Cadrage : la caméra suit le centre de la scène et recule en vue éclatée ---------- */
+  /* ---------- Cadrage de la maquette : la caméra suit le centre de la scène et recule en vue éclatée ---------- */
   let zoomBase = 1;
-  const centreVise = new THREE.Vector3(), tmp = new THREE.Vector3();
+  const centreVise = new THREE.Vector3();
   function vueCourante() {
     const t = douce(eclate), c = douce(caisse);
-    const centre = tmp.copy(vues.a0.center).lerp(vues.a1.center, c);
+    const centre = new THREE.Vector3().copy(vues.a0.center).lerp(vues.a1.center, c);
     const centreE = new THREE.Vector3().copy(vues.e0.center).lerp(vues.e1.center, c);
     centre.lerp(centreE, t);
     const rayonA = THREE.MathUtils.lerp(vues.a0.radius, vues.a1.radius, c);
@@ -1735,6 +1902,7 @@ function demarrer() {
     return { centre: centre, rayon: THREE.MathUtils.lerp(rayonA, rayonE, t) };
   }
   function cadrer() {
+    if (mode !== 'maquette') return;
     const v = vueCourante();
     centreVise.copy(v.centre);
     camera.position.add(centreVise).sub(controles.target);                        // la caméra suit sa cible
@@ -1750,19 +1918,30 @@ function demarrer() {
     demanderRendu();
   }
 
-  /* ---------- Taille ---------- */
+  /* ---------- Taille (selon le conteneur où se trouve le canvas) ---------- */
+  function conteneurActuel() {
+    return rendu.domElement.parentElement || zoneScene;
+  }
   function redimensionner() {
-    const l = zoneScene.clientWidth, h = zoneScene.clientHeight;
+    const zone = conteneurActuel();
+    const l = zone.clientWidth || 1, h = zone.clientHeight || 1;
     rendu.setSize(l, h, false);
     camera.aspect = l / h;
-    // Recul de la caméra pour que toute la voiture tienne aussi en portrait (mobile)
-    zoomBase = Math.min(1, camera.aspect);
-    cadrer();
+    if (mode === 'maquette') {
+      camera.clearViewOffset();
+      // Recul de la caméra pour que toute la voiture tienne aussi en portrait (mobile)
+      zoomBase = Math.min(1, camera.aspect);
+      cadrer();
+    } else {
+      camera.zoom = 1;
+      camera.updateProjectionMatrix();
+    }
     demanderRendu();
   }
-  new ResizeObserver(redimensionner).observe(zoneScene);
+  const observateur = new ResizeObserver(redimensionner);
+  observateur.observe(zoneScene);
 
-  /* ---------- Étiquettes françaises (vue éclatée) ---------- */
+  /* ---------- Étiquettes françaises (vue éclatée de la maquette) ---------- */
   const etiquettes = listePieces.map((p) => {
     const el = document.createElement('span');
     el.className = 'etiquette-piece';
@@ -1797,42 +1976,100 @@ function demarrer() {
       if (gene) e.visible = false; else placees.push(e);
     });
     etiquettes.forEach((e) => {
-      e.el.style.visibility = e.visible || e.piece === survolee ? 'visible' : 'hidden';
-      if (e.visible || e.piece === survolee) {
-        e.el.style.transform = 'translate(-50%, -120%) translate(' + e.x.toFixed(1) + 'px,' + e.y.toFixed(1) + 'px)';
+      const montrer = e.visible || e.piece === survolee;
+      e.el.style.visibility = montrer ? 'visible' : 'hidden';
+      if (montrer) e.el.style.transform = 'translate(-50%, -120%) translate(' + e.x.toFixed(1) + 'px,' + e.y.toFixed(1) + 'px)';
+    });
+  }
+
+  /* ---------- Visibilité, matériaux, fluides ---------- */
+  function appliquerVisibilite() {
+    listePieces.forEach((p) => {
+      let v = mode === 'visite' || !masques.has(p.name);
+      if (p.userData.carrosserie && caisse <= 0.01) v = false;
+      p.visible = v;
+    });
+  }
+
+  // Opacité de chaque maillage selon le mode : visite (la pièce de la fiche reste pleine, le reste
+  // devient fantôme), fluides (vue fantôme), carrosserie transparente et fondu de la caisse
+  function appliquerMateriaux() {
+    const focus = mode === 'visite' ? visite.focus : null;
+    racine.traverse((o) => {
+      if (!o.isMesh) return;
+      const b = o.userData.base, p = pieceDe(o), enCaisse = p.userData.carrosserie;
+      let opacite = b.opacite, transparent = b.transparent;
+      if (mode === 'visite') {
+        if (focus && !focus.has(p.name)) { opacite = Math.min(opacite, enCaisse ? 0.05 : 0.15); transparent = true; }
+      } else {
+        if (fluidesActifs) { opacite = Math.min(opacite, enCaisse ? 0.08 : 0.22); transparent = true; }
+        if (enCaisse && transparence) { opacite = Math.min(opacite, 0.4); transparent = true; }
+      }
+      if (enCaisse && caisse < 0.999) { opacite *= douce(caisse); transparent = true; }
+      o.material.opacity = opacite;
+      if (o.material.transparent !== transparent) {
+        o.material.transparent = transparent;
+        o.material.depthWrite = transparent ? false : b.depthWrite;
+        o.material.needsUpdate = true;
       }
     });
   }
 
-  /* ---------- Vue éclatée, carrosserie, fluides ---------- */
+  function majFluides() {
+    if (mode === 'visite') {
+      const types = (visite.fiche && FLUIDES_PAR_FICHE[visite.fiche]) || [];
+      fluides.groupe.visible = types.length > 0 && eclate < 0.02;
+      Object.keys(fluides.parType).forEach((t) => { fluides.parType[t].visible = types.includes(t); });
+    } else {
+      fluides.groupe.visible = fluidesActifs && eclate < 0.02;
+      Object.keys(fluides.parType).forEach((t) => { fluides.parType[t].visible = true; });
+    }
+  }
+
   function appliquerEclate() {
     const t = douce(eclate);
     listePieces.forEach((p) => p.position.copy(p.userData.eclate).multiplyScalar(t));
-    // Les fluides suivent les pièces assemblées : on les masque dès que la maquette s'ouvre
-    fluides.groupe.visible = fluidesActifs && eclate < 0.02;
+    majFluides();
     cadrer();
   }
 
-  // Opacité de chaque maillage selon la carrosserie (fondu) et la vue « fantôme » des fluides
-  function appliquerMateriaux() {
-    racine.traverse((o) => {
-      if (!o.isMesh) return;
-      const b = o.userData.base, enCaisse = pieceDe(o).userData.carrosserie;
-      let opacite = b.opacite, transparent = b.transparent;
-      if (fluidesActifs) { opacite = Math.min(opacite, enCaisse ? 0.08 : 0.22); transparent = true; }
-      if (enCaisse) { opacite *= douce(caisse); transparent = true; }
-      o.material.opacity = opacite;
-      o.material.transparent = transparent;
-      o.material.depthWrite = transparent ? false : b.depthWrite;
-      o.material.needsUpdate = true;
+  function eclairer(p, intensite) {
+    if (!p) return;
+    p.traverse((o) => {
+      if (o.isMesh) {
+        o.material.emissive.setHex(intensite > 0 ? 0x7c3aed : (o.userData.emissif || 0));
+        o.material.emissiveIntensity = intensite > 0 ? intensite : (o.userData.intensite || 0);
+      }
     });
-    carrosserie.forEach((p) => { p.visible = caisse > 0.01; });
   }
 
+  /* ---------- Commandes de la maquette ---------- */
   function basculer(bouton, actif, libelleActif, libelleInactif) {
+    if (!bouton) return;
     bouton.setAttribute('aria-pressed', String(actif));
     const libelle = bouton.querySelector('[data-libelle]');
     if (libelle && libelleActif) libelle.textContent = actif ? libelleActif : libelleInactif;
+  }
+  const caseGroupe = (g) => document.querySelector('#moteur-calques [data-groupe="' + g + '"]');
+  const caseOption = (o) => document.querySelector('#moteur-calques [data-option="' + o + '"]');
+
+  function changerCaisse(affichee) {
+    cibleCaisse = affichee ? 1 : 0;
+    basculer(boutonVoiture, affichee, 'MASQUER LA VOITURE', 'AFFICHER LA VOITURE');
+    const c = caseGroupe('carrosserie');
+    if (c) c.checked = affichee;
+    if (mouvementReduit) { caisse = cibleCaisse; appliquerVisibilite(); appliquerMateriaux(); cadrer(); }
+    demanderRendu();
+  }
+  function changerFluides(actifs) {
+    fluidesActifs = actifs;
+    basculer(boutonFluides, actifs);
+    const c = caseOption('fluides');
+    if (c) c.checked = actifs;
+    if (legendeFluides) legendeFluides.hidden = !actifs;
+    majFluides();
+    appliquerMateriaux();
+    demanderRendu();
   }
 
   boutonEclate.addEventListener('click', () => {
@@ -1844,22 +2081,27 @@ function demarrer() {
     if (mouvementReduit) { eclate = cibleEclate; appliquerEclate(); }
     demanderRendu();
   });
+  if (boutonVoiture) boutonVoiture.addEventListener('click', () => changerCaisse(!cibleCaisse));
+  if (boutonFluides) boutonFluides.addEventListener('click', () => changerFluides(!fluidesActifs));
 
-  if (boutonVoiture) boutonVoiture.addEventListener('click', () => {
-    cibleCaisse = cibleCaisse ? 0 : 1;
-    basculer(boutonVoiture, !!cibleCaisse, 'MASQUER LA VOITURE', 'AFFICHER LA VOITURE');
-    if (mouvementReduit) { caisse = cibleCaisse; appliquerMateriaux(); cadrer(); }
-    demanderRendu();
+  // Panneau « Affichage » : un groupe d'éléments par case, plus deux options
+  document.querySelectorAll('#moteur-calques [data-groupe]').forEach((c) => {
+    c.addEventListener('change', () => {
+      const g = c.dataset.groupe;
+      if (g === 'carrosserie') { changerCaisse(c.checked); return; }
+      (GROUPES[g] || []).forEach((id) => { if (c.checked) masques.delete(id); else masques.add(id); });
+      appliquerVisibilite();
+      demanderRendu();
+    });
   });
-
-  if (boutonFluides) boutonFluides.addEventListener('click', () => {
-    fluidesActifs = !fluidesActifs;
-    basculer(boutonFluides, fluidesActifs);
-    if (legendeFluides) legendeFluides.hidden = !fluidesActifs;
-    fluides.groupe.visible = fluidesActifs && eclate < 0.02;
+  const optionTransparence = caseOption('transparence');
+  if (optionTransparence) optionTransparence.addEventListener('change', () => {
+    transparence = optionTransparence.checked;
     appliquerMateriaux();
     demanderRendu();
   });
+  const optionFluides = caseOption('fluides');
+  if (optionFluides) optionFluides.addEventListener('change', () => changerFluides(optionFluides.checked));
 
   if (boutonAcceleration) {
     if (mouvementReduit) {
@@ -1867,11 +2109,12 @@ function demarrer() {
       boutonAcceleration.title = 'Désactivé : votre système demande de réduire les animations';
     }
     boutonAcceleration.addEventListener('click', () => {
-      sim.etat.actif = !sim.etat.actif;
-      sim.etat.phase = 'ralenti';
-      sim.etat.t = 0;
-      basculer(boutonAcceleration, sim.etat.actif);
-      if (panneauSimulation) panneauSimulation.hidden = !sim.etat.actif;
+      const s = sim.etat;
+      s.actif = !s.actif;
+      s.phase = s.actif && s.regime > 600 ? 'ralenti' : 'arret-moteur';
+      s.t = 0;
+      basculer(boutonAcceleration, s.actif);
+      if (panneauSimulation) panneauSimulation.hidden = !s.actif;
       demanderRendu();
     });
   }
@@ -1888,7 +2131,7 @@ function demarrer() {
     });
   });
 
-  /* ---------- Survol et clic sur une pièce ---------- */
+  /* ---------- Survol et clic sur une pièce (maquette) ---------- */
   const rayon = new THREE.Raycaster();
   const pointeur = new THREE.Vector2();
   let survolee = null;
@@ -1897,37 +2140,31 @@ function demarrer() {
     while (o && !(o.userData && o.userData.piece)) o = o.parent;
     return o;
   }
+  function estVisible(o) {
+    for (; o; o = o.parent) if (!o.visible) return false;
+    return true;
+  }
 
   function pieceSous(e) {
     const zone = rendu.domElement.getBoundingClientRect();
     pointeur.set(((e.clientX - zone.left) / zone.width) * 2 - 1, -((e.clientY - zone.top) / zone.height) * 2 + 1);
     rayon.setFromCamera(pointeur, camera);
-    const touches = rayon.intersectObject(racine, true);
-    for (const touche of touches) {
+    for (const touche of rayon.intersectObject(racine, true)) {
+      if (!estVisible(touche.object)) continue;
       const p = pieceDe(touche.object);
-      if (!p || !p.visible) continue;
-      // Voiture assemblée : la carrosserie (en transparence) laisse passer le clic vers la mécanique
-      if (p.userData.carrosserie && eclate < 0.5) continue;
+      if (!p) continue;
+      // Carrosserie transparente (ou vue des fluides) : le clic la traverse jusqu'à la mécanique
+      if (p.userData.carrosserie && eclate < 0.5 && (transparence || fluidesActifs)) continue;
       return p;
     }
     return null;
   }
 
-  function surligner(p, actif) {
-    if (!p) return;
-    p.traverse((o) => {
-      if (o.isMesh) {
-        o.material.emissive.setHex(actif ? 0x7c3aed : (o.userData.emissif || 0));
-        o.material.emissiveIntensity = actif ? 0.45 : (o.userData.intensite || 0);
-      }
-    });
-  }
-
   function changerSurvol(p) {
     if (p === survolee) return;
-    surligner(survolee, false);
+    eclairer(survolee, 0);
     survolee = p;
-    surligner(survolee, true);
+    eclairer(survolee, 0.45);
     zoneSurvol.textContent = p ? p.userData.nom + (p.userData.fiche ? ' — cliquer pour la fiche' : '') : '';
     zoneSurvol.classList.toggle('est-visible', !!p);
     rendu.domElement.style.cursor = p && p.userData.fiche ? 'pointer' : '';
@@ -1936,7 +2173,7 @@ function demarrer() {
   }
 
   rendu.domElement.addEventListener('pointermove', (e) => {
-    if (e.pointerType === 'mouse') changerSurvol(pieceSous(e));
+    if (mode === 'maquette' && e.pointerType === 'mouse') changerSurvol(pieceSous(e));
   });
   rendu.domElement.addEventListener('pointerleave', () => changerSurvol(null));
 
@@ -1944,12 +2181,172 @@ function demarrer() {
   let depart = null;
   rendu.domElement.addEventListener('pointerdown', (e) => { depart = { x: e.clientX, y: e.clientY }; });
   rendu.domElement.addEventListener('pointerup', (e) => {
-    if (!depart || Math.hypot(e.clientX - depart.x, e.clientY - depart.y) > 6) return;
+    if (mode !== 'maquette' || !depart || Math.hypot(e.clientX - depart.x, e.clientY - depart.y) > 6) return;
     const p = pieceSous(e);
     if (!p) return;
     if (e.pointerType !== 'mouse') changerSurvol(p);
     if (p.userData.fiche && window.ouvrirFiche) window.ouvrirFiche(p.userData.fiche);
   });
+
+  /* ---------- Visite guidée des fiches ---------- */
+  const sectionMaquette = document.getElementById('moteur');
+  const sectionVisite = document.getElementById('documentation');
+  const zoneVisite = document.getElementById('visite-scene');
+  const textePiece = document.getElementById('visite-piece');
+  const texteCompteur = document.getElementById('visite-compteur');
+  const avecVisite = !!(sectionVisite && zoneVisite);
+  const fichesVisite = avecVisite ? Array.from(sectionVisite.querySelectorAll('.fiche')) : [];
+  const visite = {
+    index: -2, fiche: null, focus: null, eclairees: [],
+    position: new THREE.Vector3(), cible: new THREE.Vector3(), regard: new THREE.Vector3(),
+    decalage: { x: 0, y: 0, cx: 0, cy: 0 }, derive: 0, aSauter: true
+  };
+  if (avecVisite) {
+    racineHtml.classList.add('visite-3d');
+    observateur.observe(zoneVisite);
+    // La page s'allonge : le défilement fluide doit recalculer sa longueur
+    requestAnimationFrame(() => { if (window.Site && window.Site.lenis) window.Site.lenis.resize(); });
+  }
+
+  // Fiche active : celle dont le centre est le plus proche de la ligne de lecture
+  function ficheActive() {
+    const h = window.innerHeight, ligne = h * (petitEcran() ? 0.66 : 0.5);
+    let meilleure = -1, ecart = Infinity;
+    fichesVisite.forEach((f, i) => {
+      const z = f.getBoundingClientRect();
+      if (z.bottom < 0 || z.top > h) return;
+      const d = Math.abs((z.top + z.bottom) / 2 - ligne);
+      if (d < ecart) { ecart = d; meilleure = i; }
+    });
+    if (meilleure === 0 && fichesVisite[0].getBoundingClientRect().top > ligne) meilleure = -1;
+    return meilleure;
+  }
+
+  function cadrageVisite() {
+    const centre = vues.a1.center;
+    if (!visite.focus) {
+      visite.cible.copy(centre);
+      visite.position.copy(centre).addScaledVector(DIRECTION, distanceBase * 0.9);
+      return;
+    }
+    const sphere = boiteDe(Array.from(visite.focus).map((id) => pieces[id]).filter(Boolean), 0).getBoundingSphere(new THREE.Sphere());
+    // Direction : vue de trois-quarts avant, tournée vers le côté où se trouve la pièce
+    const radial = sphere.center.clone().sub(centre);
+    radial.y = 0;
+    const dir = DIRECTION.clone().multiplyScalar(0.8);
+    if (radial.length() > 2) dir.addScaledVector(radial.normalize(), 0.9);
+    dir.y += 0.35;
+    dir.normalize();
+    const distance = THREE.MathUtils.clamp(sphere.radius / Math.sin(THREE.MathUtils.degToRad(camera.fov / 2)) * 1.25, 7, distanceBase);
+    visite.cible.copy(sphere.center);
+    visite.position.copy(sphere.center).addScaledVector(dir, distance);
+  }
+
+  function majVisite() {
+    if (!avecVisite || mode !== 'visite') return;
+    const i = ficheActive();
+    if (i === visite.index) return;
+    visite.index = i;
+    fichesVisite.forEach((f, k) => f.classList.toggle('est-active', k === i));
+    const fiche = i >= 0 ? fichesVisite[i] : null;
+    visite.fiche = fiche ? fiche.dataset.fiche : null;
+    const ids = visite.fiche ? (PIECES_PAR_FICHE[visite.fiche] || []).filter((id) => pieces[id]) : [];
+    visite.focus = ids.length ? new Set(ids) : null;
+    // Décalage de l'image : la voiture se place du côté opposé au panneau de la fiche
+    if (fiche) {
+      const z = fiche.getBoundingClientRect();
+      if (petitEcran()) { visite.decalage.cx = 0; visite.decalage.cy = 0.2; }
+      else { visite.decalage.cx = (z.left + z.right) / 2 < window.innerWidth / 2 ? -0.18 : 0.18; visite.decalage.cy = 0; }
+    } else { visite.decalage.cx = 0; visite.decalage.cy = 0; }
+    cadrageVisite();
+    // Mise en valeur : la pièce de la fiche s'illumine
+    visite.eclairees.forEach((p) => eclairer(p, 0));
+    visite.eclairees = ids.map((id) => pieces[id]);
+    if (textePiece) textePiece.textContent = visite.fiche ? ids.map((id) => pieces[id].userData.nom).slice(0, 2).join(' · ') : 'BMW E39 520i — M54B22';
+    if (texteCompteur) texteCompteur.textContent = i >= 0 ? 'Fiche ' + (i + 1) + ' / ' + fichesVisite.length : 'Visite guidée · ' + fichesVisite.length + ' fiches';
+    appliquerMateriaux();
+    majFluides();
+    if (mouvementReduit) visite.aSauter = true;
+    demanderRendu();
+  }
+
+  function animerVisite(dt) {
+    const k = visite.aSauter ? 1 : 1 - Math.exp(-dt * 2.4);
+    visite.aSauter = false;
+    // Lente dérive autour de la pièce pour garder du relief
+    if (!mouvementReduit) visite.derive += dt * 0.12;
+    const vise = visite.position.clone().sub(visite.cible).applyAxisAngle(new THREE.Vector3(0, 1, 0), Math.sin(visite.derive) * 0.18).add(visite.cible);
+    camera.position.lerp(vise, k);
+    visite.regard.lerp(visite.cible, k);
+    camera.lookAt(visite.regard);
+    const d = visite.decalage;
+    d.x += (d.cx - d.x) * k;
+    d.y += (d.cy - d.y) * k;
+    const zone = conteneurActuel(), l = zone.clientWidth || 1, h = zone.clientHeight || 1;
+    camera.setViewOffset(l, h, d.x * l, d.y * h, l, h);
+    // La pièce de la fiche pulse doucement
+    const pulse = mouvementReduit ? 0.3 : 0.22 + Math.sin(performance.now() * 0.004) * 0.12;
+    visite.eclairees.forEach((p) => eclairer(p, pulse));
+  }
+
+  /* ---------- Changement de mode selon la section à l'écran ---------- */
+  let sauvegardeMaquette = null;
+  function choisirMode() {
+    const h = window.innerHeight;
+    if (sectionMaquette) {
+      const z = sectionMaquette.getBoundingClientRect();
+      if (z.top < h * 0.85 && z.bottom > h * 0.1) return 'maquette';
+    }
+    if (avecVisite) {
+      const z = sectionVisite.getBoundingClientRect();
+      if (z.top < h && z.bottom > 0) return 'visite';
+    }
+    return 'aucun';
+  }
+
+  function changerMode(nouveau) {
+    if (nouveau === mode) return;
+    if (mode === 'maquette') {
+      sauvegardeMaquette = { position: camera.position.clone(), cible: controles.target.clone() };
+      changerSurvol(null);
+    }
+    visite.eclairees.forEach((p) => eclairer(p, 0));
+    mode = nouveau;
+    racineHtml.classList.toggle('maquette-active', mode === 'maquette');
+    if (mode === 'maquette') {
+      zoneScene.appendChild(rendu.domElement);
+      camera.clearViewOffset();
+      if (sauvegardeMaquette) { camera.position.copy(sauvegardeMaquette.position); controles.target.copy(sauvegardeMaquette.cible); }
+      else { controles.target.copy(vues.a1.center); camera.position.copy(vues.a1.center).addScaledVector(DIRECTION, distanceBase); }
+      controles.enabled = true;
+      meca.poser(sim.angles);
+    } else if (mode === 'visite') {
+      zoneVisite.appendChild(rendu.domElement);
+      controles.enabled = false;
+      visite.index = -2;
+      visite.aSauter = true;
+      visite.regard.copy(controles.target);
+    }
+    if (mode !== 'visite' && visite.index !== -2) visite.index = -2;
+    redimensionner();
+    appliquerVisibilite();
+    appliquerMateriaux();
+    majFluides();
+    majVisite();
+    demanderRendu();
+  }
+
+  function suivreDefilement() {
+    changerMode(choisirMode());
+    if (avecVisite) {
+      const z = sectionVisite.getBoundingClientRect();
+      racineHtml.classList.toggle('visite-active', z.top <= 0 && z.bottom >= window.innerHeight);
+    }
+    majVisite();
+    demanderRendu();
+  }
+  window.addEventListener('scroll', suivreDefilement, { passive: true });
+  window.addEventListener('resize', () => { visite.index = -2; suivreDefilement(); });
 
   /* ---------- Panneau de simulation ---------- */
   const texteRapport = panneauSimulation && panneauSimulation.querySelector('[data-rapport]');
@@ -1957,8 +2354,8 @@ function demarrer() {
   function afficherSimulation() {
     if (!panneauSimulation || panneauSimulation.hidden) return;
     const s = sim.etat;
-    texteRapport.textContent = s.rapport ? 'rapport ' + s.rapport : 'point mort';
-    barreRegime.style.transform = 'scaleX(' + ((s.regime - RALENTI) / (REGIME_MAX - RALENTI) * 0.9 + 0.1).toFixed(3) + ')';
+    texteRapport.textContent = s.phase === 'lancement' ? 'démarrage' : s.regime < 50 ? 'moteur arrêté' : s.rapport ? 'rapport ' + s.rapport : 'point mort';
+    barreRegime.style.transform = 'scaleX(' + Math.max(0, s.regime / REGIME_MAX).toFixed(3) + ')';
   }
 
   /* ---------- Boucle de rendu ---------- */
@@ -1969,36 +2366,56 @@ function demarrer() {
   function image() {
     enCours = false;
     const dt = Math.min(horloge.getDelta(), 0.05);
-    if (!mouvementReduit) {
-      const angles = sim.etape(dt);
-      meca.poser(angles);
-      // Débit des fluides : pompe à eau et pompe à huile suivent le moteur, la pompe à essence est électrique
-      if (fluides.groupe.visible) {
-        const vitesses = { moteur: omega(sim.etat.regime) * 0.35, carburant: 0.6 + sim.etat.charge * 0.9 };
-        Object.keys(fluides.textures).forEach((type) => {
-          const v = vitesses[FLUIDES[type].vitesse];
-          fluides.textures[type].forEach((f) => { f.tex.offset.x -= v * f.facteur * dt; });
-        });
-      }
+    if (mode === 'aucun') return;
+
+    // Mécanique : maquette = simulation (moteur à l'arrêt tant qu'on n'accélère pas) ;
+    // visite = démonstration selon la fiche
+    let vitesses;
+    if (mode === 'maquette') {
+      if (!mouvementReduit) meca.poser(sim.etape(dt));
+      const tourne = sim.etat.regime > 0;
+      vitesses = { moteur: omega(sim.etat.regime) * 0.35, carburant: tourne ? 0.6 + sim.etat.charge * 0.9 : 0 };
       afficherSimulation();
+    } else {
+      const tourne = !mouvementReduit && FICHES_MOTEUR_TOURNANT.includes(visite.fiche);
+      const w = tourne ? VITESSE_RALENTI * 0.8 : 0;
+      const roulent = !mouvementReduit && (visite.fiche === 'transmission' || visite.fiche === 'freinage');
+      demo.moteur += w * dt;
+      demo.disque += w * dt;
+      demo.roues += (roulent ? 0.9 : 0) * dt;
+      demo.arbre += (roulent ? 0.9 * PONT : 0) * dt;
+      demo.levier = roulent ? GRILLE[3] : GRILLE[0];
+      if (!mouvementReduit) meca.poser(demo);
+      vitesses = { moteur: mouvementReduit ? 0 : 0.8, carburant: mouvementReduit ? 0 : 0.8 };
+      animerVisite(dt);
     }
+    // Débit des fluides : pompe à eau et pompe à huile suivent le moteur, la pompe à essence est électrique
+    if (fluides.groupe.visible) {
+      Object.keys(fluides.textures).forEach((type) => {
+        const v = vitesses[FLUIDES[type].vitesse];
+        fluides.textures[type].forEach((f) => { f.tex.offset.x -= v * f.facteur * dt; });
+      });
+    }
+
     let bouge = false;
-    if (Math.abs(cibleEclate - eclate) > 0.001) {
-      eclate += (cibleEclate - eclate) * Math.min(1, dt * 3.2);
-      if (Math.abs(cibleEclate - eclate) <= 0.001) eclate = cibleEclate;
+    const cE = cibleEclateCourante(), cC = cibleCaisseCourante();
+    if (Math.abs(cE - eclate) > 0.001) {
+      eclate += (cE - eclate) * Math.min(1, dt * 3.2);
+      if (Math.abs(cE - eclate) <= 0.001 || mouvementReduit) eclate = cE;
       appliquerEclate();
       bouge = true;
     }
-    if (Math.abs(cibleCaisse - caisse) > 0.001) {
-      caisse += (cibleCaisse - caisse) * Math.min(1, dt * 3.5);
-      if (Math.abs(cibleCaisse - caisse) <= 0.001) caisse = cibleCaisse;
+    if (Math.abs(cC - caisse) > 0.001) {
+      caisse += (cC - caisse) * Math.min(1, dt * 3.5);
+      if (Math.abs(cC - caisse) <= 0.001 || mouvementReduit) caisse = cC;
+      appliquerVisibilite();
       appliquerMateriaux();
       cadrer();
       bouge = true;
     }
-    controles.update();
+    if (mode === 'maquette') controles.update();
     rendu.render(scene, camera);
-    if (cibleEclate || eclate > 0.01 || survolee) placerEtiquettes();
+    if (mode === 'maquette' && (cibleEclate || eclate > 0.01 || survolee)) placerEtiquettes();
     // On continue tant que quelque chose bouge et que la vue est à l'écran
     if (visible && !document.hidden && (!mouvementReduit || bouge)) demanderRendu();
   }
@@ -2012,14 +2429,13 @@ function demarrer() {
 
   controles.addEventListener('change', demanderRendu);
   // Accès pour le débogage depuis la console (pièces, caméra, contrôles)
-  window.MoteurM54 = { pieces: pieces, camera: camera, controles: controles, rendre: demanderRendu };
-  new IntersectionObserver((entrees) => {
-    visible = entrees[0].isIntersecting;
-    if (visible) { horloge.getDelta(); demanderRendu(); }
-  }).observe(zoneScene);
-  document.addEventListener('visibilitychange', demanderRendu);
+  window.MoteurM54 = { pieces: pieces, camera: camera, controles: controles, rendre: demanderRendu, mode: () => mode };
+  document.addEventListener('visibilitychange', () => { horloge.getDelta(); demanderRendu(); });
 
+  appliquerVisibilite();
   appliquerMateriaux();
+  majFluides();
+  suivreDefilement();
   redimensionner();
   cadre.classList.add('est-pret');
   return pieces;
