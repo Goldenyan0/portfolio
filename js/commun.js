@@ -7,7 +7,7 @@
    - Révélations au scroll ([data-revele] → .est-visible)
    - Moteur de scroll partagé : volets entre sections ([data-volet]),
      parallax ([data-parallax]) et grands mots de fond ([data-glisse])
-   - Curseur personnalisé (souris uniquement) et boutons magnétiques
+   - Boutons magnétiques (souris uniquement ; curseur natif du système)
    Tout respecte prefers-reduced-motion : dans ce cas, rien ne bouge
    et la classe .anime n'est pas posée sur <html> (voir le <head>).
    ========================================================================== */
@@ -348,61 +348,7 @@
 
 
   /* ------------------------------------------------------------------
-     7. Curseur personnalisé : un point + un anneau qui suit avec retard
-     ------------------------------------------------------------------ */
-  function gererCurseur() {
-    if (!sourisFine) return;
-    const point = document.querySelector('.curseur');
-    const anneau = document.querySelector('.curseur-anneau');
-    if (!point || !anneau) return;
-
-    let sourisX = -100, sourisY = -100;
-    let anneauX = -100, anneauY = -100;
-    let actif = false;
-
-    window.addEventListener('pointermove', function (e) {
-      if (e.pointerType !== 'mouse') return;
-      sourisX = e.clientX;
-      sourisY = e.clientY;
-      if (!actif) {
-        actif = true;
-        anneauX = sourisX;
-        anneauY = sourisY;
-        document.documentElement.classList.add('curseur-actif');
-      }
-    }, { passive: true });
-
-    // La souris quitte la fenêtre : on cache le curseur
-    document.addEventListener('mouseleave', function () {
-      document.documentElement.classList.remove('curseur-actif');
-      actif = false;
-    });
-
-    // L'anneau grossit au-dessus des éléments cliquables
-    const cliquables = 'a, button, [role="button"], label, .projet__carte';
-    document.addEventListener('pointerover', function (e) {
-      if (e.target.closest(cliquables)) anneau.classList.add('est-survol');
-    });
-    document.addEventListener('pointerout', function (e) {
-      if (e.target.closest(cliquables)) anneau.classList.remove('est-survol');
-    });
-
-    // Avec mouvement réduit, l'anneau suit la souris sans traînée
-    const lissage = mouvementReduit ? 1 : 0.18;
-
-    function boucle() {
-      anneauX += (sourisX - anneauX) * lissage;
-      anneauY += (sourisY - anneauY) * lissage;
-      point.style.transform = 'translate3d(' + sourisX + 'px,' + sourisY + 'px,0)';
-      anneau.style.transform = 'translate3d(' + anneauX + 'px,' + anneauY + 'px,0)';
-      requestAnimationFrame(boucle);
-    }
-    requestAnimationFrame(boucle);
-  }
-
-
-  /* ------------------------------------------------------------------
-     8. Boutons magnétiques : le bouton est attiré vers la souris
+     7. Boutons magnétiques : le bouton est attiré vers la souris
      ------------------------------------------------------------------ */
   function gererMagnetisme() {
     if (!sourisFine || mouvementReduit) return;
@@ -444,6 +390,5 @@
   gererRevelations();
   gererEffetsScroll();
   gererTimelines();
-  gererCurseur();
   gererMagnetisme();
 })();

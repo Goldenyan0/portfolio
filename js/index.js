@@ -3,9 +3,8 @@
    - Effet machine à écrire du hero
    - Hero en scrollytelling (le titre se réduit et s'efface, le fond 3D zoome)
    - "Pourquoi moi" épinglé : une comparaison par écran
-   - Projets : défilement horizontal piloté par le scroll vertical
    - Compteurs, barres de compétences (les timelines sont dans commun.js)
-   - Filtre des projets (animation fluide) + inclinaison 3D des cartes
+   - Filtre de la grille des projets (animation fluide) + inclinaison 3D des cartes
    - Formulaire de contact (EmailJS + champ piège anti-spam)
    Dépend de commun.js (objet window.Site).
    ========================================================================== */
@@ -190,62 +189,6 @@
 
 
   /* ------------------------------------------------------------------
-     4. Projets : sur grand écran, la section est épinglée et la rangée
-        de cartes défile horizontalement pendant qu'on scrolle verticalement.
-     ------------------------------------------------------------------ */
-  let reglerProjets = function () {};
-
-  function gererProjetsHorizontaux() {
-    const scene = document.getElementById('projets-scene');
-    const piste = document.getElementById('grille-projets');
-    const ecran = scene && scene.querySelector('.projets__ecran');
-    const barre = scene && scene.querySelector('.projets__progression');
-    if (!scene || !racine.classList.contains('anime')) return;
-
-    let debordement = 0;
-
-    // Calcule la hauteur de la scène = hauteur d'écran + longueur à faire défiler
-    reglerProjets = function () {
-      const actif = window.innerWidth >= 720;
-      racine.classList.toggle('projets-horizontal', actif);
-      if (!actif) { scene.style.removeProperty('--hauteur-scene'); return; }
-
-      // Si les cartes ne tiennent pas en hauteur (petit écran), on revient à la grille
-      if (ecran.scrollHeight > ecran.clientHeight + 2) {
-        racine.classList.remove('projets-horizontal');
-        scene.style.removeProperty('--hauteur-scene');
-        return;
-      }
-      debordement = Math.max(0, piste.scrollWidth - window.innerWidth);
-      scene.style.setProperty('--hauteur-scene', (window.innerHeight + debordement) + 'px');
-      Site.rafraichir();
-    };
-
-    reglerProjets();
-    window.addEventListener('resize', reglerProjets);
-    if (document.fonts) document.fonts.ready.then(reglerProjets);
-
-    const medias = piste.querySelectorAll('.projet__media img');
-
-    Site.surScroll(function () {
-      if (!racine.classList.contains('projets-horizontal')) return;
-      const p = progressionScene(scene);
-      piste.style.setProperty('--tx', (-p * debordement).toFixed(1) + 'px');
-      barre.style.setProperty('--progression', p.toFixed(3));
-
-      // Parallax des images : chacune glisse un peu à contre-sens de sa carte
-      const milieu = window.innerWidth / 2;
-      medias.forEach(function (img) {
-        const zone = img.parentElement.getBoundingClientRect();
-        if (zone.right < 0 || zone.left > window.innerWidth) return;
-        const ecart = (zone.left + zone.width / 2 - milieu) / milieu; // -1 → 1
-        img.style.setProperty('--ix', (-ecart * 28).toFixed(1) + 'px');
-      });
-    });
-  }
-
-
-  /* ------------------------------------------------------------------
      Outil : appelle "action" une seule fois quand "element" devient visible
      ------------------------------------------------------------------ */
   function quandVisible(element, action, seuil) {
@@ -261,7 +204,7 @@
 
 
   /* ------------------------------------------------------------------
-     5. Compteurs : de 0 à la valeur cible, avec ralentissement à la fin
+     4. Compteurs : de 0 à la valeur cible, avec ralentissement à la fin
      ------------------------------------------------------------------ */
   function gererCompteurs() {
     if (mouvementReduit) return; // les valeurs finales sont déjà dans le HTML
@@ -286,7 +229,7 @@
 
 
   /* ------------------------------------------------------------------
-     6. Barres de compétences : se remplissent quand le bloc apparaît
+     5. Barres de compétences : se remplissent quand le bloc apparaît
      ------------------------------------------------------------------ */
   function gererBarres() {
     const bloc = document.getElementById('competences');
@@ -304,7 +247,7 @@
 
 
   /* ------------------------------------------------------------------
-     7. Filtre des projets, avec animation "FLIP" :
+     6. Filtre des projets (cartes de la grille), avec animation "FLIP" :
         on mémorise la position des cartes, on filtre, puis on anime
         chaque carte de son ancienne position vers la nouvelle.
      ------------------------------------------------------------------ */
@@ -330,7 +273,6 @@
       // Version sans animation
       if (mouvementReduit || !Element.prototype.animate) {
         appliquer(filtre);
-        reglerProjets();
         return;
       }
       if (enCours) return;
@@ -383,8 +325,8 @@
         return Promise.all(animations);
       }).then(function () {
         enCours = false;
-        // La rangée a changé de longueur : on recalcule le défilement horizontal
-        reglerProjets();
+        // La hauteur de la grille a changé : on recalcule les effets liés au scroll
+        Site.rafraichir();
       });
     }
 
@@ -399,7 +341,7 @@
 
 
   /* ------------------------------------------------------------------
-     8. Inclinaison 3D des cartes projets selon la position de la souris
+     7. Inclinaison 3D des cartes projets selon la position de la souris
      ------------------------------------------------------------------ */
   function gererInclinaison() {
     if (!sourisFine || mouvementReduit) return;
@@ -425,7 +367,7 @@
 
 
   /* ------------------------------------------------------------------
-     9. Formulaire de contact : EmailJS + champ piège anti-spam
+     8. Formulaire de contact : EmailJS + champ piège anti-spam
      ------------------------------------------------------------------ */
   function gererFormulaire() {
     const formulaire = document.getElementById('formulaire-contact');
@@ -503,7 +445,6 @@
 
   gererHero();
   gererPourquoi();
-  gererProjetsHorizontaux();
   gererCompteurs();
   gererBarres();
   gererFiltre();

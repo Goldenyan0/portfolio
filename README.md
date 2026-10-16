@@ -46,11 +46,11 @@ Les trois pages partagent une seule feuille de style : `css/style.css`.
 
 ## ✨ Animations et interactions
 
-- Préchargeur (compteur + rideau), curseur personnalisé, boutons magnétiques
+- Préchargeur (compteur + rideau), boutons magnétiques (curseur natif du système)
 - Hero en *scrollytelling* : le titre se réduit et s'efface, la caméra plonge dans le réseau 3D
 - Titres révélés mot à mot, transitions entre sections en volets (clip-path)
 - Section « Pourquoi moi » épinglée : une comparaison par écran
-- Projets en défilement horizontal piloté par le scroll (carrousel au doigt sur mobile), filtre animé, inclinaison 3D des cartes
+- Projets en grille (3 colonnes sur desktop, 2 sur tablette, 1 sur mobile), filtre animé par catégorie, inclinaison 3D des cartes
 - Parallax multicouche, compteurs, barres de compétences, timelines qui se dessinent
 
 **Accessibilité :** si « réduire les animations » est activé dans le système, le site s'affiche en version statique, sans mouvement. Mise en page pensée d'abord pour le mobile (vérifiée à 360 px).

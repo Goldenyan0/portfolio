@@ -52,8 +52,6 @@
 
   <a class="lien-evitement" href="#contenu">Aller au contenu</a>
 
-  <div class="curseur" aria-hidden="true"></div>
-  <div class="curseur-anneau" aria-hidden="true"></div>
 
   <!-- ══ Navigation ══ -->
   <header class="nav" id="nav">
@@ -768,6 +766,30 @@
                   </ul>
                 </div>
               </div>
+            </div>
+          </article>
+
+          <!-- 11 Transmission (propulsion) — ouverte aussi par les pièces 3D volant, embrayage, boîte, arbre, pont, roues -->
+          <article class="fiche" id="fiche-transmission" data-fiche="transmission" data-revele>
+            <p class="fiche__numero">11</p>
+            <h3>La transmission (propulsion)</h3>
+            <p class="fiche__role">Du moteur aux roues motrices arrière : volant moteur, embrayage, boîte de vitesses, arbre de transmission, pont arrière et roues.</p>
+            <!-- À COMPLÉTER (Yanis) : rôle détaillé, symptômes de panne et valeurs mesurées -->
+            <button class="fiche__ouvrir" type="button">Ouvrir la fiche <svg class="icone" aria-hidden="true"><use href="#i-fleche"/></svg></button>
+            <div class="fiche__detail">
+              <figure class="fiche__schema">
+                <svg class="sch sch-transmission" viewBox="0 0 320 200" role="img" aria-label="Schéma animé de la transmission : le mouvement passe du moteur au volant moteur, à l'embrayage, à la boîte de vitesses, à l'arbre de transmission puis au pont arrière et aux roues">
+                  <path class="sch-conduit" d="M88 56 H118 M198 56 H228 M264 74 V126 M228 144 H198 M118 144 H88"/>
+                  <path class="sch-flux" d="M88 56 H118 M198 56 H228 M264 74 V126 M228 144 H198 M118 144 H88"/>
+                  <rect class="sch-piece sch-piece--accent" x="18" y="38" width="70" height="36" rx="8"/><text class="sch-texte sch-texte--petit" x="53" y="60" fill="#fff">Moteur</text>
+                  <rect class="sch-piece" x="118" y="38" width="80" height="36" rx="8"/><text class="sch-texte sch-texte--petit" x="158" y="60">Volant</text>
+                  <rect class="sch-piece" x="228" y="38" width="74" height="36" rx="8"/><text class="sch-texte sch-texte--petit" x="265" y="60">Embrayage</text>
+                  <rect class="sch-piece" x="228" y="126" width="74" height="36" rx="8"/><text class="sch-texte sch-texte--petit" x="265" y="148">Boîte</text>
+                  <rect class="sch-piece" x="118" y="126" width="80" height="36" rx="8"/><text class="sch-texte sch-texte--petit" x="158" y="148">Arbre</text>
+                  <rect class="sch-piece" x="18" y="126" width="70" height="36" rx="8"/><text class="sch-texte sch-texte--petit" x="53" y="148">Pont · roues</text>
+                </svg>
+              </figure>
+              <div class="fiche__mini3d" data-mini3d="transmission"></div>
             </div>
           </article>
         </div>

@@ -6,7 +6,7 @@
    1. Variables (couleurs, typo, espacements)
    2. Base & reset
    3. Utilitaires (conteneur, révélations au scroll, accessibilité)
-   4. Composants partagés (boutons, nav, curseur, préchargeur, titres, pied de page)
+   4. Composants partagés (boutons, nav, préchargeur, titres, pied de page)
    5. Page d'accueil (hero, ticker, domaines, chiffres, pourquoi moi,
       projets, stack, parcours, à propos, contact)
    6. Page CV (+ impression)
@@ -490,44 +490,7 @@ button { font: inherit; color: inherit; cursor: pointer; }
 }
 
 
-/* --- 4.3 Curseur personnalisé (animation 14 : desktop uniquement) ---
-   Activé par commun.js seulement si l'appareil a une souris (pointer: fine). */
-.curseur,
-.curseur-anneau {
-  position: fixed;
-  top: 0; left: 0;
-  z-index: 9999;
-  pointer-events: none;
-  border-radius: 50%;
-  opacity: 0;
-  transition: opacity 0.3s;
-}
-.curseur-actif .curseur,
-.curseur-actif .curseur-anneau { opacity: 1; }
-.curseur {
-  width: 8px; height: 8px;
-  margin: -4px 0 0 -4px;
-  background: var(--violet);
-}
-.curseur-anneau {
-  width: 40px; height: 40px;
-  margin: -20px 0 0 -20px;
-  border: 1.5px solid var(--violet);
-  transition: opacity 0.3s, width 0.35s var(--ease-sortie), height 0.35s var(--ease-sortie),
-              margin 0.35s var(--ease-sortie), background 0.35s;
-}
-.curseur-anneau.est-survol {
-  width: 72px; height: 72px;
-  margin: -36px 0 0 -36px;
-  background: rgba(124, 58, 237, 0.1);
-}
-.curseur-actif,
-.curseur-actif a,
-.curseur-actif button,
-.curseur-actif label { cursor: none; }
-/* On garde le curseur texte natif dans les champs de formulaire */
-.curseur-actif input,
-.curseur-actif textarea { cursor: text; }
+/* --- 4.3 (supprimé : le site utilise le curseur natif du système) --- */
 
 
 /* --- 4.4 Préchargeur (animation 1 : compteur + barre + rideau) --- */
@@ -1268,22 +1231,17 @@ html:not(.js) .comparaison__rature { background-size: 100% 0.11em; }
 .anime .comparaisons .comparaison.est-contre .comparaison__contre { opacity: 1; transform: none; }
 
 /* --- 5.6 Projets (animation 6 : cascade + filtre + survol ; tilt 3D) ---
-   Mobile : carrousel horizontal au doigt (aimanté sur chaque carte).
-   ≥ 720 px avec animations (.projets-horizontal sur <html>) : section épinglée,
-   la rangée de cartes défile horizontalement quand on scrolle verticalement. */
+   Grille : 1 colonne sur mobile, 2 sur tablette (≥ 720 px), 3 sur desktop (≥ 1024 px). */
 .projets { position: relative; }
 .projets__scene { padding-block: 96px; }
 .projets__entete { margin-bottom: 32px; }
 .projets__entete .filtres { margin-top: 28px; }
-.projets__pied { display: none; }
-/* Grille de repli : alignée sur le conteneur de la page */
+/* Grille alignée sur le conteneur de la page */
 .projets__fenetre {
   max-width: var(--largeur-max);
   margin-inline: auto;
   padding-inline: var(--gouttiere);
 }
-@media (max-width: 719px) { .projets__fenetre { padding-inline: 0; } }
-.projets-horizontal .projets__fenetre { max-width: none; padding-inline: 0; }
 
 .filtres {
   display: flex;
@@ -1300,97 +1258,6 @@ html:not(.js) .comparaison__rature { background-size: 100% 0.11em; }
   .filtres { flex-wrap: wrap; overflow: visible; margin-inline: 0; padding-inline: 0; }
 }
 
-/* Carrousel mobile */
-@media (max-width: 719px) {
-  .grille-projets {
-    display: flex;
-    gap: 14px;
-    overflow-x: auto;
-    scroll-snap-type: x mandatory;
-    scrollbar-width: none;
-    padding: 8px var(--gouttiere) 24px;
-  }
-  .grille-projets::-webkit-scrollbar { display: none; }
-  .grille-projets .projet {
-    flex: 0 0 84vw;
-    scroll-snap-align: center;
-  }
-}
-
-/* Version épinglée à défilement horizontal */
-.projets-horizontal .projets__scene { height: var(--hauteur-scene, 300vh); padding: 0; }
-.projets-horizontal .projets__ecran {
-  position: sticky;
-  top: 0;
-  height: 100svh;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  gap: 24px;
-  padding: calc(var(--hauteur-nav) + 8px) 0 24px;
-  overflow: hidden;
-}
-.projets-horizontal .projets__entete {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: flex-end;
-  justify-content: space-between;
-  gap: 28px 32px;
-  margin-bottom: 0;
-}
-.projets-horizontal .projets__entete .titre-section { font-size: clamp(2.2rem, 4.4vw, 4rem); max-width: none; }
-.projets-horizontal .filtres { margin-top: 0; }
-.projets-horizontal .filtre { min-height: 38px; padding: 0 15px; font-size: 0.86rem; }
-/* Cartes plus compactes pour tenir dans la hauteur de l'écran */
-.projets-horizontal .projet__corps { padding: 20px; gap: 9px; }
-.projets-horizontal .projet__corps h3 { font-size: 1.3rem; }
-.projets-horizontal .projet__corps p:not(.projet__meta) { font-size: 0.9rem; line-height: 1.55; }
-@media (max-height: 860px) {
-  .projets-horizontal .projets__entete .surtitre { display: none; }
-  .projets-horizontal .projet__media { aspect-ratio: 2 / 1; }
-}
-@media (max-height: 800px) {
-  .projets-horizontal .projets__ecran { gap: 14px; padding-top: calc(var(--hauteur-nav) - 8px); padding-bottom: 14px; }
-  .projets-horizontal .projet__media { aspect-ratio: 5 / 2; }
-  .projets-horizontal .projet__corps { padding: 16px 18px; gap: 7px; }
-  .projets-horizontal .projets__pied { display: none; }
-}
-.projets-horizontal .grille-projets {
-  display: flex;
-  align-items: stretch;
-  gap: 24px;
-  width: max-content;
-  /* La rangée démarre alignée sur le conteneur de la page */
-  padding-left: max(var(--gouttiere), calc((100vw - var(--largeur-max)) / 2 + var(--gouttiere)));
-  padding-right: var(--gouttiere);
-  translate: var(--tx, 0px) 0;
-}
-.projets-horizontal .projet { width: clamp(300px, 29vw, 410px); flex-shrink: 0; }
-.projets-horizontal .projet__media { aspect-ratio: 16 / 9; }
-.projets-horizontal .projets__pied {
-  display: flex;
-  align-items: center;
-  gap: 20px;
-  font-family: var(--police-mono);
-  font-size: 0.78rem;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--encre-3);
-}
-.projets__progression {
-  flex: 1;
-  height: 3px;
-  background: var(--ligne);
-  border-radius: 999px;
-  overflow: hidden;
-}
-.projets__progression span {
-  display: block;
-  height: 100%;
-  background: var(--violet);
-  transform: scaleX(var(--progression, 0));
-  transform-origin: left;
-}
 .filtre {
   position: relative;
   min-height: 42px;
@@ -1406,9 +1273,10 @@ html:not(.js) .comparaison__rature { background-size: 100% 0.11em; }
 .filtre:hover { border-color: var(--violet); color: var(--violet); }
 .filtre[aria-pressed="true"] { background: var(--encre); border-color: var(--encre); color: #fff; }
 
-/* Grille classique (≥ 720 px sans animations) */
-@media (min-width: 720px) { .grille-projets { display: grid; gap: 20px; grid-template-columns: repeat(2, 1fr); } }
-@media (min-width: 1200px) { .grille-projets { grid-template-columns: repeat(3, 1fr); gap: 24px; } }
+/* Grille des projets : 1 → 2 → 3 colonnes */
+.grille-projets { display: grid; gap: 18px; grid-template-columns: 1fr; }
+@media (min-width: 720px) { .grille-projets { gap: 20px; grid-template-columns: repeat(2, 1fr); } }
+@media (min-width: 1024px) { .grille-projets { grid-template-columns: repeat(3, 1fr); gap: 24px; } }
 
 .projet {
   /* --accent est défini par carte (classes .projet--xxx) */
@@ -1516,9 +1384,6 @@ html:not(.js) .comparaison__rature { background-size: 100% 0.11em; }
 }
 .projet__lien { position: absolute; inset: 0; z-index: 3; }
 .projet__lien:focus-visible { outline-offset: -4px; border-radius: var(--rayon); }
-
-/* Parallax des images dans la rangée horizontale : l'image glisse moins vite que sa carte */
-.projets-horizontal .projet__media img { scale: 1.2; translate: var(--ix, 0px) 0; }
 
 /* Visuel SVG du projet Maison du Don : schéma réseau animé */
 .projet__media--schema {
@@ -2180,7 +2045,7 @@ html:not(.js) .timeline__trait { transform: none; }
 @media print {
   html { font-size: 10.2px; }
   body { background: #fff; line-height: 1.42; }
-  .nav, .menu-mobile, .lien-evitement, .curseur, .curseur-anneau,
+  .nav, .menu-mobile, .lien-evitement,
   .cv-actions, .pied, [data-imprimer] { display: none; }
 
   /* Tout est visible, sans découpe ni décalage d'animation */
