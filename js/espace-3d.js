@@ -176,7 +176,7 @@ async function demarrer() {
   document.body.prepend(couche);
 
   const rendu = new THREE.WebGLRenderer({ antialias: !petitEcran, alpha: true, powerPreference: 'low-power' });
-  rendu.setPixelRatio(Math.min(window.devicePixelRatio, petitEcran ? 1.25 : 1.6));
+  rendu.setPixelRatio(Math.min(window.devicePixelRatio, petitEcran ? 1.15 : 1.4));
   rendu.setClearColor(0x000000, 0);
   couche.appendChild(rendu.domElement);
 
@@ -335,6 +335,122 @@ async function demarrer() {
   geoPaquets.setAttribute('aEclat', new THREE.BufferAttribute(new Float32Array(NB_PAQUETS).fill(1), 1));
   scene.add(new THREE.Points(geoPaquets, materiauPoints));
 
+  /* ---------- Panneaux 3D : chaque panneau de section devient une dalle de verre posée
+     dans l'espace (face avant calée sous le texte, tranche violette visible en perspective),
+     reliée par un câble lumineux à la boule violette de son étape. Le texte reste du HTML. ---------- */
+  const PROFONDEUR = 360;                   // distance des dalles devant la caméra
+  const EPAISSEUR = 40;                     // épaisseur des dalles
+  const FUITE = 0.35;                        // la tranche fuit vers la boule violette de l'étape
+  function formeArrondie(l, h, r) {
+    const s = new THREE.Shape(), x = -l / 2, y = -h / 2;
+    s.moveTo(x + r, y);
+    s.lineTo(x + l - r, y); s.quadraticCurveTo(x + l, y, x + l, y + r);
+    s.lineTo(x + l, y + h - r); s.quadraticCurveTo(x + l, y + h, x + l - r, y + h);
+    s.lineTo(x + r, y + h); s.quadraticCurveTo(x, y + h, x, y + h - r);
+    s.lineTo(x, y + r); s.quadraticCurveTo(x, y, x + r, y);
+    return s;
+  }
+  const dalles = [];
+  etapes.forEach((etape, i) => {
+    const el = etape.classList.contains('panneau') ? etape : etape.querySelector('.panneau');
+    if (!el || el.matches('.cv-feuille, .cv-actions')) return;
+    const sombre = !!el.closest('.chiffres');
+    const groupe = new THREE.Group();
+    const faces = new THREE.MeshBasicMaterial({ color: sombre ? 0x15131d : 0xffffff, transparent: true, opacity: sombre ? 0.93 : 0.84, depthWrite: false, fog: false });
+    const tranche = new THREE.MeshBasicMaterial({ color: 0x8b5cf6, transparent: true, opacity: 0.32, depthWrite: false, fog: false, side: THREE.DoubleSide });
+    const maille = new THREE.Mesh(new THREE.BufferGeometry(), [faces, tranche]);
+    maille.matrixAutoUpdate = false;                                  // cisaillement posé à chaque image
+    const contour = new THREE.LineLoop(new THREE.BufferGeometry(), new THREE.LineBasicMaterial({ color: 0xa78bfa, transparent: true, opacity: 0.55, fog: false }));
+    groupe.add(maille, contour);
+    groupe.renderOrder = 3;
+    scene.add(groupe);
+    // Câble : courbe du bord de la dalle jusqu'à la boule violette de l'étape
+    const posCable = new Float32Array(33 * 3);
+    const geoCable = new THREE.BufferGeometry();
+    geoCable.setAttribute('position', new THREE.BufferAttribute(posCable, 3));
+    const cable = new THREE.Line(geoCable, new THREE.LineBasicMaterial({ color: 0x7c3aed, transparent: true, opacity: 0.45, depthWrite: false, fog: false }));
+    cable.frustumCulled = false;
+    scene.add(cable);
+    dalles.push({ el: el, i: i, groupe: groupe, maille: maille, contour: contour, cable: cable, posCable: posCable, l: 0, h: 0, sombre: sombre });
+  });
+  // Points lumineux : l'attache du câble sur la dalle et un paquet qui circule vers la boule
+  const posAttaches = new Float32Array(Math.max(1, dalles.length) * 2 * 3);
+  const eclatsAttaches = new Float32Array(Math.max(1, dalles.length) * 2);
+  const geoAttaches = new THREE.BufferGeometry();
+  geoAttaches.setAttribute('position', new THREE.BufferAttribute(posAttaches, 3));
+  geoAttaches.setAttribute('aTaille', new THREE.BufferAttribute(new Float32Array(Math.max(1, dalles.length) * 2).fill(12), 1));
+  geoAttaches.setAttribute('aEclat', new THREE.BufferAttribute(eclatsAttaches, 1));
+  const attaches = new THREE.Points(geoAttaches, materiauPoints);
+  attaches.frustumCulled = false;
+  if (dalles.length) {
+    scene.add(attaches);
+    racineHtml.classList.add('panneaux-3d');
+  }
+
+  const vue = new THREE.Vector3(), bout = new THREE.Vector3(), milieu = new THREE.Vector3(), projeteBoule = new THREE.Vector3();
+  const courbeCable = new THREE.QuadraticBezierCurve3(new THREE.Vector3(), new THREE.Vector3(), new THREE.Vector3());
+  function placerDalles(temps, active) {
+    if (!dalles.length) return;
+    camera.updateMatrixWorld();
+    const tanDemi = Math.tan(THREE.MathUtils.degToRad(camera.fov / 2));
+    const parPixel = 2 * PROFONDEUR * tanDemi / hauteur;          // unités par pixel à cette profondeur
+    dalles.forEach((d, k) => {
+      const z = d.el.getBoundingClientRect();
+      const visible = z.width > 0 && z.bottom > -80 && z.top < hauteur + 80;
+      d.groupe.visible = visible;
+      d.cable.visible = visible;
+      if (!visible) { eclatsAttaches[k * 2] = 0; eclatsAttaches[k * 2 + 1] = 0; return; }
+      // Taille : on reconstruit la dalle seulement si le panneau a changé de taille
+      const l = z.width * parPixel, h = z.height * parPixel;
+      if (Math.abs(l - d.l) > 0.4 || Math.abs(h - d.h) > 0.4) {
+        d.l = l; d.h = h;
+        const r = Math.min(32 * parPixel, l / 4, h / 4);
+        const forme = formeArrondie(l, h, r);
+        d.maille.geometry.dispose();
+        d.maille.geometry = new THREE.ExtrudeGeometry(forme, { depth: EPAISSEUR, bevelEnabled: false, curveSegments: 5 }).translate(0, 0, -EPAISSEUR);
+        d.contour.geometry.dispose();
+        d.contour.geometry = new THREE.BufferGeometry().setFromPoints(forme.getPoints(6).map((p) => new THREE.Vector3(p.x, p.y, 0.5)));
+      }
+      // Position : la face avant se projette exactement sous le panneau HTML
+      const cx = (z.left + z.width / 2) / largeur * 2 - 1, cy = 1 - (z.top + z.height / 2) / hauteur * 2;
+      vue.set(cx * PROFONDEUR * tanDemi * camera.aspect, cy * PROFONDEUR * tanDemi, -PROFONDEUR).applyMatrix4(camera.matrixWorld);
+      d.groupe.position.copy(vue);
+      d.groupe.quaternion.copy(camera.quaternion);
+      // Le panneau s'estompe en arrivant et en partant : la dalle aussi
+      const fondu = 1 - Math.min(1, Math.abs(d.el.approche || 0)) * 0.5;
+      const estActive = d.i === active;
+      d.maille.material[0].opacity = (d.sombre ? 0.93 : 0.84) * fondu;
+      d.maille.material[1].opacity = (estActive ? 0.3 : 0.18) * fondu;
+      d.contour.material.opacity = (estActive ? 0.85 : 0.45) * fondu;
+      d.cable.material.opacity = (estActive ? 0.75 : 0.32) * fondu;
+      // Attache du câble : sur le bord de la dalle tourné vers la boule
+      const boule = waypoints[d.i];
+      projeteBoule.copy(boule).project(camera);
+      const versDroite = projeteBoule.z > 1 ? cx < 0 : projeteBoule.x > cx;
+      // Profondeur visible : la face arrière glisse vers la boule (la face avant ne bouge pas)
+      let fx = projeteBoule.z > 1 ? (cx < 0 ? 1 : -1) : projeteBoule.x - cx;
+      let fy = projeteBoule.z > 1 ? 0.3 : projeteBoule.y - cy;
+      const n = Math.hypot(fx, fy) || 1;
+      fx /= n; fy /= n;
+      d.maille.matrix.set(1, 0, -fx * FUITE, 0, 0, 1, -fy * FUITE, 0, 0, 0, 1, 0, 0, 0, 0, 1);
+      bout.set((versDroite ? 1 : -1) * l / 2, h * 0.18, 0).applyQuaternion(camera.quaternion).add(vue);
+      milieu.copy(bout).lerp(boule, 0.5).addScaledVector(new THREE.Vector3(0, 1, 0), 60);
+      courbeCable.v0.copy(bout); courbeCable.v1.copy(milieu); courbeCable.v2.copy(boule);
+      for (let s = 0; s <= 32; s++) {
+        courbeCable.getPoint(s / 32, milieu);
+        d.posCable.set([milieu.x, milieu.y, milieu.z], s * 3);
+      }
+      d.cable.geometry.attributes.position.needsUpdate = true;
+      posAttaches.set([bout.x, bout.y, bout.z], k * 6);
+      courbeCable.getPoint(((temps || 0) * 0.00018 + k * 0.23) % 1, milieu);
+      posAttaches.set([milieu.x, milieu.y, milieu.z], k * 6 + 3);
+      eclatsAttaches[k * 2] = (estActive ? 1 : 0.5) * fondu;
+      eclatsAttaches[k * 2 + 1] = (mouvementReduit ? 0 : (estActive ? 1.2 : 0.6)) * fondu;
+    });
+    geoAttaches.attributes.position.needsUpdate = true;
+    geoAttaches.attributes.aEclat.needsUpdate = true;
+  }
+
   /* ---------- Taille ---------- */
   let largeur = 1, hauteur = 1;
   function redimensionner() {
@@ -444,18 +560,24 @@ async function demarrer() {
     });
     geoPaquets.attributes.position.needsUpdate = true;
 
+    placerDalles(temps, etat.active);
     rendu.render(scene, camera);
   }
 
   /* ---------- Boucle : en pause si l'onglet est caché ou si une scène plein écran
      (visite de la E39) recouvre l'espace ---------- */
-  let enCours = false, dernier = performance.now();
+  // Performance : à l'arrêt (aucun défilement depuis un instant), 30 images par seconde suffisent
+  let enCours = false, dernier = performance.now(), dernierDefilement = 0;
+  window.addEventListener('scroll', () => { dernierDefilement = performance.now(); }, { passive: true });
   function image(temps) {
     enCours = false;
+    if (!mouvementReduit && temps - dernierDefilement > 900 && temps - dernier < 30) { demander(); return; }
     const dt = Math.min(0.05, (temps - dernier) / 1000);
     dernier = temps;
     if (document.hidden) return;
-    if (!racineHtml.classList.contains('visite-active')) dessiner(temps, dt);
+    // Une scène plein écran (visite de la E39, ouverture du capot) recouvre l'espace : rien à dessiner
+    const recouvert = racineHtml.classList.contains('visite-active') || racineHtml.classList.contains('capot-actif');
+    if (!recouvert) dessiner(temps, dt);
     if (!mouvementReduit) demander();
   }
   function demander() {

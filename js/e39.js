@@ -205,6 +205,126 @@
 
 
   /* ------------------------------------------------------------------
+     5 bis. Fiches pièces (une pièce par fiche) et leur index
+     - index : un accordéon par catégorie, la liste des pièces sans description
+     - fenêtre : la pièce dans la voiture complète et la pièce seule (vues
+       3D dessinées par moteur-3d.js), sa description, mes valeurs, et un lien
+       vers la fiche du système qui l'explique
+     ------------------------------------------------------------------ */
+  function gererFichesPieces() {
+    const groupes = window.PIECES_E39;
+    if (!groupes) return;
+    const fiches = {};
+    groupes.forEach(function (g) { Object.keys(g.fiches).forEach(function (id) { fiches[id] = g.fiches[id]; }); });
+
+    const dialogue = document.getElementById('fiche-piece');
+    const avecDialogue = dialogue && typeof dialogue.showModal === 'function';
+
+    // Index en accordéons
+    const index = document.getElementById('index-pieces');
+    if (index) {
+      groupes.forEach(function (g, i) {
+        const details = document.createElement('details');
+        details.className = 'accordeon';
+        const ids = Object.keys(g.fiches);
+        details.innerHTML = '<summary><span class="accordeon__numero">' + String(i + 1).padStart(2, '0') + '</span>' +
+          '<span class="accordeon__titre"></span><span class="accordeon__compte">' + ids.length + (ids.length > 1 ? ' pièces' : ' pièce') + '</span>' +
+          '<span class="accordeon__signe" aria-hidden="true"></span></summary>';
+        details.querySelector('.accordeon__titre').textContent = g.categorie;
+        const liste = document.createElement('ul');
+        liste.className = 'accordeon__liste';
+        ids.forEach(function (id) {
+          const li = document.createElement('li');
+          const b = document.createElement('button');
+          b.type = 'button';
+          b.className = 'accordeon__piece';
+          b.textContent = g.fiches[id].nom;
+          b.disabled = !avecDialogue;
+          b.addEventListener('click', function () { ouvrir(id); });
+          li.appendChild(b);
+          liste.appendChild(li);
+        });
+        details.appendChild(liste);
+        index.appendChild(details);
+      });
+    }
+
+    if (!avecDialogue) return;
+    const titre = document.getElementById('fiche-piece-titre');
+    const categorie = document.getElementById('fiche-piece-categorie');
+    const description = document.getElementById('fiche-piece-description');
+    const blocVoiture = document.getElementById('fiche-piece-voiture');
+    const lienSysteme = document.getElementById('fiche-piece-systeme');
+    let declencheur = null, systemeApres = null;
+
+    function ouvrir(id) {
+      const f = fiches[id];
+      if (!f) return;
+      if (dialogue.open) dialogue.close();
+      declencheur = document.activeElement;
+      categorie.textContent = f.categorie;
+      titre.textContent = f.nom;
+      description.textContent = f.description;
+      const valeurs = blocVoiture.querySelector('ul');
+      valeurs.innerHTML = '';
+      (f.maVoiture || []).forEach(function (v) {
+        const li = document.createElement('li');
+        li.textContent = v;
+        valeurs.appendChild(li);
+      });
+      blocVoiture.hidden = !(f.maVoiture && f.maVoiture.length);
+      // Lien vers la fiche du système (documentation), s'il existe sur la page
+      const systeme = f.systeme && document.querySelector('.fiche[data-fiche="' + f.systeme + '"] h3');
+      lienSysteme.hidden = !systeme;
+      if (systeme) {
+        lienSysteme.textContent = 'Comprendre le système : ' + systeme.textContent;
+        lienSysteme.dataset.systeme = f.systeme;
+      }
+      dialogue.showModal();
+      dialogue.querySelector('.fiche-dialog__contenu').scrollTop = 0;
+      if (Site.lenis) Site.lenis.stop();
+      document.dispatchEvent(new CustomEvent('fichepiece:ouverte', {
+        detail: { id: id, pieces: f.pieces, ensemble: document.getElementById('fiche-piece-ensemble'), seule: document.getElementById('fiche-piece-seule') }
+      }));
+    }
+
+    dialogue.addEventListener('close', function () {
+      if (Site.lenis) Site.lenis.start();
+      document.dispatchEvent(new CustomEvent('fichepiece:fermee'));
+      if (systemeApres && window.ouvrirFiche) {
+        const s = systemeApres;
+        systemeApres = null;
+        window.ouvrirFiche(s);
+      } else if (declencheur && declencheur.focus) declencheur.focus();
+    });
+    dialogue.querySelector('[data-fermer]').addEventListener('click', function () { dialogue.close(); });
+    dialogue.addEventListener('click', function (e) { if (e.target === dialogue) dialogue.close(); });
+    lienSysteme.addEventListener('click', function () {
+      systemeApres = lienSysteme.dataset.systeme;
+      dialogue.close();
+    });
+
+    // Utilisé par moteur-3d.js quand on clique une pièce de la maquette
+    window.ouvrirFichePiece = ouvrir;
+  }
+
+
+  /* ------------------------------------------------------------------
+     5 ter. Comparaison « réel / maquette » : le curseur découvre l'une ou l'autre
+     ------------------------------------------------------------------ */
+  function gererComparaison() {
+    document.querySelectorAll('.comparaison-photo').forEach(function (figure) {
+      const cadreImages = figure.querySelector('.comparaison-photo__cadre');
+      const curseur = figure.querySelector('.comparaison-photo__curseur');
+      if (!cadreImages || !curseur) return;
+      curseur.addEventListener('input', function () {
+        cadreImages.style.setProperty('--position', curseur.value + '%');
+      });
+    });
+  }
+
+
+  /* ------------------------------------------------------------------
      6. Graphiques des relevés
      ------------------------------------------------------------------ */
 
@@ -456,5 +576,7 @@
   animerDebit();
   animerJauges();
   gererFiches();
+  gererFichesPieces();
+  gererComparaison();
   graphiquesReleves();
 })();

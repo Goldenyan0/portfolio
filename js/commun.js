@@ -358,7 +358,7 @@
   function gererPanneaux() {
     const selecteur = '.section > .conteneur, .chiffres > .conteneur, .projets__ecran, .cv-feuille, .cv-actions';
     // Exclus : scènes épinglées, maquette 3D, visite guidée et éléments qui ont déjà leur propre animation d'entrée
-    const exclus = '.hero-scene, .pourquoi, .moteur, .documentation, .e39-hero';
+    const exclus = '.hero-scene, .pourquoi, .moteur, .documentation, .e39-hero, .encyclopedie, .capot-intro';
     const panneaux = Array.from(document.querySelectorAll(selecteur)).filter(function (el) {
       return !el.closest(exclus) && !el.hasAttribute('data-revele');
     });

@@ -247,14 +247,167 @@
 
 
   /* ------------------------------------------------------------------
+     6 bis. Sélecteur immersif des projets : carrousel 3D qui tourne à 360°
+        Les cartes sont posées en anneau ; l'anneau tourne pour amener la carte
+        choisie devant. Flèches, glisser (souris ou doigt), clavier (← →) et clic
+        sur une carte de côté. Le filtre reconstruit l'anneau avec les projets retenus.
+        Sans JavaScript, la grille d'origine reste affichée.
+     ------------------------------------------------------------------ */
+  function gererCarrousel() {
+    const grille = document.getElementById('grille-projets');
+    const commandes = document.getElementById('carrousel-commandes');
+    if (!grille || !commandes) return null;
+    const projets = Array.from(grille.querySelectorAll('.projet'));
+    if (projets.length < 2) return null;
+
+    const anneau = document.createElement('div');
+    anneau.className = 'carrousel__anneau';
+    projets.forEach(function (p) { anneau.appendChild(p); });
+    grille.appendChild(anneau);
+    racine.classList.add('carrousel-actif');
+    commandes.hidden = false;
+    const aide = document.querySelector('.carrousel__aide');
+    if (aide) aide.hidden = false;
+    grille.setAttribute('tabindex', '0');
+    grille.setAttribute('role', 'region');
+    grille.setAttribute('aria-roledescription', 'carrousel');
+    grille.setAttribute('aria-label', 'Projets : flèches gauche et droite pour changer de projet');
+
+    const texteRang = commandes.querySelector('[data-rang]');
+    const texteTotal = commandes.querySelector('[data-total]');
+    const texteNom = commandes.querySelector('[data-nom]');
+    let visibles = projets.slice();
+    let index = 0, angle = 0, pas = 360 / projets.length;
+
+    // Rayon de l'anneau : assez grand pour que les cartes ne se chevauchent pas
+    function mesurer() {
+      const largeur = projets[0].offsetWidth || 320;
+      pas = 360 / Math.max(1, visibles.length);
+      const rayon = visibles.length < 2 ? 0 : Math.round(largeur / 2 / Math.tan(Math.PI / Math.max(3, visibles.length)) + 36);
+      grille.style.setProperty('--rayon-anneau', rayon + 'px');
+      // Hauteur : celle de la plus haute carte retenue (la carte de devant ne déborde jamais)
+      const haute = Math.max.apply(null, visibles.map(function (p) { return p.offsetHeight; }).concat([300]));
+      grille.style.height = (haute + 28) + 'px';
+    }
+    function placer() {
+      projets.forEach(function (p) {
+        const i = visibles.indexOf(p);
+        p.classList.toggle('est-filtre', i < 0);
+        if (i >= 0) p.style.setProperty('--a', (i * pas).toFixed(2) + 'deg');
+      });
+      anneau.style.setProperty('--angle', angle.toFixed(2) + 'deg');
+      majEtat();
+    }
+    function majEtat() {
+      visibles.forEach(function (p, i) {
+        const active = i === index;
+        p.classList.toggle('est-active', active);
+        p.setAttribute('aria-hidden', String(!active));
+        p.querySelectorAll('a, button').forEach(function (l) { l.tabIndex = active ? 0 : -1; });
+      });
+      texteRang.textContent = String(index + 1);
+      texteTotal.textContent = String(visibles.length);
+      texteNom.textContent = visibles[index] ? visibles[index].querySelector('h3').textContent : '';
+    }
+    // Va au projet i (le chemin le plus court autour de l'anneau)
+    function aller(i) {
+      const n = visibles.length;
+      if (!n) return;
+      let d = i - index;
+      if (d > n / 2) d -= n;
+      if (d < -n / 2) d += n;
+      angle -= d * pas;
+      index = ((index + d) % n + n) % n;
+      anneau.style.setProperty('--angle', angle.toFixed(2) + 'deg');
+      majEtat();
+    }
+
+    commandes.querySelectorAll('[data-sens]').forEach(function (b) {
+      b.addEventListener('click', function () { aller(index + Number(b.dataset.sens)); });
+    });
+    grille.addEventListener('keydown', function (e) {
+      if (e.key === 'ArrowRight') { aller(index + 1); e.preventDefault(); }
+      else if (e.key === 'ArrowLeft') { aller(index - 1); e.preventDefault(); }
+    });
+
+    // Glisser : l'anneau suit la souris ou le doigt, puis se cale sur la carte la plus proche
+    let depart = null, dernierGlisse = 0;
+    grille.addEventListener('pointerdown', function (e) {
+      if (e.button !== 0) return;
+      depart = { x: e.clientX, angle: angle, glisse: false };
+    });
+    window.addEventListener('pointermove', function (e) {
+      if (!depart) return;
+      const dx = e.clientX - depart.x;
+      if (!depart.glisse && Math.abs(dx) < 8) return;
+      depart.glisse = true;
+      anneau.classList.add('est-glisse');
+      anneau.style.setProperty('--angle', (depart.angle + dx * 0.22).toFixed(2) + 'deg');
+    });
+    window.addEventListener('pointerup', function (e) {
+      if (!depart) return;
+      if (depart.glisse) {
+        dernierGlisse = performance.now();
+        anneau.classList.remove('est-glisse');
+        const pasFaits = Math.round(-((e.clientX - depart.x) * 0.22) / pas);
+        anneau.style.setProperty('--angle', angle.toFixed(2) + 'deg');
+        aller(index + pasFaits);
+      }
+      depart = null;
+    });
+    // Clic : une carte de côté vient devant (au lieu d'ouvrir son lien) ; pas de clic après un glisser
+    anneau.addEventListener('click', function (e) {
+      const p = e.target.closest('.projet');
+      if (!p) return;
+      if (performance.now() - dernierGlisse < 300) { e.preventDefault(); e.stopPropagation(); return; }
+      const i = visibles.indexOf(p);
+      if (i >= 0 && i !== index) { e.preventDefault(); e.stopPropagation(); aller(i); }
+    }, true);
+
+    mesurer();
+    placer();
+    window.addEventListener('resize', function () { mesurer(); placer(); });
+    // Les polices et les images changent la hauteur des cartes : on remesure
+    if ('ResizeObserver' in window) {
+      const obs = new ResizeObserver(function () { mesurer(); });
+      projets.forEach(function (p) { obs.observe(p); });
+    }
+
+    return {
+      filtrer: function (filtre) {
+        visibles = projets.filter(function (p) { return filtre === 'tout' || p.dataset.categories.split(' ').indexOf(filtre) !== -1; });
+        projets.forEach(function (p) { p.classList.toggle('est-filtre', visibles.indexOf(p) < 0); });
+        index = 0;
+        angle = 0;
+        mesurer();
+        placer();
+        Site.rafraichir();
+      }
+    };
+  }
+
+
+  /* ------------------------------------------------------------------
      6. Filtre des projets (cartes de la grille), avec animation "FLIP" :
         on mémorise la position des cartes, on filtre, puis on anime
         chaque carte de son ancienne position vers la nouvelle.
      ------------------------------------------------------------------ */
-  function gererFiltre() {
+  function gererFiltre(carrousel) {
     const boutons = document.querySelectorAll('.filtre');
     const projets = Array.from(document.querySelectorAll('.projet'));
     if (!boutons.length) return;
+
+    // Carrousel actif : le filtre reconstruit l'anneau avec les seuls projets retenus
+    if (carrousel) {
+      boutons.forEach(function (bouton) {
+        bouton.addEventListener('click', function () {
+          if (bouton.getAttribute('aria-pressed') === 'true') return;
+          boutons.forEach(function (b) { b.setAttribute('aria-pressed', String(b === bouton)); });
+          carrousel.filtrer(bouton.dataset.filtre);
+        });
+      });
+      return;
+    }
 
     let enCours = false;
 
@@ -447,7 +600,7 @@
   gererPourquoi();
   gererCompteurs();
   gererBarres();
-  gererFiltre();
+  gererFiltre(gererCarrousel());
   gererInclinaison();
   gererFormulaire();
 })();

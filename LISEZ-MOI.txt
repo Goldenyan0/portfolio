@@ -1,0 +1,10 @@
+DOSSIER E39 POUR LE PORTFOLIO
+=============================
+Décompresse ce dossier à la RACINE du dossier portfolio
+(C:\Users\10061208\Downloads\PortableGit\portfolio).
+
+Contenu :
+- ref/moteur/baie-moteur-vue-dessus-1.jpg : photo du compartiment moteur (vue 3/4)
+- ref/moteur/baie-moteur-vue-dessus-2.jpg : photo du compartiment moteur (vue de dessus)
+- ref/moteur/vanne-disa.png : vanne DISA de référence (pour replacer et fidéliser le modèle 3D)
+- modeles/bmw-e39.glb : modèle 3D BMW E39 (Black Snow, licence CC Attribution — crédit à ajouter dans le README)
