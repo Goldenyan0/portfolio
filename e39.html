@@ -47,7 +47,13 @@
     <symbol id="i-fleche" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" d="M5 12h14M13 6l6 6-6 6"/></symbol>
     <symbol id="i-fleche-retour" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" d="M19 12H5m6-6-6 6 6 6"/></symbol>
     <symbol id="i-eclate" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M4 4h16v4H4zM4 10h16v4H4zM4 16h16v4H4zM12 1v2m0 18v2"/></symbol>
-    <symbol id="i-fermer" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" d="M6 6l12 12M18 6 6 18"/></symbol>
+    <symbol id="i-voiture" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M3 16v-3l2-5h10l4 5h2v3h-2M3 16h2m4 0h6"/><circle cx="7" cy="16" r="2" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="17" cy="16" r="2" fill="none" stroke="currentColor" stroke-width="2"/></symbol>
+    <symbol id="i-acceleration" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M4 18a8 8 0 1 1 16 0M12 18l4-6"/></symbol>
+    <symbol id="i-goutte" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" d="M12 3s6 7 6 11a6 6 0 0 1-12 0c0-4 6-11 6-11z"/></symbol>
+    <symbol id="i-plus" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" d="M12 5v14M5 12h14"/></symbol>
+    <symbol id="i-moins" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" d="M5 12h14"/></symbol>
+    <symbol id="i-recentrer" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></symbol>
+    <symbol id="i-fermer"viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" d="M6 6l12 12M18 6 6 18"/></symbol>
   </svg>
 
   <a class="lien-evitement" href="#contenu">Aller au contenu</a>
@@ -363,15 +369,43 @@
           <div class="moteur3d__scene" id="moteur-scene"></div>
           <div class="moteur3d__etiquettes" id="moteur-etiquettes" aria-hidden="true"></div>
           <p class="moteur3d__survol" id="moteur-survol" aria-live="polite"></p>
+          <!-- Mode accélération : rapport engagé et régime simulés -->
+          <div class="moteur3d__simulation" id="moteur-simulation" hidden>
+            <p>Simulation · <span data-rapport>point mort</span></p>
+            <div class="moteur3d__regime" aria-hidden="true"><span data-regime></span></div>
+          </div>
+          <!-- Légende des couleurs des fluides -->
+          <ul class="moteur3d__fluides" id="moteur-fluides" aria-label="Couleurs des fluides" hidden>
+            <li class="moteur3d__fluide moteur3d__fluide--refroidissement">Liquide de refroidissement</li>
+            <li class="moteur3d__fluide moteur3d__fluide--carburant">Carburant</li>
+            <li class="moteur3d__fluide moteur3d__fluide--huile">Huile moteur</li>
+          </ul>
+          <div class="moteur3d__zoom" role="group" aria-label="Zoom de la maquette">
+            <button type="button" data-zoom="1" aria-label="Zoomer"><svg aria-hidden="true"><use href="#i-plus"/></svg></button>
+            <button type="button" data-zoom="-1" aria-label="Dézoomer"><svg aria-hidden="true"><use href="#i-moins"/></svg></button>
+            <button type="button" data-zoom="0" aria-label="Recentrer la vue"><svg aria-hidden="true"><use href="#i-recentrer"/></svg></button>
+          </div>
           <div class="moteur3d__repli" id="moteur-repli">
             <p>Chargement de la vue 3D…</p>
           </div>
           <div class="moteur3d__barre">
-            <button class="bouton magnetique" id="bouton-eclate" type="button" aria-pressed="false">
-              <span class="bouton__texte"><svg aria-hidden="true"><use href="#i-eclate"/></svg><span data-libelle>VUE ÉCLATÉE</span></span>
-            </button>
+            <div class="moteur3d__commandes">
+              <button class="bouton magnetique" id="bouton-eclate" type="button" aria-pressed="false">
+                <span class="bouton__texte"><svg aria-hidden="true"><use href="#i-eclate"/></svg><span data-libelle>VUE ÉCLATÉE</span></span>
+              </button>
+              <button class="bouton bouton--clair" id="bouton-voiture" type="button" aria-pressed="true">
+                <span class="bouton__texte"><svg aria-hidden="true"><use href="#i-voiture"/></svg><span data-libelle>MASQUER LA VOITURE</span></span>
+              </button>
+              <button class="bouton bouton--clair" id="bouton-acceleration" type="button" aria-pressed="false">
+                <span class="bouton__texte"><svg aria-hidden="true"><use href="#i-acceleration"/></svg><span>ACCÉLÉRATION</span></span>
+              </button>
+              <button class="bouton bouton--clair" id="bouton-fluides" type="button" aria-pressed="false">
+                <span class="bouton__texte"><svg aria-hidden="true"><use href="#i-goutte"/></svg><span>FLUIDES</span></span>
+              </button>
+            </div>
             <p class="moteur3d__legende">M54B22 — 6 cylindres en ligne, 2.2L</p>
-            <p class="moteur3d__aide">Glissez pour tourner · survolez ou touchez une pièce</p>
+            <p class="moteur3d__aide">Glissez pour tourner · cliquez puis molette, ou pincez, pour zoomer · survolez ou touchez une pièce</p>
+            <p class="moteur3d__mention">Maquette expérimentale — quelques petites pièces peuvent manquer</p>
           </div>
         </div>
       </div>
@@ -774,7 +808,6 @@
             <p class="fiche__numero">11</p>
             <h3>La transmission (propulsion)</h3>
             <p class="fiche__role">Du moteur aux roues motrices arrière : volant moteur, embrayage, boîte de vitesses, arbre de transmission, pont arrière et roues.</p>
-            <!-- À COMPLÉTER (Yanis) : rôle détaillé, symptômes de panne et valeurs mesurées -->
             <button class="fiche__ouvrir" type="button">Ouvrir la fiche <svg class="icone" aria-hidden="true"><use href="#i-fleche"/></svg></button>
             <div class="fiche__detail">
               <figure class="fiche__schema">

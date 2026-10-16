@@ -35,7 +35,7 @@ Les trois pages partagent une seule feuille de style : `css/style.css`.
 | Technologie | Usage |
 |---|---|
 | HTML5 / CSS3 / JavaScript vanilla | Structure, mise en page, animations — sans framework |
-| [Three.js](https://threejs.org/) | Réseau 3D interactif du hero (avec repli SVG si WebGL est indisponible) |
+| [Three.js](https://threejs.org/) | Réseau 3D interactif du hero (avec repli SVG si WebGL est indisponible) et maquette 3D de la E39 (moteur, transmission, carrosserie, fluides) sur `e39.html` |
 | [Lenis](https://lenis.darkroom.engineering/) | Défilement fluide |
 | [EmailJS](https://www.emailjs.com/) | Envoi du formulaire de contact (avec champ piège anti-spam) |
 | Space Grotesk + Inter | Polices hébergées dans le dépôt (`fonts/`) |

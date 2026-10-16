@@ -2505,6 +2505,87 @@ html:not(.anime) .sch-trace--reel { stroke-dashoffset: 0; }
 }
 .moteur3d__aide { flex-basis: 100%; font-size: 0.82rem; color: var(--encre-3); }
 @media (min-width: 720px) { .moteur3d__aide { flex-basis: auto; margin-left: auto; } }
+.moteur3d__mention { flex-basis: 100%; font-size: 0.72rem; font-style: italic; color: var(--encre-3); }
+/* Boutons de la maquette : compacts, sur une ou deux lignes en mobile */
+.moteur3d__commandes { display: flex; flex-wrap: wrap; gap: 8px; }
+.moteur3d__commandes .bouton { min-height: 40px; padding: 0 14px; font-size: 0.78rem; }
+.moteur3d__commandes .bouton svg { width: 16px; height: 16px; }
+.moteur3d__commandes .bouton--clair { background: rgba(255, 255, 255, 0.85); }
+.moteur3d__commandes .bouton--clair[aria-pressed="true"] { background: var(--violet-pale); border-color: var(--violet); color: var(--violet-fonce); }
+.moteur3d__commandes .bouton:disabled { opacity: 0.45; cursor: not-allowed; }
+@media (max-width: 719px) {
+  .moteur3d__commandes .bouton__texte { gap: 6px; }
+  .moteur3d__commandes .bouton { padding: 0 11px; font-size: 0.72rem; }
+}
+/* Zoom : colonne de boutons ronds à droite */
+.moteur3d__zoom {
+  position: absolute;
+  right: 14px; top: 50%;
+  transform: translateY(-50%);
+  display: grid;
+  gap: 6px;
+}
+.moteur3d__zoom button {
+  display: grid;
+  place-items: center;
+  width: 38px; height: 38px;
+  border: 1px solid var(--ligne);
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.9);
+  color: var(--encre);
+  transition: border-color 0.2s, color 0.2s;
+}
+.moteur3d__zoom button:hover { border-color: var(--violet); color: var(--violet); }
+.moteur3d__zoom svg { width: 16px; height: 16px; }
+.moteur3d.est-pret .moteur3d__zoom { display: grid; }
+.moteur3d:not(.est-pret) .moteur3d__zoom { display: none; }
+/* Mode accélération : rapport et jauge de régime simulés */
+.moteur3d__simulation {
+  position: absolute;
+  left: 16px; top: 64px;
+  width: min(220px, 46%);
+  padding: 10px 14px;
+  border: 1px solid var(--ligne);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.9);
+  font-family: var(--police-mono);
+  font-size: 0.74rem;
+  color: var(--encre-2);
+}
+.moteur3d__simulation[hidden], .moteur3d__fluides[hidden] { display: none; }
+.moteur3d__regime { margin-top: 8px; height: 6px; border-radius: 999px; background: var(--ligne); overflow: hidden; }
+.moteur3d__regime span { display: block; height: 100%; background: var(--violet); transform: scaleX(0.1); transform-origin: left; }
+/* Légende des fluides */
+.moteur3d__fluides {
+  position: absolute;
+  right: 16px; top: 16px;
+  display: grid;
+  gap: 4px;
+  padding: 10px 14px;
+  border: 1px solid var(--ligne);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.9);
+  font-size: 0.74rem;
+  font-weight: 600;
+}
+.moteur3d__fluide { display: flex; align-items: center; gap: 8px; }
+.moteur3d__fluide::before { content: ""; width: 18px; height: 6px; border-radius: 999px; background: var(--couleur); }
+.moteur3d__fluide--refroidissement { --couleur: #0891b2; }
+.moteur3d__fluide--carburant { --couleur: #ea580c; }
+.moteur3d__fluide--huile { --couleur: #713f12; }
+.moteur3d__survol { max-width: calc(100% - 32px); }
+/* Mobile : la barre de commandes passe sous la scène pour ne pas masquer la voiture */
+@media (max-width: 719px) {
+  .moteur3d { --scene-h: clamp(360px, 62vh, 520px); height: auto; }
+  .moteur3d__scene { position: relative; height: var(--scene-h); }
+  .moteur3d__etiquettes { bottom: auto; height: var(--scene-h); }
+  .moteur3d__barre { position: static; padding: 4px 14px 16px; }
+  .moteur3d__zoom { top: 12px; right: 10px; transform: none; }
+  .moteur3d__zoom button { width: 34px; height: 34px; }
+  .moteur3d__fluides { top: calc(var(--scene-h) - 104px); right: auto; left: 12px; }
+  .moteur3d__simulation { top: 56px; left: 12px; }
+  .moteur3d__survol { top: 12px; left: 12px; max-width: calc(100% - 70px); }
+}
 .moteur3d__repli {
   position: absolute;
   inset: 0;
