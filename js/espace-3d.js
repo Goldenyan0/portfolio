@@ -216,6 +216,8 @@ function creerVoyage(THREE, camera) {
   });
   // Décors posés à plat derrière les cartes (la voiture de la visite guidée)
   main.querySelectorAll('[data-voyage-fond]').forEach((el) => main.insertBefore(el, cameraCss));
+  // … et ce qui doit rester au-dessus d'elles (compteur et sommaire de la visite)
+  main.querySelectorAll('[data-voyage-dessus]').forEach((el) => main.appendChild(el));
   racineHtml.classList.add('voyage-pret');
 
   camera.fov = FOV_VOYAGE;
@@ -508,7 +510,7 @@ async function demarrer() {
 
   /* ---------- Réglages (allégés sur petit écran) ---------- */
   const longueur = voyage ? voyage.cartes.length : NB_ETAPES;
-  const NB_NOEUDS = Math.round((petitEcran ? 22 : 40) * longueur + (petitEcran ? 60 : 110));
+  const NB_NOEUDS = Math.min(petitEcran ? 900 : 1600, Math.round((petitEcran ? 22 : 40) * longueur + (petitEcran ? 60 : 110)));
   const VOISINS = 3;
   const DISTANCE_MAX = 320 * E;
   const NB_PAQUETS = petitEcran ? 18 : 46;
@@ -880,7 +882,7 @@ async function demarrer() {
     if (!mouvementReduit) demander();
   }
   function demander() {
-    if (!enCours) { enCours = true; requestAnimationFrame(image); }
+    if (!enCours) { enCours = true; window.Site.image(image); }
   }
   document.addEventListener('visibilitychange', () => { dernier = performance.now(); demander(); });
 

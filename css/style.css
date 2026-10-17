@@ -2570,6 +2570,7 @@ html:not(.anime) .sch-trace--reel { stroke-dashoffset: 0; }
 .moteur3d__zoom button:hover { border-color: var(--violet); color: var(--violet); }
 .moteur3d__zoom svg { width: 16px; height: 16px; }
 .moteur3d.est-pret .moteur3d__zoom { display: grid; }
+.moteur3d__pivot { display: none; }
 .moteur3d:not(.est-pret) .moteur3d__zoom { display: none; }
 /* Mode accélération : rapport et jauge de régime simulés */
 .moteur3d__simulation {
@@ -2613,6 +2614,33 @@ html:not(.anime) .sch-trace--reel { stroke-dashoffset: 0; }
   .moteur3d__etiquettes { bottom: auto; height: var(--scene-h); }
   .moteur3d__barre { position: static; padding: 4px 14px 16px; }
   .moteur3d__zoom { top: 12px; right: 10px; transform: none; }
+  /* Flèches de pivotement : petite croix discrète en bas de la vue */
+  .moteur3d.est-pret .moteur3d__pivot {
+    position: absolute;
+    top: calc(var(--scene-h) - 100px);
+    left: 50%;
+    z-index: 3;
+    display: grid;
+    grid-template: repeat(3, 30px) / repeat(3, 30px);
+    transform: translateX(-50%);
+    opacity: 0.85;
+  }
+  .moteur3d__pivot button {
+    display: grid;
+    place-items: center;
+    border: 1px solid var(--ligne);
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.9);
+    color: var(--encre);
+  }
+  .moteur3d__pivot svg { width: 14px; height: 14px; }
+  .moteur3d__pivot [data-pivot="0,-1"] { grid-area: 1 / 2; }
+  .moteur3d__pivot [data-pivot="0,-1"] svg { transform: rotate(-90deg); }
+  .moteur3d__pivot [data-pivot="-1,0"] { grid-area: 2 / 1; }
+  .moteur3d__pivot [data-pivot="-1,0"] svg { transform: scaleX(-1); }
+  .moteur3d__pivot [data-pivot="1,0"] { grid-area: 2 / 3; }
+  .moteur3d__pivot [data-pivot="0,1"] { grid-area: 3 / 2; }
+  .moteur3d__pivot [data-pivot="0,1"] svg { transform: rotate(90deg); }
   .moteur3d__zoom button { width: 34px; height: 34px; }
   .moteur3d__fluides { top: calc(var(--scene-h) - 104px); right: auto; left: 12px; }
   .moteur3d__simulation { top: 56px; left: 12px; }
@@ -2701,6 +2729,7 @@ html:not(.anime) .sch-trace--reel { stroke-dashoffset: 0; }
 .fiche-dialog {
   width: min(980px, 100% - 24px);
   max-height: min(92vh, 1000px);
+  max-height: min(92dvh, 1000px);
   margin: auto;
   padding: 0;
   border: 0;
@@ -2729,7 +2758,7 @@ html:not(.anime) .sch-trace--reel { stroke-dashoffset: 0; }
   background: var(--surface);
 }
 .fiche-dialog__fermer:hover { border-color: var(--violet); color: var(--violet); }
-.fiche-dialog__contenu { overflow-y: auto; overscroll-behavior: contain; }
+.fiche-dialog__contenu { flex: 1 1 auto; min-height: 0; overflow-y: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; }
 .fiche-dialog .fiche { border: 0; border-radius: 0; padding: 32px 22px 28px; background: transparent; }
 .fiche-dialog .fiche:hover { transform: none; box-shadow: none; }
 .fiche-dialog .fiche h3 { font-size: clamp(1.8rem, 6vw, 2.6rem); padding-right: 48px; }
@@ -2983,6 +3012,54 @@ html:not(.anime) .sch-trace--reel { stroke-dashoffset: 0; }
 .visite__piece:empty, .visite__compteur:empty { display: none; }
 .visite__piece { color: var(--violet-fonce); border-color: rgba(124, 58, 237, 0.3); }
 .visite__compteur { font-family: var(--police-mono); color: var(--encre-2); }
+/* Sommaire déroulant de la visite : le compteur porte une petite flèche et ouvre la liste */
+.visite__sommaire { position: relative; pointer-events: auto; }
+button.visite__compteur { display: inline-flex; align-items: center; gap: 8px; cursor: pointer; }
+button.visite__compteur::after {
+  content: "";
+  width: 7px; height: 7px;
+  border-right: 2px solid currentColor;
+  border-bottom: 2px solid currentColor;
+  transform: translateY(-2px) rotate(45deg);
+  transition: transform 0.25s;
+}
+button.visite__compteur[aria-expanded="true"]::after { transform: translateY(2px) rotate(-135deg); }
+button.visite__compteur:hover, button.visite__compteur:focus-visible { border-color: var(--violet); color: var(--violet); }
+.visite__liste {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 50%;
+  z-index: 5;
+  width: min(300px, calc(100vw - 32px));
+  max-height: min(55vh, 420px);
+  overflow-y: auto;
+  padding: 8px;
+  border: 1px solid var(--ligne);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.98);
+  box-shadow: 0 24px 60px -24px rgba(76, 29, 149, 0.5);
+  transform: translateX(-50%);
+  counter-reset: fiche;
+}
+.visite__liste[hidden] { display: none; }
+.visite__liste button {
+  display: flex;
+  gap: 10px;
+  width: 100%;
+  padding: 7px 10px;
+  border: 0;
+  border-radius: 10px;
+  background: none;
+  color: var(--encre-2);
+  font-size: 0.84rem;
+  text-align: left;
+}
+.visite__liste li { counter-increment: fiche; }
+.visite__liste button::before { content: counter(fiche, decimal-leading-zero); font-family: var(--police-mono); font-size: 0.72rem; color: var(--encre-3); }
+.visite__liste button:hover, .visite__liste button:focus-visible { background: var(--violet-pale); color: var(--encre); }
+.voyage-pret:not(.visite-active) .visite { visibility: hidden; transition: opacity 0.6s, visibility 0s 0.6s; }
+.voyage-pret main > .visite__hud { z-index: 2; transition: opacity 0.6s; }
+.voyage-pret:not(.visite-active) main > .visite__hud { opacity: 0; visibility: hidden; }
 .visite-3d .documentation { background: transparent; padding-bottom: 30svh; }
 .visite-3d .documentation > .conteneur { position: relative; z-index: 1; }
 .visite-3d .documentation > .mot-fond { display: none; }
@@ -3447,13 +3524,54 @@ html:not(.anime) .sch-trace--reel { stroke-dashoffset: 0; }
 .carrousel-actif .projet .projet__carte { transition: transform 0.6s var(--ease-sortie), box-shadow 0.6s, border-color 0.4s, opacity 0.6s, filter 0.6s; }
 .carrousel-actif .projet:not(.est-active) .projet__carte { opacity: 0.5; filter: saturate(0.5); cursor: pointer; }
 .carrousel-actif .projet.est-active .projet__carte { box-shadow: 0 40px 90px -35px color-mix(in srgb, var(--accent) 55%, transparent); border-color: color-mix(in srgb, var(--accent) 40%, transparent); }
+/* Flèches à position fixe : la colonne du titre a une largeur fixe, le titre tient sur une ligne */
 .carrousel__commandes {
-  display: flex;
+  display: grid;
+  grid-template-columns: 44px minmax(0, 1fr) 44px;
   align-items: center;
-  justify-content: center;
-  gap: 16px;
-  margin-top: 18px;
+  gap: 12px;
+  width: min(420px, 100%);
+  margin: 18px auto 0;
 }
+.carrousel__etat strong { display: block; max-width: 100%; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+/* Molette : cadran à faire tourner, crans = projets */
+.carrousel__molette {
+  position: relative;
+  width: 92px;
+  height: 92px;
+  margin: 14px auto 0;
+  border-radius: 50%;
+  border: 1px solid var(--ligne);
+  background:
+    radial-gradient(circle, #fff 0 56%, transparent 57%),
+    repeating-conic-gradient(from var(--tour, 0deg), var(--violet-clair) 0 2deg, var(--surface-2) 2deg 20deg);
+  box-shadow: 0 10px 24px -14px rgba(76, 29, 149, 0.5);
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+  transition: box-shadow 0.2s;
+}
+.carrousel__molette:active { cursor: grabbing; }
+.carrousel__molette:focus-visible { outline: 3px solid var(--violet); outline-offset: 3px; }
+.carrousel__molette[hidden] { display: none; }
+.carrousel__repere { position: absolute; left: 50%; top: 4px; width: 4px; height: 14px; margin-left: -2px; border-radius: 2px; background: var(--violet); }
+/* Bouton « Voir le projet » des cartes (au-dessus du lien qui couvre la carte) */
+.projet__bouton {
+  position: relative;
+  z-index: 4;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 14px;
+  padding: 8px 16px;
+  border-radius: 999px;
+  background: var(--encre);
+  color: #fff;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+.projet__bouton .icone { width: 16px; height: 16px; }
+.projet__bouton:hover, .projet__bouton:focus-visible { background: var(--violet); }
 .carrousel__commandes[hidden], .carrousel__aide[hidden] { display: none; }
 .carrousel__fleche {
   display: grid;

@@ -1309,8 +1309,9 @@ function construireMaquette() {
   geoSelle.rotateY(-Math.PI / 2);
   reservoir.add(place(maillage(geoSelle, 'reservoir'), 28.0, 0, 0));
   [23.0, 26.5].forEach((x) => reservoir.add(place(maillage(boite(0.25, 0.05, 12.4, 0.02), 'acier'), x, -2.68, 0)));
-  reservoir.add(tuyau([[27.5, 0.3, -5.5], [30.5, 1.6, -7.5], [33.5, 3.0, -9.3], [35.2, 3.9, -9.9]], 0.3, 'plastique'));
-  reservoir.add(place(maillage(axeZ(cylindre(0.42, 0.2, 24)), 'noir'), 35.3, 4.0, -10.0));
+  // Goulotte de remplissage : elle s'arrête derrière la trappe, à l'intérieur de l'aile (invisible de dehors)
+  reservoir.add(tuyau([[27.5, 0.3, -5.5], [30.5, 1.4, -7.0], [33.5, 2.8, -7.9], [35.0, 3.6, -8.2]], 0.3, 'plastique'));
+  reservoir.add(place(maillage(axeZ(cylindre(0.42, 0.2, 24)), 'noir'), 35.1, 3.65, -8.3));
 
   // --- Pompe à essence immergée AEM 340 L/h, suspendue sous sa platine ---
   const pompeEssence = ajouter(piece('pompeEssence', 'Pompe à essence AEM 340 L/h', 'carburant', [0, 8.0, -1.5]));
@@ -2625,6 +2626,17 @@ function demarrer() {
   }
 
   // Zoom au clavier ou au doigt : boutons + / − et recentrage
+  // Mobile : flèches qui font pivoter la maquette autour de sa cible (un cran par appui)
+  cadre.querySelectorAll('[data-pivot]').forEach((b) => b.addEventListener('click', () => {
+    const [dx, dy] = b.dataset.pivot.split(',').map(Number);
+    const ecart = camera.position.clone().sub(controles.target);
+    const sph = new THREE.Spherical().setFromVector3(ecart);
+    sph.theta -= dx * 0.4;
+    sph.phi = THREE.MathUtils.clamp(sph.phi + dy * 0.25, controles.minPolarAngle, controles.maxPolarAngle);
+    camera.position.copy(controles.target).add(ecart.setFromSpherical(sph));
+    controles.update();
+    demanderRendu();
+  }));
   cadre.querySelectorAll('[data-zoom]').forEach((b) => {
     b.addEventListener('click', () => {
       const sens = Number(b.dataset.zoom);
@@ -2787,8 +2799,11 @@ function demarrer() {
     visite.index = i;
     fichesVisite.forEach((f, k) => f.classList.toggle('est-active', k === i));
     const fiche = i >= 0 ? fichesVisite[i] : null;
-    visite.fiche = fiche ? fiche.dataset.fiche : null;
-    const ids = visite.fiche ? (PIECES_PAR_FICHE[visite.fiche] || []).filter((id) => pieces[id]) : [];
+    // Fiche d'une pièce (pieces-e39.js) : on éclaire ses pièces ; les animations (moteur qui tourne,
+    // fluides) suivent son système
+    const fichePiece = fiche && window.PIECES_E39 ? window.PIECES_E39.map((g) => g.fiches[fiche.dataset.fiche]).find(Boolean) : null;
+    visite.fiche = fiche ? (fichePiece ? fichePiece.systeme || null : fiche.dataset.fiche) : null;
+    const ids = (fichePiece ? fichePiece.pieces : (visite.fiche && PIECES_PAR_FICHE[visite.fiche]) || []).filter((id) => pieces[id]);
     visite.focus = ids.length ? new Set(ids) : null;
     // Décalage de l'image : la voiture se place du côté opposé au panneau de la fiche
     if (fiche) {
@@ -2801,7 +2816,7 @@ function demarrer() {
     // Mise en valeur : la pièce de la fiche s'illumine
     visite.eclairees.forEach((p) => eclairer(p, 0));
     visite.eclairees = ids.map((id) => pieces[id]);
-    if (textePiece) textePiece.textContent = visite.fiche ? ids.map((id) => pieces[id].userData.nom).slice(0, 2).join(' · ') : 'BMW E39 520i — M54B22';
+    if (textePiece) textePiece.textContent = ids.length ? ids.map((id) => pieces[id].userData.nom).slice(0, 2).join(' · ') : 'BMW E39 520i — M54B22';
     if (texteCompteur) texteCompteur.textContent = i >= 0 ? 'Fiche ' + (i + 1) + ' / ' + fichesVisite.length : 'Visite guidée · ' + fichesVisite.length + ' fiches';
     appliquerMateriaux();
     majFluides();
@@ -2939,7 +2954,8 @@ function demarrer() {
   document.querySelectorAll('[data-encyclo-vue]').forEach((b) => b.addEventListener('click', () => vueEncyclo(b.dataset.encycloVue)));
   if (carteEncyclo) {
     const fermer = carteEncyclo.querySelector('[data-fermer]');
-    if (fermer) fermer.addEventListener('click', () => { carteEncyclo.hidden = true; encyclo.points.concat(encyclo.pointsInterieur).forEach((x) => x.el.classList.remove('est-choisi')); });
+    // La croix fait comme « Vue de base » : extérieur, caméra de départ, tout refermé
+    if (fermer) fermer.addEventListener('click', () => vueEncyclo('exterieur'));
   }
   // Les points suivent la voiture à l'écran
   function placerPoints() {
@@ -3193,7 +3209,7 @@ function demarrer() {
   function demanderRendu() {
     if (!enCours) {
       enCours = true;
-      requestAnimationFrame(image);
+      window.Site.image(image);
     }
   }
 
@@ -3321,8 +3337,6 @@ function demarrer() {
       const fond = new THREE.Mesh(new THREE.BoxGeometry(x1 - x0, y1 - y0, 1.24 * S_GLB), new THREE.MeshBasicMaterial({ color: 0x050507, side: THREE.BackSide }));
       pieces.caisse.add(place(fond, (x0 + x1) / 2, (y0 + y1) / 2, 0));
     }
-    // Feux arrière : ils font partie de la malle et la suivent quand elle s'ouvre
-    if (pieces.feuxAr && ouvrants.coffre) ouvrants.coffre.contenu.add(pieces.feuxAr);
     memoriserMateriaux(racine);
     carrosserieDetaillee = true;
     cadre.classList.add('est-detaillee');
@@ -3439,7 +3453,7 @@ function brancherMiniMaquette(pieces) {
       if (t !== derniereTaille) { derniereTaille = t; taillerMini(conteneur); }
       mini.controles.update();
       mini.rendu.render(mini.scene, mini.camera);
-      requestAnimationFrame(boucle);
+      window.Site.image(boucle);
     })();
   }
 
@@ -3505,4 +3519,35 @@ async function lancer() {
     console.error(e);
   }
 }
-lancer();
+
+/* Performance : la 3D (chargement de Three.js, construction de la maquette, modèle GLB) n'est
+   lancée que quand on approche d'une section qui l'utilise, ou à l'ouverture d'une fiche pièce ;
+   le chargement de la page n'est plus bloqué par elle */
+let lancement = null;
+let ficheEnAttente = null;
+function lancerUneFois() {
+  if (lancement) return lancement;
+  observateurSections.disconnect();
+  lancement = lancer().then(() => {
+    // Une fiche ouverte avant que la 3D soit prête : on lui envoie ses vues maintenant
+    if (ficheEnAttente) document.dispatchEvent(new CustomEvent('fichepiece:ouverte', { detail: ficheEnAttente }));
+    ficheEnAttente = null;
+  });
+  return lancement;
+}
+const SECTIONS_3D = ['documentation', 'moteur', 'reel', 'encyclopedie'];
+const observateurSections = new IntersectionObserver((entrees) => {
+  if (entrees.some((e) => e.isIntersecting) && !document.documentElement.classList.contains('voyage-pret')) lancerUneFois();
+}, { rootMargin: '100% 0px' });
+SECTIONS_3D.forEach((id) => { const el = document.getElementById(id); if (el) observateurSections.observe(el); });
+// Voyage 3D : on lance la 3D une étape avant la documentation (ou plus loin)
+const etapesPage = Array.from(document.querySelectorAll('[data-etape]'));
+const premiere3d = Math.min(...SECTIONS_3D.map((id) => etapesPage.indexOf(document.getElementById(id))).filter((i) => i >= 0));
+const surCarte = (detail) => { if (detail && etapesPage.indexOf(detail.etape) >= premiere3d - 1) lancerUneFois(); };
+document.addEventListener('voyage:carte', (e) => surCarte(e.detail));
+surCarte(window.Site && window.Site.carteVoyage);
+document.addEventListener('fichepiece:ouverte', (e) => {
+  if (lancement) return;
+  ficheEnAttente = e.detail;
+  lancerUneFois();
+});

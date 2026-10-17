@@ -26,7 +26,7 @@ const ECHAPPEMENT = ['Object_51001', 'Object_37001', 'Object_25001'];
 const INTERIEUR = ['Object_4', 'Object_5', 'Object_6', 'Object_8', 'Object_10', 'Object_11', 'Object_12', 'Object_14',
   'Object_16', 'Object_19', 'Object_21', 'Object_35', 'Object_40', 'Object_49', 'Object_53', 'Object_54', 'Object_55',
   'Object_58001', 'Object_58002', 'Object_58003', 'Object_14001', 'Object_14002', 'Object_35001', 'Object_35002', 'Object_49001'];
-// Feux arrière : la partie intérieure est posée sur le couvercle de coffre
+// Feux arrière (tous fixés à la carrosserie)
 const FEUX = ['Object_64', 'Object_42', 'Object_50', 'Object_59', 'Object_41', 'Object_63', 'Object_58'];
 const VITRES = ['Object_62', 'Object_26'];
 
@@ -160,7 +160,8 @@ function etiqueter(nom, positions, index, nbTriangles) {
       const p = interieur ? (y < 0.95 && zonePorte(x, y, z, 0.70, 0, basPorte)) : zonePorte(x, y, z, ecartPorte, 0, basPorte);
       if (p) return p;
     }
-    if (dans(FEUX, nom) && z > 1.7 && y > 0.45) return Math.abs(x) < 0.625 ? 'coffre' : 'feuxAr';
+    // Feux arrière : fixés à la carrosserie, ils ne montent pas avec la malle
+    if (dans(FEUX, nom) && z > 1.7 && y > 0.45) return 'feuxAr';
     if (surCapot(x, y, z)) return 'capot';
     if (surCoffre(x, y, z) && !interieur) return 'coffre';
     // Doublure noire sous le capot (le reste de ce maillage : passages de roue, dessous)

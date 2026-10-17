@@ -4,7 +4,8 @@
    - Débit du débitmètre qui alterne ralenti / pleine charge (schéma A2)
    - Tracés VANOS consigne / réel (schéma A5)
    - Jauges LTFT animées (schéma A4)
-   - Fenêtre des fiches "Le M54 expliqué" (ouverte aussi depuis le moteur 3D)
+   - "Le M54 expliqué" : les cartes de la visite sont les fiches des pièces (pieces-e39.js),
+     avec un sommaire déroulant sur le compteur « Fiche X / N »
    - Photos de la page : un clic (ou Entrée) les ouvre en grand
    - Graphiques natifs SVG des relevés du 08/10/2026, animés au scroll,
      avec infobulle au survol et tableau des valeurs
@@ -133,7 +134,7 @@
           const a = parseFloat(j.dataset.depart), b = parseFloat(j.dataset.arrivee);
           placer(j, a + (b - a) * adouci);
         });
-        if (t < 1) requestAnimationFrame(etape);
+        if (t < 1) Site.image(etape);
         else bloc.classList.add('est-zero');
       })(performance.now());
     });
@@ -143,72 +144,6 @@
   /* ------------------------------------------------------------------
      5. Fenêtre des fiches
      ------------------------------------------------------------------ */
-  function gererFiches() {
-    const dialogue = document.getElementById('fiche-dialog');
-    const contenu = document.getElementById('fiche-dialog-contenu');
-    if (!dialogue || typeof dialogue.showModal !== 'function') return; // sans support : les fiches restent dépliées
-
-    document.documentElement.classList.add('fiches-repliables');
-    let declencheur = null;
-
-    function ouvrir(id) {
-      const article = document.querySelector('.fiche[data-fiche="' + id + '"]');
-      if (!article) return;
-      declencheur = document.activeElement;
-
-      const copie = article.cloneNode(true);
-      copie.removeAttribute('id');
-      // La copie ne garde rien de la carte 3D du voyage (position dans l'espace, opacité, clics bloqués)
-      copie.removeAttribute('style');
-      copie.removeAttribute('data-carte');
-      copie.classList.remove('carte-3d', 'est-active');
-      copie.classList.add('est-visible');
-      copie.querySelectorAll('[data-revele]').forEach(function (el) { el.classList.add('est-visible'); });
-      const bouton = copie.querySelector('.fiche__ouvrir');
-      if (bouton) bouton.remove();
-      const titre = copie.querySelector('h3');
-      titre.id = 'fiche-dialog-titre';
-      dialogue.setAttribute('aria-labelledby', 'fiche-dialog-titre');
-
-      contenu.innerHTML = '';
-      contenu.appendChild(copie);
-      dialogue.showModal();
-      contenu.scrollTop = 0;
-      if (Site.lenis) Site.lenis.stop();
-
-      // Le moteur 3D affiche la mini-maquette dans la zone prévue
-      document.dispatchEvent(new CustomEvent('fiche:ouverte', {
-        detail: { systeme: id, conteneur: copie.querySelector('[data-mini3d]') }
-      }));
-    }
-
-    function fermer() {
-      dialogue.close();
-    }
-
-    dialogue.addEventListener('close', function () {
-      contenu.innerHTML = '';
-      if (Site.lenis) Site.lenis.start();
-      document.dispatchEvent(new CustomEvent('fiche:fermee'));
-      if (declencheur && declencheur.focus) declencheur.focus();
-    });
-    dialogue.querySelector('[data-fermer]').addEventListener('click', fermer);
-    // Clic sur le fond assombri : fermeture
-    dialogue.addEventListener('click', function (e) {
-      if (e.target === dialogue) fermer();
-    });
-
-    document.querySelectorAll('.fiche').forEach(function (article) {
-      article.querySelector('.fiche__ouvrir').addEventListener('click', function () {
-        ouvrir(article.dataset.fiche);
-      });
-    });
-
-    // Utilisé par moteur-3d.js quand on clique une pièce
-    window.ouvrirFiche = ouvrir;
-  }
-
-
   /* ------------------------------------------------------------------
      5 bis. Fiches pièces (une pièce par fiche) et leur index
      - index : un accordéon par catégorie, la liste des pièces sans description
@@ -224,6 +159,56 @@
 
     const dialogue = document.getElementById('fiche-piece');
     const avecDialogue = dialogue && typeof dialogue.showModal === 'function';
+
+    // Les cartes ouvrent leur fiche dans la fenêtre (sinon, elles restent de simples cartes)
+    if (avecDialogue) document.documentElement.classList.add('fiches-repliables');
+    // Visite « Le M54 expliqué » : une carte par fiche (catégorie, nom, description, bouton)
+    const zoneVisite = document.getElementById('fiches-visite');
+    const listeVisite = document.getElementById('visite-liste');
+    const compteur = document.getElementById('visite-compteur');
+    if (zoneVisite) {
+      groupes.forEach(function (g) {
+        Object.keys(g.fiches).forEach(function (id) {
+          const f = g.fiches[id];
+          const carte = document.createElement('article');
+          carte.className = 'fiche fiche--piece';
+          carte.id = 'visite-' + id;
+          carte.dataset.fiche = id;
+          carte.setAttribute('data-carte', '');
+          carte.setAttribute('data-revele', '');
+          carte.innerHTML = '<p class="fiche__numero"></p><h3></h3><p class="fiche__role"></p>' +
+            '<button class="fiche__ouvrir" type="button">Ouvrir la fiche <svg class="icone" aria-hidden="true"><use href="#i-fleche"/></svg></button>';
+          carte.querySelector('.fiche__numero').textContent = g.categorie;
+          carte.querySelector('h3').textContent = f.nom;
+          carte.querySelector('.fiche__role').textContent = f.description;
+          carte.querySelector('.fiche__ouvrir').addEventListener('click', function () { ouvrir(id); });
+          zoneVisite.appendChild(carte);
+          if (listeVisite) {
+            const li = document.createElement('li');
+            const b = document.createElement('button');
+            b.type = 'button';
+            b.textContent = f.nom;
+            b.addEventListener('click', function () {
+              derouler(false);
+              if (Site.allerA) Site.allerA(carte);
+            });
+            li.appendChild(b);
+            listeVisite.appendChild(li);
+          }
+        });
+      });
+    }
+    // Sommaire déroulant de la visite : le compteur ouvre la liste des fiches
+    function derouler(ouvert) {
+      if (!listeVisite || !compteur) return;
+      listeVisite.hidden = !ouvert;
+      compteur.setAttribute('aria-expanded', String(ouvert));
+    }
+    if (compteur) {
+      compteur.addEventListener('click', function () { derouler(listeVisite.hidden); });
+      document.addEventListener('click', function (e) { if (!e.target.closest('.visite__sommaire')) derouler(false); });
+      document.addEventListener('keydown', function (e) { if (e.key === 'Escape') derouler(false); });
+    }
 
     // Index en accordéons
     const index = document.getElementById('index-pieces');
@@ -262,7 +247,7 @@
     const lienSysteme = document.getElementById('fiche-piece-systeme');
     const blocPhoto = document.getElementById('fiche-piece-photo');
     const image = document.getElementById('fiche-piece-image');
-    let declencheur = null, systemeApres = null;
+    let declencheur = null;
 
     function ouvrir(id) {
       const f = fiches[id];
@@ -284,13 +269,7 @@
       blocPhoto.hidden = !f.photo;
       image.removeAttribute('src');
       if (f.photo) { image.alt = f.nom; image.src = f.photo; }
-      // Lien vers la fiche du système (documentation), s'il existe sur la page
-      const systeme = f.systeme && document.querySelector('.fiche[data-fiche="' + f.systeme + '"] h3');
-      lienSysteme.hidden = !systeme;
-      if (systeme) {
-        lienSysteme.textContent = 'Comprendre le système : ' + systeme.textContent;
-        lienSysteme.dataset.systeme = f.systeme;
-      }
+      lienSysteme.hidden = true;
       dialogue.showModal();
       dialogue.querySelector('.fiche-dialog__contenu').scrollTop = 0;
       if (Site.lenis) Site.lenis.stop();
@@ -302,18 +281,10 @@
     dialogue.addEventListener('close', function () {
       if (Site.lenis) Site.lenis.start();
       document.dispatchEvent(new CustomEvent('fichepiece:fermee'));
-      if (systemeApres && window.ouvrirFiche) {
-        const s = systemeApres;
-        systemeApres = null;
-        window.ouvrirFiche(s);
-      } else if (declencheur && declencheur.focus) declencheur.focus();
+      if (declencheur && declencheur.focus) declencheur.focus();
     });
     dialogue.querySelector('[data-fermer]').addEventListener('click', function () { dialogue.close(); });
     dialogue.addEventListener('click', function (e) { if (e.target === dialogue) dialogue.close(); });
-    lienSysteme.addEventListener('click', function () {
-      systemeApres = lienSysteme.dataset.systeme;
-      dialogue.close();
-    });
 
     // Utilisé par moteur-3d.js quand on clique une pièce de la maquette
     window.ouvrirFichePiece = ouvrir;
@@ -338,7 +309,7 @@
 
     function ouvrir(img) {
       declencheur = img;
-      grande.src = img.currentSrc || img.src;
+      grande.src = img.dataset.grande || img.currentSrc || img.src;   // photo d'origine si l'affichée est réduite
       grande.alt = img.alt;
       dialogue.showModal();
       if (Site.lenis) Site.lenis.stop();
@@ -629,7 +600,6 @@
   surveillerMoteur();
   animerDebit();
   animerJauges();
-  gererFiches();
   gererFichesPieces();
   gererComparaison();
   gererAgrandissement();

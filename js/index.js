@@ -6,6 +6,8 @@
      (sauf pendant le voyage 3D : le hero et "Pourquoi moi" sont alors des cartes fixes)
    - Compteurs, barres de compétences (les timelines sont dans commun.js)
    - Filtre de la grille des projets (animation fluide) + inclinaison 3D des cartes
+   - Carrousel : flèches, glisser, molette circulaire à tourner ; bouton « Voir le projet »
+     sur les cartes qui ont un lien (même destination que la carte)
    - Formulaire de contact (EmailJS + champ piège anti-spam)
    Dépend de commun.js (objet window.Site).
    ========================================================================== */
@@ -222,9 +224,9 @@
           const t = Math.min((maintenant - debut) / duree, 1);
           const adouci = 1 - Math.pow(2, -10 * t); // courbe "ease-out expo"
           compteur.textContent = String(Math.round(cible * (t === 1 ? 1 : adouci)));
-          if (t < 1) requestAnimationFrame(etape);
+          if (t < 1) Site.image(etape);
         }
-        requestAnimationFrame(etape);
+        Site.image(etape);
       }, 0.6);
     });
   }
@@ -310,6 +312,14 @@
       texteRang.textContent = String(index + 1);
       texteTotal.textContent = String(visibles.length);
       texteNom.textContent = visibles[index] ? visibles[index].querySelector('h3').textContent : '';
+      const molette = document.getElementById('carrousel-molette');
+      if (molette) {
+        molette.style.setProperty('--tour', (-angle).toFixed(1) + 'deg');
+        molette.setAttribute('aria-valuemin', '1');
+        molette.setAttribute('aria-valuemax', String(visibles.length));
+        molette.setAttribute('aria-valuenow', String(index + 1));
+        molette.setAttribute('aria-valuetext', texteNom.textContent);
+      }
     }
     // Va au projet i (le chemin le plus court autour de l'anneau)
     function aller(i) {
@@ -327,6 +337,57 @@
     commandes.querySelectorAll('[data-sens]').forEach(function (b) {
       b.addEventListener('click', function () { aller(index + Number(b.dataset.sens)); });
     });
+
+    // Bouton « Voir le projet » : sur chaque carte qui a un lien, vers la même destination
+    projets.forEach(function (p) {
+      const lien = p.querySelector('.projet__lien');
+      if (!lien) return;
+      const b = document.createElement('a');
+      b.className = 'projet__bouton';
+      b.href = lien.href;
+      if (lien.target) { b.target = lien.target; b.rel = lien.rel; }
+      b.innerHTML = 'Voir le projet <svg class="icone" aria-hidden="true"><use href="#i-fleche"/></svg>';
+      p.querySelector('.projet__corps').appendChild(b);
+    });
+
+    // Molette : un cadran qu'on fait tourner (glisser circulaire) ; un cran = un projet
+    const molette = document.getElementById('carrousel-molette');
+    if (molette) {
+      molette.hidden = false;
+      molette.tabIndex = 0;
+      molette.setAttribute('role', 'slider');
+      molette.setAttribute('aria-label', grille.getAttribute('aria-label'));
+      let tour = null;
+      const angleDe = function (e) {
+        const z = molette.getBoundingClientRect();
+        return Math.atan2(e.clientY - (z.top + z.height / 2), e.clientX - (z.left + z.width / 2)) * 180 / Math.PI;
+      };
+      molette.addEventListener('pointerdown', function (e) {
+        tour = { dernier: angleDe(e), cumul: 0 };
+        molette.setPointerCapture(e.pointerId);
+        e.preventDefault();
+      });
+      molette.addEventListener('pointermove', function (e) {
+        if (!tour) return;
+        const a = angleDe(e);
+        let d = a - tour.dernier;
+        if (d > 180) d -= 360;
+        if (d < -180) d += 360;
+        tour.dernier = a;
+        tour.cumul += d;
+        // Sens horaire : projet suivant
+        while (tour.cumul >= pas) { tour.cumul -= pas; aller(index + 1); }
+        while (tour.cumul <= -pas) { tour.cumul += pas; aller(index - 1); }
+        molette.style.setProperty('--tour', (-angle + tour.cumul).toFixed(1) + 'deg');
+      });
+      const lacher = function () { tour = null; molette.style.setProperty('--tour', (-angle).toFixed(1) + 'deg'); };
+      molette.addEventListener('pointerup', lacher);
+      molette.addEventListener('pointercancel', lacher);
+      molette.addEventListener('keydown', function (e) {
+        if (e.key === 'ArrowRight' || e.key === 'ArrowUp') { aller(index + 1); e.preventDefault(); }
+        else if (e.key === 'ArrowLeft' || e.key === 'ArrowDown') { aller(index - 1); e.preventDefault(); }
+      });
+    }
     grille.addEventListener('keydown', function (e) {
       if (e.key === 'ArrowRight') { aller(index + 1); e.preventDefault(); }
       else if (e.key === 'ArrowLeft') { aller(index - 1); e.preventDefault(); }

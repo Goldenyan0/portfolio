@@ -48,6 +48,28 @@
 
 
   /* ------------------------------------------------------------------
+     0. Une seule boucle requestAnimationFrame par page : Lenis et les scènes 3D
+        (espace-3d.js, moteur-3d.js) y inscrivent leur prochaine image
+     ------------------------------------------------------------------ */
+  const aFaire = new Set();
+  let planifie = false;
+  function planifier() {
+    if (planifie) return;
+    planifie = true;
+    requestAnimationFrame(executer);
+  }
+  function executer(temps) {
+    planifie = false;
+    // Lenis a besoin de chaque image ; les autres ne demandent que celles dont elles ont besoin
+    if (window.Site.lenis) { window.Site.lenis.raf(temps); planifier(); }
+    const liste = Array.from(aFaire);
+    aFaire.clear();
+    liste.forEach(function (fn) { fn(temps); });
+  }
+  window.Site.image = function (fn) { aFaire.add(fn); planifier(); };
+
+
+  /* ------------------------------------------------------------------
      1. Défilement fluide avec Lenis (désactivé si mouvement réduit)
      ------------------------------------------------------------------ */
   function lancerLenis() {
@@ -56,11 +78,7 @@
     const lenis = new window.Lenis({ lerp: 0.09, smoothWheel: true });
     window.Site.lenis = lenis;
 
-    function boucle(temps) {
-      lenis.raf(temps);
-      requestAnimationFrame(boucle);
-    }
-    requestAnimationFrame(boucle);
+    planifier();
 
     // Les liens internes (#section) défilent en douceur au lieu de sauter
     document.addEventListener('click', function (e) {
@@ -120,7 +138,7 @@
       if (affiche >= 100 && pageChargee) {
         terminer();
       } else {
-        requestAnimationFrame(etape);
+        window.Site.image(etape);
       }
     }
 
@@ -145,7 +163,7 @@
       const attendre = function () { pageChargee ? terminer() : setTimeout(attendre, 50); };
       attendre();
     } else {
-      requestAnimationFrame(etape);
+      window.Site.image(etape);
     }
   }
 
@@ -287,7 +305,7 @@
   function demanderMiseAJour() {
     if (miseAJourDemandee) return;
     miseAJourDemandee = true;
-    requestAnimationFrame(function () {
+    window.Site.image(function () {
       miseAJourDemandee = false;
       ecouteursScroll.forEach(function (fn) { fn(); });
     });
