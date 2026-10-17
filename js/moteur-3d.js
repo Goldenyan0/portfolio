@@ -2080,8 +2080,8 @@ function creerSimulation() {
       // Débrayé : le moteur redescend vers le régime du rapport suivant
       s.embraye = false; s.charge = 0;
       const cible = regimeDe(s.roues * RAPPORTS[s.rapport] * PONT);
-      s.regime += (cible - s.regime) * Math.min(1, dt * 7);
-      if (s.t > 0.9) { s.rapport += 1; s.regime = cible; s.phase = 'acceleration'; s.t = 0; }
+      s.regime += (cible - s.regime) * Math.min(1, dt * 3.5);
+      if (s.t > 1.8) { s.rapport += 1; s.regime = cible; s.phase = 'acceleration'; s.t = 0; }
     } else if (s.phase === 'deceleration') {
       // Pied levé : frein moteur, la voiture ralentit en 5e
       s.embraye = true; s.charge = 0;
@@ -2104,7 +2104,7 @@ function creerSimulation() {
     angles.arbre += wArbre * dt;
     angles.roues += s.roues * dt;
     // Levier : il passe par le point mort au début de chaque changement de rapport
-    if (s.phase === 'passage') angles.levier = s.t < 0.3 ? GRILLE[s.rapport] : s.t < 0.6 ? GRILLE[0] : GRILLE[s.rapport + 1];
+    if (s.phase === 'passage') angles.levier = s.t < 0.6 ? GRILLE[s.rapport] : s.t < 1.2 ? GRILLE[0] : GRILLE[s.rapport + 1];
     else angles.levier = GRILLE[s.rapport];
     return angles;
   }
@@ -2280,12 +2280,12 @@ function demarrer() {
     const toile = document.createElement('canvas');
     toile.width = toile.height = 256;
     const c = toile.getContext('2d');
-    c.fillStyle = '#5b5e64';
+    c.fillStyle = '#26272b';
     c.fillRect(0, 0, 256, 256);
     let g = 11;
     const hasard = () => { g = (g * 16807) % 2147483647; return (g - 1) / 2147483646; };
     for (let i = 0; i < 2600; i++) {
-      const v = 70 + Math.floor(hasard() * 60);
+      const v = hasard() < 0.08 ? 70 + Math.floor(hasard() * 30) : 30 + Math.floor(hasard() * 25);
       c.fillStyle = 'rgb(' + v + ',' + v + ',' + (v + 4) + ')';
       c.fillRect(hasard() * 256, hasard() * 256, 1 + hasard() * 2, 1 + hasard() * 2);
     }
@@ -3413,7 +3413,7 @@ function demarrer() {
       }
       if (pommeauModele) { pommeauModele.rotation.x = meca.levier.rotation.x * 0.6; pommeauModele.rotation.z = meca.levier.rotation.z * 0.6; }
       majCompteur();
-      if (sim.etat.roues > 0.001) goudron.material.map.offset.x -= regimeDe(sim.etat.roues) * 2.02 / 60 / 0.867 * dt;
+      if (sim.etat.roues > 0.001) goudron.material.map.offset.x -= sim.etat.roues * R_PNEU / 10 * dt;
       vitesses = { moteur: omega(sim.etat.regime) * 0.35, carburant: tourne ? 0.6 + sim.etat.charge * 0.9 : 0 };
       afficherSimulation();
       anime = !mouvementReduit && (controles.autoRotate || tourne || sim.etat.actif);

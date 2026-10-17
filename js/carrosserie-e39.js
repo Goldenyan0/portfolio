@@ -189,6 +189,9 @@ function etiqueter(nom, positions, index, nbTriangles) {
     else if (pref === 'Object_30') label = 'coffre';
     // Volant et pommeau du modèle : panneaux à part, animés par la maquette (braquage, rapports)
     else if (['Object_35002', 'Object_5', 'Object_8', 'Object_58001'].includes(pref)) label = 'volantModele';
+    // Boutons des branches du volant (Object_55) et petite pièce sous le moyeu (Object_58) : dans le plan du volant
+    else if (pref === 'Object_55' && Math.abs(b.centre[0] + 0.38) < 0.13 && b.centre[1] > 0.72 && b.centre[1] < 0.77 && b.centre[2] > -0.41 && b.centre[2] < -0.36) label = 'volantModele';
+    else if (pref === 'Object_58' && Math.abs(b.centre[0] + 0.381) < 0.02 && Math.abs(b.centre[1] - 0.609) < 0.02 && Math.abs(b.centre[2] + 0.321) < 0.02) label = 'volantModele';
     else if (interieur && Math.abs(b.centre[0] + 0.012) < 0.03 && b.centre[1] > 0.39 && b.centre[1] < 0.48 && b.centre[2] > -0.37 && b.centre[2] < -0.31 && b.max[1] - b.min[1] < 0.09) label = 'pommeau';
     // Pédales du modèle : la maquette a ses trois pédales
     else if (pref === 'Object_14' && b.max[1] < 0.4 && b.min[2] > -0.96 && b.max[2] < -0.68 && b.max[0] < -0.2) label = 'retire';
