@@ -2578,6 +2578,12 @@ function demarrer() {
   if (boutonVoiture) boutonVoiture.addEventListener('click', () => changerCaisse(!cibleCaisse));
   if (boutonFluides) boutonFluides.addEventListener('click', () => changerFluides(!fluidesActifs));
   if (boutonCache) boutonCache.addEventListener('click', () => basculerCache());
+  // Vue éclatée : les numéros des pièces se masquent ou reviennent
+  const boutonNumeros = document.getElementById('bouton-numeros');
+  if (boutonNumeros) boutonNumeros.addEventListener('click', () => {
+    const masques = cadre.classList.toggle('sans-numeros');
+    basculer(boutonNumeros, masques, 'AFFICHER LES NUMÉROS', 'MASQUER LES NUMÉROS');
+  });
   // Boutons qui ouvrent ou ferment tous les ouvrants d'un coup
   document.querySelectorAll('[data-ouvrants]').forEach((b) => {
     b.addEventListener('click', () => {
@@ -2901,7 +2907,18 @@ function demarrer() {
     if (cacheMoteur.cible) basculerCache(false);
     document.querySelectorAll('[data-ouvrants]').forEach((x) => basculer(x, false, 'TOUT FERMER', 'TOUT OUVRIR'));
   }
+  // Points numérotés : masqués par le bouton, ou dès qu'on choisit un équipement ;
+  // ils reviennent avec la vue de base (ou en fermant la fiche de l'équipement)
+  const boutonPoints = document.querySelector('[data-encyclo-points]');
+  function masquerPoints(masques) {
+    if (calquePoints) calquePoints.classList.toggle('est-masque', masques);
+    if (!boutonPoints) return;
+    boutonPoints.setAttribute('aria-pressed', String(masques));
+    boutonPoints.querySelector('[data-libelle]').textContent = masques ? 'Afficher les points' : 'Masquer les points';
+  }
+  if (boutonPoints) boutonPoints.addEventListener('click', () => masquerPoints(!calquePoints.classList.contains('est-masque')));
   function montrerCarte(donnees, bouton) {
+    masquerPoints(true);
     encyclo.points.concat(encyclo.pointsInterieur).forEach((x) => x.el.classList.toggle('est-choisi', x.el === bouton));
     if (!carteEncyclo) return;
     carteEncyclo.querySelector('[data-titre]').textContent = donnees.nom;
@@ -2931,6 +2948,7 @@ function demarrer() {
   function vueEncyclo(v) {
     encyclo.vue = v;
     reinitialiserOuvrants();
+    masquerPoints(false);
     document.querySelectorAll('[data-encyclo-vue]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.encycloVue === v)));
     if (sectionEncyclo) sectionEncyclo.classList.toggle('est-interieur', v === 'interieur');
     if (carteEncyclo) carteEncyclo.hidden = true;
@@ -2973,6 +2991,7 @@ function demarrer() {
     if (fermer) fermer.addEventListener('click', () => {
       if (encyclo.vue === 'interieur') {
         carteEncyclo.hidden = true;
+        masquerPoints(false);
         encyclo.points.concat(encyclo.pointsInterieur).forEach((x) => x.el.classList.remove('est-choisi'));
       } else vueEncyclo('exterieur');
     });

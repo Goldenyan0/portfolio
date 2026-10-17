@@ -368,16 +368,7 @@
     document.addEventListener('fullscreenchange', maj);
     document.addEventListener('webkitfullscreenchange', maj);
   }
-  function gererPointsEncyclo() {
-    const b = document.querySelector('[data-encyclo-points]');
-    const calque = document.getElementById('encyclo-points');
-    if (!b || !calque) return;
-    b.addEventListener('click', function () {
-      const masques = calque.classList.toggle('est-masque');
-      b.setAttribute('aria-pressed', String(masques));
-      b.querySelector('[data-libelle]').textContent = masques ? 'Afficher les points' : 'Masquer les points';
-    });
-  }
+
 
 
   /* ------------------------------------------------------------------
@@ -693,6 +684,5 @@
   gererComparaison();
   gererAgrandissement();
   gererPleinEcran();
-  gererPointsEncyclo();
   graphiquesReleves();
 })();
