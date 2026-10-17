@@ -3,6 +3,7 @@
    - Effet machine à écrire du hero
    - Hero en scrollytelling (le titre se réduit et s'efface, le fond 3D zoome)
    - "Pourquoi moi" épinglé : une comparaison par écran
+     (sauf pendant le voyage 3D : le hero et "Pourquoi moi" sont alors des cartes fixes)
    - Compteurs, barres de compétences (les timelines sont dans commun.js)
    - Filtre de la grille des projets (animation fluide) + inclinaison 3D des cartes
    - Formulaire de contact (EmailJS + champ piège anti-spam)
@@ -82,7 +83,8 @@
      ------------------------------------------------------------------ */
   function gererHero() {
     const scene = document.getElementById('hero-scene');
-    if (!scene || mouvementReduit) return;
+    // Voyage 3D : le hero est une carte comme les autres, il n'est pas épinglé
+    if (!scene || mouvementReduit || racine.classList.contains('voyage')) return;
 
     const hero = document.getElementById('accueil');
     const grille = hero.querySelector('.hero__grille');
@@ -159,7 +161,7 @@
      ------------------------------------------------------------------ */
   function gererPourquoi() {
     const scene = document.getElementById('pourquoi-scene');
-    if (!scene || !racine.classList.contains('anime')) return;
+    if (!scene || !racine.classList.contains('anime') || racine.classList.contains('voyage')) return;
 
     const comparaisons = Array.from(document.querySelectorAll('#comparaisons .comparaison'));
     const index = document.getElementById('pourquoi-index');

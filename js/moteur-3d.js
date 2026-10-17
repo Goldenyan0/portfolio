@@ -10,10 +10,14 @@
      arbre de transmission, pont arrière, demi-arbres, roues motrices
    - Carburant : réservoir, pompe immergée AEM 340, filtre-régulateur, durites
    - Visite guidée : pendant les fiches de la documentation, la voiture reste à l'écran
-     et la caméra rejoint la pièce de chaque fiche ; la maquette complète vient ensuite
-   - Boutons : vue éclatée (voiture comprise), voiture affichée / masquée,
-     mode accélération (moteur à l'arrêt au chargement), fluides animés + légende ;
-     panneau « Affichage » pour montrer ou masquer chaque groupe d'éléments
+     et la caméra rejoint la pièce de chaque fiche ; la maquette complète vient ensuite.
+     Pendant le voyage 3D (espace-3d.js), c'est la carte lue qui choisit la vue
+   - Boutons : vue éclatée (voiture comprise ; pièces numérotées, nom au survol du numéro),
+     figer / reprendre la rotation, voiture affichée / masquée, mode accélération (moteur à
+     l'arrêt au chargement), fluides animés + légende ; panneau « Affichage » pour montrer ou
+     masquer chaque groupe d'éléments ; « voir cet angle » : la vue de la photo, rotation figée
+   - Tour du propriétaire : points de l'extérieur et de l'intérieur (fiches des pièces),
+     retour à la vue de base, ouvrants refermés avant chaque étape
    - Zoom à la molette (après un clic dans la vue) ou au pincement, boutons + / −
    - Survol : nom de la pièce ; clic : ouverture de la fiche correspondante
    - Mini-maquette 3D dans chaque fiche ouverte (événement "fiche:ouverte")
@@ -756,14 +760,10 @@ function construireMaquette() {
   });
   // Tube unique jusqu'au silencieux arrière, sous le réservoir et à côté du pont
   ligne.add(tuyau([[18.5, -3.4, -2.0], [22.0, -3.5, -2.2], [27.0, -3.55, -2.35], [31.0, -3.55, -2.4], [34.2, -3.35, -2.6], [35.0, -3.15, -2.75]], R_TUBE, 'echappement'));
-  // Silencieux arrière transversal, sortie unique à gauche, coudée vers le sol (cachée sous le pare-chocs)
+  // Silencieux arrière transversal ; la sortie unique, à gauche, est celle du modèle de carrosserie
   const arriere = place(maillage(axeZ(cylindre(0.6, 8.6, 40)), 'echappement'), 36.0, -3.0, 0.7);
   arriere.scale.set(1.9, 1.05, 1);
   ligne.add(arriere);
-  ligne.add(tuyau([[37.0, -3.1, 4.4], [40.0, -3.25, 4.6], [41.6, -3.45, 4.6], [42.3, -3.8, 4.6]], R_TUBE, 'echappement'));
-  const embout = place(maillage(tubeOuvert(0.34, 0.6, 32), 'aluOuvert'), 42.45, -3.95, 4.6);
-  embout.rotation.z = 0.5;
-  ligne.add(embout);
   // Silentblocs de suspension de ligne
   [[13.0, -2.0], [18.0, -2.0], [35.5, -3.2], [36.5, 4.6]].forEach(([x, z]) => {
     ligne.add(place(maillage(cylindre(0.12, 0.5, 12), 'caoutchouc'), x, -2.5, z));
@@ -1259,7 +1259,7 @@ function construireMaquette() {
   colonne.add(tuyau([[-3.3, -1.5, 2.6], [-1.5, -0.9, 2.75], [3.0, 1.0, 3.4], [X_TABLIER + 1.0, 2.6, zv - 0.2], [xv - 0.9, yv - 0.45, zv]], 0.14, 'acier'));
   [[-1.5, -0.9, 2.75], [X_TABLIER + 1.0, 2.6, zv - 0.2]].forEach(([x, y, z]) => colonne.add(place(maillage(new THREE.SphereGeometry(0.2, 14, 10), 'acier'), x, y, z)));   // cardans
   // Volant de secours : il s'efface quand la carrosserie détaillée (avec son propre volant) est chargée
-  const volantDirection = new THREE.Group();
+  const volantDirection = anime(new THREE.Group());
   volantDirection.name = 'volantSecours';
   volantDirection.position.set(xv, yv, zv);
   volantDirection.rotation.z = 1.15;                                              // incliné vers le conducteur
@@ -1493,18 +1493,6 @@ function construireMaquette() {
   freinPedale.add(place(maillage(boite(0.8, 0.6, 3.9, 0.08), 'acier'), 5.85, 2.75, 4.4));                 // support du pédalier
   embrayagePedale.add(barre([5.95, 1.8, 6.05], [4.3, 2.1, 6.05], 0.05, 'acier'));
   embrayagePedale.add(place(maillage(axeX(cylindre(0.17, 0.75, 16)), 'alu'), 3.75, 2.1, 6.05));           // émetteur d'embrayage
-
-  // --- Attelage (ma voiture en a un) : traverse cachée sous le bouclier, col de cygne, boule ---
-  const attelage = ajouter(piece('attelage', 'Attelage', 'carrosserie', [12.5, -1.5, 0], true));
-  {
-    const xb = depuisGlb(0, 0, 2.36)[0];
-    attelage.add(place(maillage(boite(0.5, 0.45, 9.0, 0.08), 'garniture'), xb - 1.3, -2.85, 0));
-    attelage.add(tuyau([[xb - 1.2, -2.9, 0], [xb + 0.2, -3.0, 0], [xb + 1.25, -2.55, 0], [xb + 1.45, -1.55, 0]], 0.2, 'garniture'));
-    attelage.add(place(maillage(cylindre(0.14, 0.4, 16), 'garniture'), xb + 1.45, -1.35, 0));
-    attelage.add(place(maillage(new THREE.SphereGeometry(0.29, 24, 16), 'chrome'), xb + 1.45, -1.0, 0));
-    attelage.add(place(maillage(boite(0.25, 0.35, 0.3, 0.05), 'garniture'), xb + 0.6, -3.05, -0.45));        // prise électrique
-  }
-
 
   /* ---------------- Carrosserie (E39 berline, bleu topaze) ---------------- */
   construireCarrosserie(ajouter);
@@ -1792,8 +1780,8 @@ function construireCarrosserie(ajouter) {
     feux.add(place(maillage(boite(0.52, 0.32, 1.0, 0.1), 'feuBlanc'), x2, y2 - 0.22, z2 + s * 0.25));
   });
 
-  // Face arrière : bouclier, baguette, plaque, jonc chromé, attelage
-  const faceAr = panneauDe('faceArriere', 'Face arrière (pare-chocs, plaque, attelage)', [13, 0, 0]);
+  // Face arrière : bouclier, baguette, plaque, jonc chromé
+  const faceAr = panneauDe('faceArriere', 'Face arrière (pare-chocs, plaque)', [13, 0, 0]);
   faceAr.add(panneau(4540, 4775, 1, 10, 0, 'peinture'));
   faceAr.add(face(4775, 'peinture'));
   const [xp, yp] = posCaisse(4782, 845, 0);
@@ -1989,7 +1977,7 @@ const PIECES_PAR_FICHE = {
 
 // Groupes d'éléments du panneau « Affichage » de la maquette
 const GROUPES = {
-  carrosserie: PIECES_PAR_FICHE.carrosserie.concat(['habitacle', 'caisse', 'baieMoteur', 'filtresHabitacle', 'attelage']),
+  carrosserie: PIECES_PAR_FICHE.carrosserie.concat(['habitacle', 'caisse', 'baieMoteur', 'filtresHabitacle']),
   moteur: ['bloc', 'pistons', 'vilebrequin', 'culasse', 'soupapes', 'aac', 'vanos', 'cache', 'bougies', 'bobines',
     'cacheBobines', 'cacheMoteur', 'carter', 'pompeHuile', 'filtreHuile', 'jauge', 'ccv', 'dme'],
   admission: ['boiteAir', 'debitmetre', 'manchon', 'collecteurAdm', 'disa', 'papillon'],
@@ -2164,26 +2152,29 @@ const POINTS_ENCYCLO = [
   { id: 'essuieglaces', nom: 'Essuie-glaces', texte: 'Deux essuie-glaces au pied du pare-brise, devant la grille d\'auvent.', ancre: depuisGlb(0, 0.8, -1.0), vue: [-1, 0.9, 0.2], distance: 12 },
   { id: 'feux', nom: 'Feux arrière', texte: 'Feux de phase 2, rouge et blanc : la partie extérieure est sur l\'aile, la partie intérieure sur le couvercle de coffre.', ancre: depuisGlb(-0.6, 0.62, 2.22), vue: [1, 0.2, 0.5], distance: 11 },
   { id: 'badge', nom: 'Logo et badge 520i', texte: 'Le logo BMW au centre du coffre et le badge « 520i » à droite, comme sur ma voiture.', ancre: depuisGlb(0.375, 0.705, 2.32), vue: [1, 0.3, -0.25], distance: 8 },
-  { id: 'echappement', nom: 'Sortie d\'échappement', texte: 'Une sortie unique, à gauche, discrète sous le bouclier arrière.', ancre: depuisGlb(-0.53, 0.12, 2.3), vue: [1, -0.05, 0.45], distance: 8 },
-  { id: 'attelage', nom: 'Attelage', texte: 'Attelage à boule fixé sous le bouclier arrière, comme sur ma voiture.', ancre: [depuisGlb(0, 0, 2.36)[0] + 1.45, -1.0, 0], vue: [1, 0.3, 0.45], distance: 10 }
+  { id: 'echappement', nom: 'Sortie d\'échappement', texte: 'Une sortie unique, à gauche, discrète sous le bouclier arrière.', ancre: depuisGlb(-0.53, 0.12, 2.3), vue: [1, -0.05, 0.45], distance: 8 }
+];
+// Habitacle : les points de la vue intérieure reprennent les fiches des pièces (nom et description) ;
+// leur repère est un point de la maquette (volant, patins des pédales, levier, planche de bord)
+const POINTS_INTERIEUR = [
+  { fiche: 'colonneDirection', ancre: P_VOLANT },
+  { fiche: 'pedaleEmbrayage', ancre: [7.15, -1.0, 6.05] },          // patins des pédales (voir « Pédalier »)
+  { fiche: 'pedaleFrein', ancre: [7.15, -1.0, 4.5] },
+  { fiche: 'pedaleAccelerateur', ancre: [7.15, -0.8, 2.8] },
+  { fiche: 'boite', ancre: depuisGlb(-0.013, 0.44, -0.34) },
+  { fiche: 'habitacle', ancre: depuisGlb(0, 0.8, -0.62) }
 ];
 // Habitacle : position des yeux du conducteur (à gauche) et direction du regard
 const OEIL_CONDUCTEUR = depuisGlb(-0.38, 1.03, 0.12);
 const REGARD_CONDUCTEUR = depuisGlb(-0.36, 0.93, -0.6);
 // Vue de la photo de la baie moteur : au-dessus du bouclier avant, regard vers le tablier
 const VUE_PHOTO = { position: depuisGlb(0, 1.68, -3.05), cible: depuisGlb(0, 0.4, -1.42), fov: 46 };
-// Ouverture du capot (section « Sous le capot ») : de trois-quarts avant à la vue plongeante
-const VUES_CAPOT = [
-  { position: depuisGlb(-3.0, 1.4, -5.4), cible: depuisGlb(0.9, 0.85, -0.6) },
-  { position: depuisGlb(-0.25, 1.75, -2.9), cible: depuisGlb(0, 0.45, -1.4) }
-];
 
 
 /* ==========================================================================
    10. Vue principale — un seul moteur de rendu, plusieurs usages :
    - « visite » : pendant les fiches de la documentation, la voiture reste à l'écran
      (scène épinglée) et la caméra rejoint la pièce de la fiche au centre de l'écran
-   - « capot » : le capot s'ouvre au fil du défilement, avant la maquette
    - « maquette » : la maquette interactive complète
    - « encyclo » : le tour des équipements (extérieur, puis habitacle)
    - « fiche » : la pièce d'une fiche mise en évidence dans la voiture complète
@@ -2310,7 +2301,7 @@ function demarrer() {
   rendu.domElement.addEventListener('contextmenu', (e) => e.preventDefault());
 
   /* ---------- État ---------- */
-  let mode = 'aucun';                         // 'maquette', 'visite', 'capot', 'encyclo', 'fiche' ou 'aucun'
+  let mode = 'aucun';                         // 'maquette', 'visite', 'encyclo', 'fiche', 'photo' (instantané) ou 'aucun'
   let eclate = 0, cibleEclate = 0;            // 0 = assemblé, 1 = éclaté (valeurs animées)
   let caisse = 1, cibleCaisse = 1;            // 1 = carrosserie affichée
   let transparence = false;                   // carrosserie en transparence (maquette)
@@ -2321,9 +2312,9 @@ function demarrer() {
   const demo = { moteur: 0, disque: 0, arbre: 0, roues: 0, levier: GRILLE[0] };   // mécanique de la visite
   const cibleEclateCourante = () => (mode === 'maquette' ? cibleEclate : 0);
   const cibleCaisseCourante = () => (mode === 'maquette' ? cibleCaisse : 1);
-  // Ouverture voulue de chaque ouvrant selon la vue (le capot suit le défilement dans « capot »)
-  const cibleOuvrant = (id, o) => (mode === 'capot' ? (id === 'capot' ? capot.angle : 0) : mode === 'visite' ? 0 : o.cible);
-  const cibleCache = () => (mode === 'capot' || mode === 'visite' ? 0 : cacheMoteur.cible);
+  // Ouverture voulue de chaque ouvrant selon la vue (tout est fermé pendant la visite)
+  const cibleOuvrant = (id, o) => (mode === 'visite' ? 0 : o.cible);
+  const cibleCache = () => (mode === 'visite' ? 0 : cacheMoteur.cible);
 
   /* ---------- Cadrage de la maquette : la caméra suit le centre de la scène et recule en vue éclatée ---------- */
   let zoomBase = 1;
@@ -2337,12 +2328,19 @@ function demarrer() {
     const rayonE = THREE.MathUtils.lerp(vues.e0.radius, vues.e1.radius, c);
     return { centre: centre, rayon: THREE.MathUtils.lerp(rayonA, rayonE, t) };
   }
+  let centrePose = false;
   function cadrer() {
     if (mode !== 'maquette') return;
     const v = vueCourante();
+    // La caméra et sa cible suivent le déplacement du centre de la scène (vue éclatée, voiture masquée) ;
+    // une vue choisie (angle de la photo, déplacement au clic droit) n'est pas recollée au centre
+    if (centrePose) {
+      const delta = v.centre.clone().sub(centreVise);
+      camera.position.add(delta);
+      controles.target.add(delta);
+    }
+    centrePose = true;
     centreVise.copy(v.centre);
-    camera.position.add(centreVise).sub(controles.target);                        // la caméra suit sa cible
-    controles.target.copy(centreVise);
     camera.zoom = zoomBase * vues.a1.radius / v.rayon;
     camera.updateProjectionMatrix();
   }
@@ -2369,7 +2367,7 @@ function demarrer() {
       zoomBase = Math.min(1, camera.aspect);
       cadrer();
     } else {
-      camera.zoom = mode === 'encyclo' || mode === 'capot' ? Math.min(1, camera.aspect * 1.1) : 1;
+      camera.zoom = mode === 'encyclo' ? Math.min(1, camera.aspect * 1.1) : 1;
       camera.updateProjectionMatrix();
     }
     demanderRendu();
@@ -2378,10 +2376,21 @@ function demarrer() {
   observateur.observe(zoneScene);
 
   /* ---------- Étiquettes françaises (vue éclatée de la maquette) ---------- */
-  const etiquettes = listePieces.map((p) => {
+  // Des numéros plutôt que des noms (moins chargé) : le nom s'affiche au survol du numéro, un clic
+  // fait comme un clic sur la pièce (fiche, ouvrant, cache moteur)
+  const etiquettes = listePieces.map((p, i) => {
     const el = document.createElement('span');
     el.className = 'etiquette-piece';
-    el.textContent = p.userData.nom;
+    el.textContent = String(i + 1);
+    el.dataset.nom = p.userData.nom;
+    el.addEventListener('pointerenter', () => changerSurvol(p));
+    el.addEventListener('pointerleave', () => changerSurvol(null));
+    el.addEventListener('click', () => {
+      if (mode !== 'maquette') return;
+      if (ouvrants[p.name]) basculerOuvrant(p.name);
+      else if (p.name === 'cacheMoteur') basculerCache();
+      else if (fichePieceDe(p) && window.ouvrirFichePiece) window.ouvrirFichePiece(fichePieceDe(p));
+    });
     zoneEtiquettes.appendChild(el);
     return { piece: p, el: el, boite: new THREE.Box3(), point: new THREE.Vector3(), coin: new THREE.Vector3() };
   });
@@ -2494,6 +2503,18 @@ function demarrer() {
   }
 
   /* ---------- Commandes de la maquette ---------- */
+  // Rotation automatique de la maquette : figée par le bouton, en vue éclatée et sur l'angle de la photo
+  let rotationFigee = false;
+  const boutonRotation = document.getElementById('bouton-rotation');
+  if (boutonRotation && mouvementReduit) boutonRotation.hidden = true;
+  function figerRotation(figee) {
+    rotationFigee = figee;
+    basculer(boutonRotation, figee, 'REPRENDRE LA ROTATION', 'FIGER LA ROTATION');
+    if (mode === 'maquette') controles.autoRotate = !mouvementReduit && !figee;
+    demanderRendu();
+  }
+  if (boutonRotation) boutonRotation.addEventListener('click', () => figerRotation(!rotationFigee));
+
   function basculer(bouton, actif, libelleActif, libelleInactif) {
     if (!bouton) return;
     bouton.setAttribute('aria-pressed', String(actif));
@@ -2548,7 +2569,7 @@ function demarrer() {
     basculer(boutonEclate, !!cibleEclate, 'RÉASSEMBLER', 'VUE ÉCLATÉE');
     cadre.classList.toggle('est-eclate', !!cibleEclate);
     // En vue éclatée, la maquette arrête de tourner toute seule : les pièces restent faciles à viser
-    controles.autoRotate = !mouvementReduit && !cibleEclate;
+    figerRotation(!!cibleEclate);
     if (mouvementReduit) { eclate = cibleEclate; appliquerEclate(); }
     demanderOmbre();
     demanderRendu();
@@ -2710,8 +2731,18 @@ function demarrer() {
     requestAnimationFrame(() => { if (window.Site && window.Site.lenis) window.Site.lenis.resize(); });
   }
 
+  // Voyage 3D (espace-3d.js) : les sections sont des cartes ; la carte lue décide de la vue
+  const voyage = Object.assign({ carte: null, etape: null, cote: 0 }, window.Site && window.Site.carteVoyage);
+  const enVoyage = () => racineHtml.classList.contains('voyage-pret');
+  document.addEventListener('voyage:carte', (e) => {
+    Object.assign(voyage, e.detail);
+    suivreDefilement();
+  });
+
   // Fiche active : celle dont le centre est le plus proche de la ligne de lecture
+  // (pendant le voyage : la carte lue, si c'est une fiche)
   function ficheActive() {
+    if (enVoyage()) return fichesVisite.indexOf(voyage.carte);
     const h = window.innerHeight, ligne = h * (petitEcran() ? 0.66 : 0.5);
     let meilleure = -1, ecart = Infinity;
     fichesVisite.forEach((f, i) => {
@@ -2763,6 +2794,7 @@ function demarrer() {
     if (fiche) {
       const z = fiche.getBoundingClientRect();
       if (petitEcran()) { visite.decalage.cx = 0; visite.decalage.cy = 0.2; }
+      else if (enVoyage()) { visite.decalage.cx = voyage.cote * 0.2; visite.decalage.cy = 0; }
       else { visite.decalage.cx = (z.left + z.right) / 2 < window.innerWidth / 2 ? -0.18 : 0.18; visite.decalage.cy = 0; }
     } else { visite.decalage.cx = 0; visite.decalage.cy = 0; }
     cadrageVisite();
@@ -2796,35 +2828,12 @@ function demarrer() {
     visite.eclairees.forEach((p) => eclairer(p, pulse));
   }
 
-  /* ---------- « Sous le capot » : le capot s'ouvre au fil du défilement ---------- */
-  const sectionCapot = document.getElementById('capot');
-  const zoneCapot = document.getElementById('capot-scene');
-  const sceneCapot = sectionCapot && sectionCapot.querySelector('.capot-intro__scene');
-  const capot = { angle: 0, p: 0 };
-  if (zoneCapot) observateur.observe(zoneCapot);
-  function progressionCapot() {
-    if (!sceneCapot) return 0;
-    const z = sceneCapot.getBoundingClientRect();
-    const course = z.height - window.innerHeight;
-    return course > 0 ? THREE.MathUtils.clamp(-z.top / course, 0, 1) : 1;
-  }
-  function animerCapot() {
-    const p = mouvementReduit ? 1 : progressionCapot();
-    capot.p = p;
-    capot.angle = douce(THREE.MathUtils.clamp((p - 0.08) / 0.42, 0, 1));
-    const k = douce(THREE.MathUtils.clamp((p - 0.3) / 0.6, 0, 1));
-    const a = VUES_CAPOT[0], b = VUES_CAPOT[1];
-    camera.position.copy(versScene(a.position)).lerp(versScene(b.position), k);
-    camera.lookAt(versScene(a.cible).lerp(versScene(b.cible), k));
-    if (sectionCapot) sectionCapot.style.setProperty('--capot', p.toFixed(3));
-  }
-
   /* ---------- Encyclopédie : tour des équipements, puis habitacle ---------- */
   const sectionEncyclo = document.getElementById('encyclopedie');
   const zoneEncyclo = document.getElementById('encyclo-scene');
   const calquePoints = document.getElementById('encyclo-points');
   const carteEncyclo = document.getElementById('encyclo-carte');
-  const encyclo = { vue: 'exterieur', points: [], position: null, cible: null, choisi: null, anim: null };
+  const encyclo = { vue: 'exterieur', points: [], pointsInterieur: [], position: null, cible: null, choisi: null, anim: null };
   if (zoneEncyclo) observateur.observe(zoneEncyclo);
   if (calquePoints) {
     POINTS_ENCYCLO.forEach((pt, i) => {
@@ -2837,19 +2846,54 @@ function demarrer() {
       calquePoints.appendChild(b);
       encyclo.points.push({ donnees: pt, el: b, v: new THREE.Vector3() });
     });
+    // Points de l'intérieur (place du conducteur) : nom et description tirés des fiches des pièces
+    const fichesPieces = {};
+    (window.PIECES_E39 || []).forEach((g) => Object.assign(fichesPieces, g.fiches));
+    POINTS_INTERIEUR.forEach((pt) => {
+      const f = fichesPieces[pt.fiche];
+      if (!f) return;
+      const ancre = versScene(pt.ancre);
+      const donnees = { nom: f.nom, texte: f.description };
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'encyclo__point';
+      b.setAttribute('aria-label', f.nom);
+      b.innerHTML = '<span class="encyclo__numero" aria-hidden="true">' + (encyclo.pointsInterieur.length + 1) + '</span><span class="encyclo__nom"></span>';
+      b.querySelector('.encyclo__nom').textContent = f.nom;
+      b.addEventListener('click', () => choisirPointInterieur(donnees, ancre, b));
+      calquePoints.appendChild(b);
+      encyclo.pointsInterieur.push({ donnees: donnees, el: b, ancre: ancre, v: new THREE.Vector3() });
+    });
+  }
+  // Avant chaque étape (point, changement de vue, retour à la vue de base) : portes, capot et
+  // coffre refermés, cache moteur reposé
+  function reinitialiserOuvrants() {
+    Object.keys(ouvrants).forEach((id) => basculerOuvrant(id, false));
+    if (cacheMoteur.cible) basculerCache(false);
+    document.querySelectorAll('[data-ouvrants]').forEach((x) => basculer(x, false, 'TOUT FERMER', 'TOUT OUVRIR'));
+  }
+  function montrerCarte(donnees, bouton) {
+    encyclo.points.concat(encyclo.pointsInterieur).forEach((x) => x.el.classList.toggle('est-choisi', x.el === bouton));
+    if (!carteEncyclo) return;
+    carteEncyclo.querySelector('[data-titre]').textContent = donnees.nom;
+    carteEncyclo.querySelector('[data-texte]').textContent = donnees.texte;
+    carteEncyclo.hidden = false;
   }
   function choisirPoint(pt, bouton) {
     encyclo.choisi = pt;
-    encyclo.points.forEach((x) => x.el.classList.toggle('est-choisi', x.el === bouton));
-    if (carteEncyclo) {
-      carteEncyclo.querySelector('[data-titre]').textContent = pt.nom;
-      carteEncyclo.querySelector('[data-texte]').textContent = pt.texte;
-      carteEncyclo.hidden = false;
-    }
+    reinitialiserOuvrants();
+    montrerCarte(pt, bouton);
     // La caméra rejoint l'équipement
     const ancre = versScene(pt.ancre);
     const dir = new THREE.Vector3().fromArray(pt.vue).normalize();
     allerVers(ancre.clone().addScaledVector(dir, pt.distance), ancre);
+  }
+  // Intérieur : le conducteur tourne la tête vers l'équipement
+  function choisirPointInterieur(donnees, ancre, bouton) {
+    reinitialiserOuvrants();
+    montrerCarte(donnees, bouton);
+    const oeil = versScene(OEIL_CONDUCTEUR);
+    allerVers(oeil, oeil.clone().addScaledVector(ancre.clone().sub(oeil).normalize(), 0.25));
   }
   function allerVers(position, cible) {
     encyclo.anim = { p0: camera.position.clone(), c0: controles.target.clone(), p1: position, c1: cible, t: mouvementReduit ? 1 : 0 };
@@ -2857,13 +2901,16 @@ function demarrer() {
   }
   function vueEncyclo(v) {
     encyclo.vue = v;
+    reinitialiserOuvrants();
     document.querySelectorAll('[data-encyclo-vue]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.encycloVue === v)));
     if (sectionEncyclo) sectionEncyclo.classList.toggle('est-interieur', v === 'interieur');
     if (carteEncyclo) carteEncyclo.hidden = true;
-    encyclo.points.forEach((x) => x.el.classList.remove('est-choisi'));
+    encyclo.points.concat(encyclo.pointsInterieur).forEach((x) => x.el.classList.remove('est-choisi'));
     if (mode !== 'encyclo') return;
     reglerEncyclo(true);
   }
+  // Retour à la vue de base : extérieur, caméra de départ, tout refermé
+  document.querySelectorAll('[data-encyclo-base]').forEach((b) => b.addEventListener('click', () => vueEncyclo('exterieur')));
   // Réglages de caméra et de contrôles de l'encyclopédie
   function reglerEncyclo(animer) {
     plafonnier.intensity = encyclo.vue === 'interieur' ? 18 : 0;
@@ -2892,7 +2939,7 @@ function demarrer() {
   document.querySelectorAll('[data-encyclo-vue]').forEach((b) => b.addEventListener('click', () => vueEncyclo(b.dataset.encycloVue)));
   if (carteEncyclo) {
     const fermer = carteEncyclo.querySelector('[data-fermer]');
-    if (fermer) fermer.addEventListener('click', () => { carteEncyclo.hidden = true; encyclo.points.forEach((x) => x.el.classList.remove('est-choisi')); });
+    if (fermer) fermer.addEventListener('click', () => { carteEncyclo.hidden = true; encyclo.points.concat(encyclo.pointsInterieur).forEach((x) => x.el.classList.remove('est-choisi')); });
   }
   // Les points suivent la voiture à l'écran
   function placerPoints() {
@@ -2907,6 +2954,14 @@ function demarrer() {
       const deFace = versCamera.dot(new THREE.Vector3().fromArray(x.donnees.vue).normalize()) > -0.05;
       x.v.copy(ancre).project(camera);
       const devant = deFace && x.v.z < 1 && Math.abs(x.v.x) < 1.05 && Math.abs(x.v.y) < 1.05;
+      x.el.style.visibility = devant ? 'visible' : 'hidden';
+      if (devant) x.el.style.transform = 'translate(' + ((x.v.x + 1) / 2 * l).toFixed(1) + 'px,' + ((1 - x.v.y) / 2 * h).toFixed(1) + 'px)';
+    });
+    // Intérieur : un point se montre quand l'équipement est dans le champ du regard
+    const interieur = mode === 'encyclo' && encyclo.vue === 'interieur';
+    encyclo.pointsInterieur.forEach((x) => {
+      x.v.copy(x.ancre).project(camera);
+      const devant = interieur && x.v.z < 1 && Math.abs(x.v.x) < 0.95 && Math.abs(x.v.y) < 0.95;
       x.el.style.visibility = devant ? 'visible' : 'hidden';
       if (devant) x.el.style.transform = 'translate(' + ((x.v.x + 1) / 2 * l).toFixed(1) + 'px,' + ((1 - x.v.y) / 2 * h).toFixed(1) + 'px)';
     });
@@ -2950,16 +3005,21 @@ function demarrer() {
   const sauvegardes = {};
   function choisirMode() {
     if (fiche.actif) return 'fiche';
+    if (enVoyage()) {
+      if (voyage.etape === sectionMaquette) return 'maquette';
+      if (zoneEncyclo && voyage.etape === sectionEncyclo) return 'encyclo';
+      if (avecVisite && voyage.etape === sectionVisite) return 'visite';
+      return 'aucun';
+    }
     const h = window.innerHeight;
     const visibleA = (el, haut, bas) => { if (!el) return false; const z = el.getBoundingClientRect(); return z.top < h * haut && z.bottom > h * bas; };
     if (visibleA(sectionMaquette, 0.85, 0.1)) return 'maquette';
-    if (zoneCapot && visibleA(sectionCapot, 1, 0)) return 'capot';
     if (zoneEncyclo && visibleA(sectionEncyclo, 0.9, 0.1)) return 'encyclo';
     if (avecVisite && visibleA(sectionVisite, 1, 0)) return 'visite';
     return 'aucun';
   }
 
-  const ZONES = { maquette: zoneScene, visite: zoneVisite, capot: zoneCapot, encyclo: zoneEncyclo, fiche: zoneFiche };
+  const ZONES = { maquette: zoneScene, visite: zoneVisite, encyclo: zoneEncyclo, fiche: zoneFiche };
   function changerMode(nouveau) {
     if (nouveau === mode) return;
     // On quitte l'ancien mode : on garde la caméra de la maquette et de l'encyclopédie
@@ -2980,7 +3040,7 @@ function demarrer() {
     if (mode !== 'encyclo' && camera.fov !== 35) { camera.fov = 35; camera.updateProjectionMatrix(); }
     if (mode === 'maquette') {
       limitesMaquette();
-      controles.autoRotate = !mouvementReduit && !cibleEclate;
+      controles.autoRotate = !mouvementReduit && !rotationFigee;
       const s = sauvegardes.maquette;
       if (s) { camera.position.copy(s.position); controles.target.copy(s.cible); }
       else { controles.target.copy(vues.a1.center); camera.position.copy(vues.a1.center).addScaledVector(DIRECTION, distanceBase); }
@@ -3009,13 +3069,10 @@ function demarrer() {
 
   function suivreDefilement() {
     changerMode(choisirMode());
-    if (avecVisite) {
+    if (avecVisite && enVoyage()) racineHtml.classList.toggle('visite-active', mode === 'visite');
+    else if (avecVisite) {
       const z = sectionVisite.getBoundingClientRect();
       racineHtml.classList.toggle('visite-active', z.top <= 0 && z.bottom >= window.innerHeight);
-    }
-    if (sceneCapot) {
-      const z = sceneCapot.getBoundingClientRect();
-      racineHtml.classList.toggle('capot-actif', z.top <= 0 && z.bottom >= window.innerHeight);
     }
     majVisite();
     demanderRendu();
@@ -3066,8 +3123,6 @@ function demarrer() {
       vitesses = { moteur: mouvementReduit ? 0 : 0.8, carburant: mouvementReduit ? 0 : 0.8 };
       animerVisite(dt);
       anime = !mouvementReduit;
-    } else if (mode === 'capot') {
-      animerCapot();
     } else if (mode === 'encyclo' || mode === 'fiche') {
       if (encyclo.anim && mode === 'encyclo') {
         const a = encyclo.anim;
@@ -3112,7 +3167,7 @@ function demarrer() {
     Object.keys(ouvrants).forEach((id) => {
       const o = ouvrants[id], c = cibleOuvrant(id, o);
       if (Math.abs(c - o.t) <= 0.001) return;
-      if (mode === 'capot' || mouvementReduit) o.t = c;
+      if (mode === 'photo' || mouvementReduit) o.t = c;
       else { o.t += Math.sign(c - o.t) * Math.min(Math.abs(c - o.t), dt * 1.6); }
       poserOuvrant(o);
       bouge = true;
@@ -3153,7 +3208,7 @@ function demarrer() {
       ratio: rendu.getPixelRatio(), taille: rendu.getSize(new THREE.Vector2()), visibles: listePieces.map((p) => p.visible)
     };
     // Capot ouvert, cache posé, tout assemblé et opaque
-    mode = 'capot';
+    mode = 'photo';
     Object.values(ouvrants).forEach((o) => { o.t = 0; poserOuvrant(o); });
     ouvrants.capot.t = 1; poserOuvrant(ouvrants.capot);
     cacheMoteur.t = 0; eclate = 0; caisse = 1;
@@ -3203,17 +3258,19 @@ function demarrer() {
     obs.observe(imageMaquette);
   }
   // Bouton « voir cet angle dans la maquette »
+  // La photo est prise avec un objectif plus large (46°) que la maquette (35°) : à direction égale,
+  // la caméra recule d'autant pour cadrer la même scène, puis la rotation est figée
   document.querySelectorAll('[data-vue-photo]').forEach((b) => b.addEventListener('click', () => {
-    sauvegardes.maquette = { position: versScene(VUE_PHOTO.position), cible: versScene(VUE_PHOTO.cible) };
+    const cible = versScene(VUE_PHOTO.cible);
+    const recul = Math.tan(THREE.MathUtils.degToRad(VUE_PHOTO.fov / 2)) / Math.tan(THREE.MathUtils.degToRad(35 / 2));
+    sauvegardes.maquette = { position: versScene(VUE_PHOTO.position).sub(cible).multiplyScalar(recul).add(cible), cible: cible };
     basculerOuvrant('capot', true);
     basculerCache(false);
     changerCaisse(true);
     if (cibleEclate) boutonEclate.click();
-    controles.autoRotate = false;
-    if (mode === 'maquette') { camera.position.copy(sauvegardes.maquette.position); controles.target.copy(sauvegardes.maquette.cible); }
-    const cible = document.getElementById('moteur');
-    if (window.Site && window.Site.lenis) window.Site.lenis.scrollTo(cible, { duration: 1.2 });
-    else cible.scrollIntoView({ behavior: mouvementReduit ? 'auto' : 'smooth' });
+    figerRotation(true);
+    if (mode === 'maquette') { camera.position.copy(sauvegardes.maquette.position); controles.target.copy(sauvegardes.maquette.cible); controles.update(); }
+    window.Site.allerA(cadre);
   }));
 
   /* ---------- Carrosserie détaillée : le modèle 3D remplace la carrosserie de secours ---------- */
@@ -3244,6 +3301,28 @@ function demarrer() {
     });
     // Le volant de secours laisse la place au volant du modèle
     if (pieces.colonneDirection) pieces.colonneDirection.traverse((o) => { if (o.name === 'volantSecours') o.visible = false; });
+    // Le levier de la boîte laisse la place au pommeau du modèle (un seul pommeau dans l'habitacle)
+    meca.levier.visible = false;
+    // Portes : un cache sombre, entre la garniture et la tôle, bouche les trous du modèle (porte ouverte)
+    const CACHES_PORTES = {
+      Av: [[-0.84, 0.33], [0.16, 0.33], [0.16, 0.7], [-0.84, 0.7]],                   // [z, y] du modèle, sous la ceinture de caisse
+      Ar: [[0.23, 0.33], [0.95, 0.33], [1.15, 0.55], [1.15, 0.7], [0.23, 0.7]]        // coin coupé : passage de roue
+    };
+    ['G', 'D'].forEach((cote) => Object.keys(CACHES_PORTES).forEach((porte) => {
+      const o = ouvrants['porte' + porte + cote];
+      if (!o) return;
+      const x = cote === 'G' ? -0.8 : 0.8;
+      const forme = new THREE.Shape(CACHES_PORTES[porte].map(([z, y]) => { const p = depuisGlb(x, y, z); return new THREE.Vector2(p[0], p[1]); }));
+      o.contenu.add(place(maillage(new THREE.ShapeGeometry(forme), 'plastiqueOuvert'), 0, 0, depuisGlb(x, 0, 0)[2]));
+    }));
+    // Coffre : fond noir (le modèle est vide sous la malle) ; vu de l'extérieur, seul l'intérieur de la boîte se dessine
+    if (pieces.caisse) {
+      const [x0, y0] = depuisGlb(0, 0.2, 1.3), [x1, y1] = depuisGlb(0, 0.8, 2.25);
+      const fond = new THREE.Mesh(new THREE.BoxGeometry(x1 - x0, y1 - y0, 1.24 * S_GLB), new THREE.MeshBasicMaterial({ color: 0x050507, side: THREE.BackSide }));
+      pieces.caisse.add(place(fond, (x0 + x1) / 2, (y0 + y1) / 2, 0));
+    }
+    // Feux arrière : ils font partie de la malle et la suivent quand elle s'ouvre
+    if (pieces.feuxAr && ouvrants.coffre) ouvrants.coffre.contenu.add(pieces.feuxAr);
     memoriserMateriaux(racine);
     carrosserieDetaillee = true;
     cadre.classList.add('est-detaillee');
@@ -3259,10 +3338,7 @@ function demarrer() {
   // Accès pour le débogage depuis la console, et pour les autres scripts de la page
   window.MoteurM54 = {
     pieces: pieces, camera: camera, controles: controles, rendre: demanderRendu, mode: () => mode,
-    ouvrants: ouvrants, basculerOuvrant: basculerOuvrant, basculerCache: basculerCache, instantane: instantane,
-    // Place la caméra (coordonnées de la maquette)
-    voir: (position, cible) => { camera.position.copy(versScene(position)); controles.target.copy(versScene(cible)); controles.update(); demanderRendu(); },
-    scene: scene, rendu: rendu, versScene: versScene
+    ouvrants: ouvrants, basculerOuvrant: basculerOuvrant, basculerCache: basculerCache, instantane: instantane
   };
 
   appliquerVisibilite();
@@ -3327,18 +3403,21 @@ function brancherMiniMaquette(pieces) {
       racine.add(copie);
     });
     racine.updateMatrixWorld(true);
-    const boite = new THREE.Box3().setFromObject(racine);
-    const centre = boite.getCenter(new THREE.Vector3());
-    const taille = Math.max(0.5, boite.getSize(new THREE.Vector3()).length());
-    racine.position.sub(centre);
+    const sphere = new THREE.Box3().setFromObject(racine).getBoundingSphere(new THREE.Sphere());
+    const rayon = Math.max(0.25, sphere.radius);
+    racine.position.sub(sphere.center);
     mini.scene.add(racine);
     mini.racine = racine;
 
-    mini.camera.position.set(-0.9, 0.55, 1).normalize().multiplyScalar(taille * 1.25);
-    mini.camera.near = taille / 200; mini.camera.far = taille * 20;
+    // Distance à laquelle la sphère englobante tient dans la vue (marge de 15 %), quelle que soit la largeur
+    taillerMini(conteneur);
+    const demiAngle = Math.atan(Math.tan(THREE.MathUtils.degToRad(mini.camera.fov / 2)) * Math.min(1, mini.camera.aspect));
+    const distance = rayon / Math.sin(demiAngle) * 1.15;
+    mini.camera.position.set(-0.9, 0.55, 1).normalize().multiplyScalar(distance);
+    mini.camera.near = distance / 100; mini.camera.far = distance * 20;
     mini.controles.target.set(0, 0, 0);
-    mini.controles.minDistance = taille * 0.2;
-    mini.controles.maxDistance = taille * 4;
+    mini.controles.minDistance = rayon * 0.4;
+    mini.controles.maxDistance = distance * 3;
     mini.controles.autoRotate = !mouvementReduit;
     mini.controles.update();
     taillerMini(conteneur);

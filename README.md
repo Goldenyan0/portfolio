@@ -46,13 +46,11 @@ Les trois pages partagent une seule feuille de style : `css/style.css`.
 
 ## ✨ Animations et interactions
 
-- Navigation 3D sur tout le site : le défilement fait avancer une caméra dans le réseau 3D ; chaque section est un point violet (waypoint) où la caméra marque une pause, et son contenu s'affiche dans un panneau flottant
-- Repères de parcours : rail des étapes cliquable, jauge de progression, annonce de l'étape atteinte
-- Page E39 : visite guidée — la voiture reste à l'écran et la caméra rejoint la pièce de chaque fiche ; la maquette 3D complète (vue éclatée, accélération, fluides, panneau d'affichage) clôt le parcours
+- Navigation immersive (accueil et page E39) : chaque section est une carte posée dans l'espace 3D (transformations CSS 3D, même caméra que le réseau). Le défilement fait voyager la caméra : elle lit chaque carte de face, à l'échelle 1, puis s'envole vers la suivante ; sur `e39.html`, chaque fiche de la documentation est sa propre carte. Le CV garde la caméra qui avance dans le réseau
+- Sommaire latéral persistant (repliable sur mobile), jauge de progression, annonce de l'étape atteinte
+- Page E39 : visite guidée — la voiture reste à l'écran et la caméra rejoint la pièce de chaque fiche ; la maquette 3D complète (vue éclatée numérotée, accélération, fluides, panneau d'affichage) ; fiches pièces avec la pièce dans la voiture, la pièce seule en 3D et sa photo réelle ; tour du propriétaire (extérieur et intérieur) ; photos agrandies au clic
 - Préchargeur (compteur + rideau), boutons magnétiques (curseur natif du système)
-- Hero en *scrollytelling* : le titre se réduit et s'efface pendant que la caméra entre dans le réseau
-- Titres révélés mot à mot, transitions entre sections en volets (clip-path)
-- Section « Pourquoi moi » épinglée : une comparaison par écran
+- Titres révélés mot à mot ; sans navigation immersive (CV, ou WebGL indisponible) : hero en *scrollytelling*, transitions en volets (clip-path), « Pourquoi moi » épinglée
 - Projets en grille (3 colonnes sur desktop, 2 sur tablette, 1 sur mobile), filtre animé par catégorie, inclinaison 3D des cartes
 - Parallax multicouche, compteurs, barres de compétences, timelines qui se dessinent
 
@@ -71,9 +69,13 @@ portfolio/
 │   ├── index.js           # page d'accueil
 │   ├── espace-3d.js       # espace 3D commun aux 3 pages (module Three.js)
 │   ├── moteur-3d.js       # E39 en 3D : visite guidée et maquette (module Three.js)
+│   ├── carrosserie-e39.js # découpe du modèle de carrosserie en panneaux (module)
+│   ├── pieces-e39.js      # fiches des pièces de la maquette
 │   └── e39.js · cv.js     # pages projet automobile et CV
 ├── fonts/                 # polices auto-hébergées
 ├── img/                   # images du site (projets, E39…)
+├── modeles/               # modèle 3D de la carrosserie (bmw-e39-web.glb : version allégée)
+├── photos-pieces/         # photos réelles des pièces (sources dans MANIFEST.csv)
 └── ref/ma-voiture/        # photos d'origine de la E39 (plaques floutées)
 ```
 
@@ -91,6 +93,13 @@ python -m http.server 8000
 ```
 
 > ⚠️ Pour que le formulaire de contact fonctionne, un compte **EmailJS** configuré est nécessaire.
+
+---
+
+## 🙏 Crédits
+
+- Carrosserie de la maquette 3D : modèle « BMW E39 Free » de **Black Snow** (Sketchfab), sous licence [Creative Commons Attribution 4.0 (CC BY 4.0)](https://creativecommons.org/licenses/by/4.0/), ramené à ma 520i (badges M5 retirés, sortie d'échappement unique, peinture bleu topaze) — mécanique modélisée pour ce site
+- Photos des pièces (`photos-pieces/`) : la source de chaque photo est indiquée dans `MANIFEST.csv`
 
 ---
 

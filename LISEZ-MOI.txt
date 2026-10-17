@@ -1,10 +1,20 @@
-DOSSIER E39 POUR LE PORTFOLIO
-=============================
-Décompresse ce dossier à la RACINE du dossier portfolio
-(C:\Users\10061208\Downloads\PortableGit\portfolio).
+PHOTOS IRL DES PIÈCES E39 — DOSSIER POUR CLAUDE CODE
+=====================================================
 
 Contenu :
-- ref/moteur/baie-moteur-vue-dessus-1.jpg : photo du compartiment moteur (vue 3/4)
-- ref/moteur/baie-moteur-vue-dessus-2.jpg : photo du compartiment moteur (vue de dessus)
-- ref/moteur/vanne-disa.png : vanne DISA de référence (pour replacer et fidéliser le modèle 3D)
-- modeles/bmw-e39.glb : modèle 3D BMW E39 (Black Snow, licence CC Attribution — crédit à ajouter dans le README)
+- photos-pieces/<categorie>/<id>.png : photo réelle de la pièce détourée
+  (fond transparent), nommée avec l'identifiant de la fiche dans js/pieces-e39.js.
+  Exemple : photos-pieces/freinage/blocAbs.png = fiche "blocAbs".
+- photos-pieces/carrosserie/baieMoteur.jpg : photo de la baie moteur (scène complète,
+  PAS détourée — à utiliser telle quelle).
+- MANIFEST.csv : correspondance id ; nom ; catégorie ; dossier ; statut ; source.
+- PHOTOS-MANQUANTES.txt : 3 pièces sans photo fiable (lunette, custode, toit —
+  panneaux soudés, jamais vendus en détaché). Leurs fiches n'ont pas de photo.
+
+Mission pour Claude Code :
+Dans chaque fiche pièce (window.PIECES_E39), ajoute la photo IRL à côté du
+modèle 3D : la fiche montre (a) la pièce en surbrillance dans la voiture complète,
+(b) la pièce seule en 3D, (c) la photo réelle détourée. Si pas de photo pour une
+fiche (voir PHOTOS-MANQUANTES.txt), ne rien afficher à la place — pas de placeholder.
+
+Décompresse ce dossier à la racine du portfolio avant de commencer.

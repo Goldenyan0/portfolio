@@ -1,13 +1,14 @@
 /* ==========================================================================
    commun.js — comportements partagés par les 3 pages
-   - Défilement fluide (Lenis) + liens d'ancre
+   - Défilement fluide (Lenis) + liens d'ancre (Site.allerA : par les cartes pendant le voyage 3D)
    - Préchargeur (si présent dans la page)
    - Navigation : flou au scroll, masquée en descendant, menu mobile
    - Titres découpés mot à mot ([data-mots])
    - Révélations au scroll ([data-revele] → .est-visible)
    - Moteur de scroll partagé : volets entre sections ([data-volet]),
      parallax ([data-parallax]) et grands mots de fond ([data-glisse])
-   - Panneaux flottants (le contenu des sections dans l'espace 3D)
+   - Panneaux flottants (CV) ; pendant le voyage 3D (accueil, page voiture), les sections
+     sont des cartes (espace-3d.js) : pas de volets, de parallax ni de panneaux
    - Boutons magnétiques (souris uniquement ; curseur natif du système)
    Tout respecte prefers-reduced-motion : dans ce cas, rien ne bouge
    et la classe .anime n'est pas posée sur <html> (voir le <head>).
@@ -20,6 +21,8 @@
   const mouvementReduit = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   // L'appareil a-t-il une vraie souris (pas un écran tactile) ?
   const sourisFine = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+  // Voyage 3D (espace-3d.js) : les sections sont des cartes, pas de scènes épinglées ni de volets
+  const voyage = document.documentElement.classList.contains('voyage');
 
   // Fonctions de scroll enregistrées par les scripts de page (index.js…)
   const ecouteursScroll = [];
@@ -35,7 +38,12 @@
     // Force un recalcul (après un changement de mise en page)
     rafraichir: function () { demanderMiseAJour(); },
     // Borne une valeur entre min et max
-    borner: function (v, min, max) { return Math.min(Math.max(v, min), max); }
+    borner: function (v, min, max) { return Math.min(Math.max(v, min), max); },
+    // Défile jusqu'à un élément (remplacée par espace-3d.js pendant le voyage : la carte qui le contient)
+    allerA: function (el) {
+      if (window.Site.lenis) window.Site.lenis.scrollTo(el, { duration: 1.4 });
+      else el.scrollIntoView({ behavior: mouvementReduit ? 'auto' : 'smooth' });
+    }
   };
 
 
@@ -64,7 +72,8 @@
       if (!cible) return;
       e.preventDefault();
       // Le hero est épinglé : pour y revenir, on remonte tout en haut
-      lenis.scrollTo(id === '#accueil' ? 0 : cible, { duration: 1.4 });
+      if (id === '#accueil' && !voyage) lenis.scrollTo(0, { duration: 1.4 });
+      else window.Site.allerA(cible);
     });
   }
 
@@ -287,7 +296,7 @@
   window.addEventListener('resize', demanderMiseAJour);
 
   function gererEffetsScroll() {
-    if (mouvementReduit) return;
+    if (mouvementReduit || voyage) return;
     const borner = window.Site.borner;
 
     // Volets : --volet passe de 0 à 1 pendant que la section entre dans l'écran
@@ -358,10 +367,11 @@
   function gererPanneaux() {
     const selecteur = '.section > .conteneur, .chiffres > .conteneur, .projets__ecran, .cv-feuille, .cv-actions';
     // Exclus : scènes épinglées, maquette 3D, visite guidée et éléments qui ont déjà leur propre animation d'entrée
-    const exclus = '.hero-scene, .pourquoi, .moteur, .documentation, .e39-hero, .encyclopedie, .capot-intro';
+    const exclus = '.hero-scene, .pourquoi, .moteur, .documentation, .e39-hero, .encyclopedie';
     const panneaux = Array.from(document.querySelectorAll(selecteur)).filter(function (el) {
       return !el.closest(exclus) && !el.hasAttribute('data-revele');
     });
+    if (voyage) return;
     panneaux.forEach(function (p, i) {
       p.classList.add('panneau');
       p.style.setProperty('--cote', i % 2 ? '1' : '-1');

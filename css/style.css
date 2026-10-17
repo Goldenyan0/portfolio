@@ -120,8 +120,9 @@ body.scroll-bloque { overflow: hidden; }
 /* Défilement fluide Lenis : réglages recommandés par la librairie */
 html.lenis,
 html.lenis body { height: auto; }
-.lenis.lenis-smooth { scroll-behavior: auto; }
-.lenis.lenis-smooth [data-lenis-prevent] { overscroll-behavior: contain; }
+/* Lenis pilote le défilement : le lissage natif du navigateur le contrarierait (à-coups, sauts annulés) */
+html.lenis { scroll-behavior: auto; }
+.lenis [data-lenis-prevent] { overscroll-behavior: contain; }
 .lenis.lenis-stopped { overflow: hidden; }
 
 h1, h2, h3, h4 {
@@ -266,7 +267,7 @@ button { font: inherit; color: inherit; cursor: pointer; }
 
 /* --- Transitions entre sections : volet en clip-path piloté par le scroll ---
    commun.js fait varier --volet de 0 (section qui arrive) à 1 (section en place). */
-.anime .volet {
+.anime:not(.voyage) .volet {
   --volet: 0;
   clip-path: inset(
     0 calc((1 - var(--volet)) * 9%)
@@ -275,7 +276,7 @@ button { font: inherit; color: inherit; cursor: pointer; }
   );
 }
 /* Variante : ouverture en cercle depuis le bas */
-.anime .volet--cercle {
+.anime:not(.voyage) .volet--cercle {
   clip-path: circle(calc(25% + var(--volet) * 120%) at 50% 100%);
 }
 
@@ -630,8 +631,8 @@ html:not(.js) .titre-section em::after { transform: scaleX(1); }
    .hero-scene est plus haute que l'écran ; le hero y reste épinglé (sticky)
    pendant qu'index.js le transforme selon la progression du scroll. */
 .hero-scene { position: relative; }
-.anime:not(.hero-libre) .hero-scene { height: 180vh; }
-@media (min-width: 1040px) { .anime:not(.hero-libre) .hero-scene { height: 220vh; } }
+.anime:not(.hero-libre):not(.voyage) .hero-scene { height: 180vh; }
+@media (min-width: 1040px) { .anime:not(.hero-libre):not(.voyage) .hero-scene { height: 220vh; } }
 
 .hero {
   position: relative;
@@ -775,7 +776,7 @@ html:not(.js) .titre-section em::after { transform: scaleX(1); }
 /* Hero épinglé pendant la traversée de la scène.
    Si le contenu ne tient pas dans l'écran (petit téléphone), index.js pose .hero-libre
    et le hero redevient un bloc normal, pour ne rien couper. */
-.anime:not(.hero-libre) .hero {
+.anime:not(.hero-libre):not(.voyage) .hero {
   position: sticky;
   top: 0;
   height: 100svh;
@@ -1168,8 +1169,8 @@ html:not(.js) .comparaison__rature { background-size: 100% 0.11em; }
 .js .comparaison.est-visible .comparaison__contre { opacity: 1; transform: none; }
 
 /* --- Version épinglée --- */
-.anime .pourquoi__scene { height: 420vh; padding: 0; }
-.anime .pourquoi__ecran {
+.anime:not(.voyage) .pourquoi__scene { height: 420vh; padding: 0; }
+.anime:not(.voyage) .pourquoi__ecran {
   position: sticky;
   top: 0;
   height: 100svh;
@@ -1178,16 +1179,16 @@ html:not(.js) .comparaison__rature { background-size: 100% 0.11em; }
   padding: calc(var(--hauteur-nav) + 16px) 0 28px;
   overflow: hidden;
 }
-.anime .pourquoi__entete { margin-bottom: 0; }
-.anime .pourquoi__titre { font-size: clamp(1.8rem, 6vw, 3.6rem); }
-.anime .pourquoi__compteur {
+.anime:not(.voyage) .pourquoi__entete { margin-bottom: 0; }
+.anime:not(.voyage) .pourquoi__titre { font-size: clamp(1.8rem, 6vw, 3.6rem); }
+.anime:not(.voyage) .pourquoi__compteur {
   display: block;
   font-family: var(--police-mono);
   font-size: 0.9rem;
   color: var(--encre-3);
 }
-.anime .pourquoi__compteur span { color: var(--violet); font-weight: 700; }
-.anime .pourquoi__progression {
+.anime:not(.voyage) .pourquoi__compteur span { color: var(--violet); font-weight: 700; }
+.anime:not(.voyage) .pourquoi__progression {
   display: block;
   height: 3px;
   margin-inline: var(--gouttiere);
@@ -1195,7 +1196,7 @@ html:not(.js) .comparaison__rature { background-size: 100% 0.11em; }
   border-radius: 999px;
   overflow: hidden;
 }
-.anime .pourquoi__progression span {
+.anime:not(.voyage) .pourquoi__progression span {
   display: block;
   height: 100%;
   background: var(--violet);
@@ -1203,10 +1204,10 @@ html:not(.js) .comparaison__rature { background-size: 100% 0.11em; }
   transform-origin: left;
 }
 
-.anime .comparaisons { position: relative; border: 0; }
+.anime:not(.voyage) .comparaisons { position: relative; border: 0; }
 /* Chaque comparaison occupe tout l'écran ; --entree (0 → 1) pilote le volet,
    --recul fait légèrement reculer celle qui se fait recouvrir */
-.anime .comparaisons .comparaison {
+.anime:not(.voyage) .comparaisons .comparaison {
   position: absolute;
   inset: 0;
   display: flex;
@@ -1219,16 +1220,16 @@ html:not(.js) .comparaison__rature { background-size: 100% 0.11em; }
   transform-origin: 50% 0;
   transition: none;
 }
-.anime .comparaisons .comparaison:first-child { --entree: 1; }
-.anime .comparaison > .conteneur { grid-template-columns: 1fr; gap: clamp(20px, 4vh, 40px); }
-.anime .comparaison__cliche { font-size: clamp(2rem, 8.5vw, 6.2rem); line-height: 1.02; }
-.anime .comparaison__contre { font-size: clamp(1.6rem, 5.8vw, 4.2rem); line-height: 1.05; }
+.anime:not(.voyage) .comparaisons .comparaison:first-child { --entree: 1; }
+.anime:not(.voyage) .comparaison > .conteneur { grid-template-columns: 1fr; gap: clamp(20px, 4vh, 40px); }
+.anime:not(.voyage) .comparaison__cliche { font-size: clamp(2rem, 8.5vw, 6.2rem); line-height: 1.02; }
+.anime:not(.voyage) .comparaison__contre { font-size: clamp(1.6rem, 5.8vw, 4.2rem); line-height: 1.05; }
 /* La rature suit le scroll (--rature de 0 à 1) */
-.anime .comparaisons .comparaison .comparaison__rature { background-size: calc(var(--rature, 0) * 100%) 0.1em; transition: none; }
+.anime:not(.voyage) .comparaisons .comparaison .comparaison__rature { background-size: calc(var(--rature, 0) * 100%) 0.1em; transition: none; }
 /* La contre-valeur apparaît en "pop" quand la rature est finie */
-.anime .comparaisons .comparaison .comparaison__contre { transition-delay: 0s; }
-.anime .comparaisons .comparaison:not(.est-contre) .comparaison__contre { opacity: 0; transform: scale(0.85) translateY(12px); }
-.anime .comparaisons .comparaison.est-contre .comparaison__contre { opacity: 1; transform: none; }
+.anime:not(.voyage) .comparaisons .comparaison .comparaison__contre { transition-delay: 0s; }
+.anime:not(.voyage) .comparaisons .comparaison:not(.est-contre) .comparaison__contre { opacity: 0; transform: scale(0.85) translateY(12px); }
+.anime:not(.voyage) .comparaisons .comparaison.est-contre .comparaison__contre { opacity: 1; transform: none; }
 
 /* --- 5.6 Projets (animation 6 : cascade + filtre + survol ; tilt 3D) ---
    Grille : 1 colonne sur mobile, 2 sur tablette (≥ 720 px), 3 sur desktop (≥ 1024 px). */
@@ -2473,8 +2474,39 @@ html:not(.anime) .sch-trace--reel { stroke-dashoffset: 0; }
   opacity: 0;
   transition: opacity 0.4s, background 0.2s, color 0.2s;
 }
-.moteur3d.est-eclate .etiquette-piece { opacity: 1; }
+.moteur3d.est-eclate .etiquette-piece { opacity: 1; pointer-events: auto; cursor: pointer; }
 .etiquette-piece.est-active { opacity: 1; background: var(--violet); border-color: var(--violet); color: #fff; }
+/* Vue éclatée : un numéro par pièce, son nom au survol (ou quand la pièce est survolée dans la vue) */
+.etiquette-piece {
+  min-width: 26px;
+  height: 26px;
+  padding: 0 7px;
+  display: grid;
+  place-items: center;
+  font-family: var(--police-mono);
+  font-size: 0.72rem;
+  line-height: 1;
+}
+.etiquette-piece::after {
+  content: attr(data-nom);
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% + 6px);
+  padding: 5px 10px;
+  border-radius: 999px;
+  background: var(--encre);
+  color: #fff;
+  font-family: var(--police-texte);
+  font-size: 0.76rem;
+  font-weight: 600;
+  white-space: nowrap;
+  opacity: 0;
+  transform: translate(-50%, 4px);
+  transition: opacity 0.2s, transform 0.2s;
+  pointer-events: none;
+}
+.etiquette-piece:hover::after,
+.etiquette-piece.est-active::after { opacity: 1; transform: translate(-50%, 0); }
 .moteur3d__survol {
   position: absolute;
   top: 16px; left: 16px;
@@ -2855,7 +2887,7 @@ html:not(.anime) .sch-trace--reel { stroke-dashoffset: 0; }
 .espace-actif .hero__fond { display: none; }
 .espace-actif .ticker,
 .espace-actif .pied { background: rgba(255, 255, 255, 0.72); }
-.anime.espace-actif .pourquoi__ecran { background: rgba(250, 250, 249, 0.6); }
+.anime:not(.voyage).espace-actif .pourquoi__ecran { background: rgba(250, 250, 249, 0.6); }
 
 /* --- Panneaux flottants : le contenu des sections posé dans l'espace ---
    --approche (commun.js) : 0 au centre de l'écran, ±1 quand le panneau arrive ou s'éloigne */
@@ -2875,7 +2907,7 @@ html:not(.anime) .sch-trace--reel { stroke-dashoffset: 0; }
   }
 }
 .js .chiffres > .panneau { background: rgba(17, 16, 24, 0.92); border-color: rgba(255, 255, 255, 0.08); }
-.anime .panneau {
+.anime:not(.voyage) .panneau {
   --a: var(--approche, 0);
   --a-abs: max(var(--a), calc(var(--a) * -1));
   transform: perspective(1600px)
@@ -2888,58 +2920,7 @@ html:not(.anime) .sch-trace--reel { stroke-dashoffset: 0; }
 .section:has(> .panneau) { padding-block: 72px; }
 @media (min-width: 1040px) { .section:has(> .panneau) { padding-block: 110px; } }
 
-/* --- Repères : rail des étapes (bureau), jauge de progression, annonce de l'étape --- */
-.reperes { display: none; }
-@media (min-width: 1040px) {
-  .reperes {
-    display: block;
-    position: fixed;
-    right: 14px;
-    top: 50%;
-    z-index: 40;
-    transform: translateY(-50%);
-    transition: opacity 0.4s;
-  }
-  .reperes ol { position: relative; z-index: 1; display: grid; gap: 2px; }
-  .reperes__bouton {
-    display: flex;
-    flex-direction: row-reverse;
-    align-items: center;
-    gap: 10px;
-    margin-left: auto;
-    padding: 4px 6px;
-    border: 0;
-    background: none;
-    color: var(--encre-2);
-    font-size: 0.74rem;
-    font-weight: 600;
-  }
-  .reperes__point {
-    flex-shrink: 0;
-    width: 10px; height: 10px;
-    border: 2px solid var(--violet-clair);
-    border-radius: 50%;
-    background: var(--fond);
-    transition: background 0.3s, border-color 0.3s, box-shadow 0.3s;
-  }
-  .reperes__nom {
-    padding: 3px 10px;
-    border: 1px solid var(--ligne);
-    border-radius: 999px;
-    background: rgba(255, 255, 255, 0.92);
-    white-space: nowrap;
-    opacity: 0;
-    transform: translateX(6px);
-    transition: opacity 0.25s, transform 0.25s;
-  }
-  .reperes__bouton:hover .reperes__nom,
-  .reperes__bouton:focus-visible .reperes__nom { opacity: 1; transform: none; }
-  .reperes__bouton.est-passee .reperes__point { background: var(--violet-clair); }
-  .reperes__bouton.est-active .reperes__point { background: var(--violet); border-color: var(--violet); box-shadow: 0 0 0 5px rgba(124, 58, 237, 0.18); }
-  .reperes__trace { position: absolute; top: 12px; bottom: 12px; right: 16px; width: 2px; background: var(--ligne); }
-  .reperes__trace span { display: block; height: 100%; background: var(--violet); transform: scaleY(0); transform-origin: top; transition: transform 0.6s var(--ease-sortie); }
-  .maquette-active .reperes { opacity: 0; pointer-events: none; }
-}
+/* --- Jauge de progression et annonce de l'étape (le sommaire est en fin de fichier) --- */
 .reperes__jauge { position: fixed; top: 0; left: 0; right: 0; z-index: 120; height: 3px; pointer-events: none; }
 .reperes__jauge span { display: block; height: 100%; background: linear-gradient(90deg, var(--violet-clair), var(--violet)); transform: scaleX(0); transform-origin: left; }
 .reperes__annonce {
@@ -3039,7 +3020,7 @@ html:not(.anime) .sch-trace--reel { stroke-dashoffset: 0; }
   border-color: rgba(124, 58, 237, 0.45);
   box-shadow: 0 0 0 4px rgba(124, 58, 237, 0.12), 0 40px 90px -40px rgba(76, 29, 149, 0.5);
 }
-.anime.visite-3d .fiches > .fiche:not(.est-active) { transform: perspective(1200px) translateZ(-80px) rotateY(calc(var(--cote-fiche, 1) * 6deg)); }
+.anime:not(.voyage).visite-3d .fiches > .fiche:not(.est-active) { transform: perspective(1200px) translateZ(-80px) rotateY(calc(var(--cote-fiche, 1) * 6deg)); }
 .visite-3d .fiches > .fiche:nth-child(even) { --cote-fiche: -1; }
 @media (min-width: 720px) {
   .visite-3d .fiches > .fiche { -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px); background: rgba(255, 255, 255, 0.8); }
@@ -3099,13 +3080,13 @@ html:not(.anime) .sch-trace--reel { stroke-dashoffset: 0; }
 
 /* Impression : ni espace 3D, ni repères, ni effets de panneau */
 @media print {
-  .espace, .reperes, .reperes__jauge, .reperes__annonce, .visite { display: none !important; }
+  .espace, .sommaire, .reperes__jauge, .reperes__annonce, .visite { display: none !important; }
   .panneau { transform: none !important; opacity: 1 !important; box-shadow: none !important; -webkit-backdrop-filter: none !important; backdrop-filter: none !important; }
 }
 
 
 /* ==========================================================================
-   11. Page E39 : fenêtres des fiches, capot, comparaison, index, encyclopédie,
+   11. Page E39 : fenêtres des fiches, comparaison, index, encyclopédie,
    fiche technique
    ========================================================================== */
 
@@ -3139,6 +3120,9 @@ html:not(.anime) .sch-trace--reel { stroke-dashoffset: 0; }
 .fiche-piece__repli { position: absolute; inset: 0; display: grid; place-items: center; padding: 16px; text-align: center; color: var(--encre-3); font-size: 0.9rem; }
 .fiche-piece__scene:has(canvas) .fiche-piece__repli { display: none; }
 .fiche-piece__vue figcaption { margin-top: 8px; font-size: 0.8rem; color: var(--encre-3); }
+/* Photo réelle détourée (fond transparent) : posée sur le même fond que la pièce seule */
+.fiche-piece__scene--photo { display: grid; place-items: center; padding: 18px; background: radial-gradient(circle at 50% 45%, #ffffff 0%, #ebe7f4 100%); touch-action: auto; }
+.fiche-piece__scene--photo img { max-width: 100%; max-height: 100%; object-fit: contain; filter: drop-shadow(0 16px 24px rgba(17, 16, 24, 0.18)); }
 .fiche-piece__description { margin-top: 22px; max-width: 70ch; font-size: 1.02rem; color: var(--encre-2); }
 .fiche-piece__voiture { margin-top: 18px; padding: 16px 18px; border-radius: 14px; background: var(--surface-2); }
 .fiche-piece__voiture h4 { margin: 0 0 8px; font-size: 1rem; }
@@ -3150,7 +3134,35 @@ html:not(.anime) .sch-trace--reel { stroke-dashoffset: 0; }
   .fiche-piece__corps { padding: 40px 44px; }
   .fiche-piece__vues { grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); }
   .fiche-piece__scene { height: 360px; }
+  /* Avec la photo : la voiture en grand, puis la pièce seule et la photo côte à côte */
+  .fiche-piece__vues:has(#fiche-piece-photo:not([hidden])) { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+  .fiche-piece__vues:has(#fiche-piece-photo:not([hidden])) > :first-child { grid-column: 1 / -1; }
 }
+@media (min-width: 1040px) {
+  .fiche-piece__vues:has(#fiche-piece-photo:not([hidden])) { grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr) minmax(0, 1fr); }
+  .fiche-piece__vues:has(#fiche-piece-photo:not([hidden])) > :first-child { grid-column: auto; }
+}
+
+/* Visionneuse : une photo de la page voiture en grand (e39.js) */
+.agrandissable { cursor: zoom-in; }
+.agrandissable:focus-visible { outline: 3px solid var(--violet); outline-offset: 3px; }
+.visionneuse {
+  width: 100vw;
+  height: 100vh;
+  max-width: none;
+  max-height: none;
+  margin: 0;
+  padding: 16px;
+  border: 0;
+  background: transparent;
+  cursor: zoom-out;
+}
+.visionneuse[open] { display: grid; place-items: center; }
+.visionneuse::backdrop { background: rgba(10, 9, 15, 0.88); }
+.visionneuse img { max-width: 100%; max-height: calc(100vh - 32px); object-fit: contain; border-radius: 12px; box-shadow: 0 30px 80px rgba(0, 0, 0, 0.5); }
+.visionneuse .fiche-dialog__fermer { position: fixed; top: 16px; right: 16px; }
+.anime .visionneuse[open] img { animation: visionneuse-entree 0.35s var(--ease-sortie); }
+@keyframes visionneuse-entree { from { opacity: 0; transform: scale(0.96); } }
 
 /* Lien en forme de bouton texte */
 .lien-bouton {
@@ -3168,42 +3180,6 @@ html:not(.anime) .sch-trace--reel { stroke-dashoffset: 0; }
 .lien-bouton:hover .icone { transform: translateX(5px); }
 .lien-bouton[hidden] { display: none; }
 
-/* --- Sous le capot : la scène reste à l'écran pendant que le capot s'ouvre --- */
-.capot-intro { position: relative; }
-.capot-intro__ecran {
-  position: relative;
-  height: 80svh;
-  min-height: 460px;
-  overflow: hidden;
-  background: radial-gradient(70% 60% at 50% 55%, #ffffff 0%, var(--surface-2) 100%);
-}
-.anime .capot-intro__scene { height: 260vh; }
-.anime .capot-intro__ecran { position: sticky; top: 0; height: 100svh; }
-.capot-intro__vue { position: absolute; inset: 0; }
-.capot-intro__vue canvas { width: 100%; height: 100%; display: block; }
-.capot-intro__texte {
-  position: relative;
-  z-index: 1;
-  padding-top: calc(var(--hauteur-nav) + 28px);
-  pointer-events: none;
-}
-.capot-intro__texte > * { max-width: 520px; }
-.capot-intro__texte p:not(.surtitre) { margin-top: 14px; color: var(--encre-2); }
-.anime .capot-intro__texte { opacity: clamp(0, calc(1 - (var(--capot, 0) - 0.55) * 4), 1); }
-.capot-intro__indice {
-  position: absolute;
-  left: 50%; bottom: 28px;
-  transform: translateX(-50%);
-  padding: 8px 16px;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.9);
-  border: 1px solid var(--ligne);
-  font-family: var(--police-mono);
-  font-size: 0.78rem;
-  color: var(--encre-2);
-  opacity: clamp(0, calc(1 - var(--capot, 0) * 5), 1);
-}
-.capot-actif .reperes__annonce { display: none; }
 
 /* --- Réel ou maquette : curseur de comparaison --- */
 .comparaison-photo { margin: 0; }
@@ -3366,7 +3342,7 @@ html:not(.anime) .sch-trace--reel { stroke-dashoffset: 0; }
 .encyclo__point:focus-visible .encyclo__nom,
 .encyclo__point.est-choisi .encyclo__nom { opacity: 1; transform: none; }
 .encyclo__point.est-choisi .encyclo__numero { background: var(--encre); }
-.encyclo__vues { position: absolute; left: 16px; bottom: 16px; z-index: 2; display: flex; gap: 8px; }
+.encyclo__vues { position: absolute; left: 16px; bottom: 16px; z-index: 2; display: flex; flex-wrap: wrap; gap: 8px; max-width: calc(100% - 32px); }
 .encyclo__vues .bouton { min-height: 40px; padding: 0 16px; font-size: 0.82rem; background: rgba(255, 255, 255, 0.9); }
 .encyclo__vues .bouton svg { width: 18px; height: 18px; }
 .encyclo__vues .bouton[aria-pressed="true"] { background: var(--encre); border-color: var(--encre); color: #fff; }
@@ -3416,7 +3392,7 @@ html:not(.anime) .sch-trace--reel { stroke-dashoffset: 0; }
 .moteur3d__commandes #bouton-cache[aria-pressed="true"] { background: var(--violet-pale); border-color: var(--violet); color: var(--violet-fonce); }
 
 @media print {
-  .capot-intro, .encyclo, .comparaison-photo__poignee, .comparaison-photo__curseur { display: none !important; }
+  .encyclo, .comparaison-photo__poignee, .comparaison-photo__curseur { display: none !important; }
 }
 
 
@@ -3429,20 +3405,9 @@ html:not(.anime) .sch-trace--reel { stroke-dashoffset: 0; }
 .projets__ecran.panneau .projets__entete,
 .projets__ecran.panneau .projets__fenetre { max-width: none; }
 
-/* Panneaux 3D (espace-3d.js pose .panneaux-3d) : le fond, la tranche et le câble vers la boule
-   violette sont dessinés en 3D sous le panneau ; le panneau HTML ne garde que son contenu */
-.panneaux-3d.espace-actif .panneau:not(.cv-feuille, .cv-actions) {
-  background: transparent;
-  border-color: transparent;
-  box-shadow: none;
-  -webkit-backdrop-filter: none;
-  backdrop-filter: none;
-}
-.anime.panneaux-3d .panneau:not(.cv-feuille, .cv-actions) { transform: none; }
-
 /* « Pourquoi moi » : les réponses sont plus longues, la taille s'adapte à l'écran épinglé */
-.anime .comparaison__contre { font-size: clamp(1.25rem, 3.2vw, 2.5rem); line-height: 1.12; }
-@media (max-height: 700px) { .anime .comparaison__contre { font-size: clamp(1.1rem, 2.6vw, 1.9rem); } }
+.anime:not(.voyage) .comparaison__contre { font-size: clamp(1.25rem, 3.2vw, 2.5rem); line-height: 1.12; }
+@media (max-height: 700px) { .anime:not(.voyage) .comparaison__contre { font-size: clamp(1.1rem, 2.6vw, 1.9rem); } }
 
 /* --- Sélecteur immersif : carrousel 3D (index.js pose .carrousel-actif sur <html>) --- */
 .carrousel-actif .grille-projets {
@@ -3510,4 +3475,198 @@ html:not(.anime) .sch-trace--reel { stroke-dashoffset: 0; }
 .carrousel__aide { margin-top: 6px; text-align: center; font-size: 0.82rem; color: var(--encre-3); }
 @media (max-width: 719px) {
   .carrousel-actif .grille-projets { height: clamp(440px, 70vh, 520px); perspective: 1100px; }
+}
+
+
+/* ==========================================================================
+   14. Voyage (espace-3d.js) : les sections deviennent des cartes posées dans l'espace 3D
+   .voyage (posée dans le <head>) : pas de scènes épinglées ni de volets, chaque section
+   garde sa hauteur naturelle. .voyage-pret : les cartes sont en place.
+   <main> est la scène (perspective), .voyage__camera porte la caméra, chaque .carte-3d
+   reçoit sa propre transformation ; les .voyage-relais (ses ancêtres) ne font que la
+   transmettre (aucun effet qui aplatirait la 3D).
+   ========================================================================== */
+.voyage .hero-scene { height: auto; }
+.voyage .mot-fond, .voyage .ticker { display: none; }
+.voyage-pret .voyage__defilement { position: relative; z-index: 1; }
+.voyage-pret main {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  height: 100lvh;
+  overflow: clip;
+  perspective-origin: 50% 50%;
+}
+.voyage__camera { position: absolute; inset: 0; transform-style: preserve-3d; pointer-events: none; }
+.voyage-pret .voyage-relais {
+  position: static !important;
+  transform: none !important;
+  transform-style: preserve-3d;
+  clip-path: none !important;
+  filter: none !important;
+  opacity: 1 !important;
+  overflow: visible !important;
+  background: none !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  min-height: 0 !important;
+  height: auto !important;
+}
+/* Dans une section découpée en cartes, ce qui n'est pas une carte n'a pas sa place dans l'espace */
+.voyage-pret .voyage-relais > :not(.carte-3d, .voyage-relais) { display: none !important; }
+
+.voyage-pret .carte-3d {
+  position: absolute !important;
+  left: 0;
+  top: 0;
+  width: min(1180px, calc(100vw - var(--sommaire-largeur, 0px) - 2 * var(--marge-carte)));
+  margin: 0 !important;
+  padding-block: clamp(36px, 6vw, 72px);
+  border: 1px solid rgba(124, 58, 237, 0.16);
+  border-radius: clamp(20px, 3vw, 32px);
+  background: rgba(255, 255, 255, 0.95);
+  box-shadow: 0 50px 120px -50px rgba(76, 29, 149, 0.45);
+  pointer-events: auto;
+  backface-visibility: hidden;
+  clip-path: none !important;
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+  overflow: hidden;
+  transition: box-shadow 0.5s, border-color 0.5s;
+}
+:root { --marge-carte: 12px; }
+@media (min-width: 720px) { :root { --marge-carte: 20px; } }
+.voyage-pret .carte-3d:not(.est-active) { pointer-events: none; }
+.voyage-pret .carte-3d.est-active { border-color: rgba(124, 58, 237, 0.34); box-shadow: 0 0 0 4px rgba(124, 58, 237, 0.08), 0 60px 140px -50px rgba(76, 29, 149, 0.55); }
+.voyage-pret .carte-3d > .conteneur { position: relative; }
+/* Les fonds sombres gardent leur ambiance */
+.voyage-pret .chiffres.carte-3d { background: rgba(17, 16, 24, 0.96); border-color: rgba(255, 255, 255, 0.08); }
+/* Hero de l'accueil : une carte comme les autres (son titre ne s'efface plus au défilement) */
+.voyage-pret .hero-scene.carte-3d { padding-block: 0; }
+.voyage-pret .hero { min-height: 0; padding-bottom: clamp(36px, 6vw, 72px); }
+/* Cartes étroites de la documentation (en-tête, intertitres, fiches) */
+.voyage-pret .documentation .carte-3d {
+  width: min(460px, calc(100vw - 2 * var(--marge-carte)));
+  padding: clamp(22px, 4vw, 34px);
+  opacity: 1;
+}
+.voyage-pret .documentation__sous-titre.carte-3d { width: auto; max-width: min(460px, calc(100vw - 2 * var(--marge-carte))); }
+/* La voiture de la visite guidée : un décor à plat derrière les cartes de la documentation */
+.voyage-pret .visite {
+  display: block;
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  height: auto;
+  margin: 0;
+  opacity: 0;
+  transition: opacity 0.6s;
+}
+.voyage-pret.visite-active .visite { opacity: 1; }
+.voyage-pret .voyage__camera { z-index: 1; }
+.voyage-pret .visite__passer { display: inline-flex; align-items: center; gap: 8px; margin-top: 18px; color: var(--violet); font-weight: 600; }
+/* Le pied de page glisse par-dessus la dernière carte */
+.voyage-pret .pied { position: relative; z-index: 2; }
+
+
+/* ==========================================================================
+   15. Sommaire latéral (espace-3d.js) : les étapes de la page, toujours à portée
+   Grand écran : colonne fixe à gauche ; ailleurs : bouton « Sommaire » qui l'ouvre
+   ========================================================================== */
+.sommaire {
+  position: fixed;
+  left: 12px;
+  bottom: 12px;
+  z-index: 60;
+}
+.sommaire__bascule {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 44px;
+  padding: 8px 16px 8px 12px;
+  border: 1px solid var(--ligne);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.94);
+  box-shadow: 0 12px 30px -16px rgba(76, 29, 149, 0.45);
+  color: var(--encre);
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+.sommaire__icone, .sommaire__icone::before, .sommaire__icone::after, .sommaire__icone span {
+  display: block;
+  width: 16px;
+  height: 2px;
+  border-radius: 2px;
+  background: var(--violet);
+}
+.sommaire__icone { position: relative; background: none; }
+.sommaire__icone::before, .sommaire__icone::after { content: ""; position: absolute; left: 0; }
+.sommaire__icone::before { top: -5px; }
+.sommaire__icone::after { top: 5px; width: 10px; }
+.sommaire__liste {
+  position: absolute;
+  left: 0;
+  bottom: calc(100% + 8px);
+  display: none;
+  width: min(290px, calc(100vw - 24px));
+  max-height: min(70vh, 560px);
+  overflow-y: auto;
+  padding: 10px;
+  border: 1px solid var(--ligne);
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.97);
+  box-shadow: 0 30px 70px -30px rgba(76, 29, 149, 0.5);
+  counter-reset: none;
+}
+.sommaire.est-ouvert .sommaire__liste { display: grid; gap: 2px; }
+.sommaire__lien {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  width: 100%;
+  min-height: 36px;
+  padding: 7px 10px;
+  border: 0;
+  border-radius: 12px;
+  background: none;
+  color: var(--encre-2);
+  font-size: 0.86rem;
+  font-weight: 500;
+  text-align: left;
+  transition: background 0.25s, color 0.25s;
+}
+.sommaire__numero { font-family: var(--police-mono); font-size: 0.72rem; color: var(--encre-3); }
+.sommaire__lien:hover, .sommaire__lien:focus-visible { background: var(--violet-pale); color: var(--encre); }
+.sommaire__lien.est-passee .sommaire__numero { color: var(--violet-clair); }
+.sommaire__lien.est-active { background: var(--violet-pale); color: var(--violet-fonce); font-weight: 700; }
+.sommaire__lien.est-active .sommaire__numero { color: var(--violet); }
+@media (min-width: 1280px) {
+  :root { --sommaire-largeur: 236px; }
+  .sommaire {
+    top: calc(var(--hauteur-nav) + 16px);
+    bottom: auto;
+    left: 16px;
+    width: 204px;
+  }
+  .sommaire__bascule { display: none; }
+  .sommaire__liste {
+    position: static;
+    display: grid;
+    gap: 2px;
+    width: auto;
+    max-height: calc(100vh - var(--hauteur-nav) - 40px);
+    padding: 8px;
+    background: rgba(255, 255, 255, 0.86);
+    box-shadow: 0 20px 50px -30px rgba(76, 29, 149, 0.4);
+  }
+  .sommaire__lien { font-size: 0.8rem; min-height: 32px; padding: 6px 10px; }
+}
+/* Le contenu classique (CV) laisse la place au sommaire sur grand écran */
+@media (min-width: 1280px) {
+  html:not(.voyage-pret) body:has(.sommaire) :is(main, .pied) { padding-left: var(--sommaire-largeur); }
 }

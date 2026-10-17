@@ -6,7 +6,10 @@
    - badges M5 retirés, badge « 520i » ajouté à droite du coffre (comme sur la voiture)
    - échappement : une seule sortie, à gauche
    - roues M5 retirées : les roues 17 pouces de la maquette les remplacent
+   - pédales retirées : la maquette a ses trois pédales
    - peinture bleu topaze métallisé, vernie
+   Les triangles d'un ouvrant qui débordent de sa zone (garnitures étirées à l'ouverture)
+   sont retirés ; moteur-3d.js bouche les trous (caches de portes, fond noir du coffre).
    Chaque triangle est rangé dans un panneau (capot, portes, coffre, ailes…)
    d'après sa position : les ouvrants peuvent s'ouvrir et la vue éclatée
    sépare les panneaux. Les maillages identiques d'un même panneau sont fusionnés.
@@ -174,6 +177,8 @@ function etiqueter(nom, positions, index, nbTriangles) {
     let label = null, portes = 'oui';
     if (pref === 'Object_28') label = 'faceAvant';
     else if (pref === 'Object_30') label = 'coffre';
+    // Pédales du modèle : la maquette a ses trois pédales
+    else if (pref === 'Object_14' && b.max[1] < 0.4 && b.min[2] > -0.96 && b.max[2] < -0.68 && b.max[0] < -0.2) label = 'retire';
     else if (dans(ECHAPPEMENT, nom)) label = cx > -0.43 ? 'retire' : 'faceArriere';
     else if (pref === 'Object_44' && b.max[1] < 0.4) label = 'retire';           // inserts des baguettes (M5)
     else if (pref === 'Object_65') label = 'caisse';                             // grille d'auvent
@@ -204,6 +209,17 @@ function etiqueter(nom, positions, index, nbTriangles) {
   if (interieur) {
     for (let t = 0; t < nbTriangles; t++) {
       if (labels[t] === 'habitacle' && centre(t)[2] < -0.94) labels[t] = 'retire';
+    }
+  }
+  // Triangles d'un ouvrant qui débordent de sa zone (ils s'étirent en lambeaux à l'ouverture) :
+  // retirés ; les caches des portes et le fond du coffre bouchent les trous (moteur-3d.js)
+  for (let t = 0; t < nbTriangles; t++) {
+    const l = labels[t];
+    if (l !== 'coffre' && !(interieur && l && l.startsWith('porte'))) continue;
+    for (let k = 0; k < 3; k++) {
+      const v = index(t * 3 + k) * 3, x = positions[v], y = positions[v + 1], z = positions[v + 2];
+      const dehors = l === 'coffre' ? !(Math.abs(x) < 0.66 && z > 1.7 && y > 0.46) : zonePorte(x, y, z, 0.64, 0.03, basPorte) !== l;
+      if (dehors) { labels[t] = 'retire'; break; }
     }
   }
   return labels;

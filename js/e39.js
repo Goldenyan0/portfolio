@@ -5,6 +5,7 @@
    - Tracés VANOS consigne / réel (schéma A5)
    - Jauges LTFT animées (schéma A4)
    - Fenêtre des fiches "Le M54 expliqué" (ouverte aussi depuis le moteur 3D)
+   - Photos de la page : un clic (ou Entrée) les ouvre en grand
    - Graphiques natifs SVG des relevés du 08/10/2026, animés au scroll,
      avec infobulle au survol et tableau des valeurs
    Dépend de commun.js (window.Site) et donnees-releves.js (window.RELEVES).
@@ -157,6 +158,10 @@
 
       const copie = article.cloneNode(true);
       copie.removeAttribute('id');
+      // La copie ne garde rien de la carte 3D du voyage (position dans l'espace, opacité, clics bloqués)
+      copie.removeAttribute('style');
+      copie.removeAttribute('data-carte');
+      copie.classList.remove('carte-3d', 'est-active');
       copie.classList.add('est-visible');
       copie.querySelectorAll('[data-revele]').forEach(function (el) { el.classList.add('est-visible'); });
       const bouton = copie.querySelector('.fiche__ouvrir');
@@ -255,6 +260,8 @@
     const description = document.getElementById('fiche-piece-description');
     const blocVoiture = document.getElementById('fiche-piece-voiture');
     const lienSysteme = document.getElementById('fiche-piece-systeme');
+    const blocPhoto = document.getElementById('fiche-piece-photo');
+    const image = document.getElementById('fiche-piece-image');
     let declencheur = null, systemeApres = null;
 
     function ouvrir(id) {
@@ -273,6 +280,10 @@
         valeurs.appendChild(li);
       });
       blocVoiture.hidden = !(f.maVoiture && f.maVoiture.length);
+      // Photo réelle de la pièce (aucune photo, aucun cadre, pour les pièces qui n'en ont pas)
+      blocPhoto.hidden = !f.photo;
+      image.removeAttribute('src');
+      if (f.photo) { image.alt = f.nom; image.src = f.photo; }
       // Lien vers la fiche du système (documentation), s'il existe sur la page
       const systeme = f.systeme && document.querySelector('.fiche[data-fiche="' + f.systeme + '"] h3');
       lienSysteme.hidden = !systeme;
@@ -306,6 +317,49 @@
 
     // Utilisé par moteur-3d.js quand on clique une pièce de la maquette
     window.ouvrirFichePiece = ouvrir;
+  }
+
+
+  /* ------------------------------------------------------------------
+     5 quater. Photos : un clic les agrandit (fenêtre plein écran, fermée par
+     un clic, Échap ou le bouton) ; la comparaison réel / maquette garde son curseur
+     ------------------------------------------------------------------ */
+  function gererAgrandissement() {
+    const photos = Array.from(document.querySelectorAll('main img')).filter(function (img) {
+      return !img.closest('.comparaison-photo');
+    });
+    const dialogue = document.createElement('dialog');
+    if (!photos.length || typeof dialogue.showModal !== 'function') return;
+    dialogue.className = 'visionneuse';
+    dialogue.innerHTML = '<button class="fiche-dialog__fermer" type="button" aria-label="Fermer"><svg class="icone" aria-hidden="true"><use href="#i-fermer"/></svg></button><img alt="" />';
+    document.body.appendChild(dialogue);
+    const grande = dialogue.querySelector('img');
+    let declencheur = null;
+
+    function ouvrir(img) {
+      declencheur = img;
+      grande.src = img.currentSrc || img.src;
+      grande.alt = img.alt;
+      dialogue.showModal();
+      if (Site.lenis) Site.lenis.stop();
+    }
+    dialogue.addEventListener('click', function () { dialogue.close(); });
+    dialogue.addEventListener('close', function () {
+      if (Site.lenis) Site.lenis.start();
+      if (declencheur) declencheur.focus();
+    });
+    photos.forEach(function (img) {
+      img.classList.add('agrandissable');
+      img.tabIndex = 0;
+      img.setAttribute('role', 'button');
+      img.setAttribute('aria-label', 'Agrandir : ' + img.alt);
+      img.addEventListener('click', function () { ouvrir(img); });
+      img.addEventListener('keydown', function (e) {
+        if (e.key !== 'Enter' && e.key !== ' ') return;
+        e.preventDefault();
+        ouvrir(img);
+      });
+    });
   }
 
 
@@ -578,5 +632,6 @@
   gererFiches();
   gererFichesPieces();
   gererComparaison();
+  gererAgrandissement();
   graphiquesReleves();
 })();

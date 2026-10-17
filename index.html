@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="fr" data-voyage>
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -31,6 +31,8 @@
   <script>
     document.documentElement.classList.add('js');
     if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) document.documentElement.classList.add('anime');
+    // "voyage" : les sections deviennent des cartes posées dans l'espace 3D (espace-3d.js)
+    if (document.documentElement.classList.contains('anime') && window.WebGLRenderingContext) document.documentElement.classList.add('voyage');
   </script>
 </head>
 

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="fr" data-voyage>
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -28,6 +28,8 @@
   <script>
     document.documentElement.classList.add('js');
     if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) document.documentElement.classList.add('anime');
+    // "voyage" : les sections deviennent des cartes posées dans l'espace 3D (espace-3d.js)
+    if (document.documentElement.classList.contains('anime') && window.WebGLRenderingContext) document.documentElement.classList.add('voyage');
   </script>
 
   <!-- Correspondance des modules Three.js (le moteur 3D importe "three" et ses compléments) -->
@@ -56,6 +58,7 @@
     <symbol id="i-recentrer" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></symbol>
     <symbol id="i-fermer"viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" d="M6 6l12 12M18 6 6 18"/></symbol>
     <symbol id="i-portes" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" d="M4 20V5l9-2v19l-9-2Zm9-17h7v17h-7M10 12h.01"/></symbol>
+    <symbol id="i-rotation" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M20 12a8 8 0 1 1-2.34-5.66M20 4v4h-4M10 9v6m4-6v6"/></symbol>
     <symbol id="i-cache" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M3 14h18l-2 4H5l-2-4Zm4-4V7m5 3V5m5 5V7"/></symbol>
     <symbol id="i-interieur" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18Zm0 6a3 3 0 1 0 0 6 3 3 0 0 0 0-6ZM3.5 10.5 9 12m6 0 5.5-1.5M12 15v6"/></symbol>
     <symbol id="i-exterieur" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M3 16v-3l2-5h10l4 5h2v3h-2M3 16h2m4 0h6"/><circle cx="7" cy="16" r="2" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="17" cy="16" r="2" fill="none" stroke="currentColor" stroke-width="2"/></symbol>
@@ -119,8 +122,8 @@
           </ul>
         </div>
         <div class="e39-hero__photos" aria-label="Photos de la voiture">
-          <img class="e39-hero__photo e39-hero__photo--1" data-parallax="0.08" src="img/e39/e39-face-avant-plaque-floutee.jpg" width="900" height="1196" alt="BMW E39 bleue vue de face sur du gravier, plaque floutée, phares à anneaux" />
-          <img class="e39-hero__photo e39-hero__photo--2" data-parallax="-0.06" src="img/e39/e39-nuit-angel-eyes-jaunes.jpg" width="900" height="1599" alt="La voiture de nuit, phares à anneaux jaunes et antibrouillards allumés" />
+          <img class="e39-hero__photo e39-hero__photo--1" data-parallax="0.08" src="img/e39/e39-nuit-angel-eyes-jaunes.jpg" width="900" height="1599" alt="La voiture de nuit, phares à anneaux jaunes et antibrouillards allumés" />
+          <img class="e39-hero__photo e39-hero__photo--2" data-parallax="-0.06" src="img/e39/e39-face-avant-plaque-floutee.jpg" width="900" height="1196" alt="BMW E39 bleue vue de face sur du gravier, plaque floutée, phares à anneaux" />
         </div>
       </div>
     </section>
@@ -364,7 +367,7 @@
     <section class="section documentation" id="documentation" data-etape="Documentation" aria-labelledby="doc-titre">
       <!-- Visite guidée 3D : la voiture reste à l'écran pendant qu'on fait défiler les fiches,
            la caméra rejoint la pièce de chaque fiche (piloté par moteur-3d.js) -->
-      <div class="visite" id="visite" aria-hidden="true">
+      <div class="visite" id="visite" aria-hidden="true" data-voyage-fond>
         <div class="visite__scene" id="visite-scene"></div>
         <div class="visite__hud">
           <p class="visite__piece" id="visite-piece"></p>
@@ -373,7 +376,7 @@
       </div>
       <span class="mot-fond" data-glisse="-0.35" aria-hidden="true">M54</span>
       <div class="conteneur">
-        <div class="entete-section">
+        <div class="entete-section" data-carte>
           <p class="surtitre" data-revele>Documentation</p>
           <h2 class="titre-section" id="doc-titre" data-mots>Le M54 <em>expliqué.</em></h2>
           <p data-revele>Dix fiches pour comprendre le moteur, sept pour aller plus loin. Chacune : son rôle, un schéma animé, une maquette 3D, les symptômes de panne et mes valeurs mesurées.</p>
@@ -383,7 +386,7 @@
         <div class="fiches" data-cascade>
 
           <!-- 01 Cycle 4 temps -->
-          <article class="fiche" id="fiche-cycle" data-fiche="cycle" data-revele>
+          <article class="fiche" data-carte id="fiche-cycle" data-fiche="cycle" data-revele>
             <p class="fiche__numero">01</p>
             <h3>Le cycle 4 temps</h3>
             <p class="fiche__role">Admission, compression, combustion, échappement : chaque cylindre fait ces quatre temps en deux tours de vilebrequin. Sur un six cylindres en ligne, il y a une combustion tous les 120°, dans l'ordre 1-5-3-6-2-4 — d'où la douceur du M54.</p>
@@ -424,7 +427,7 @@
           </article>
 
           <!-- 02 Admission -->
-          <article class="fiche" id="fiche-admission" data-fiche="admission" data-revele>
+          <article class="fiche" data-carte id="fiche-admission" data-fiche="admission" data-revele>
             <p class="fiche__numero">02</p>
             <h3>L'admission</h3>
             <p class="fiche__role">Amener au moteur un air propre et mesuré : filtre, débitmètre (MAF), manchon, papillon, collecteur avec DISA, et l'ICV qui dose l'air du ralenti en contournant le papillon. Chaque entrée d'air non mesurée fausse le dosage.</p>
@@ -454,7 +457,7 @@
           </article>
 
           <!-- 03 Carburant -->
-          <article class="fiche" id="fiche-carburant" data-fiche="carburant" data-revele>
+          <article class="fiche" data-carte id="fiche-carburant" data-fiche="carburant" data-revele>
             <p class="fiche__numero">03</p>
             <h3>Le carburant</h3>
             <p class="fiche__role">La pompe immergée débite en excès, le filtre retient les impuretés, son régulateur intégré fixe 3,5 bar et renvoie le surplus. La rampe alimente six injecteurs que le calculateur ouvre au bon moment.</p>
@@ -502,7 +505,7 @@
           </article>
 
           <!-- 04 Allumage -->
-          <article class="fiche" id="fiche-allumage" data-fiche="allumage" data-revele>
+          <article class="fiche" data-carte id="fiche-allumage" data-fiche="allumage" data-revele>
             <p class="fiche__numero">04</p>
             <h3>L'allumage</h3>
             <p class="fiche__role">Une bobine crayon par cylindre, posée directement sur la bougie. Le calculateur décide de l'instant exact de l'étincelle (l'avance) selon le régime, la charge et les capteurs de cliquetis.</p>
@@ -541,7 +544,7 @@
           </article>
 
           <!-- 05 Distribution & double VANOS -->
-          <article class="fiche" id="fiche-distribution" data-fiche="distribution" data-revele>
+          <article class="fiche" data-carte id="fiche-distribution" data-fiche="distribution" data-revele>
             <p class="fiche__numero">05</p>
             <h3>Distribution &amp; double VANOS</h3>
             <p class="fiche__role">Une chaîne entraîne les deux arbres à cames (admission et échappement, 24 soupapes). Le double VANOS décale chacun de quelques degrés pour plus de couple en bas et de puissance en haut, piloté en boucle fermée : consigne contre position réelle.</p>
@@ -574,7 +577,7 @@
           </article>
 
           <!-- 06 Échappement & dépollution -->
-          <article class="fiche" id="fiche-echappement" data-fiche="echappement" data-revele>
+          <article class="fiche" data-carte id="fiche-echappement" data-fiche="echappement" data-revele>
             <p class="fiche__numero">06</p>
             <h3>Échappement &amp; dépollution</h3>
             <p class="fiche__role">Deux collecteurs (cylindres 1-3 et 4-6), deux catalyseurs et quatre sondes lambda : deux avant les catalyseurs pour régler le mélange, deux après pour surveiller les catalyseurs.</p>
@@ -616,7 +619,7 @@
           </article>
 
           <!-- 07 Refroidissement -->
-          <article class="fiche" id="fiche-refroidissement" data-fiche="refroidissement" data-revele>
+          <article class="fiche" data-carte id="fiche-refroidissement" data-fiche="refroidissement" data-revele>
             <p class="fiche__numero">07</p>
             <h3>Le refroidissement</h3>
             <p class="fiche__role">La pompe à eau fait circuler le liquide, le thermostat retient le moteur en petit circuit tant qu'il est froid, le radiateur évacue la chaleur, le vase absorbe la dilatation et le visco-coupleur pilote le ventilateur.</p>
@@ -646,7 +649,7 @@
           </article>
 
           <!-- 08 Lubrification -->
-          <article class="fiche" id="fiche-lubrification" data-fiche="lubrification" data-revele>
+          <article class="fiche" data-carte id="fiche-lubrification" data-fiche="lubrification" data-revele>
             <p class="fiche__numero">08</p>
             <h3>La lubrification</h3>
             <p class="fiche__role">La pompe à huile aspire dans le carter à travers la crépine, pousse l'huile dans le filtre puis dans les galeries : vilebrequin, bielles, arbres à cames, VANOS. Un capteur surveille le niveau.</p>
@@ -687,7 +690,7 @@
           </article>
 
           <!-- 09 CCV -->
-          <article class="fiche" id="fiche-ccv" data-fiche="ccv" data-revele>
+          <article class="fiche" data-carte id="fiche-ccv" data-fiche="ccv" data-revele>
             <p class="fiche__numero">09</p>
             <h3>Le CCV (reniflard)</h3>
             <p class="fiche__role">Une partie des gaz de combustion passe sous les pistons (blow-by). Le CCV les aspire, sépare l'huile qu'ils transportent, la renvoie au carter et réinjecte les gaz dans l'admission pour qu'ils soient brûlés.</p>
@@ -725,7 +728,7 @@
           </article>
 
           <!-- 10 Gestion électronique -->
-          <article class="fiche" id="fiche-gestion" data-fiche="gestion" data-revele>
+          <article class="fiche" data-carte id="fiche-gestion" data-fiche="gestion" data-revele>
             <p class="fiche__numero">10</p>
             <h3>La gestion électronique</h3>
             <p class="fiche__role">Le calculateur Siemens MS43 (DME) lit en permanence ses capteurs — vilebrequin (PMH), arbres à cames, cliquetis, températures, débitmètre, sondes lambda — et commande injecteurs, bobines, VANOS et papillon.</p>
@@ -763,7 +766,7 @@
           </article>
 
           <!-- 11 Transmission (propulsion) — ouverte aussi par les pièces 3D volant, embrayage, boîte, arbre, pont, roues -->
-          <article class="fiche" id="fiche-transmission" data-fiche="transmission" data-revele>
+          <article class="fiche" data-carte id="fiche-transmission" data-fiche="transmission" data-revele>
             <p class="fiche__numero">11</p>
             <h3>La transmission (propulsion)</h3>
             <p class="fiche__role">Du moteur aux roues motrices arrière : volant moteur, embrayage, boîte de vitesses, arbre de transmission, pont arrière et roues.</p>
@@ -787,11 +790,11 @@
         </div>
 
         <!-- Systèmes détaillés -->
-        <h3 class="documentation__sous-titre" data-revele>Systèmes détaillés</h3>
+        <h3 class="documentation__sous-titre" data-revele data-carte>Systèmes détaillés</h3>
         <div class="fiches fiches--approfondies" data-cascade>
 
           <!-- D1 VANOS -->
-          <article class="fiche fiche--approfondie" id="fiche-vanos" data-fiche="vanos" data-revele>
+          <article class="fiche fiche--approfondie" data-carte id="fiche-vanos" data-fiche="vanos" data-revele>
             <p class="fiche__numero">Deep dive · 01</p>
             <h3>Le VANOS</h3>
             <p class="fiche__role">Un piston poussé par la pression d'huile glisse sur des cannelures hélicoïdales : en avançant, il fait tourner l'arbre à cames de quelques degrés par rapport à son pignon. Une électrovanne pilotée par le calculateur dose l'huile pour régler l'avance en continu.</p>
@@ -836,7 +839,7 @@
           </article>
 
           <!-- D2 DISA -->
-          <article class="fiche fiche--approfondie" id="fiche-disa" data-fiche="disa" data-revele>
+          <article class="fiche fiche--approfondie" data-carte id="fiche-disa" data-fiche="disa" data-revele>
             <p class="fiche__numero">Deep dive · 02</p>
             <h3>La DISA</h3>
             <p class="fiche__role">Un volet dans le collecteur d'admission change la longueur du chemin de l'air. Fermé, les conduits longs renforcent les pulsations d'air et remplissent mieux les cylindres à bas régime ; ouvert vers 4 000 tr/min, le chemin court favorise la puissance.</p>
@@ -853,7 +856,7 @@
           </article>
 
           <!-- D3 Thermostat piloté -->
-          <article class="fiche fiche--approfondie" id="fiche-thermostat" data-fiche="thermostat" data-revele>
+          <article class="fiche fiche--approfondie" data-carte id="fiche-thermostat" data-fiche="thermostat" data-revele>
             <p class="fiche__numero">Deep dive · 03</p>
             <h3>Le thermostat piloté</h3>
             <p class="fiche__role">Une capsule de cire ouvre le clapet quand le liquide est chaud. Sur le M54, une résistance chauffante commandée par le calculateur peut chauffer la cire pour ouvrir plus tôt : moteur plus frais en forte charge, plus chaud en croisière.</p>
@@ -881,7 +884,7 @@
           </article>
 
           <!-- D4 Pompe à air secondaire -->
-          <article class="fiche fiche--approfondie" id="fiche-air-secondaire" data-fiche="airsecondaire" data-revele>
+          <article class="fiche fiche--approfondie" data-carte id="fiche-air-secondaire" data-fiche="airsecondaire" data-revele>
             <p class="fiche__numero">Deep dive · 04</p>
             <h3>La pompe à air secondaire</h3>
             <p class="fiche__role">Au démarrage à froid, une pompe électrique souffle de l'air frais juste derrière les soupapes d'échappement pendant les premières minutes. L'oxygène ajouté brûle les imbrûlés et réchauffe les catalyseurs plus vite.</p>
@@ -909,7 +912,7 @@
           </article>
 
           <!-- D5 Sondes lambda -->
-          <article class="fiche fiche--approfondie" id="fiche-lambda" data-fiche="lambda" data-revele>
+          <article class="fiche fiche--approfondie" data-carte id="fiche-lambda" data-fiche="lambda" data-revele>
             <p class="fiche__numero">Deep dive · 05</p>
             <h3>Les sondes lambda</h3>
             <p class="fiche__role">Elles mesurent l'oxygène restant dans les gaz. La sonde amont bascule sans cesse entre pauvre (~0,1 V) et riche (~0,9 V) : le calculateur corrige l'injection en boucle fermée. La sonde aval, derrière un catalyseur sain, reste stable.</p>
@@ -936,7 +939,7 @@
           </article>
 
           <!-- D6 Papillon MDK -->
-          <article class="fiche fiche--approfondie" id="fiche-mdk" data-fiche="mdk" data-revele>
+          <article class="fiche fiche--approfondie" data-carte id="fiche-mdk" data-fiche="mdk" data-revele>
             <p class="fiche__numero">Deep dive · 06</p>
             <h3>Le papillon électronique MDK</h3>
             <p class="fiche__role">Pas de câble entre la pédale et le papillon : la pédale envoie sa position au calculateur, qui commande un moteur électrique sur le papillon (drive-by-wire). Pédale et papillon ont chacun deux capteurs de position.</p>
@@ -965,7 +968,7 @@
           </article>
 
           <!-- D7 Gicleurs d'huile -->
-          <article class="fiche fiche--approfondie" id="fiche-gicleurs" data-fiche="gicleurs" data-revele>
+          <article class="fiche fiche--approfondie" data-carte id="fiche-gicleurs" data-fiche="gicleurs" data-revele>
             <p class="fiche__numero">Deep dive · 07</p>
             <h3>Les gicleurs d'huile sous pistons</h3>
             <p class="fiche__role">De petits gicleurs projettent un jet d'huile sous chaque piston. L'huile évacue la chaleur de la tête du piston, la pièce la plus sollicitée thermiquement du moteur. <span class="a-preciser">[À VÉRIFIER : présence de gicleurs sur le M54B22]</span></p>
@@ -991,11 +994,11 @@
         </div>
 
         <!-- Châssis et équipements : les éléments ajoutés à la maquette -->
-        <h3 class="documentation__sous-titre" data-revele>Châssis et équipements</h3>
+        <h3 class="documentation__sous-titre" data-revele data-carte>Châssis et équipements</h3>
         <div class="fiches fiches--equipements" data-cascade>
 
           <!-- E1 Démarreur -->
-          <article class="fiche fiche--equipement" id="fiche-demarreur" data-fiche="demarreur" data-revele>
+          <article class="fiche fiche--equipement" data-carte id="fiche-demarreur" data-fiche="demarreur" data-revele>
             <p class="fiche__numero">Équipement · 01</p>
             <h3>Le démarreur</h3>
             <p class="fiche__role">Un moteur électrique alimenté par la batterie. À la clé, son solénoïde avance un petit pignon qui engrène sur la couronne du volant moteur : le vilebrequin est entraîné jusqu'à ce que le moteur démarre, puis le pignon se retire.</p>
@@ -1012,7 +1015,7 @@
           </article>
 
           <!-- E2 Alternateur -->
-          <article class="fiche fiche--equipement" id="fiche-alternateur" data-fiche="alternateur" data-revele>
+          <article class="fiche fiche--equipement" data-carte id="fiche-alternateur" data-fiche="alternateur" data-revele>
             <p class="fiche__numero">Équipement · 02</p>
             <h3>L'alternateur</h3>
             <p class="fiche__role">Entraîné par la courroie d'accessoires, il produit le courant électrique quand le moteur tourne : il recharge la batterie et alimente tout le véhicule. Son régulateur maintient la tension de charge autour de 14 V.</p>
@@ -1029,7 +1032,7 @@
           </article>
 
           <!-- E3 Direction assistée -->
-          <article class="fiche fiche--equipement" id="fiche-direction" data-fiche="direction" data-revele>
+          <article class="fiche fiche--equipement" data-carte id="fiche-direction" data-fiche="direction" data-revele>
             <p class="fiche__numero">Équipement · 03</p>
             <h3>La direction assistée</h3>
             <p class="fiche__role">La pompe, entraînée par la courroie, met l'huile de direction sous pression. Le boîtier de direction s'en sert pour réduire l'effort au volant, puis la barre et les biellettes orientent les roues avant.</p>
@@ -1046,7 +1049,7 @@
           </article>
 
           <!-- E4 Trains roulants -->
-          <article class="fiche fiche--equipement" id="fiche-suspension" data-fiche="suspension" data-revele>
+          <article class="fiche fiche--equipement" data-carte id="fiche-suspension" data-fiche="suspension" data-revele>
             <p class="fiche__numero">Équipement · 04</p>
             <h3>Trains roulants et suspensions</h3>
             <p class="fiche__role">À l'avant, des jambes de force (amortisseur et ressort) ; à l'arrière, un essieu multibras monté sur berceau. Les trains guident les roues, absorbent les irrégularités et gardent les pneus en contact avec la route.</p>
@@ -1063,7 +1066,7 @@
           </article>
 
           <!-- E5 Roues et freinage -->
-          <article class="fiche fiche--equipement" id="fiche-freinage" data-fiche="freinage" data-revele>
+          <article class="fiche fiche--equipement" data-carte id="fiche-freinage" data-fiche="freinage" data-revele>
             <p class="fiche__numero">Équipement · 05</p>
             <h3>Roues et freinage</h3>
             <p class="fiche__role">Chaque roue porte un disque qu'un étrier hydraulique vient serrer au freinage. Les roues arrière sont motrices, les roues avant directrices. Comme sur ma voiture : jantes 17 pouces à doubles branches et pneus 235/45 R17 ; disques ventilés à l'avant, bloc ABS dans le compartiment moteur.</p>
@@ -1080,10 +1083,10 @@
           </article>
 
           <!-- E6 Carrosserie -->
-          <article class="fiche fiche--equipement" id="fiche-carrosserie" data-fiche="carrosserie" data-revele>
+          <article class="fiche fiche--equipement" data-carte id="fiche-carrosserie" data-fiche="carrosserie" data-revele>
             <p class="fiche__numero">Équipement · 06</p>
             <h3>La carrosserie E39</h3>
-            <p class="fiche__role">Berline E39 phase 2 : 4,78 m de long, 1,80 m de large, 1,44 m de haut et 2,83 m d'empattement. Sur la maquette : bleu topaze, angel eyes, calandre double haricot, feux arrière rouge et blanc de phase 2 et attelage.</p>
+            <p class="fiche__role">Berline E39 phase 2 : 4,78 m de long, 1,80 m de large, 1,44 m de haut et 2,83 m d'empattement. Sur la maquette : bleu topaze, angel eyes, calandre double haricot, feux arrière rouge et blanc de phase 2.</p>
             <button class="fiche__ouvrir" type="button">Ouvrir la fiche <svg class="icone" aria-hidden="true"><use href="#i-fleche"/></svg></button>
             <div class="fiche__detail">
               <div class="fiche__mini3d" data-mini3d="carrosserie"></div>
@@ -1094,21 +1097,6 @@
               </ul>
             </div>
           </article>
-        </div>
-      </div>
-    </section>
-
-    <!-- ══ Sous le capot : le capot s'ouvre au fil du défilement (piloté par moteur-3d.js) ══ -->
-    <section class="capot-intro" id="capot" data-etape="Sous le capot" aria-labelledby="capot-titre">
-      <div class="capot-intro__scene">
-        <div class="capot-intro__ecran">
-          <div class="capot-intro__vue" id="capot-scene" aria-hidden="true"></div>
-          <div class="conteneur capot-intro__texte">
-            <p class="surtitre">Sous le capot</p>
-            <h2 class="titre-section" id="capot-titre">On ouvre <em>le capot.</em></h2>
-            <p>Le M54B22 tel qu'il apparaît capot levé : cache moteur BMW, boîte à air, vase d'expansion, bloc ABS.</p>
-          </div>
-          <p class="capot-intro__indice" aria-hidden="true">Continuez à défiler</p>
         </div>
       </div>
     </section>
@@ -1173,6 +1161,9 @@
             <div class="moteur3d__commandes">
               <button class="bouton magnetique" id="bouton-eclate" type="button" aria-pressed="false">
                 <span class="bouton__texte"><svg aria-hidden="true"><use href="#i-eclate"/></svg><span data-libelle>VUE ÉCLATÉE</span></span>
+              </button>
+              <button class="bouton bouton--clair" id="bouton-rotation" type="button" aria-pressed="false">
+                <span class="bouton__texte"><svg aria-hidden="true"><use href="#i-rotation"/></svg><span data-libelle>FIGER LA ROTATION</span></span>
               </button>
               <button class="bouton bouton--clair" id="bouton-voiture" type="button" aria-pressed="true">
                 <span class="bouton__texte"><svg aria-hidden="true"><use href="#i-voiture"/></svg><span data-libelle>MASQUER LA VOITURE</span></span>
@@ -1252,6 +1243,7 @@
           <div class="encyclo__vues" role="group" aria-label="Vue de l'encyclopédie">
             <button class="bouton bouton--clair" type="button" data-encyclo-vue="exterieur" aria-pressed="true"><span class="bouton__texte"><svg aria-hidden="true"><use href="#i-exterieur"/></svg>Extérieur</span></button>
             <button class="bouton bouton--clair" type="button" data-encyclo-vue="interieur" aria-pressed="false"><span class="bouton__texte"><svg aria-hidden="true"><use href="#i-interieur"/></svg>Intérieur</span></button>
+            <button class="bouton bouton--clair" type="button" data-encyclo-base><span class="bouton__texte"><svg aria-hidden="true"><use href="#i-recentrer"/></svg>Vue de base</span></button>
           </div>
           <div class="encyclo__carte" id="encyclo-carte" hidden>
             <button class="encyclo__fermer" type="button" data-fermer aria-label="Fermer"><svg class="icone" aria-hidden="true"><use href="#i-fermer"/></svg></button>
@@ -1400,6 +1392,10 @@
           <figure class="fiche-piece__vue">
             <div class="fiche-piece__scene fiche-piece__scene--seule" id="fiche-piece-seule"><p class="fiche-piece__repli">La vue 3D n'est pas disponible.</p></div>
             <figcaption>La pièce seule · clic gauche : tourner · clic droit : déplacer · molette : zoomer</figcaption>
+          </figure>
+          <figure class="fiche-piece__vue" id="fiche-piece-photo" hidden>
+            <div class="fiche-piece__scene fiche-piece__scene--photo"><img id="fiche-piece-image" alt="" decoding="async" /></div>
+            <figcaption>Photo réelle</figcaption>
           </figure>
         </div>
         <p class="fiche-piece__description" id="fiche-piece-description"></p>
