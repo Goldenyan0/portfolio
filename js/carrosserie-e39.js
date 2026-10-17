@@ -29,6 +29,8 @@ const INTERIEUR = ['Object_4', 'Object_5', 'Object_6', 'Object_8', 'Object_10', 
 // Feux arrière (tous fixés à la carrosserie)
 const FEUX = ['Object_64', 'Object_42', 'Object_50', 'Object_59', 'Object_41', 'Object_63', 'Object_58'];
 const VITRES = ['Object_62', 'Object_26'];
+// Derrière la calandre (ventilateur, cadre du bouclier) : restent sur la voiture, pas sur le capot
+const DERRIERE_CALANDRE = ['Object_31', 'Object_51002', 'Object_51003', 'Object_51004'];
 
 // "Object_33_body_0" → "Object_33"
 const prefixe = (nom) => (nom.match(/^Object_\d+/) || [''])[0];
@@ -163,12 +165,18 @@ function etiqueter(nom, positions, index, nbTriangles) {
     }
     // Feux arrière : fixés à la carrosserie, ils ne montent pas avec la malle
     if (dans(FEUX, nom) && z > 1.7 && y > 0.45) return 'feuxAr';
-    if (surCapot(x, y, z)) return 'capot';
+    if (surCapot(x, y, z) && !dans(DERRIERE_CALANDRE, nom)) return 'capot';
     if (surCoffre(x, y, z) && !interieur) return 'coffre';
     // Doublure noire sous le capot (le reste de ce maillage : passages de roue, dessous)
     if (pref === 'Object_25' && z < -0.95 && z > -2.22 && y > 0.55 && Math.abs(x) < 0.8) return 'capot';
     // Dessus du caisson « frame » : il fermait la baie moteur
     if (pref === 'Object_43' && z > -2.05 && z < -0.95 && y > 0.45) return 'retire';
+    // Bas des portes : dans le modèle, la tôle sous la porte (au-dessus du bas de caisse) fait partie
+    // de la coque ; elle suit la porte (passage de roue arrière exclu)
+    if (pref === 'Object_33' && y > 0.14 && y < 0.37 && Math.abs(x) > 0.78 && z < 0.98) {
+      const p = zonePorte(x, y, z, 0.78, 0, 0.14);
+      if (p) return p;
+    }
     // Coque : l'aile avant entoure le projecteur
     if (pref === 'Object_33' && z < -1.8 && y >= 0.33 && Math.abs(x) > 0.55) return 'aileAv' + (x < 0 ? 'G' : 'D');
     return region(x, y, z, interieur);
