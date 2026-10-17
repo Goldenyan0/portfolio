@@ -3,7 +3,7 @@
    « BMW E39 Free » de Black Snow (licence CC BY 4.0, crédit dans le README),
    dans sa version allégée modeles/bmw-e39-web.glb (compression meshopt).
    Le modèle d'origine est une M5 ; à l'import, on le ramène à ma 520i :
-   - badges M5 retirés, badge « 520i » ajouté à droite du coffre (comme sur la voiture)
+   - badges M5 retirés
    - échappement : une seule sortie, à gauche
    - roues M5 retirées : les roues 17 pouces de la maquette les remplacent
    - pédales retirées : la maquette a ses trois pédales
@@ -159,7 +159,7 @@ function etiqueter(nom, positions, index, nbTriangles) {
     const [x, y, z] = centre(t);
     // (les seuils, tout en bas, restent sur la caisse)
     if (portes === 'seules' && y >= 0.17) return (z < Z_PORTES ? 'porteAv' : 'porteAr') + (x < 0 ? 'G' : 'D');
-    if (portes === 'oui') {
+    if (portes === 'oui' && !(!interieur && y > 1.05 && z > 1.0 && Math.abs(x) < 0.6)) {
       const p = interieur ? (y < 0.95 && zonePorte(x, y, z, 0.70, 0, basPorte)) : zonePorte(x, y, z, ecartPorte, 0, basPorte);
       if (p) return p;
     }
@@ -173,7 +173,7 @@ function etiqueter(nom, positions, index, nbTriangles) {
     if (pref === 'Object_43' && z > -2.05 && z < -0.95 && y > 0.45) return 'retire';
     // Bas des portes : dans le modèle, la tôle sous la porte (au-dessus du bas de caisse) fait partie
     // de la coque ; elle suit la porte (passage de roue arrière exclu)
-    if (pref === 'Object_33' && y > 0.14 && y < 0.37 && Math.abs(x) > 0.78 && z < 0.98) {
+    if (pref === 'Object_33' && y > 0.14 && y < 0.37 && Math.abs(x) > 0.78 && z < 0.98 && Math.hypot(y - 0.005, z - 1.545) > 0.69) {
       const p = zonePorte(x, y, z, 0.78, 0, 0.14);
       if (p) return p;
     }
@@ -197,6 +197,11 @@ function etiqueter(nom, positions, index, nbTriangles) {
     else if (pref === 'Object_14' && b.max[1] < 0.4 && b.min[2] > -0.96 && b.max[2] < -0.68 && b.max[0] < -0.2) label = 'retire';
     else if (dans(ECHAPPEMENT, nom)) label = cx > -0.43 ? 'retire' : 'faceArriere';
     else if (pref === 'Object_44' && b.max[1] < 0.4) label = 'retire';           // inserts des baguettes (M5)
+    // Enjoliveur noir du montant central : il fait partie du cadre de vitre de la porte avant
+    else if (pref === 'Object_56' && b.min[2] > 0.1 && b.max[2] < 0.4 && b.min[1] > 0.7 && b.max[1] > 1.1) label = 'porteAv' + (cx < 0 ? 'G' : 'D');
+    // Joint du pare-brise et du toit (d'un côté à l'autre) et petit déflecteur du montant arrière : sur la caisse
+    else if (pref === 'Object_61' && b.min[0] < -0.5 && b.max[0] > 0.5) portes = 'non';
+    else if (pref === 'Object_58' && b.min[1] > 1.0 && b.min[2] > 1.05 && b.max[2] < 1.25) portes = 'non';
     else if (pref === 'Object_65') label = 'caisse';                             // grille d'auvent
     else if (pref === 'Object_40' || pref === 'Object_55') label = 'habitacle';   // garnitures de montants
     else if (pref === 'Object_29') {
@@ -248,38 +253,6 @@ function etiqueter(nom, positions, index, nbTriangles) {
 function signature(m) {
   return [m.type, m.color && m.color.getHexString(), m.roughness, m.metalness, m.map && m.map.uuid,
     m.transparent, m.opacity, m.side, m.emissive && m.emissive.getHexString()].join('|');
-}
-
-
-/* --------------------------------------------------------------------------
-   Badge « 520i » : texte chromé sur une plaque transparente
-   -------------------------------------------------------------------------- */
-function badge520i(THREE) {
-  const toile = document.createElement('canvas');
-  toile.width = 512; toile.height = 128;
-  const ctx = toile.getContext('2d');
-  // Lettres droites et géométriques (comme le badge d'origine), en chrome : dégradé vertical
-  // clair / sombre / clair avec un reflet net au milieu, et un fin liseré sombre pour le relief
-  ctx.font = '600 104px "Space Grotesk", Arial, Helvetica, sans-serif';
-  ctx.textAlign = 'center';
-  ctx.textBaseline = 'middle';
-  const chrome = ctx.createLinearGradient(0, 18, 0, 110);
-  chrome.addColorStop(0, '#ffffff');
-  chrome.addColorStop(0.35, '#c9ced6');
-  chrome.addColorStop(0.48, '#5c6370');
-  chrome.addColorStop(0.52, '#f2f4f7');
-  chrome.addColorStop(0.75, '#9aa1ab');
-  chrome.addColorStop(1, '#e9ecf0');
-  ctx.lineJoin = 'round';
-  ctx.lineWidth = 6;
-  ctx.strokeStyle = 'rgba(20, 22, 28, 0.55)';
-  ctx.strokeText('520i', 256, 68);
-  ctx.fillStyle = chrome;
-  ctx.fillText('520i', 256, 66);
-  const texture = new THREE.CanvasTexture(toile);
-  texture.colorSpace = THREE.SRGBColorSpace;
-  texture.anisotropy = 8;
-  return new THREE.MeshStandardMaterial({ map: texture, transparent: true, metalness: 0.35, roughness: 0.3, emissive: 0x5a5f68, emissiveMap: texture, depthWrite: false });
 }
 
 
@@ -371,12 +344,6 @@ export async function chargerCarrosserie(THREE, outils, url, versMaquette, peint
     if (!g) return;
     (panneaux[lot.panneau] = panneaux[lot.panneau] || []).push({ geometrie: g, materiau: lot.materiau, peinture: lot.materiau === peinture });
   });
-
-  // Badge « 520i » à droite du coffre, à la place du badge M5 (x ≈ 0,31 → 0,44 m)
-  const plaque = new THREE.PlaneGeometry(0.13, 0.0325);
-  plaque.applyMatrix4(new THREE.Matrix4().makeTranslation(0.375, 0.705, 2.318));
-  plaque.applyMatrix4(versMaquette);
-  (panneaux.coffre = panneaux.coffre || []).push({ geometrie: plaque, materiau: badge520i(THREE), peinture: false });
 
   gltf.scene.traverse((o) => { if (o.isMesh) o.geometry.dispose(); });
   return panneaux;

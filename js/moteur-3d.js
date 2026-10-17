@@ -2176,10 +2176,14 @@ const POINTS_ENCYCLO = [
   { id: 'jantes', nom: 'Jantes 17 pouces', texte: 'Jantes 17 pouces à branches doubles, pneus 235/45 R17. Derrière les branches : le disque ventilé et son étrier.', ancre: depuisGlb(-0.83, 0.155, -1.52), vue: [-0.4, 0.2, 1], distance: 14 },
   { id: 'essuieglaces', nom: 'Essuie-glaces', texte: 'Deux essuie-glaces au pied du pare-brise, devant la grille d\'auvent.', ancre: depuisGlb(0, 0.8, -1.0), vue: [-1, 0.9, 0.2], distance: 12 },
   { id: 'feux', nom: 'Feux arrière', texte: 'Feux de phase 2, rouge et blanc : la partie extérieure est sur l\'aile, la partie intérieure sur le couvercle de coffre.', ancre: depuisGlb(-0.6, 0.62, 2.22), vue: [1, 0.2, 0.5], distance: 11 },
-  { id: 'badge', nom: 'Logo et badge 520i', texte: 'Le logo BMW au centre du coffre et le badge « 520i » à droite, comme sur ma voiture.', ancre: depuisGlb(0.375, 0.705, 2.32), vue: [1, 0.3, -0.25], distance: 8 },
   { id: 'echappement', nom: 'Sortie d\'échappement', texte: 'Une sortie unique, à gauche, discrète sous le bouclier arrière.', ancre: depuisGlb(-0.53, 0.12, 2.3), vue: [1, -0.05, 0.45], distance: 8 },
   { id: 'hofmeister', nom: 'Le coude Hofmeister', texte: 'La vitre arrière se termine par un petit crochet vers l\'avant : c\'est le « coude Hofmeister », signature de presque toutes les BMW depuis les années 1960, du nom du designer Wilhelm Hofmeister.', ancre: depuisGlb(-0.8, 1.0, 1.2), vue: [0.25, 0.25, 1], distance: 9 },
-  { id: 'trappe', nom: 'Trappe à carburant', texte: 'Sur l\'aile arrière droite. Derrière elle, la goulotte descend vers le réservoir de 70 L installé sous la banquette arrière.', ancre: depuisGlb(0.86, 0.68, 1.55), vue: [0.35, 0.25, -1], distance: 9 }
+  { id: 'trappe', nom: 'Trappe à carburant', texte: 'Sur l\'aile arrière droite. Derrière elle, la goulotte descend vers le réservoir de 70 L installé sous la banquette arrière.', ancre: depuisGlb(0.86, 0.68, 1.55), vue: [0.35, 0.25, -1], distance: 9 },
+  { id: 'batterie', nom: 'Batterie dans le coffre', texte: 'Sur la E39, la batterie n\'est pas sous le capot : elle est logée à droite du coffre, sous le plancher. Le poids est mieux réparti entre l\'avant et l\'arrière.', ancre: depuisGlb(0.5, 0.55, 1.95), vue: [1, 0.5, -0.4], distance: 9 },
+  { id: 'outils', nom: 'Trousse à outils', texte: 'Fixée sous le couvercle du coffre : elle se rabat à l\'ouverture et reste à portée de main sans vider le coffre.', ancre: depuisGlb(0, 0.82, 2.0), vue: [1, 0.45, 0.2], distance: 9 },
+  { id: 'secours', nom: 'Roue de secours', texte: 'Sous le plancher du coffre, à plat dans son logement.', ancre: depuisGlb(0, 0.45, 1.9), vue: [1, 0.6, 0.05], distance: 10 },
+  { id: 'antenne', nom: 'Antenne dans la lunette', texte: 'Pas d\'antenne de toit sur la berline : les fils de la radio sont intégrés à la lunette arrière, avec ceux du dégivrage.', ancre: depuisGlb(0, 1.02, 1.45), vue: [1, 0.6, 0.1], distance: 10 },
+  { id: 'levage', nom: 'Points de levage', texte: 'Quatre points renforcés sous les bas de caisse, derrière les roues avant et devant les roues arrière : c\'est là que se place le cric.', ancre: depuisGlb(-0.85, 0.1, -1.1), vue: [-0.2, 0.05, 1], distance: 10 }
 ];
 // Habitacle : les points de la vue intérieure reprennent les fiches des pièces (nom et description) ;
 // leur repère est un point de la maquette (volant, patins des pédales, levier, planche de bord)
@@ -2221,6 +2225,18 @@ function demarrer() {
   monde.add(racine, fluides.groupe);
   scene.add(monde);
   const listePieces = Object.values(pieces);
+
+  // Caisse suspendue : tout sauf les roues, disques et étriers bascule autour de l'essieu arrière
+  const suspension = { pivot: new THREE.Group(), vitesse: 0, accel: 0 };
+  {
+    const interne = new THREE.Group();
+    suspension.pivot.position.set(X_AR, Y_ROUE, 0);
+    interne.position.set(-X_AR, -Y_ROUE, 0);
+    racine.children.slice().forEach((p) => { if (!/^(roue|disque|etrier)/.test(p.name)) interne.add(p); });
+    interne.add(fluides.groupe);
+    suspension.pivot.add(interne);
+    racine.add(suspension.pivot);
+  }
 
   // Braquage : chaque roue avant, son disque et son étrier pivotent autour du centre de la roue
   const braquage = { angle: 0, pivots: [] };
@@ -3413,7 +3429,16 @@ function demarrer() {
       }
       if (pommeauModele) { pommeauModele.rotation.x = meca.levier.rotation.x * 0.6; pommeauModele.rotation.z = meca.levier.rotation.z * 0.6; }
       majCompteur();
-      if (sim.etat.roues > 0.001) goudron.material.map.offset.x -= sim.etat.roues * R_PNEU / 10 * dt;
+      const vitesseReelle = regimeDe(sim.etat.roues) * 2.02 / 60;      // m/s, comme le compteur
+      if (vitesseReelle > 0.01) goudron.material.map.offset.x -= vitesseReelle * S_GLB / 10 * dt;
+      // Cabrage à l'accélération, plongée au freinage et aux passages (lissé, ±1,4°)
+      if (dt > 0) {
+        const a = (vitesseReelle - suspension.vitesse) / dt;
+        suspension.vitesse = vitesseReelle;
+        suspension.accel += (a - suspension.accel) * Math.min(1, dt * 4);
+        const cible = THREE.MathUtils.clamp(-0.005 * suspension.accel, -0.025, 0.025) * Math.sign(X_AR - X_AV);
+        suspension.pivot.rotation.z += (cible - suspension.pivot.rotation.z) * Math.min(1, dt * 3);
+      }
       vitesses = { moteur: omega(sim.etat.regime) * 0.35, carburant: tourne ? 0.6 + sim.etat.charge * 0.9 : 0 };
       afficherSimulation();
       anime = !mouvementReduit && (controles.autoRotate || tourne || sim.etat.actif);
