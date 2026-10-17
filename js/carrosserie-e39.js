@@ -157,6 +157,9 @@ function etiqueter(nom, positions, index, nbTriangles) {
   // d'une garniture qui n'appartient qu'aux portes), 'non'
   const regionTriangle = (t, portes) => {
     const [x, y, z] = centre(t);
+    // Enjoliveur du montant central : moitié avant sur la porte avant, moitié arrière sur la porte arrière
+    // (la rainure du milieu, entre les deux portes, reste avec la porte avant ; elle suit l'inclinaison du montant)
+    if (portes === 'montantB') return (z < 0.2353 + (y - 0.75) * 0.2255 ? 'porteAv' : 'porteAr') + (x < 0 ? 'G' : 'D');
     // (les seuils, tout en bas, restent sur la caisse)
     if (portes === 'seules' && y >= 0.17) return (z < Z_PORTES ? 'porteAv' : 'porteAr') + (x < 0 ? 'G' : 'D');
     if (portes === 'oui' && !(!interieur && y > 1.05 && z > 1.0 && Math.abs(x) < 0.6)) {
@@ -197,8 +200,10 @@ function etiqueter(nom, positions, index, nbTriangles) {
     else if (pref === 'Object_14' && b.max[1] < 0.4 && b.min[2] > -0.96 && b.max[2] < -0.68 && b.max[0] < -0.2) label = 'retire';
     else if (dans(ECHAPPEMENT, nom)) label = cx > -0.43 ? 'retire' : 'faceArriere';
     else if (pref === 'Object_44' && b.max[1] < 0.4) label = 'retire';           // inserts des baguettes (M5)
-    // Enjoliveur noir du montant central : il fait partie du cadre de vitre de la porte avant
-    else if (pref === 'Object_56' && b.min[2] > 0.1 && b.max[2] < 0.4 && b.min[1] > 0.7 && b.max[1] > 1.1) label = 'porteAv' + (cx < 0 ? 'G' : 'D');
+    // Enjoliveur noir du montant central : partagé entre les cadres de vitre des deux portes
+    else if (pref === 'Object_56' && b.min[2] > 0.1 && b.max[2] < 0.4 && b.min[1] > 0.7 && b.max[1] > 1.1) portes = 'montantB';
+    // Gicleurs de lave-glace : posés sur le capot, ils se lèvent avec lui
+    else if (Math.abs(Math.abs(cx) - 0.201) < 0.02 && b.centre[1] > 0.76 && b.centre[1] < 0.78 && b.centre[2] > -1.3 && b.centre[2] < -1.27 && b.max[0] - b.min[0] < 0.03) label = 'capot';
     // Joint du pare-brise et du toit (d'un côté à l'autre) et petit déflecteur du montant arrière : sur la caisse
     else if (pref === 'Object_61' && b.min[0] < -0.5 && b.max[0] > 0.5) portes = 'non';
     else if (pref === 'Object_58' && b.min[1] > 1.0 && b.min[2] > 1.05 && b.max[2] < 1.25) portes = 'non';
@@ -226,6 +231,13 @@ function etiqueter(nom, positions, index, nbTriangles) {
     // Composante à cheval sur plusieurs panneaux : triangle par triangle
     b.triangles.forEach((t) => { labels[t] = regionTriangle(t, portes); });
   });
+  // Petite baguette au bord du pavillon, au-dessus de la porte avant : elle partait avec la porte
+  if (pref === 'Object_56') {
+    for (let t = 0; t < nbTriangles; t++) {
+      const [x, y, z] = centre(t);
+      if (y > 1.14 && Math.abs(x) > 0.54 && Math.abs(x) < 0.58 && z > -0.3 && z < -0.12) labels[t] = 'retire';
+    }
+  }
   // Garnitures intérieures qui dépassent en avant du tablier : elles se verraient dans la baie moteur
   if (interieur) {
     for (let t = 0; t < nbTriangles; t++) {

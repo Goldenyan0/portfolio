@@ -5,5 +5,6 @@ Ces pièces n'ont pas de photo produit fiable en ligne :
 - Ailes arrière (custodes) (id: custode, catégorie: Carrosserie et équipements)
 - Pavillon (id: toit, catégorie: Carrosserie et équipements)
 - Lunette arrière (id: lunette, catégorie: Carrosserie et équipements)
+- Roue de secours (id: roueSecours, catégorie: Suspension et roues)
 
 Place chaque photo dans photos-pieces/<dossier>/<id>.png (fond uni de préférence).

@@ -133,7 +133,9 @@ const MATERIAUX = {
   feuRouge: { color: 0xc81e1e, metalness: 0.2, roughness: 0.3, transparent: true, opacity: 0.85 },
   feuBlanc: { color: 0xf3f4f6, metalness: 0.2, roughness: 0.3, transparent: true, opacity: 0.85 },
   angelEyes: { color: 0xfde68a, emissive: 0xfbbf24, emissiveIntensity: 0.9, metalness: 0, roughness: 0.4 },
-  garniture: { color: 0x1c1c22, metalness: 0.1, roughness: 0.6 }
+  garniture: { color: 0x1c1c22, metalness: 0.1, roughness: 0.6 },
+  batterie: { color: 0xe4e6ea, metalness: 0, roughness: 0.55 },
+  bleuVarta: { color: 0x2c5aa0, metalness: 0.1, roughness: 0.4 }
 };
 
 // Chaque maillage reçoit sa propre copie du matériau : on peut ainsi
@@ -1151,6 +1153,27 @@ function construireMaquette() {
   roue('roueAvG', 'Roue avant gauche', 'freinage', X_AV, 1, [0, 0, 5]);
   roue('roueAvD', 'Roue avant droite', 'freinage', X_AV, -1, [0, 0, -5]);
 
+  // --- Roue de secours : à plat sous le plancher du coffre ---
+  const secours = ajouter(piece('roueSecours', 'Roue de secours', 'freinage', [6, 5, 0]));
+  const roueAPlat = new THREE.Group();
+  roueAPlat.position.fromArray(depuisGlb(0, 0.36, 1.92));
+  roueAPlat.rotation.x = Math.PI / 2;
+  const profilSecours = [[R_JANTE + 0.02, -1.2], [3.25, -1.36], [R_PNEU, -0.85], [R_PNEU, 0.85], [3.25, 1.36], [R_JANTE + 0.02, 1.2]]
+    .map(([r, h]) => new THREE.Vector2(r, h));
+  roueAPlat.add(maillage(axeZ(new THREE.LatheGeometry(profilSecours, 48)), 'pneu'));
+  roueAPlat.add(maillage(axeZ(tubeOuvert(R_JANTE - 0.04, 2.3, 40)), 'aluOuvert'));
+  roueAPlat.add(place(maillage(axeZ(cylindre(R_JANTE - 0.05, 0.2, 40)), 'jante'), 0, 0, 0.6));
+  roueAPlat.add(place(maillage(axeZ(cylindre(0.62, 0.3, 32)), 'jante'), 0, 0, 0.82));
+  secours.add(roueAPlat);
+
+  // --- Batterie Varta E11 (12 V, 74 Ah, 278 × 175 × 190 mm) : à droite du coffre, sous le plancher ---
+  const batterie = ajouter(piece('batterie', 'Batterie (Varta E11, 74 Ah)', 'alternateur', [4, 4, -4]));
+  const [bx, by, bz] = depuisGlb(0.48, 0.335, 1.98);
+  batterie.add(place(maillage(boite(mm(278), mm(165), mm(175), mm(5)), 'batterie'), bx, by - mm(12), bz));
+  batterie.add(place(maillage(boite(mm(282), mm(28), mm(179), mm(4)), 'batterie'), bx, by + mm(81), bz));        // couvercle
+  batterie.add(place(maillage(boite(mm(210), mm(70), mm(2), mm(1)), 'bleuVarta'), bx, by - mm(10), bz + mm(88.5)));  // étiquette
+  [-1, 1].forEach((c) => batterie.add(place(maillage(cylindre(mm(9), mm(18), 12), c > 0 ? 'rouge' : 'conduite'), bx + c * mm(105), by + mm(104), bz - mm(55))));
+
 
   /* ---------------- Freinage : 4 disques (ventilés à l'avant), étriers, ABS ---------------- */
 
@@ -1976,7 +1999,7 @@ const PIECES_PAR_FICHE = {
   mdk: ['papillon'],
   gicleurs: ['pistons', 'vilebrequin', 'pompeHuile'],
   demarreur: ['demarreur', 'volant'],
-  alternateur: ['alternateur', 'poulies'],
+  alternateur: ['alternateur', 'poulies', 'batterie'],
   direction: ['pompeDA', 'bocalDA', 'boitierDirection', 'colonneDirection'],
   suspension: ['berceauAv', 'brasAv', 'jambesAv', 'berceauAr', 'brasAr', 'ressortsAr', 'amortisseursAr'],
   freinage: ['roueAvG', 'roueAvD', 'roueArG', 'roueArD'].concat(FREINS),
@@ -1995,8 +2018,8 @@ const GROUPES = {
   transmission: ['volant', 'embrayage', 'boite', 'arbre', 'pont', 'demiArbres'],
   carburant: ['reservoir', 'pompeEssence', 'filtreEssence', 'duriteEssence', 'rampe', 'injecteurs'],
   freinage: FREINS.concat(PEDALES),
-  chassis: PIECES_PAR_FICHE.suspension.concat(['boitierDirection', 'colonneDirection', 'roueAvG', 'roueAvD', 'roueArG', 'roueArD']),
-  accessoires: ['poulies', 'alternateur', 'pompeDA', 'bocalDA', 'demarreur', 'laveGlace']
+  chassis: PIECES_PAR_FICHE.suspension.concat(['boitierDirection', 'colonneDirection', 'roueAvG', 'roueAvD', 'roueArG', 'roueArD', 'roueSecours']),
+  accessoires: ['poulies', 'alternateur', 'pompeDA', 'bocalDA', 'demarreur', 'laveGlace', 'batterie']
 };
 
 // Visite guidée : fluides montrés et mécanique en mouvement selon la fiche
@@ -2174,12 +2197,13 @@ const POINTS_ENCYCLO = [
   { id: 'retroviseurs', nom: 'Rétroviseurs', texte: 'Rétroviseurs extérieurs à coque couleur carrosserie, fixés sur les portes avant.', ancre: depuisGlb(-0.93, 0.82, -0.62), vue: [-0.8, 0.35, 0.6], distance: 9 },
   { id: 'poignees', nom: 'Poignées de porte', texte: 'Poignées couleur carrosserie ; la serrure à clé est sur la porte du conducteur, à gauche.', ancre: depuisGlb(-0.885, 0.62, 0.08), vue: [0, 0.2, 1], distance: 8 },
   { id: 'jantes', nom: 'Jantes 17 pouces', texte: 'Jantes 17 pouces à branches doubles, pneus 235/45 R17. Derrière les branches : le disque ventilé et son étrier.', ancre: depuisGlb(-0.83, 0.155, -1.52), vue: [-0.4, 0.2, 1], distance: 14 },
+  { id: 'gicleurs', nom: 'Gicleurs de lave-glace', texte: 'Deux gicleurs posés sur le capot, devant le pare-brise : ils se lèvent avec lui. Ils sont alimentés par le réservoir de lave-glace, à l\'avant droit de la baie moteur.', ancre: depuisGlb(0.2, 0.78, -1.285), vue: [-1, 0.7, 0.25], distance: 9 },
   { id: 'essuieglaces', nom: 'Essuie-glaces', texte: 'Deux essuie-glaces au pied du pare-brise, devant la grille d\'auvent.', ancre: depuisGlb(0, 0.8, -1.0), vue: [-1, 0.9, 0.2], distance: 12 },
   { id: 'feux', nom: 'Feux arrière', texte: 'Feux de phase 2, rouge et blanc : la partie extérieure est sur l\'aile, la partie intérieure sur le couvercle de coffre.', ancre: depuisGlb(-0.6, 0.62, 2.22), vue: [1, 0.2, 0.5], distance: 11 },
   { id: 'echappement', nom: 'Sortie d\'échappement', texte: 'Une sortie unique, à gauche, discrète sous le bouclier arrière.', ancre: depuisGlb(-0.53, 0.12, 2.3), vue: [1, -0.05, 0.45], distance: 8 },
   { id: 'hofmeister', nom: 'Le coude Hofmeister', texte: 'La vitre arrière se termine par un petit crochet vers l\'avant : c\'est le « coude Hofmeister », signature de presque toutes les BMW depuis les années 1960, du nom du designer Wilhelm Hofmeister.', ancre: depuisGlb(-0.8, 1.0, 1.2), vue: [0.25, 0.25, 1], distance: 9 },
   { id: 'trappe', nom: 'Trappe à carburant', texte: 'Sur l\'aile arrière droite. Derrière elle, la goulotte descend vers le réservoir de 70 L installé sous la banquette arrière.', ancre: depuisGlb(0.86, 0.68, 1.55), vue: [0.35, 0.25, -1], distance: 9 },
-  { id: 'batterie', nom: 'Batterie dans le coffre', texte: 'Sur la E39, la batterie n\'est pas sous le capot : elle est logée à droite du coffre, sous le plancher. Le poids est mieux réparti entre l\'avant et l\'arrière.', ancre: depuisGlb(0.5, 0.55, 1.95), vue: [1, 0.5, -0.4], distance: 9 },
+  { id: 'batterie', nom: 'Batterie dans le coffre', texte: 'Sur la E39, la batterie n\'est pas sous le capot : elle est logée à droite du coffre, sous le plancher. Le poids est mieux réparti entre l\'avant et l\'arrière. Sur ma voiture : une Varta E11, 12 V, 74 Ah, 680 A.', ancre: depuisGlb(0.48, 0.45, 1.98), vue: [1, 0.5, -0.4], distance: 9 },
   { id: 'outils', nom: 'Trousse à outils', texte: 'Fixée sous le couvercle du coffre : elle se rabat à l\'ouverture et reste à portée de main sans vider le coffre.', ancre: depuisGlb(0, 0.82, 2.0), vue: [1, 0.45, 0.2], distance: 9 },
   { id: 'secours', nom: 'Roue de secours', texte: 'Sous le plancher du coffre, à plat dans son logement.', ancre: depuisGlb(0, 0.45, 1.9), vue: [1, 0.6, 0.05], distance: 10 },
   { id: 'antenne', nom: 'Antenne dans la lunette', texte: 'Pas d\'antenne de toit sur la berline : les fils de la radio sont intégrés à la lunette arrière, avec ceux du dégivrage.', ancre: depuisGlb(0, 1.02, 1.45), vue: [1, 0.6, 0.1], distance: 10 },
@@ -3315,7 +3339,7 @@ function demarrer() {
       if (voyage.etape === sectionMaquette) return 'maquette';
       if (zoneEncyclo && voyage.etape === sectionEncyclo) return 'encyclo';
       if (avecVisite && voyage.etape === sectionVisite) return 'visite';
-      return 'aucun';
+      return zoneEncyclo ? 'encyclo' : 'aucun';
     }
     const h = window.innerHeight;
     const visibleA = (el, haut, bas) => { if (!el) return false; const z = el.getBoundingClientRect(); return z.top < h * haut && z.bottom > h * bas; };
@@ -3466,6 +3490,8 @@ function demarrer() {
         anime = true;
       }
       anime = anime || (!mouvementReduit && controles.autoRotate);
+      // Carte du tour vue de loin pendant le voyage : une image fixe suffit
+      if (mode === 'encyclo' && enVoyage() && voyage.etape !== sectionEncyclo) anime = false;
       if (mode === 'fiche') {
         const pulse = mouvementReduit ? 0.3 : 0.25 + Math.sin(performance.now() * 0.004) * 0.12;
         fiche.eclairees.forEach((p) => eclairer(p, pulse));
@@ -3885,6 +3911,14 @@ const premiere3d = Math.min(...SECTIONS_3D.map((id) => etapesPage.indexOf(docume
 const surCarte = (detail) => { if (detail && etapesPage.indexOf(detail.etape) >= premiere3d - 1) lancerUneFois(); };
 document.addEventListener('voyage:carte', (e) => surCarte(e.detail));
 surCarte(window.Site && window.Site.carteVoyage);
+// Voyage (grand écran) : la carte du tour du propriétaire est visible dès le premier écran ; la 3D
+// démarre dès que la page est chargée et que le navigateur est libre (sans retarder le premier affichage)
+// (pas sur petit écran : la carte n'y est pas visible d'emblée, et on y économise les données)
+if (document.documentElement.classList.contains('voyage') && window.innerWidth >= 720) {
+  const auRepos = () => (window.requestIdleCallback ? window.requestIdleCallback(lancerUneFois, { timeout: 2000 }) : setTimeout(lancerUneFois, 300));
+  if (document.readyState === 'complete') auRepos();
+  else window.addEventListener('load', auRepos, { once: true });
+}
 document.addEventListener('fichepiece:ouverte', (e) => {
   if (lancement) return;
   ficheEnAttente = e.detail;

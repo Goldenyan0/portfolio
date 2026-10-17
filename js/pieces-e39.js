@@ -84,7 +84,8 @@ window.PIECES_E39 = [
     categorie: 'Électricité et gestion', dossier: 'electricite', fiches: {
       dme: { nom: 'Calculateur moteur (MS43)', systeme: 'gestion', description: 'Le calculateur Siemens MS43 lit les capteurs et commande injecteurs, bobines, VANOS et papillon. Il est logé dans un boîtier à l\'arrière droit du compartiment.', maVoiture: ['Log complet MS430DS0 d\'environ 110 points le 08/10/2026 ; lectures INPA par câble K+DCAN.'] },
       alternateur: { nom: 'Alternateur', systeme: 'alternateur', description: 'Entraîné par la courroie, il produit le courant quand le moteur tourne : il recharge la batterie et alimente la voiture.' },
-      demarreur: { nom: 'Démarreur', systeme: 'demarreur', description: 'Un moteur électrique dont le pignon engrène sur la couronne du volant moteur pour lancer le moteur.' }
+      demarreur: { nom: 'Démarreur', systeme: 'demarreur', description: 'Un moteur électrique dont le pignon engrène sur la couronne du volant moteur pour lancer le moteur.' },
+      batterie: { nom: 'Batterie', systeme: 'alternateur', description: 'Logée à droite du coffre, sous le plancher : sur la E39, elle n\'est pas sous le capot. Elle alimente le démarreur et la voiture moteur coupé ; l\'alternateur la recharge.', maVoiture: ['Varta Dynamic SLI E11 : 12 V, 74 Ah, 680 A (EN), référence 574 012 068.'] }
     }
   },
   {
@@ -133,7 +134,8 @@ window.PIECES_E39 = [
       brasAr: { nom: 'Bras de suspension arrière', systeme: 'suspension', description: 'Plusieurs bras par roue (essieu multibras) tiennent précisément les roues arrière motrices.' },
       ressortsAr: { nom: 'Ressorts arrière', systeme: 'suspension', description: 'Ils portent le poids de l\'arrière de la voiture et absorbent les bosses.' },
       amortisseursAr: { nom: 'Amortisseurs arrière', systeme: 'suspension', description: 'Ils freinent les oscillations des ressorts pour garder les roues au contact de la route.' },
-      roue: { nom: 'Roues (jantes et pneus)', systeme: 'freinage', pieces: ['roueAvG', 'roueAvD', 'roueArG', 'roueArD'], description: 'Sur ma voiture : jantes 17 pouces à branches doubles et pneus 235/45 R17. Les roues arrière sont motrices, les roues avant directrices.' }
+      roue: { nom: 'Roues (jantes et pneus)', systeme: 'freinage', pieces: ['roueAvG', 'roueAvD', 'roueArG', 'roueArD'], description: 'Sur ma voiture : jantes 17 pouces à branches doubles et pneus 235/45 R17. Les roues arrière sont motrices, les roues avant directrices.' },
+      roueSecours: { nom: 'Roue de secours', systeme: 'freinage', description: 'Rangée à plat sous le plancher du coffre, dans son logement.' }
     }
   },
   {
@@ -155,7 +157,7 @@ window.PIECES_E39 = [
 ];
 
 // Pièces sans photo fiable (voir PHOTOS-MANQUANTES.txt) : leur fiche n'affiche pas de photo
-const SANS_PHOTO = ['custode', 'toit', 'lunette'];
+const SANS_PHOTO = ['custode', 'toit', 'lunette', 'roueSecours'];
 
 // Pièce de la maquette → fiche (une fiche peut regrouper une paire de pièces identiques)
 window.FICHE_DE_PIECE = {};
