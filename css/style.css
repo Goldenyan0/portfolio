@@ -2552,8 +2552,7 @@ html:not(.anime) .sch-trace--reel { stroke-dashoffset: 0; }
 /* Zoom : colonne de boutons ronds à droite */
 .moteur3d__zoom {
   position: absolute;
-  right: 14px; top: 50%;
-  transform: translateY(-50%);
+  right: 14px; top: 14px;
   display: grid;
   gap: 6px;
 }
@@ -2573,12 +2572,13 @@ html:not(.anime) .sch-trace--reel { stroke-dashoffset: 0; }
 /* Flèches de pivotement (maquette et tour du propriétaire) : petite croix discrète */
 .moteur3d.est-pret .moteur3d__pivot, .encyclo__pivot {
   position: absolute;
-  right: 16px;
-  top: calc(50% + 100px);
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%);
   z-index: 3;
   display: grid;
-  grid-template: repeat(3, 30px) / repeat(3, 30px);
-  opacity: 0.85;
+  grid-template: repeat(3, 32px) / repeat(3, 32px);
+  gap: 4px;
 }
 .moteur3d__pivot button {
   display: grid;
@@ -2599,10 +2599,14 @@ html:not(.anime) .sch-trace--reel { stroke-dashoffset: 0; }
 /* Monter / descendre : les deux coins du bas de la croix */
 .moteur3d__pivot [data-hauteur="1"] { grid-area: 1 / 3; }
 .moteur3d__pivot [data-hauteur="-1"] { grid-area: 3 / 3; }
+/* Zoom et recentrage dans le même pavé : + en haut à gauche, − en bas à gauche, recentrer au centre */
+.moteur3d__pivot [data-zoom="1"] { grid-area: 1 / 1; }
+.moteur3d__pivot [data-zoom="-1"] { grid-area: 3 / 1; }
+.moteur3d__pivot [data-zoom="0"] { grid-area: 2 / 2; }
 .moteur3d__pivot [data-hauteur] { border-radius: 8px; background: var(--violet-pale); color: var(--violet-fonce); }
 .moteur3d__pivot [data-hauteur="1"] svg { transform: rotate(-90deg); }
 .moteur3d__pivot [data-hauteur="-1"] svg { transform: rotate(90deg); }
-.encyclo__pivot { position: absolute; top: auto; right: 16px; bottom: 52px; z-index: 2; }
+.encyclo__pivot { position: absolute; top: auto; right: 16px; bottom: 52px; z-index: 2; transform: none; }
 .moteur3d:not(.est-pret) .moteur3d__zoom { display: none; }
 /* Mode accélération : rapport et jauge de régime simulés */
 .moteur3d__simulation {
@@ -2647,7 +2651,7 @@ html:not(.anime) .sch-trace--reel { stroke-dashoffset: 0; }
   .moteur3d__barre { position: static; padding: 4px 14px 16px; }
   .moteur3d__zoom { top: 12px; right: 10px; transform: none; }
   .encyclo__pivot { bottom: 120px; }
-  .moteur3d.est-pret .moteur3d__pivot { top: calc(var(--scene-h) - 100px); right: auto; bottom: auto; left: 50%; transform: translateX(-50%); }
+  .moteur3d.est-pret .moteur3d__pivot { top: calc(var(--scene-h) - 118px); right: auto; bottom: auto; left: 50%; transform: translateX(-50%); }
   .moteur3d__zoom button { width: 34px; height: 34px; }
   .moteur3d__fluides { top: calc(var(--scene-h) - 104px); right: auto; left: 12px; }
   .moteur3d__simulation { top: 56px; left: 12px; }
@@ -3194,7 +3198,7 @@ button.visite__compteur:hover, button.visite__compteur:focus-visible { border-co
 .moteur3d__calques label { display: flex; align-items: center; gap: 8px; font-size: 0.82rem; cursor: pointer; }
 .moteur3d__calques input { width: 16px; height: 16px; accent-color: var(--violet); }
 .moteur3d__calques-separateur { height: 1px; margin: 4px 0; background: var(--ligne); }
-.moteur3d__simulation { top: 16px; left: auto; right: 16px; }
+.moteur3d__simulation { top: 16px; left: auto; right: 64px; }
 .moteur3d__fluides { top: auto; bottom: 150px; }
 .moteur3d__fluide--retour { --couleur: #fdba74; }
 .moteur3d__fluides-note { max-width: 230px; font-size: 0.7rem; font-weight: 400; color: var(--encre-3); }
@@ -3269,6 +3273,24 @@ button.visite__compteur:hover, button.visite__compteur:focus-visible { border-co
   .fiche-piece__vues:has(#fiche-piece-photo:not([hidden])) { grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr) minmax(0, 1fr); }
   .fiche-piece__vues:has(#fiche-piece-photo:not([hidden])) > :first-child { grid-column: auto; }
 }
+
+/* Infobulle qui suit la souris sur les boutons des maquettes (e39.js) */
+.infobulle-souris {
+  position: fixed;
+  left: 0; top: 0;
+  z-index: 2147483000;
+  max-width: 260px;
+  padding: 7px 11px;
+  border-radius: 10px;
+  background: var(--encre);
+  color: #fff;
+  font-size: 0.78rem;
+  line-height: 1.35;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.15s;
+}
+.infobulle-souris.est-visible { opacity: 1; }
 
 /* Visionneuse : une photo de la page voiture en grand (e39.js) */
 .agrandissable { cursor: zoom-in; }
@@ -3417,6 +3439,37 @@ button.visite__compteur:hover, button.visite__compteur:focus-visible { border-co
 }
 .encyclo__scene { position: absolute; inset: 0; }
 .encyclo__points.est-masque { display: none; }
+/* Compteur de la simulation : deux cadrans façon combiné E39 (fond noir, chiffres blancs, zone rouge) */
+.moteur3d__compteur {
+  position: absolute;
+  top: 14px;
+  left: 50%;
+  z-index: 3;
+  width: min(320px, calc(100% - 120px));
+  padding: 6px 10px 2px;
+  border-radius: 22px;
+  background: #15161b;
+  box-shadow: 0 16px 40px -18px rgba(0, 0, 0, 0.6);
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+.moteur3d__compteur[hidden] { display: none; }
+/* Depuis le volant, le compteur est celui du tableau de bord de la voiture */
+.moteur3d.vue-interieure .moteur3d__compteur { display: none; }
+.moteur3d__compteur svg { display: block; width: 100%; height: auto; }
+.compteur__fond { fill: #0b0c10; stroke: #2c2e36; stroke-width: 2; }
+.compteur__trait { stroke: #f2f3f5; stroke-width: 2; stroke-linecap: round; }
+.compteur__chiffre { fill: #f2f3f5; font: 600 10px var(--police-texte); text-anchor: middle; }
+.compteur__unite { fill: #9da1ab; font: 500 7px var(--police-texte); text-anchor: middle; }
+.compteur__vitesse { fill: #ff8a3d; font: 600 10px var(--police-mono); text-anchor: middle; }
+.compteur__rouge { fill: none; stroke: #e8590c; stroke-width: 6; }
+.compteur__aiguille { stroke: #f4f5f7; stroke-width: 3; stroke-linecap: round; }
+.compteur__axe { fill: #2c2e36; stroke: #0b0c10; stroke-width: 2; }
+@media (max-width: 719px) {
+  .moteur3d__compteur { width: min(220px, calc(100% - 110px)); top: 12px; }
+  /* Le compteur affiche déjà régime et rapport : le petit panneau de simulation s'efface */
+  .moteur3d:has(.moteur3d__compteur:not([hidden])) .moteur3d__simulation { display: none; }
+}
 /* Vue éclatée : numéros masquables (le bouton remplace « Retirer le cache ») */
 .moteur3d.sans-numeros .moteur3d__etiquettes { display: none; }
 .moteur3d.est-eclate #bouton-cache, .moteur3d:not(.est-eclate) #bouton-numeros { display: none; }

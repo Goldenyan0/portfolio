@@ -348,6 +348,56 @@
      5 quinquies. Plein écran des deux maquettes (tous leurs boutons restent)
      et points du tour du propriétaire masquables
      ------------------------------------------------------------------ */
+  // Infobulle collée à la souris : ce que fait chaque bouton des maquettes (souris uniquement)
+  const AIDES = [
+    ['#bouton-eclate', 'Écarte les pièces pour voir comment tout s\'assemble'],
+    ['#bouton-rotation', 'Arrête ou relance la rotation automatique'],
+    ['#bouton-voiture', 'Cache ou affiche la carrosserie pour voir la mécanique'],
+    ['#bouton-acceleration', 'Démarre le moteur et simule une accélération, rapport après rapport'],
+    ['#bouton-interieur', 'S\'installe à la place du conducteur, ou revient à l\'extérieur'],
+    ['#bouton-fluides', 'Montre la circulation du liquide de refroidissement, du carburant et de l\'huile'],
+    ['[data-ouvrants]', 'Ouvre ou ferme les portes, le capot et le coffre'],
+    ['#bouton-cache', 'Retire ou repose le cache plastique du moteur'],
+    ['#bouton-numeros', 'Masque ou affiche les numéros des pièces'],
+    ['#moteur-calques summary', 'Choisit les groupes de pièces affichés'],
+    ['[data-plein-ecran]', 'Affiche la vue en plein écran, ou en sort'],
+    ['[data-zoom="1"]', 'Rapproche la vue'],
+    ['[data-zoom="-1"]', 'Éloigne la vue'],
+    ['[data-zoom="0"]', 'Revient au cadrage de départ'],
+    ['[data-pivot="0,-1"]', 'Tourne la vue vers le haut'],
+    ['[data-pivot="0,1"]', 'Tourne la vue vers le bas'],
+    ['[data-pivot="-1,0"]', 'Tourne la vue vers la gauche'],
+    ['[data-pivot="1,0"]', 'Tourne la vue vers la droite'],
+    ['[data-hauteur="1"]', 'Monte la caméra'],
+    ['[data-hauteur="-1"]', 'Descend la caméra'],
+    ['[data-encyclo-vue="exterieur"]', 'Fait le tour de la voiture, de l\'extérieur'],
+    ['[data-encyclo-vue="interieur"]', 'S\'installe à la place du conducteur'],
+    ['[data-encyclo-points]', 'Masque ou affiche les points numérotés'],
+    ['[data-encyclo-base]', 'Revient à la vue de départ et referme tout']
+  ];
+  function gererInfobulles() {
+    if (!Site.sourisFine) return;
+    AIDES.forEach(function (a) { document.querySelectorAll(a[0]).forEach(function (el) { el.dataset.aide = a[1]; }); });
+    const bulle = document.createElement('div');
+    bulle.className = 'infobulle-souris';
+    bulle.setAttribute('aria-hidden', 'true');
+    let cible = null;
+    document.addEventListener('pointerover', function (e) {
+      const el = e.target.closest('[data-aide]');
+      if (el === cible) return;
+      cible = el;
+      if (!el) { bulle.classList.remove('est-visible'); return; }
+      bulle.textContent = el.dataset.aide;
+      // En plein écran, seule la zone affichée est visible : la bulle y est rangée
+      (document.fullscreenElement || document.body).appendChild(bulle);
+      bulle.classList.add('est-visible');
+    });
+    document.addEventListener('pointermove', function (e) {
+      if (!cible) return;
+      bulle.style.transform = 'translate(' + (e.clientX + 16) + 'px,' + (e.clientY + 18) + 'px)';
+    }, { passive: true });
+  }
+
   function gererPleinEcran() {
     const actuel = function () { return document.fullscreenElement || document.webkitFullscreenElement; };
     document.querySelectorAll('[data-plein-ecran]').forEach(function (b) {
@@ -684,5 +734,6 @@
   gererComparaison();
   gererAgrandissement();
   gererPleinEcran();
+  gererInfobulles();
   graphiquesReleves();
 })();

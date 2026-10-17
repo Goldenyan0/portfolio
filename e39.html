@@ -129,7 +129,271 @@
         </div>
       </div>
     </section>
+    <!-- ══ Fiche technique ══ -->
+    <section class="section caracteristiques volet" id="fiche-technique" data-volet data-etape="Fiche technique" aria-labelledby="caracteristiques-titre">
+      <div class="conteneur">
+        <div class="entete-section">
+          <p class="surtitre" data-revele>Fiche technique</p>
+          <h2 class="titre-section" id="caracteristiques-titre" data-mots>La 520i, <em>en chiffres.</em></h2>
+          <p data-revele>BMW 520i E39 berline, 2002, boîte manuelle.</p>
+        </div>
+        <div class="caracteristiques__grille" data-cascade>
+          <div class="caracteristiques__bloc" data-revele>
+            <h3>Moteur</h3>
+            <dl>
+            <div><dt>Moteur</dt><dd>M54B22, 6 cylindres en ligne</dd></div>
+            <div><dt>Cylindrée</dt><dd>2 171 cm³</dd></div>
+            <div class="caracteristiques__fort"><dt>Puissance</dt><dd>170 ch <span>à 6 250 tr/min</span></dd></div>
+            <div class="caracteristiques__fort"><dt>Couple</dt><dd>210 Nm <span>à 3 500 tr/min</span></dd></div>
+            <div><dt>Puissance fiscale</dt><dd>11 CV</dd></div>
+          </dl>
+          </div>
+          <div class="caracteristiques__bloc" data-revele>
+            <h3>Transmission et freinage</h3>
+            <dl>
+            <div><dt>Transmission</dt><dd>Propulsion</dd></div>
+            <div><dt>Boîte</dt><dd>Manuelle, 5 rapports</dd></div>
+            <div><dt>Freins</dt><dd>4 disques, ventilés à l'avant</dd></div>
+            <div><dt>Jantes et pneus</dt><dd>17 pouces sur la mienne, 235/45 R17</dd></div>
+          </dl>
+          </div>
+          <div class="caracteristiques__bloc" data-revele>
+            <h3>Gabarit</h3>
+            <dl>
+            <div><dt>Longueur × largeur × hauteur</dt><dd>4 775 × 1 800 × 1 435 mm</dd></div>
+            <div><dt>Empattement</dt><dd>2 830 mm</dd></div>
+            <div><dt>Poids</dt><dd>1 495 kg</dd></div>
+            <div><dt>Coffre</dt><dd>460 L</dd></div>
+            <div><dt>Réservoir</dt><dd>70 L</dd></div>
+          </dl>
+          </div>
+          <div class="caracteristiques__bloc" data-revele>
+            <h3>Performances et consommation</h3>
+            <dl>
+            <div class="caracteristiques__fort"><dt>Vitesse maximale</dt><dd>226 km/h</dd></div>
+            <div class="caracteristiques__fort"><dt>0 à 100 km/h</dt><dd>9,1 s</dd></div>
+            <div><dt>Urbaine</dt><dd>12,2 L/100 km</dd></div>
+            <div><dt>Extra-urbaine</dt><dd>7,1 L/100 km</dd></div>
+            <div><dt>Mixte</dt><dd>9,0 L/100 km</dd></div>
+          </dl>
+          </div>
+        </div>
+      </div>
+    </section>
+    <!-- ══ Encyclopédie : le tour des équipements, puis l'habitacle (piloté par moteur-3d.js) ══ -->
+    <section class="section encyclopedie" id="encyclopedie" data-etape="Encyclopédie" aria-labelledby="encyclo-titre">
+      <div class="conteneur">
+        <div class="entete-section">
+          <p class="surtitre" data-revele>Encyclopédie</p>
+          <h2 class="titre-section" id="encyclo-titre" data-mots>Le tour <em>du propriétaire.</em></h2>
+          <p data-revele>Touchez un point pour découvrir l'équipement ; portes, capot et coffre s'ouvrent au clic. Puis installez-vous au volant.</p>
+        </div>
+      </div>
+      <div class="conteneur conteneur--large">
+        <div class="encyclo" data-revele>
+          <div class="encyclo__scene" id="encyclo-scene"></div>
+          <div class="encyclo__points" id="encyclo-points"></div>
+          <p class="moteur3d__survol" id="encyclo-survol" aria-live="polite"></p>
+          <div class="encyclo__vues" role="group" aria-label="Vue de l'encyclopédie">
+            <button class="bouton bouton--clair" type="button" data-encyclo-vue="exterieur" aria-pressed="true"><span class="bouton__texte"><svg aria-hidden="true"><use href="#i-exterieur"/></svg>Extérieur</span></button>
+            <button class="bouton bouton--clair" type="button" data-encyclo-vue="interieur" aria-pressed="false"><span class="bouton__texte"><svg aria-hidden="true"><use href="#i-interieur"/></svg>Intérieur</span></button>
+            <button class="bouton bouton--clair" type="button" data-encyclo-points aria-pressed="false"><span class="bouton__texte"><svg aria-hidden="true"><use href="#i-points"/></svg><span data-libelle>Masquer les points</span></span></button>
+            <button class="bouton bouton--clair" type="button" data-encyclo-base><span class="bouton__texte"><svg aria-hidden="true"><use href="#i-recentrer"/></svg>Vue de base</span></button>
+          </div>
+          <div class="moteur3d__pivot encyclo__pivot" role="group" aria-label="Déplacer la vue">
+            <button type="button" data-pivot="0,-1" aria-label="Pivoter vers le haut"><svg aria-hidden="true"><use href="#i-fleche"/></svg></button>
+            <button type="button" data-pivot="-1,0" aria-label="Pivoter vers la gauche"><svg aria-hidden="true"><use href="#i-fleche"/></svg></button>
+            <button type="button" data-pivot="1,0" aria-label="Pivoter vers la droite"><svg aria-hidden="true"><use href="#i-fleche"/></svg></button>
+            <button type="button" data-pivot="0,1" aria-label="Pivoter vers le bas"><svg aria-hidden="true"><use href="#i-fleche"/></svg></button>
+            <button type="button" data-hauteur="1" aria-label="Monter"><svg aria-hidden="true"><use href="#i-fleche"/></svg></button>
+            <button type="button" data-hauteur="-1" aria-label="Descendre"><svg aria-hidden="true"><use href="#i-fleche"/></svg></button>
+            <button type="button" data-zoom="1" aria-label="Zoomer"><svg aria-hidden="true"><use href="#i-plus"/></svg></button>
+            <button type="button" data-zoom="-1" aria-label="Dézoomer"><svg aria-hidden="true"><use href="#i-moins"/></svg></button>
+            <button type="button" data-zoom="0" aria-label="Recentrer la vue"><svg aria-hidden="true"><use href="#i-recentrer"/></svg></button>
+          </div>
+          <button class="encyclo__plein-ecran" type="button" data-plein-ecran aria-label="Plein écran" aria-pressed="false"><svg aria-hidden="true"><use href="#i-plein-ecran"/></svg></button>
+          <div class="encyclo__carte" id="encyclo-carte" hidden>
+            <button class="encyclo__fermer" type="button" data-fermer aria-label="Fermer"><svg class="icone" aria-hidden="true"><use href="#i-fermer"/></svg></button>
+            <h3 data-titre></h3>
+            <p data-texte></p>
+          </div>
+          <p class="encyclo__aide encyclo__aide--exterieur">Glissez pour tourner autour de la voiture · clic droit pour déplacer</p>
+          <p class="encyclo__aide encyclo__aide--interieur">Place du conducteur : glissez pour regarder autour de vous</p>
+        </div>
+      </div>
+    </section>
+    <!-- ══ Documentation : Le M54 expliqué ══ -->
+    <section class="section documentation" id="documentation" data-etape="Documentation" aria-labelledby="doc-titre">
+      <!-- Visite guidée 3D : la voiture reste à l'écran pendant qu'on fait défiler les fiches,
+           la caméra rejoint la pièce de chaque fiche (piloté par moteur-3d.js) -->
+      <div class="visite" id="visite" data-voyage-fond>
+        <div class="visite__scene" id="visite-scene" aria-hidden="true"></div>
+        <div class="visite__hud" data-voyage-dessus>
+          <p class="visite__piece" id="visite-piece" aria-hidden="true"></p>
+          <!-- Compteur « Fiche X / N » : un clic déroule la liste des fiches (e39.js) -->
+          <div class="visite__sommaire">
+            <button class="visite__compteur" id="visite-compteur" type="button" aria-expanded="false" aria-controls="visite-liste"></button>
+            <ol class="visite__liste" id="visite-liste" hidden></ol>
+          </div>
+          <a class="visite__suite" href="#reel">Aller à la suite <svg class="icone" aria-hidden="true"><use href="#i-fleche"/></svg></a>
+        </div>
+      </div>
+      <span class="mot-fond" data-glisse="-0.35" aria-hidden="true">M54</span>
+      <div class="conteneur">
+        <div class="entete-section" data-carte>
+          <p class="surtitre" data-revele>Documentation</p>
+          <h2 class="titre-section" id="doc-titre" data-mots>Le M54 <em>expliqué.</em></h2>
+          <p data-revele>La voiture en <span data-nombre-categories>14</span> grands groupes, de la mécanique à la carrosserie : <span data-nombre-fiches>84</span> fiches en tout. Dépliez le détail d'un groupe pour ouvrir la fiche d'une pièce : sa place dans la voiture, la pièce seule en 3D et, quand elle existe, sa photo réelle.</p>
+          <p class="note-maquette" data-revele>La maquette reste une simplification : de nombreux petits éléments — durites, colliers, faisceaux électriques, capteurs, visserie — ne sont pas représentés.</p>
+          <a class="visite__passer" href="#reel">Passer la visite guidée : aller à la maquette <svg class="icone" aria-hidden="true"><use href="#i-fleche"/></svg></a>
+        </div>
 
+        <!-- Les fiches de la visite : celles des pièces (js/pieces-e39.js), créées par e39.js -->
+        <div class="fiches fiches--pieces" id="fiches-visite"></div>
+      </div>
+    </section>
+    <!-- ══ Réel ou maquette : un vrai compartiment moteur et la maquette sous le même angle ══ -->
+    <section class="section reel" id="reel" data-etape="Réel ou maquette" aria-labelledby="reel-titre">
+      <div class="conteneur">
+        <div class="entete-section">
+          <p class="surtitre" data-revele>Réel ou maquette</p>
+          <h2 class="titre-section" id="reel-titre" data-mots>La photo, <em>la maquette.</em></h2>
+          <p data-revele>Un vrai compartiment moteur de E39 à moteur M54, et la maquette vue sous le même angle, capot ouvert. Faites glisser le curseur pour passer de l'un à l'autre.</p>
+        </div>
+        <figure class="comparaison-photo" data-revele>
+          <div class="comparaison-photo__cadre" style="--position: 50%">
+            <img class="comparaison-photo__reel" src="img/e39/baie-moteur-vue-dessus-960.webp" srcset="img/e39/baie-moteur-vue-dessus-480.webp 480w, img/e39/baie-moteur-vue-dessus-960.webp 960w" sizes="(max-width: 1040px) 100vw, 960px" data-grande="img/e39/baie-moteur-vue-dessus.jpg" width="1400" height="937" loading="lazy" alt="Photo réelle d'un compartiment moteur de BMW E39 vu de face, capot ouvert : cache moteur BMW nervuré, boîte à air à droite, bloc ABS et réservoir de lave-glace à gauche, radiateur et vase d'expansion au premier plan" />
+            <img class="comparaison-photo__maquette" id="comparaison-maquette" width="1200" height="803" alt="La maquette 3D vue sous le même angle, capot ouvert, cache moteur posé" />
+            <span class="comparaison-photo__etiquette comparaison-photo__etiquette--reel" aria-hidden="true">Photo</span>
+            <span class="comparaison-photo__etiquette comparaison-photo__etiquette--maquette" aria-hidden="true">Maquette</span>
+            <span class="comparaison-photo__poignee" aria-hidden="true"></span>
+            <input class="comparaison-photo__curseur" type="range" min="0" max="100" value="50" aria-label="Proportion de la photo réelle et de la maquette" />
+          </div>
+          <figcaption>
+            <span>À gauche du curseur, la photo ; à droite, la maquette.</span>
+            <button class="lien-bouton" type="button" data-vue-photo>Voir cet angle dans la maquette <svg class="icone" aria-hidden="true"><use href="#i-fleche"/></svg></button>
+          </figcaption>
+        </figure>
+      </div>
+    </section>
+    <!-- ══ Index des fiches pièces : accordéons par catégorie, sans description (rempli par e39.js) ══ -->
+    <section class="section index-pieces" id="pieces" data-etape="Index des pièces" aria-labelledby="pieces-titre">
+      <div class="conteneur">
+        <div class="entete-section">
+          <p class="surtitre" data-revele>Index des pièces</p>
+          <h2 class="titre-section" id="pieces-titre" data-mots>Toutes les <em>pièces.</em></h2>
+          <p data-revele>Une fiche par pièce : sa place dans la voiture et la pièce seule, en 3D. Dépliez une catégorie.</p>
+          <p class="note-maquette" data-revele>La maquette reste une simplification : de nombreux petits éléments — durites, colliers, faisceaux électriques, capteurs, visserie — ne sont pas représentés.</p>
+        </div>
+        <div class="accordeons" id="index-pieces" data-revele></div>
+      </div>
+    </section>
+    <!-- ══ Le moteur en 3D : la maquette complète, à la fin du parcours ══ -->
+    <section class="section moteur" id="moteur" data-etape="Le moteur" aria-labelledby="moteur-titre">
+      <div class="conteneur">
+        <div class="entete-section">
+          <p class="surtitre" data-revele>Le moteur</p>
+          <h2 class="titre-section" id="moteur-titre" data-mots>Le M54 <em>en pièces.</em></h2>
+          <p data-revele>Une maquette du six cylindres dans sa carrosserie : faites-la tourner, ouvrez la vue éclatée, cliquez une pièce pour ouvrir sa fiche. Portes, capot et coffre s'ouvrent au clic ; le cache moteur se retire.</p>
+          <p class="note-maquette" data-revele>La maquette reste une simplification : de nombreux petits éléments — durites, colliers, faisceaux électriques, capteurs, visserie — ne sont pas représentés.</p>
+        </div>
+      </div>
+      <div class="conteneur conteneur--large">
+        <div class="moteur3d" id="moteur3d" data-revele>
+          <div class="moteur3d__scene" id="moteur-scene"></div>
+          <div class="moteur3d__etiquettes" id="moteur-etiquettes" aria-hidden="true"></div>
+          <p class="moteur3d__survol" id="moteur-survol" aria-live="polite"></p>
+          <!-- Mode accélération : rapport engagé et régime simulés -->
+          <div class="moteur3d__simulation" id="moteur-simulation" hidden>
+            <p>Simulation · <span data-rapport>point mort</span></p>
+            <div class="moteur3d__regime" aria-hidden="true"><span data-regime></span></div>
+          </div>
+          <!-- Compteur pendant la simulation (moteur-3d.js) : vitesse et régime -->
+          <div class="moteur3d__compteur" id="moteur-compteur" hidden><svg viewBox="0 0 320 150" aria-hidden="true"><circle cx="85" cy="78" r="66" class="compteur__fond"/><line class="compteur__trait" x1="36.7" y1="118.5" x2="44.4" y2="112.1"/><line class="compteur__trait" x1="25.2" y1="97.8" x2="29.9" y2="96.2"/><line class="compteur__trait" x1="22.1" y1="74.3" x2="32.1" y2="74.9"/><text class="compteur__chiffre" x="41.1" y="78.4">40</text><line class="compteur__trait" x1="27.9" y1="51.4" x2="32.4" y2="53.5"/><line class="compteur__trait" x1="41.8" y1="32.2" x2="48.6" y2="39.4"/><text class="compteur__chiffre" x="54.8" y="49.0">80</text><line class="compteur__trait" x1="61.7" y1="19.5" x2="63.6" y2="24.1"/><line class="compteur__trait" x1="85.0" y1="15.0" x2="85.0" y2="25.0"/><text class="compteur__chiffre" x="85.0" y="37.0">120</text><line class="compteur__trait" x1="108.3" y1="19.5" x2="106.4" y2="24.1"/><line class="compteur__trait" x1="128.2" y1="32.2" x2="121.4" y2="39.4"/><text class="compteur__chiffre" x="115.2" y="49.0">160</text><line class="compteur__trait" x1="142.1" y1="51.4" x2="137.6" y2="53.5"/><line class="compteur__trait" x1="147.9" y1="74.3" x2="137.9" y2="74.9"/><text class="compteur__chiffre" x="128.9" y="78.4">200</text><line class="compteur__trait" x1="144.8" y1="97.8" x2="140.1" y2="96.2"/><line class="compteur__trait" x1="133.3" y1="118.5" x2="125.6" y2="112.1"/><text class="compteur__chiffre" x="118.7" y="109.3">240</text><circle cx="235" cy="78" r="66" class="compteur__fond"/><path class="compteur__rouge" d="M290.9 99.9 A60 60 0 0 1 281.0 116.6"/><line class="compteur__trait" x1="186.7" y1="118.5" x2="194.4" y2="112.1"/><line class="compteur__trait" x1="176.4" y1="101.0" x2="181.0" y2="99.2"/><line class="compteur__trait" x1="172.1" y1="81.1" x2="182.1" y2="80.6"/><text class="compteur__chiffre" x="191.1" y="83.2">1</text><line class="compteur__trait" x1="174.4" y1="60.9" x2="179.2" y2="62.3"/><line class="compteur__trait" x1="182.9" y1="42.5" x2="191.2" y2="48.1"/><text class="compteur__chiffre" x="198.6" y="56.2">2</text><line class="compteur__trait" x1="197.0" y1="27.8" x2="200.0" y2="31.8"/><line class="compteur__trait" x1="214.9" y1="18.3" x2="218.1" y2="27.8"/><text class="compteur__chiffre" x="221.0" y="39.3">3</text><line class="compteur__trait" x1="235.0" y1="15.0" x2="235.0" y2="20.0"/><line class="compteur__trait" x1="255.1" y1="18.3" x2="251.9" y2="27.8"/><text class="compteur__chiffre" x="249.0" y="39.3">4</text><line class="compteur__trait" x1="273.0" y1="27.8" x2="270.0" y2="31.8"/><line class="compteur__trait" x1="287.1" y1="42.5" x2="278.8" y2="48.1"/><text class="compteur__chiffre" x="271.4" y="56.2">5</text><line class="compteur__trait" x1="295.6" y1="60.9" x2="290.8" y2="62.3"/><line class="compteur__trait" x1="297.9" y1="81.1" x2="287.9" y2="80.6"/><text class="compteur__chiffre" x="278.9" y="83.2">6</text><line class="compteur__trait" x1="293.6" y1="101.0" x2="289.0" y2="99.2"/><line class="compteur__trait" x1="283.3" y1="118.5" x2="275.6" y2="112.1"/><text class="compteur__chiffre" x="268.7" y="109.3">7</text><text class="compteur__unite" x="85" y="112">km/h</text><text class="compteur__unite" x="235" y="104">1/min x1000</text><text class="compteur__vitesse" x="85" y="132" data-vitesse>0 km/h</text><g transform="translate(85 78)"><g data-aiguille="vitesse" transform="rotate(-130)"><line class="compteur__aiguille" x1="0" y1="10" x2="0" y2="-54"/></g><circle r="6" class="compteur__axe"/></g><g transform="translate(235 78)"><g data-aiguille="regime" transform="rotate(-130)"><line class="compteur__aiguille" x1="0" y1="10" x2="0" y2="-54"/></g><circle r="6" class="compteur__axe"/></g></svg></div>
+          <!-- Légende des couleurs des fluides -->
+          <ul class="moteur3d__fluides" id="moteur-fluides" aria-label="Couleurs des fluides" hidden>
+            <li class="moteur3d__fluide moteur3d__fluide--refroidissement">Liquide de refroidissement</li>
+            <li class="moteur3d__fluide moteur3d__fluide--carburant">Carburant (départ)</li>
+            <li class="moteur3d__fluide moteur3d__fluide--retour">Carburant (retour au réservoir)</li>
+            <li class="moteur3d__fluide moteur3d__fluide--huile">Huile moteur</li>
+            <li class="moteur3d__fluides-note">Ils circulent quand le moteur tourne (bouton Accélération).</li>
+          </ul>
+          <!-- Panneau d'affichage : groupes d'éléments à montrer ou masquer -->
+          <details class="moteur3d__calques" id="moteur-calques">
+            <summary><svg aria-hidden="true"><use href="#i-calques"/></svg>Affichage</summary>
+            <fieldset>
+              <legend class="visuellement-cache">Éléments affichés sur la maquette</legend>
+              <label><input type="checkbox" data-groupe="carrosserie" checked /> Carrosserie</label>
+              <label><input type="checkbox" data-groupe="moteur" checked /> Moteur</label>
+              <label><input type="checkbox" data-groupe="admission" checked /> Admission</label>
+              <label><input type="checkbox" data-groupe="refroidissement" checked /> Refroidissement</label>
+              <label><input type="checkbox" data-groupe="echappement" checked /> Échappement</label>
+              <label><input type="checkbox" data-groupe="transmission" checked /> Transmission</label>
+              <label><input type="checkbox" data-groupe="carburant" checked /> Carburant</label>
+              <label><input type="checkbox" data-groupe="freinage" checked /> Freinage et pédales</label>
+              <label><input type="checkbox" data-groupe="chassis" checked /> Châssis et roues</label>
+              <label><input type="checkbox" data-groupe="accessoires" checked /> Accessoires</label>
+              <span class="moteur3d__calques-separateur" aria-hidden="true"></span>
+              <label><input type="checkbox" data-option="cache" checked /> Cache moteur</label>
+              <label><input type="checkbox" data-option="transparence" /> Carrosserie transparente</label>
+              <label><input type="checkbox" data-option="fluides" /> Fluides</label>
+            </fieldset>
+          </details>
+          <div class="moteur3d__zoom">
+            <button type="button" data-plein-ecran aria-label="Plein écran" aria-pressed="false"><svg aria-hidden="true"><use href="#i-plein-ecran"/></svg></button>
+          </div>
+          <!-- Flèches pour pivoter la maquette (moteur-3d.js) -->
+          <div class="moteur3d__pivot" role="group" aria-label="Déplacer la vue">
+            <button type="button" data-pivot="0,-1" aria-label="Pivoter vers le haut"><svg aria-hidden="true"><use href="#i-fleche"/></svg></button>
+            <button type="button" data-pivot="-1,0" aria-label="Pivoter vers la gauche"><svg aria-hidden="true"><use href="#i-fleche"/></svg></button>
+            <button type="button" data-pivot="1,0" aria-label="Pivoter vers la droite"><svg aria-hidden="true"><use href="#i-fleche"/></svg></button>
+            <button type="button" data-pivot="0,1" aria-label="Pivoter vers le bas"><svg aria-hidden="true"><use href="#i-fleche"/></svg></button>
+            <button type="button" data-hauteur="1" aria-label="Monter"><svg aria-hidden="true"><use href="#i-fleche"/></svg></button>
+            <button type="button" data-hauteur="-1" aria-label="Descendre"><svg aria-hidden="true"><use href="#i-fleche"/></svg></button>
+            <button type="button" data-zoom="1" aria-label="Zoomer"><svg aria-hidden="true"><use href="#i-plus"/></svg></button>
+            <button type="button" data-zoom="-1" aria-label="Dézoomer"><svg aria-hidden="true"><use href="#i-moins"/></svg></button>
+            <button type="button" data-zoom="0" aria-label="Recentrer la vue"><svg aria-hidden="true"><use href="#i-recentrer"/></svg></button>
+          </div>
+          <div class="moteur3d__repli" id="moteur-repli">
+            <p>Chargement de la vue 3D…</p>
+          </div>
+          <div class="moteur3d__barre">
+            <div class="moteur3d__commandes">
+              <button class="bouton magnetique" id="bouton-eclate" type="button" aria-pressed="false">
+                <span class="bouton__texte"><svg aria-hidden="true"><use href="#i-eclate"/></svg><span data-libelle>VUE ÉCLATÉE</span></span>
+              </button>
+              <button class="bouton bouton--clair" id="bouton-rotation" type="button" aria-pressed="false">
+                <span class="bouton__texte"><svg aria-hidden="true"><use href="#i-rotation"/></svg><span data-libelle>FIGER LA ROTATION</span></span>
+              </button>
+              <button class="bouton bouton--clair" id="bouton-voiture" type="button" aria-pressed="true">
+                <span class="bouton__texte"><svg aria-hidden="true"><use href="#i-voiture"/></svg><span data-libelle>MASQUER LA VOITURE</span></span>
+              </button>
+              <button class="bouton bouton--clair" id="bouton-acceleration" type="button" aria-pressed="false">
+                <span class="bouton__texte"><svg aria-hidden="true"><use href="#i-acceleration"/></svg><span>ACCÉLÉRATION</span></span>
+              </button>
+              <button class="bouton bouton--clair" id="bouton-interieur" type="button" aria-pressed="false">
+                <span class="bouton__texte"><svg aria-hidden="true"><use href="#i-interieur"/></svg><span data-libelle>VUE INTÉRIEURE</span></span>
+              </button>
+              <button class="bouton bouton--clair" id="bouton-fluides" type="button" aria-pressed="false">
+                <span class="bouton__texte"><svg aria-hidden="true"><use href="#i-goutte"/></svg><span>FLUIDES</span></span>
+              </button>
+              <button class="bouton bouton--clair" type="button" data-ouvrants aria-pressed="false">
+                <span class="bouton__texte"><svg aria-hidden="true"><use href="#i-portes"/></svg><span data-libelle>TOUT OUVRIR</span></span>
+              </button>
+              <button class="bouton bouton--clair" id="bouton-numeros" type="button" aria-pressed="false">
+                <span class="bouton__texte"><svg aria-hidden="true"><use href="#i-points"/></svg><span data-libelle>MASQUER LES NUMÉROS</span></span>
+              </button>
+              <button class="bouton bouton--clair" id="bouton-cache" type="button" aria-pressed="false">
+                <span class="bouton__texte"><svg aria-hidden="true"><use href="#i-cache"/></svg><span data-libelle>RETIRER LE CACHE</span></span>
+              </button>
+            </div>
+            <p class="moteur3d__legende">M54B22 — 6 cylindres en ligne, 2.2L</p>
+            <p class="moteur3d__aide">Clic gauche : tourner · clic droit : déplacer · cliquez puis molette, ou pincez, pour zoomer · survolez ou touchez une pièce</p>
+            <p class="moteur3d__mention">Carrosserie : modèle « BMW E39 Free » de Black Snow (CC BY 4.0), ramené à ma 520i — mécanique modélisée pour ce site</p>
+          </div>
+        </div>
+      </div>
+    </section>
     <!-- ══ Fil rouge ══ -->
     <section class="section fil-rouge" id="fil-rouge" data-etape="La méthode" aria-labelledby="fil-titre">
       <div class="conteneur">
@@ -154,7 +418,6 @@
         </ol>
       </div>
     </section>
-
     <!-- ══ Les chantiers ══ -->
     <section class="section chantiers volet" id="chantiers" data-volet data-etape="Les chantiers" aria-labelledby="chantiers-titre">
       <span class="mot-fond" data-glisse="0.35" aria-hidden="true">Atelier</span>
@@ -317,7 +580,6 @@
         </div>
       </div>
     </section>
-
     <!-- ══ Le résultat ══ -->
     <section class="section resultat" id="resultat" data-etape="Le résultat" aria-labelledby="resultat-titre">
       <div class="conteneur resultat__grille">
@@ -364,270 +626,6 @@
         </figure>
       </div>
     </section>
-
-    <!-- ══ Documentation : Le M54 expliqué ══ -->
-    <section class="section documentation" id="documentation" data-etape="Documentation" aria-labelledby="doc-titre">
-      <!-- Visite guidée 3D : la voiture reste à l'écran pendant qu'on fait défiler les fiches,
-           la caméra rejoint la pièce de chaque fiche (piloté par moteur-3d.js) -->
-      <div class="visite" id="visite" data-voyage-fond>
-        <div class="visite__scene" id="visite-scene" aria-hidden="true"></div>
-        <div class="visite__hud" data-voyage-dessus>
-          <p class="visite__piece" id="visite-piece" aria-hidden="true"></p>
-          <!-- Compteur « Fiche X / N » : un clic déroule la liste des fiches (e39.js) -->
-          <div class="visite__sommaire">
-            <button class="visite__compteur" id="visite-compteur" type="button" aria-expanded="false" aria-controls="visite-liste"></button>
-            <ol class="visite__liste" id="visite-liste" hidden></ol>
-          </div>
-          <a class="visite__suite" href="#moteur">Aller à la suite <svg class="icone" aria-hidden="true"><use href="#i-fleche"/></svg></a>
-        </div>
-      </div>
-      <span class="mot-fond" data-glisse="-0.35" aria-hidden="true">M54</span>
-      <div class="conteneur">
-        <div class="entete-section" data-carte>
-          <p class="surtitre" data-revele>Documentation</p>
-          <h2 class="titre-section" id="doc-titre" data-mots>Le M54 <em>expliqué.</em></h2>
-          <p data-revele>La voiture en <span data-nombre-categories>14</span> grands groupes, de la mécanique à la carrosserie : <span data-nombre-fiches>84</span> fiches en tout. Dépliez le détail d'un groupe pour ouvrir la fiche d'une pièce : sa place dans la voiture, la pièce seule en 3D et, quand elle existe, sa photo réelle.</p>
-          <p class="note-maquette" data-revele>La maquette reste une simplification : de nombreux petits éléments — durites, colliers, faisceaux électriques, capteurs, visserie — ne sont pas représentés.</p>
-          <a class="visite__passer" href="#moteur">Passer la visite guidée : aller à la maquette <svg class="icone" aria-hidden="true"><use href="#i-fleche"/></svg></a>
-        </div>
-
-        <!-- Les fiches de la visite : celles des pièces (js/pieces-e39.js), créées par e39.js -->
-        <div class="fiches fiches--pieces" id="fiches-visite"></div>
-      </div>
-    </section>
-
-    <!-- ══ Le moteur en 3D : la maquette complète, à la fin du parcours ══ -->
-    <section class="section moteur" id="moteur" data-etape="Le moteur" aria-labelledby="moteur-titre">
-      <div class="conteneur">
-        <div class="entete-section">
-          <p class="surtitre" data-revele>Le moteur</p>
-          <h2 class="titre-section" id="moteur-titre" data-mots>Le M54 <em>en pièces.</em></h2>
-          <p data-revele>Une maquette du six cylindres dans sa carrosserie : faites-la tourner, ouvrez la vue éclatée, cliquez une pièce pour ouvrir sa fiche. Portes, capot et coffre s'ouvrent au clic ; le cache moteur se retire.</p>
-          <p class="note-maquette" data-revele>La maquette reste une simplification : de nombreux petits éléments — durites, colliers, faisceaux électriques, capteurs, visserie — ne sont pas représentés.</p>
-        </div>
-      </div>
-      <div class="conteneur conteneur--large">
-        <div class="moteur3d" id="moteur3d" data-revele>
-          <div class="moteur3d__scene" id="moteur-scene"></div>
-          <div class="moteur3d__etiquettes" id="moteur-etiquettes" aria-hidden="true"></div>
-          <p class="moteur3d__survol" id="moteur-survol" aria-live="polite"></p>
-          <!-- Mode accélération : rapport engagé et régime simulés -->
-          <div class="moteur3d__simulation" id="moteur-simulation" hidden>
-            <p>Simulation · <span data-rapport>point mort</span></p>
-            <div class="moteur3d__regime" aria-hidden="true"><span data-regime></span></div>
-          </div>
-          <!-- Légende des couleurs des fluides -->
-          <ul class="moteur3d__fluides" id="moteur-fluides" aria-label="Couleurs des fluides" hidden>
-            <li class="moteur3d__fluide moteur3d__fluide--refroidissement">Liquide de refroidissement</li>
-            <li class="moteur3d__fluide moteur3d__fluide--carburant">Carburant (départ)</li>
-            <li class="moteur3d__fluide moteur3d__fluide--retour">Carburant (retour au réservoir)</li>
-            <li class="moteur3d__fluide moteur3d__fluide--huile">Huile moteur</li>
-            <li class="moteur3d__fluides-note">Ils circulent quand le moteur tourne (bouton Accélération).</li>
-          </ul>
-          <!-- Panneau d'affichage : groupes d'éléments à montrer ou masquer -->
-          <details class="moteur3d__calques" id="moteur-calques">
-            <summary><svg aria-hidden="true"><use href="#i-calques"/></svg>Affichage</summary>
-            <fieldset>
-              <legend class="visuellement-cache">Éléments affichés sur la maquette</legend>
-              <label><input type="checkbox" data-groupe="carrosserie" checked /> Carrosserie</label>
-              <label><input type="checkbox" data-groupe="moteur" checked /> Moteur</label>
-              <label><input type="checkbox" data-groupe="admission" checked /> Admission</label>
-              <label><input type="checkbox" data-groupe="refroidissement" checked /> Refroidissement</label>
-              <label><input type="checkbox" data-groupe="echappement" checked /> Échappement</label>
-              <label><input type="checkbox" data-groupe="transmission" checked /> Transmission</label>
-              <label><input type="checkbox" data-groupe="carburant" checked /> Carburant</label>
-              <label><input type="checkbox" data-groupe="freinage" checked /> Freinage et pédales</label>
-              <label><input type="checkbox" data-groupe="chassis" checked /> Châssis et roues</label>
-              <label><input type="checkbox" data-groupe="accessoires" checked /> Accessoires</label>
-              <span class="moteur3d__calques-separateur" aria-hidden="true"></span>
-              <label><input type="checkbox" data-option="cache" checked /> Cache moteur</label>
-              <label><input type="checkbox" data-option="transparence" /> Carrosserie transparente</label>
-              <label><input type="checkbox" data-option="fluides" /> Fluides</label>
-            </fieldset>
-          </details>
-          <div class="moteur3d__zoom" role="group" aria-label="Zoom de la maquette">
-            <button type="button" data-zoom="1" aria-label="Zoomer"><svg aria-hidden="true"><use href="#i-plus"/></svg></button>
-            <button type="button" data-zoom="-1" aria-label="Dézoomer"><svg aria-hidden="true"><use href="#i-moins"/></svg></button>
-            <button type="button" data-zoom="0" aria-label="Recentrer la vue"><svg aria-hidden="true"><use href="#i-recentrer"/></svg></button>
-            <button type="button" data-plein-ecran aria-label="Plein écran" aria-pressed="false"><svg aria-hidden="true"><use href="#i-plein-ecran"/></svg></button>
-          </div>
-          <!-- Flèches pour pivoter la maquette (moteur-3d.js) -->
-          <div class="moteur3d__pivot" role="group" aria-label="Pivoter la maquette">
-            <button type="button" data-pivot="0,-1" aria-label="Pivoter vers le haut"><svg aria-hidden="true"><use href="#i-fleche"/></svg></button>
-            <button type="button" data-pivot="-1,0" aria-label="Pivoter vers la gauche"><svg aria-hidden="true"><use href="#i-fleche"/></svg></button>
-            <button type="button" data-pivot="1,0" aria-label="Pivoter vers la droite"><svg aria-hidden="true"><use href="#i-fleche"/></svg></button>
-            <button type="button" data-pivot="0,1" aria-label="Pivoter vers le bas"><svg aria-hidden="true"><use href="#i-fleche"/></svg></button>
-            <button type="button" data-hauteur="1" aria-label="Monter"><svg aria-hidden="true"><use href="#i-fleche"/></svg></button>
-            <button type="button" data-hauteur="-1" aria-label="Descendre"><svg aria-hidden="true"><use href="#i-fleche"/></svg></button>
-          </div>
-          <div class="moteur3d__repli" id="moteur-repli">
-            <p>Chargement de la vue 3D…</p>
-          </div>
-          <div class="moteur3d__barre">
-            <div class="moteur3d__commandes">
-              <button class="bouton magnetique" id="bouton-eclate" type="button" aria-pressed="false">
-                <span class="bouton__texte"><svg aria-hidden="true"><use href="#i-eclate"/></svg><span data-libelle>VUE ÉCLATÉE</span></span>
-              </button>
-              <button class="bouton bouton--clair" id="bouton-rotation" type="button" aria-pressed="false">
-                <span class="bouton__texte"><svg aria-hidden="true"><use href="#i-rotation"/></svg><span data-libelle>FIGER LA ROTATION</span></span>
-              </button>
-              <button class="bouton bouton--clair" id="bouton-voiture" type="button" aria-pressed="true">
-                <span class="bouton__texte"><svg aria-hidden="true"><use href="#i-voiture"/></svg><span data-libelle>MASQUER LA VOITURE</span></span>
-              </button>
-              <button class="bouton bouton--clair" id="bouton-acceleration" type="button" aria-pressed="false">
-                <span class="bouton__texte"><svg aria-hidden="true"><use href="#i-acceleration"/></svg><span>ACCÉLÉRATION</span></span>
-              </button>
-              <button class="bouton bouton--clair" id="bouton-fluides" type="button" aria-pressed="false">
-                <span class="bouton__texte"><svg aria-hidden="true"><use href="#i-goutte"/></svg><span>FLUIDES</span></span>
-              </button>
-              <button class="bouton bouton--clair" type="button" data-ouvrants aria-pressed="false">
-                <span class="bouton__texte"><svg aria-hidden="true"><use href="#i-portes"/></svg><span data-libelle>TOUT OUVRIR</span></span>
-              </button>
-              <button class="bouton bouton--clair" id="bouton-numeros" type="button" aria-pressed="false">
-                <span class="bouton__texte"><svg aria-hidden="true"><use href="#i-points"/></svg><span data-libelle>MASQUER LES NUMÉROS</span></span>
-              </button>
-              <button class="bouton bouton--clair" id="bouton-cache" type="button" aria-pressed="false">
-                <span class="bouton__texte"><svg aria-hidden="true"><use href="#i-cache"/></svg><span data-libelle>RETIRER LE CACHE</span></span>
-              </button>
-            </div>
-            <p class="moteur3d__legende">M54B22 — 6 cylindres en ligne, 2.2L</p>
-            <p class="moteur3d__aide">Clic gauche : tourner · clic droit : déplacer · cliquez puis molette, ou pincez, pour zoomer · survolez ou touchez une pièce</p>
-            <p class="moteur3d__mention">Carrosserie : modèle « BMW E39 Free » de Black Snow (CC BY 4.0), ramené à ma 520i — mécanique modélisée pour ce site</p>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- ══ Réel ou maquette : un vrai compartiment moteur et la maquette sous le même angle ══ -->
-    <section class="section reel" id="reel" data-etape="Réel ou maquette" aria-labelledby="reel-titre">
-      <div class="conteneur">
-        <div class="entete-section">
-          <p class="surtitre" data-revele>Réel ou maquette</p>
-          <h2 class="titre-section" id="reel-titre" data-mots>La photo, <em>la maquette.</em></h2>
-          <p data-revele>Un vrai compartiment moteur de E39 à moteur M54, et la maquette vue sous le même angle, capot ouvert. Faites glisser le curseur pour passer de l'un à l'autre.</p>
-        </div>
-        <figure class="comparaison-photo" data-revele>
-          <div class="comparaison-photo__cadre" style="--position: 50%">
-            <img class="comparaison-photo__reel" src="img/e39/baie-moteur-vue-dessus-960.webp" srcset="img/e39/baie-moteur-vue-dessus-480.webp 480w, img/e39/baie-moteur-vue-dessus-960.webp 960w" sizes="(max-width: 1040px) 100vw, 960px" data-grande="img/e39/baie-moteur-vue-dessus.jpg" width="1400" height="937" loading="lazy" alt="Photo réelle d'un compartiment moteur de BMW E39 vu de face, capot ouvert : cache moteur BMW nervuré, boîte à air à droite, bloc ABS et réservoir de lave-glace à gauche, radiateur et vase d'expansion au premier plan" />
-            <img class="comparaison-photo__maquette" id="comparaison-maquette" width="1200" height="803" alt="La maquette 3D vue sous le même angle, capot ouvert, cache moteur posé" />
-            <span class="comparaison-photo__etiquette comparaison-photo__etiquette--reel" aria-hidden="true">Photo</span>
-            <span class="comparaison-photo__etiquette comparaison-photo__etiquette--maquette" aria-hidden="true">Maquette</span>
-            <span class="comparaison-photo__poignee" aria-hidden="true"></span>
-            <input class="comparaison-photo__curseur" type="range" min="0" max="100" value="50" aria-label="Proportion de la photo réelle et de la maquette" />
-          </div>
-          <figcaption>
-            <span>À gauche du curseur, la photo ; à droite, la maquette.</span>
-            <button class="lien-bouton" type="button" data-vue-photo>Voir cet angle dans la maquette <svg class="icone" aria-hidden="true"><use href="#i-fleche"/></svg></button>
-          </figcaption>
-        </figure>
-      </div>
-    </section>
-
-    <!-- ══ Index des fiches pièces : accordéons par catégorie, sans description (rempli par e39.js) ══ -->
-    <section class="section index-pieces" id="pieces" data-etape="Index des pièces" aria-labelledby="pieces-titre">
-      <div class="conteneur">
-        <div class="entete-section">
-          <p class="surtitre" data-revele>Index des pièces</p>
-          <h2 class="titre-section" id="pieces-titre" data-mots>Toutes les <em>pièces.</em></h2>
-          <p data-revele>Une fiche par pièce : sa place dans la voiture et la pièce seule, en 3D. Dépliez une catégorie.</p>
-          <p class="note-maquette" data-revele>La maquette reste une simplification : de nombreux petits éléments — durites, colliers, faisceaux électriques, capteurs, visserie — ne sont pas représentés.</p>
-        </div>
-        <div class="accordeons" id="index-pieces" data-revele></div>
-      </div>
-    </section>
-
-    <!-- ══ Encyclopédie : le tour des équipements, puis l'habitacle (piloté par moteur-3d.js) ══ -->
-    <section class="section encyclopedie" id="encyclopedie" data-etape="Encyclopédie" aria-labelledby="encyclo-titre">
-      <div class="conteneur">
-        <div class="entete-section">
-          <p class="surtitre" data-revele>Encyclopédie</p>
-          <h2 class="titre-section" id="encyclo-titre" data-mots>Le tour <em>du propriétaire.</em></h2>
-          <p data-revele>Touchez un point pour découvrir l'équipement ; portes, capot et coffre s'ouvrent au clic. Puis installez-vous au volant.</p>
-        </div>
-      </div>
-      <div class="conteneur conteneur--large">
-        <div class="encyclo" data-revele>
-          <div class="encyclo__scene" id="encyclo-scene"></div>
-          <div class="encyclo__points" id="encyclo-points"></div>
-          <p class="moteur3d__survol" id="encyclo-survol" aria-live="polite"></p>
-          <div class="encyclo__vues" role="group" aria-label="Vue de l'encyclopédie">
-            <button class="bouton bouton--clair" type="button" data-encyclo-vue="exterieur" aria-pressed="true"><span class="bouton__texte"><svg aria-hidden="true"><use href="#i-exterieur"/></svg>Extérieur</span></button>
-            <button class="bouton bouton--clair" type="button" data-encyclo-vue="interieur" aria-pressed="false"><span class="bouton__texte"><svg aria-hidden="true"><use href="#i-interieur"/></svg>Intérieur</span></button>
-            <button class="bouton bouton--clair" type="button" data-encyclo-points aria-pressed="false"><span class="bouton__texte"><svg aria-hidden="true"><use href="#i-points"/></svg><span data-libelle>Masquer les points</span></span></button>
-            <button class="bouton bouton--clair" type="button" data-encyclo-base><span class="bouton__texte"><svg aria-hidden="true"><use href="#i-recentrer"/></svg>Vue de base</span></button>
-          </div>
-          <div class="moteur3d__pivot encyclo__pivot" role="group" aria-label="Pivoter la maquette">
-            <button type="button" data-pivot="0,-1" aria-label="Pivoter vers le haut"><svg aria-hidden="true"><use href="#i-fleche"/></svg></button>
-            <button type="button" data-pivot="-1,0" aria-label="Pivoter vers la gauche"><svg aria-hidden="true"><use href="#i-fleche"/></svg></button>
-            <button type="button" data-pivot="1,0" aria-label="Pivoter vers la droite"><svg aria-hidden="true"><use href="#i-fleche"/></svg></button>
-            <button type="button" data-pivot="0,1" aria-label="Pivoter vers le bas"><svg aria-hidden="true"><use href="#i-fleche"/></svg></button>
-            <button type="button" data-hauteur="1" aria-label="Monter"><svg aria-hidden="true"><use href="#i-fleche"/></svg></button>
-            <button type="button" data-hauteur="-1" aria-label="Descendre"><svg aria-hidden="true"><use href="#i-fleche"/></svg></button>
-          </div>
-          <button class="encyclo__plein-ecran" type="button" data-plein-ecran aria-label="Plein écran" aria-pressed="false"><svg aria-hidden="true"><use href="#i-plein-ecran"/></svg></button>
-          <div class="encyclo__carte" id="encyclo-carte" hidden>
-            <button class="encyclo__fermer" type="button" data-fermer aria-label="Fermer"><svg class="icone" aria-hidden="true"><use href="#i-fermer"/></svg></button>
-            <h3 data-titre></h3>
-            <p data-texte></p>
-          </div>
-          <p class="encyclo__aide encyclo__aide--exterieur">Glissez pour tourner autour de la voiture · clic droit pour déplacer</p>
-          <p class="encyclo__aide encyclo__aide--interieur">Place du conducteur : glissez pour regarder autour de vous</p>
-        </div>
-      </div>
-    </section>
-
-    <!-- ══ Fiche technique ══ -->
-    <section class="section caracteristiques volet" id="fiche-technique" data-volet data-etape="Fiche technique" aria-labelledby="caracteristiques-titre">
-      <div class="conteneur">
-        <div class="entete-section">
-          <p class="surtitre" data-revele>Fiche technique</p>
-          <h2 class="titre-section" id="caracteristiques-titre" data-mots>La 520i, <em>en chiffres.</em></h2>
-          <p data-revele>BMW 520i E39 berline, 2002, boîte manuelle.</p>
-        </div>
-        <div class="caracteristiques__grille" data-cascade>
-          <div class="caracteristiques__bloc" data-revele>
-            <h3>Moteur</h3>
-            <dl>
-            <div><dt>Moteur</dt><dd>M54B22, 6 cylindres en ligne</dd></div>
-            <div><dt>Cylindrée</dt><dd>2 171 cm³</dd></div>
-            <div class="caracteristiques__fort"><dt>Puissance</dt><dd>170 ch <span>à 6 250 tr/min</span></dd></div>
-            <div class="caracteristiques__fort"><dt>Couple</dt><dd>210 Nm <span>à 3 500 tr/min</span></dd></div>
-            <div><dt>Puissance fiscale</dt><dd>11 CV</dd></div>
-          </dl>
-          </div>
-          <div class="caracteristiques__bloc" data-revele>
-            <h3>Transmission et freinage</h3>
-            <dl>
-            <div><dt>Transmission</dt><dd>Propulsion</dd></div>
-            <div><dt>Boîte</dt><dd>Manuelle, 5 rapports</dd></div>
-            <div><dt>Freins</dt><dd>4 disques, ventilés à l'avant</dd></div>
-            <div><dt>Jantes et pneus</dt><dd>17 pouces sur la mienne, 235/45 R17</dd></div>
-          </dl>
-          </div>
-          <div class="caracteristiques__bloc" data-revele>
-            <h3>Gabarit</h3>
-            <dl>
-            <div><dt>Longueur × largeur × hauteur</dt><dd>4 775 × 1 800 × 1 435 mm</dd></div>
-            <div><dt>Empattement</dt><dd>2 830 mm</dd></div>
-            <div><dt>Poids</dt><dd>1 495 kg</dd></div>
-            <div><dt>Coffre</dt><dd>460 L</dd></div>
-            <div><dt>Réservoir</dt><dd>70 L</dd></div>
-          </dl>
-          </div>
-          <div class="caracteristiques__bloc" data-revele>
-            <h3>Performances et consommation</h3>
-            <dl>
-            <div class="caracteristiques__fort"><dt>Vitesse maximale</dt><dd>226 km/h</dd></div>
-            <div class="caracteristiques__fort"><dt>0 à 100 km/h</dt><dd>9,1 s</dd></div>
-            <div><dt>Urbaine</dt><dd>12,2 L/100 km</dd></div>
-            <div><dt>Extra-urbaine</dt><dd>7,1 L/100 km</dd></div>
-            <div><dt>Mixte</dt><dd>9,0 L/100 km</dd></div>
-          </dl>
-          </div>
-        </div>
-      </div>
-    </section>
-
     <!-- ══ Les relevés, en vrai ══ -->
     <section class="section releves" id="releves" data-etape="Les relevés" aria-labelledby="releves-titre">
       <div class="conteneur">
@@ -661,7 +659,6 @@
         </div>
       </div>
     </section>
-
     <!-- ══ Galerie ══ -->
     <section class="section galerie volet" id="galerie" data-volet data-etape="Galerie" aria-labelledby="galerie-titre">
       <div class="conteneur">
@@ -678,7 +675,6 @@
         </div>
       </div>
     </section>
-
     <!-- ══ Suite ══ -->
     <section class="section e39-suite" data-etape="Suite de la visite" aria-label="Suite de la visite">
       <div class="conteneur e39-suite__contenu" data-revele>
