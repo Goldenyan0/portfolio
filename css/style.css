@@ -3061,7 +3061,27 @@ button.visite__compteur:hover, button.visite__compteur:focus-visible { border-co
   font-size: 0.84rem;
   text-align: left;
 }
-.visite__liste li { counter-increment: fiche; }
+.visite__liste ol li { counter-increment: fiche; }
+.visite__liste { width: min(340px, calc(100vw - 32px)); }
+.visite__categorie + .visite__categorie { margin-top: 6px; padding-top: 6px; border-top: 1px solid var(--ligne); }
+.visite__categorie-titre {
+  position: sticky;
+  top: -8px;
+  z-index: 1;
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 10px 4px;
+  background: rgba(255, 255, 255, 0.98);
+  font-family: var(--police-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--violet);
+}
+.visite__categorie-compte { color: var(--encre-3); }
+.visite__liste button[aria-current] { background: var(--violet-pale); color: var(--violet-fonce); font-weight: 700; }
+/* Note : la maquette ne montre pas tous les petits éléments */
+.note-maquette { margin-top: 12px; padding-left: 12px; border-left: 3px solid var(--violet-clair); font-size: 0.88rem; color: var(--encre-3); }
 .visite__liste button::before { content: counter(fiche, decimal-leading-zero); font-family: var(--police-mono); font-size: 0.72rem; color: var(--encre-3); }
 .visite__liste button:hover, .visite__liste button:focus-visible { background: var(--violet-pale); color: var(--encre); }
 .voyage-pret:not(.visite-active) .visite { visibility: hidden; transition: opacity 0.6s, visibility 0s 0.6s; }

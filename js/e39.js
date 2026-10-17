@@ -166,8 +166,24 @@
     const zoneVisite = document.getElementById('fiches-visite');
     const listeVisite = document.getElementById('visite-liste');
     const compteur = document.getElementById('visite-compteur');
+    // Nombres de fiches et de catégories annoncés dans l'introduction de la documentation
+    const total = groupes.reduce(function (n, g) { return n + Object.keys(g.fiches).length; }, 0);
+    document.querySelectorAll('[data-nombre-fiches]').forEach(function (el) { el.textContent = total; });
+    document.querySelectorAll('[data-nombre-categories]').forEach(function (el) { el.textContent = groupes.length; });
+    const boutonsVisite = [];
     if (zoneVisite) {
       groupes.forEach(function (g) {
+        // Sommaire : un groupe par catégorie (titre + nombre de fiches)
+        let sousListe = null;
+        if (listeVisite) {
+          const groupe = document.createElement('li');
+          groupe.className = 'visite__categorie';
+          groupe.innerHTML = '<p class="visite__categorie-titre"><span></span><span class="visite__categorie-compte"></span></p><ol></ol>';
+          groupe.querySelector('span').textContent = g.categorie;
+          groupe.querySelector('.visite__categorie-compte').textContent = Object.keys(g.fiches).length;
+          sousListe = groupe.querySelector('ol');
+          listeVisite.appendChild(groupe);
+        }
         Object.keys(g.fiches).forEach(function (id) {
           const f = g.fiches[id];
           const carte = document.createElement('article');
@@ -193,7 +209,8 @@
               if (Site.allerA) Site.allerA(carte);
             });
             li.appendChild(b);
-            listeVisite.appendChild(li);
+            sousListe.appendChild(li);
+            boutonsVisite.push({ bouton: b, carte: carte });
           }
         });
       });
@@ -203,7 +220,16 @@
       if (!listeVisite || !compteur) return;
       listeVisite.hidden = !ouvert;
       compteur.setAttribute('aria-expanded', String(ouvert));
+      // À l'ouverture, la fiche en cours est visible dans la liste
+      const courant = listeVisite.querySelector('[aria-current]');
+      if (ouvert && courant) listeVisite.scrollTop = courant.offsetTop - listeVisite.clientHeight / 2;
     }
+    // Fiche en cours (voyage 3D) : mise en avant dans le sommaire
+    document.addEventListener('voyage:carte', function (e) {
+      boutonsVisite.forEach(function (x) {
+        if (x.carte === e.detail.carte) x.bouton.setAttribute('aria-current', 'true'); else x.bouton.removeAttribute('aria-current');
+      });
+    });
     if (compteur) {
       compteur.addEventListener('click', function () { derouler(listeVisite.hidden); });
       document.addEventListener('click', function (e) { if (!e.target.closest('.visite__sommaire')) derouler(false); });
