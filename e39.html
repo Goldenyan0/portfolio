@@ -55,6 +55,8 @@
     <symbol id="i-calques" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" d="M12 3 3 8l9 5 9-5-9-5ZM3 13l9 5 9-5M3 17.5l9 5 9-5"/></symbol>
     <symbol id="i-plus"viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" d="M12 5v14M5 12h14"/></symbol>
     <symbol id="i-moins" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" d="M5 12h14"/></symbol>
+    <symbol id="i-plein-ecran" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M14 4h6v6M10 20H4v-6M20 4l-7 7M4 20l7-7"/></symbol>
+    <symbol id="i-points" viewBox="0 0 24 24"><circle cx="7" cy="8" r="2.5" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="17" cy="9" r="2.5" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="11" cy="17" r="2.5" fill="none" stroke="currentColor" stroke-width="2"/></symbol>
     <symbol id="i-recentrer" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></symbol>
     <symbol id="i-fermer"viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" d="M6 6l12 12M18 6 6 18"/></symbol>
     <symbol id="i-portes" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" d="M4 20V5l9-2v19l-9-2Zm9-17h7v17h-7M10 12h.01"/></symbol>
@@ -376,6 +378,7 @@
             <button class="visite__compteur" id="visite-compteur" type="button" aria-expanded="false" aria-controls="visite-liste"></button>
             <ol class="visite__liste" id="visite-liste" hidden></ol>
           </div>
+          <a class="visite__suite" href="#moteur">Aller à la suite <svg class="icone" aria-hidden="true"><use href="#i-fleche"/></svg></a>
         </div>
       </div>
       <span class="mot-fond" data-glisse="-0.35" aria-hidden="true">M54</span>
@@ -383,7 +386,7 @@
         <div class="entete-section" data-carte>
           <p class="surtitre" data-revele>Documentation</p>
           <h2 class="titre-section" id="doc-titre" data-mots>Le M54 <em>expliqué.</em></h2>
-          <p data-revele><span data-nombre-fiches>84</span> fiches, une par pièce de la maquette, rangées en <span data-nombre-categories>14</span> catégories. Chacune montre la pièce dans la voiture, la pièce seule en 3D et, quand elle existe, sa photo réelle.</p>
+          <p data-revele>La voiture en <span data-nombre-categories>14</span> grands groupes, de la mécanique à la carrosserie : <span data-nombre-fiches>84</span> fiches en tout. Dépliez le détail d'un groupe pour ouvrir la fiche d'une pièce : sa place dans la voiture, la pièce seule en 3D et, quand elle existe, sa photo réelle.</p>
           <p class="note-maquette" data-revele>La maquette reste une simplification : de nombreux petits éléments — durites, colliers, faisceaux électriques, capteurs, visserie — ne sont pas représentés.</p>
           <a class="visite__passer" href="#moteur">Passer la visite guidée : aller à la maquette <svg class="icone" aria-hidden="true"><use href="#i-fleche"/></svg></a>
         </div>
@@ -446,6 +449,7 @@
             <button type="button" data-zoom="1" aria-label="Zoomer"><svg aria-hidden="true"><use href="#i-plus"/></svg></button>
             <button type="button" data-zoom="-1" aria-label="Dézoomer"><svg aria-hidden="true"><use href="#i-moins"/></svg></button>
             <button type="button" data-zoom="0" aria-label="Recentrer la vue"><svg aria-hidden="true"><use href="#i-recentrer"/></svg></button>
+            <button type="button" data-plein-ecran aria-label="Plein écran" aria-pressed="false"><svg aria-hidden="true"><use href="#i-plein-ecran"/></svg></button>
           </div>
           <!-- Flèches pour pivoter la maquette (moteur-3d.js) -->
           <div class="moteur3d__pivot" role="group" aria-label="Pivoter la maquette">
@@ -501,7 +505,7 @@
         </div>
         <figure class="comparaison-photo" data-revele>
           <div class="comparaison-photo__cadre" style="--position: 50%">
-            <img class="comparaison-photo__reel" src="img/e39/baie-moteur-vue-dessus.jpg" width="1400" height="937" loading="lazy" alt="Photo réelle d'un compartiment moteur de BMW E39 vu de face, capot ouvert : cache moteur BMW nervuré, boîte à air à droite, bloc ABS et réservoir de lave-glace à gauche, radiateur et vase d'expansion au premier plan" />
+            <img class="comparaison-photo__reel" src="img/e39/baie-moteur-vue-dessus-960.webp" srcset="img/e39/baie-moteur-vue-dessus-480.webp 480w, img/e39/baie-moteur-vue-dessus-960.webp 960w" sizes="(max-width: 1040px) 100vw, 960px" data-grande="img/e39/baie-moteur-vue-dessus.jpg" width="1400" height="937" loading="lazy" alt="Photo réelle d'un compartiment moteur de BMW E39 vu de face, capot ouvert : cache moteur BMW nervuré, boîte à air à droite, bloc ABS et réservoir de lave-glace à gauche, radiateur et vase d'expansion au premier plan" />
             <img class="comparaison-photo__maquette" id="comparaison-maquette" width="1200" height="803" alt="La maquette 3D vue sous le même angle, capot ouvert, cache moteur posé" />
             <span class="comparaison-photo__etiquette comparaison-photo__etiquette--reel" aria-hidden="true">Photo</span>
             <span class="comparaison-photo__etiquette comparaison-photo__etiquette--maquette" aria-hidden="true">Maquette</span>
@@ -546,6 +550,7 @@
           <div class="encyclo__vues" role="group" aria-label="Vue de l'encyclopédie">
             <button class="bouton bouton--clair" type="button" data-encyclo-vue="exterieur" aria-pressed="true"><span class="bouton__texte"><svg aria-hidden="true"><use href="#i-exterieur"/></svg>Extérieur</span></button>
             <button class="bouton bouton--clair" type="button" data-encyclo-vue="interieur" aria-pressed="false"><span class="bouton__texte"><svg aria-hidden="true"><use href="#i-interieur"/></svg>Intérieur</span></button>
+            <button class="bouton bouton--clair" type="button" data-encyclo-points aria-pressed="false"><span class="bouton__texte"><svg aria-hidden="true"><use href="#i-points"/></svg><span data-libelle>Masquer les points</span></span></button>
             <button class="bouton bouton--clair" type="button" data-encyclo-base><span class="bouton__texte"><svg aria-hidden="true"><use href="#i-recentrer"/></svg>Vue de base</span></button>
           </div>
           <div class="moteur3d__pivot encyclo__pivot" role="group" aria-label="Pivoter la maquette">
@@ -556,6 +561,7 @@
             <button type="button" data-hauteur="1" aria-label="Monter"><svg aria-hidden="true"><use href="#i-fleche"/></svg></button>
             <button type="button" data-hauteur="-1" aria-label="Descendre"><svg aria-hidden="true"><use href="#i-fleche"/></svg></button>
           </div>
+          <button class="encyclo__plein-ecran" type="button" data-plein-ecran aria-label="Plein écran" aria-pressed="false"><svg aria-hidden="true"><use href="#i-plein-ecran"/></svg></button>
           <div class="encyclo__carte" id="encyclo-carte" hidden>
             <button class="encyclo__fermer" type="button" data-fermer aria-label="Fermer"><svg class="icone" aria-hidden="true"><use href="#i-fermer"/></svg></button>
             <h3 data-titre></h3>
@@ -661,11 +667,11 @@
           <h2 class="titre-section" id="galerie-titre" data-mots>Ma <em>voiture.</em></h2>
         </div>
         <div class="galerie__grille" data-cascade>
-          <figure data-revele><img src="img/e39/e39-trois-quarts-avant-jour.jpg" width="900" height="1599" loading="lazy" alt="Trois quarts avant, de jour, sur un parking arboré" /></figure>
-          <figure data-revele><img src="img/e39/e39-coucher-soleil-cesson.jpg" width="900" height="1370" loading="lazy" alt="Le capot sous un coucher de soleil rouge et orange, sur un parking à Cesson" /></figure>
-          <figure data-revele><img src="img/e39/e39-roazhon-park-nuit.jpg" width="1126" height="1900" loading="lazy" alt="De face, de nuit, phares à anneaux jaunes allumés devant le Roazhon Park" /></figure>
-          <figure data-revele><img src="img/e39/e39-arriere-porte-ouverte.jpg" width="900" height="1599" loading="lazy" alt="Vue arrière, portière conducteur ouverte, sur une route bordée de grands arbres" /></figure>
-          <figure data-revele><img src="img/e39/e39-face-avant-jour.jpg" width="900" height="1599" loading="lazy" alt="Face avant de jour, sous un bouleau, plaque floutée" /></figure>
+          <figure data-revele><img src="img/e39/e39-trois-quarts-avant-jour-960.webp" srcset="img/e39/e39-trois-quarts-avant-jour-480.webp 480w, img/e39/e39-trois-quarts-avant-jour-960.webp 960w" sizes="(max-width: 719px) 100vw, 50vw" data-grande="img/e39/e39-trois-quarts-avant-jour.jpg" width="900" height="1599" loading="lazy" alt="Trois quarts avant, de jour, sur un parking arboré" /></figure>
+          <figure data-revele><img src="img/e39/e39-coucher-soleil-cesson-960.webp" srcset="img/e39/e39-coucher-soleil-cesson-480.webp 480w, img/e39/e39-coucher-soleil-cesson-960.webp 960w" sizes="(max-width: 719px) 100vw, 50vw" data-grande="img/e39/e39-coucher-soleil-cesson.jpg" width="900" height="1370" loading="lazy" alt="Le capot sous un coucher de soleil rouge et orange, sur un parking à Cesson" /></figure>
+          <figure data-revele><img src="img/e39/e39-roazhon-park-nuit-960.webp" srcset="img/e39/e39-roazhon-park-nuit-480.webp 480w, img/e39/e39-roazhon-park-nuit-960.webp 960w" sizes="(max-width: 719px) 100vw, 50vw" data-grande="img/e39/e39-roazhon-park-nuit.jpg" width="1126" height="1900" loading="lazy" alt="De face, de nuit, phares à anneaux jaunes allumés devant le Roazhon Park" /></figure>
+          <figure data-revele><img src="img/e39/e39-arriere-porte-ouverte-960.webp" srcset="img/e39/e39-arriere-porte-ouverte-480.webp 480w, img/e39/e39-arriere-porte-ouverte-960.webp 960w" sizes="(max-width: 719px) 100vw, 50vw" data-grande="img/e39/e39-arriere-porte-ouverte.jpg" width="900" height="1599" loading="lazy" alt="Vue arrière, portière conducteur ouverte, sur une route bordée de grands arbres" /></figure>
+          <figure data-revele><img src="img/e39/e39-face-avant-jour-960.webp" srcset="img/e39/e39-face-avant-jour-480.webp 480w, img/e39/e39-face-avant-jour-960.webp 960w" sizes="(max-width: 719px) 100vw, 50vw" data-grande="img/e39/e39-face-avant-jour.jpg" width="900" height="1599" loading="lazy" alt="Face avant de jour, sous un bouleau, plaque floutée" /></figure>
         </div>
       </div>
     </section>

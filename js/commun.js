@@ -53,6 +53,11 @@
      ------------------------------------------------------------------ */
   const aFaire = new Set();
   let planifie = false;
+  let derniereAction = 0;
+  // Une action qui peut faire défiler la page relance la boucle
+  ['wheel', 'touchstart', 'touchmove', 'keydown', 'pointerdown'].forEach(function (type) {
+    window.addEventListener(type, function () { derniereAction = performance.now(); planifier(); }, { passive: true });
+  });
   function planifier() {
     if (planifie) return;
     planifie = true;
@@ -60,8 +65,13 @@
   }
   function executer(temps) {
     planifie = false;
-    // Lenis a besoin de chaque image ; les autres ne demandent que celles dont elles ont besoin
-    if (window.Site.lenis) { window.Site.lenis.raf(temps); planifier(); }
+    // Lenis ne demande des images que pendant un défilement (ou juste après une action de
+    // l'utilisateur) : à l'arrêt, la page ne fait plus tourner de boucle
+    const lenis = window.Site.lenis;
+    if (lenis) {
+      lenis.raf(temps);
+      if (lenis.isScrolling || temps - derniereAction < 300) planifier();
+    }
     const liste = Array.from(aFaire);
     aFaire.clear();
     liste.forEach(function (fn) { fn(temps); });
@@ -78,6 +88,9 @@
     const lenis = new window.Lenis({ lerp: 0.09, smoothWheel: true });
     window.Site.lenis = lenis;
 
+    // Un défilement demandé par le site (liens, sommaire, cartes) relance aussi la boucle
+    const scrollTo = lenis.scrollTo.bind(lenis);
+    lenis.scrollTo = function (cible, options) { derniereAction = performance.now(); scrollTo(cible, options); planifier(); };
     planifier();
 
     // Les liens internes (#section) défilent en douceur au lieu de sauter

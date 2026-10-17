@@ -170,64 +170,91 @@
     const total = groupes.reduce(function (n, g) { return n + Object.keys(g.fiches).length; }, 0);
     document.querySelectorAll('[data-nombre-fiches]').forEach(function (el) { el.textContent = total; });
     document.querySelectorAll('[data-nombre-categories]').forEach(function (el) { el.textContent = groupes.length; });
-    const boutonsVisite = [];
+    // Visite « Le M54 expliqué » : une carte par catégorie (les grands groupes) ; le détail des
+    // pièces se déplie dans la carte, chaque pièce ouvre sa fiche
+    const cartesGroupes = [];
     if (zoneVisite) {
-      groupes.forEach(function (g) {
-        // Sommaire : un groupe par catégorie (titre + nombre de fiches)
-        let sousListe = null;
+      groupes.forEach(function (g, i) {
+        const ids = Object.keys(g.fiches);
+        // Système dominant du groupe : il pilote les animations de la visite (moteur, fluides)
+        const comptes = {};
+        ids.forEach(function (id) { const s = g.fiches[id].systeme; if (s) comptes[s] = (comptes[s] || 0) + 1; });
+        const systeme = Object.keys(comptes).sort(function (a, b) { return comptes[b] - comptes[a]; })[0] || '';
+        const carte = document.createElement('article');
+        carte.className = 'fiche fiche--groupe';
+        carte.id = 'visite-groupe-' + (i + 1);
+        carte.dataset.fiche = 'groupe-' + (i + 1);
+        carte.dataset.pieces = ids.map(function (id) { return g.fiches[id].pieces.join(' '); }).join(' ');
+        carte.dataset.systeme = systeme;
+        carte.setAttribute('data-carte', '');
+        carte.setAttribute('data-revele', '');
+        carte.innerHTML = '<p class="fiche__numero"></p><h3></h3><p class="fiche__role"></p>' +
+          '<button class="fiche__details" type="button" aria-expanded="false">Voir le détail des pièces</button>' +
+          '<ul class="fiche__pieces" data-lenis-prevent hidden></ul>';
+        carte.querySelector('.fiche__numero').textContent = String(i + 1).padStart(2, '0') + ' · ' + ids.length + (ids.length > 1 ? ' pièces' : ' pièce');
+        carte.querySelector('h3').textContent = g.categorie;
+        carte.querySelector('.fiche__role').textContent = ids.map(function (id) { return g.fiches[id].nom; }).join(' · ');
+        const liste = carte.querySelector('.fiche__pieces');
+        ids.forEach(function (id) {
+          const li = document.createElement('li');
+          const b = document.createElement('button');
+          b.type = 'button';
+          b.innerHTML = '<span></span><span class="fiche__piece-desc"></span>';
+          b.firstChild.textContent = g.fiches[id].nom;
+          b.lastChild.textContent = g.fiches[id].description;
+          b.addEventListener('click', function () { ouvrir(id); });
+          li.appendChild(b);
+          liste.appendChild(li);
+        });
+        const details = carte.querySelector('.fiche__details');
+        details.addEventListener('click', function () {
+          const ouvert = liste.hidden;
+          liste.hidden = !ouvert;
+          details.setAttribute('aria-expanded', String(ouvert));
+          details.textContent = ouvert ? 'Masquer le détail' : 'Voir le détail des pièces';
+        });
+        zoneVisite.appendChild(carte);
+        cartesGroupes.push(carte);
+
+        // Sommaire : chaque catégorie se déplie ; un clic sur son titre y emmène
         if (listeVisite) {
-          const groupe = document.createElement('li');
-          groupe.className = 'visite__categorie';
-          groupe.innerHTML = '<p class="visite__categorie-titre"><span></span><span class="visite__categorie-compte"></span></p><ol></ol>';
-          groupe.querySelector('span').textContent = g.categorie;
-          groupe.querySelector('.visite__categorie-compte').textContent = Object.keys(g.fiches).length;
-          sousListe = groupe.querySelector('ol');
-          listeVisite.appendChild(groupe);
-        }
-        Object.keys(g.fiches).forEach(function (id) {
-          const f = g.fiches[id];
-          const carte = document.createElement('article');
-          carte.className = 'fiche fiche--piece';
-          carte.id = 'visite-' + id;
-          carte.dataset.fiche = id;
-          carte.setAttribute('data-carte', '');
-          carte.setAttribute('data-revele', '');
-          carte.innerHTML = '<p class="fiche__numero"></p><h3></h3><p class="fiche__role"></p>' +
-            '<button class="fiche__ouvrir" type="button">Ouvrir la fiche <svg class="icone" aria-hidden="true"><use href="#i-fleche"/></svg></button>';
-          carte.querySelector('.fiche__numero').textContent = g.categorie;
-          carte.querySelector('h3').textContent = f.nom;
-          carte.querySelector('.fiche__role').textContent = f.description;
-          carte.querySelector('.fiche__ouvrir').addEventListener('click', function () { ouvrir(id); });
-          zoneVisite.appendChild(carte);
-          if (listeVisite) {
-            const li = document.createElement('li');
+          const li = document.createElement('li');
+          li.className = 'visite__categorie';
+          const bloc = document.createElement('details');
+          bloc.innerHTML = '<summary><span></span><span class="visite__categorie-compte"></span></summary><ol></ol>';
+          bloc.querySelector('summary span').textContent = g.categorie;
+          bloc.querySelector('.visite__categorie-compte').textContent = ids.length;
+          bloc.querySelector('summary').addEventListener('click', function () { if (Site.allerA) Site.allerA(carte); });
+          ids.forEach(function (id) {
+            const p = document.createElement('li');
             const b = document.createElement('button');
             b.type = 'button';
-            b.textContent = f.nom;
-            b.addEventListener('click', function () {
-              derouler(false);
-              if (Site.allerA) Site.allerA(carte);
-            });
-            li.appendChild(b);
-            sousListe.appendChild(li);
-            boutonsVisite.push({ bouton: b, carte: carte });
-          }
-        });
+            b.textContent = g.fiches[id].nom;
+            b.addEventListener('click', function () { derouler(false); ouvrir(id); });
+            p.appendChild(b);
+            bloc.querySelector('ol').appendChild(p);
+          });
+          li.appendChild(bloc);
+          listeVisite.appendChild(li);
+          carte.blocSommaire = bloc;
+        }
       });
     }
-    // Sommaire déroulant de la visite : le compteur ouvre la liste des fiches
+    // Sommaire déroulant de la visite : le compteur ouvre la liste des catégories
     function derouler(ouvert) {
       if (!listeVisite || !compteur) return;
       listeVisite.hidden = !ouvert;
       compteur.setAttribute('aria-expanded', String(ouvert));
-      // À l'ouverture, la fiche en cours est visible dans la liste
-      const courant = listeVisite.querySelector('[aria-current]');
-      if (ouvert && courant) listeVisite.scrollTop = courant.offsetTop - listeVisite.clientHeight / 2;
+      const courant = listeVisite.querySelector('details[open]');
+      if (ouvert && courant) listeVisite.scrollTop = courant.offsetTop - 8;
     }
-    // Fiche en cours (voyage 3D) : mise en avant dans le sommaire
+    // Catégorie en cours (voyage 3D) : dépliée et mise en avant dans le sommaire
     document.addEventListener('voyage:carte', function (e) {
-      boutonsVisite.forEach(function (x) {
-        if (x.carte === e.detail.carte) x.bouton.setAttribute('aria-current', 'true'); else x.bouton.removeAttribute('aria-current');
+      cartesGroupes.forEach(function (c) {
+        if (!c.blocSommaire) return;
+        const actif = c === e.detail.carte;
+        c.blocSommaire.classList.toggle('est-courant', actif);
+        if (actif) c.blocSommaire.open = true;
       });
     });
     if (compteur) {
@@ -314,6 +341,42 @@
 
     // Utilisé par moteur-3d.js quand on clique une pièce de la maquette
     window.ouvrirFichePiece = ouvrir;
+  }
+
+
+  /* ------------------------------------------------------------------
+     5 quinquies. Plein écran des deux maquettes (tous leurs boutons restent)
+     et points du tour du propriétaire masquables
+     ------------------------------------------------------------------ */
+  function gererPleinEcran() {
+    const actuel = function () { return document.fullscreenElement || document.webkitFullscreenElement; };
+    document.querySelectorAll('[data-plein-ecran]').forEach(function (b) {
+      const zone = b.closest('.moteur3d, .encyclo');
+      if (!zone || !(zone.requestFullscreen || zone.webkitRequestFullscreen)) { b.hidden = true; return; }
+      b.addEventListener('click', function () {
+        if (actuel()) (document.exitFullscreen || document.webkitExitFullscreen).call(document);
+        else (zone.requestFullscreen || zone.webkitRequestFullscreen).call(zone);
+      });
+    });
+    const maj = function () {
+      document.querySelectorAll('[data-plein-ecran]').forEach(function (b) {
+        const actif = actuel() === b.closest('.moteur3d, .encyclo');
+        b.setAttribute('aria-pressed', String(actif));
+        b.setAttribute('aria-label', actif ? 'Quitter le plein écran' : 'Plein écran');
+      });
+    };
+    document.addEventListener('fullscreenchange', maj);
+    document.addEventListener('webkitfullscreenchange', maj);
+  }
+  function gererPointsEncyclo() {
+    const b = document.querySelector('[data-encyclo-points]');
+    const calque = document.getElementById('encyclo-points');
+    if (!b || !calque) return;
+    b.addEventListener('click', function () {
+      const masques = calque.classList.toggle('est-masque');
+      b.setAttribute('aria-pressed', String(masques));
+      b.querySelector('[data-libelle]').textContent = masques ? 'Afficher les points' : 'Masquer les points';
+    });
   }
 
 
@@ -629,5 +692,7 @@
   gererFichesPieces();
   gererComparaison();
   gererAgrandissement();
+  gererPleinEcran();
+  gererPointsEncyclo();
   graphiquesReleves();
 })();

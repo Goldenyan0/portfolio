@@ -2813,9 +2813,11 @@ function demarrer() {
     const fiche = i >= 0 ? fichesVisite[i] : null;
     // Fiche d'une pièce (pieces-e39.js) : on éclaire ses pièces ; les animations (moteur qui tourne,
     // fluides) suivent son système
-    const fichePiece = fiche && window.PIECES_E39 ? window.PIECES_E39.map((g) => g.fiches[fiche.dataset.fiche]).find(Boolean) : null;
-    visite.fiche = fiche ? (fichePiece ? fichePiece.systeme || null : fiche.dataset.fiche) : null;
-    const ids = (fichePiece ? fichePiece.pieces : (visite.fiche && PIECES_PAR_FICHE[visite.fiche]) || []).filter((id) => pieces[id]);
+    // Carte d'un groupe (data-pieces) : toutes ses pièces s'éclairent, son système dominant anime la scène
+    const groupe = fiche && fiche.dataset.pieces;
+    const fichePiece = !groupe && fiche && window.PIECES_E39 ? window.PIECES_E39.map((g) => g.fiches[fiche.dataset.fiche]).find(Boolean) : null;
+    visite.fiche = fiche ? (groupe ? fiche.dataset.systeme || null : fichePiece ? fichePiece.systeme || null : fiche.dataset.fiche) : null;
+    const ids = (groupe ? fiche.dataset.pieces.split(' ') : fichePiece ? fichePiece.pieces : (visite.fiche && PIECES_PAR_FICHE[visite.fiche]) || []).filter((id) => pieces[id]);
     visite.focus = ids.length ? new Set(ids) : null;
     // Décalage de l'image : la voiture se place du côté opposé au panneau de la fiche
     if (fiche) {
@@ -2828,8 +2830,8 @@ function demarrer() {
     // Mise en valeur : la pièce de la fiche s'illumine
     visite.eclairees.forEach((p) => eclairer(p, 0));
     visite.eclairees = ids.map((id) => pieces[id]);
-    if (textePiece) textePiece.textContent = ids.length ? ids.map((id) => pieces[id].userData.nom).slice(0, 2).join(' · ') : 'BMW E39 520i — M54B22';
-    if (texteCompteur) texteCompteur.textContent = i >= 0 ? 'Fiche ' + (i + 1) + ' / ' + fichesVisite.length : 'Visite guidée · ' + fichesVisite.length + ' fiches';
+    if (textePiece) textePiece.textContent = ids.length ? (groupe ? fiche.querySelector('h3').textContent : ids.map((id) => pieces[id].userData.nom).slice(0, 2).join(' · ')) : 'BMW E39 520i — M54B22';
+    if (texteCompteur) texteCompteur.textContent = i >= 0 ? 'Groupe ' + (i + 1) + ' / ' + fichesVisite.length : 'Visite guidée · ' + fichesVisite.length + ' groupes';
     appliquerMateriaux();
     majFluides();
     if (mouvementReduit) visite.aSauter = true;

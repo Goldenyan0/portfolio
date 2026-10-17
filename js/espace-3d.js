@@ -254,7 +254,9 @@ function creerVoyage(THREE, camera) {
       c.matrice = (c.matrice || new THREE.Matrix4()).compose(c.pos, c.quat, un);
       // Lecture : la carte occupe l'espace libre de l'écran (sous la navigation, à droite du
       // sommaire) ; une carte étroite se cale d'un côté (place pour la voiture de la visite)
-      const libreL = l - gauche, libreH = h - nav - 2 * MARGE;
+      // Marge haute propre à une carte (--voyage-marge-haut : place pour un bandeau au-dessus d'elle)
+      const hautLecture = nav + (parseFloat(getComputedStyle(c.el).getPropertyValue('--voyage-marge-haut')) || 0);
+      const libreL = l - gauche, libreH = h - hautLecture - 2 * MARGE;
       let centreX = gauche + libreL / 2;
       c.cote = 0;                                          // côté de l'écran où la carte est lue
       if (c.l < libreL * 0.6 && l >= 720) {
@@ -263,8 +265,8 @@ function creerVoyage(THREE, camera) {
       }
       c.x = l / 2 - centreX;
       c.course = Math.max(0, c.h - libreH);
-      c.yDebut = c.course ? c.h / 2 - (h / 2 - nav - MARGE) : nav / 2;
-      c.yFin = c.course ? h / 2 - MARGE - c.h / 2 : nav / 2;
+      c.yDebut = c.course ? c.h / 2 - (h / 2 - hautLecture - MARGE) : hautLecture / 2;
+      c.yFin = c.course ? h / 2 - MARGE - c.h / 2 : hautLecture / 2;
     });
 
     // Segments : lecture de chaque carte (pause comprise), transition vers la suivante
@@ -861,9 +863,12 @@ async function demarrer() {
 
   /* ---------- Boucle : la caméra du voyage est mise à jour à chaque image ; le réseau est en
      pause si l'onglet est caché ou si une scène plein écran (visite de la E39) le recouvre ---------- */
-  // Performance : à l'arrêt (caméra immobile, aucun défilement depuis un instant), 30 images par seconde suffisent
+  // Performance : à l'arrêt (caméra immobile, aucun défilement depuis un instant), 15 images par seconde ;
+  // sans aucune interaction pendant 20 s, le réseau ne se redessine plus
   let enCours = false, dernier = performance.now(), dernierDefilement = 0;
   window.addEventListener('scroll', () => { dernierDefilement = performance.now(); demander(); }, { passive: true });
+  // Toute interaction relance le réseau (la lueur suit la souris)
+  ['pointermove', 'pointerdown', 'keydown', 'wheel', 'touchstart'].forEach((type) => window.addEventListener(type, () => { dernierDefilement = Math.max(dernierDefilement, performance.now() - 1000); demander(); }, { passive: true }));
   function image(temps) {
     enCours = false;
     const dt = Math.min(0.05, (temps - dernier) / 1000);
@@ -874,7 +879,9 @@ async function demarrer() {
       active = voyage.etapeActive();
     }
     const auRepos = !bouge && temps - dernierDefilement > 900;
-    if (!mouvementReduit && auRepos && temps - dernier < 30) { demander(); return; }
+    // Au repos : 15 images par seconde ; après 20 s sans interaction, plus aucune image
+    if (!mouvementReduit && auRepos && temps - dernierDefilement > 20000) { dernier = temps; return; }
+    if (!mouvementReduit && auRepos && temps - dernier < 62) { demander(); return; }
     dernier = temps;
     if (!voyage) active = placerCameraChemin(temps, dt);
     const recouvert = racineHtml.classList.contains('visite-active');

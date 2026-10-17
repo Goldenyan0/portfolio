@@ -2574,7 +2574,7 @@ html:not(.anime) .sch-trace--reel { stroke-dashoffset: 0; }
 .moteur3d.est-pret .moteur3d__pivot, .encyclo__pivot {
   position: absolute;
   right: 16px;
-  top: calc(50% + 70px);
+  top: calc(50% + 100px);
   z-index: 3;
   display: grid;
   grid-template: repeat(3, 30px) / repeat(3, 30px);
@@ -3062,22 +3062,45 @@ button.visite__compteur:hover, button.visite__compteur:focus-visible { border-co
   text-align: left;
 }
 .visite__liste ol li { counter-increment: fiche; }
+/* Carte d'un groupe de la visite : le détail des pièces se déplie */
+.fiche__details { display: inline-flex; margin-top: 14px; padding: 7px 14px; border: 1px solid var(--ligne); border-radius: 999px; background: #fff; color: var(--violet-fonce); font-size: 0.85rem; font-weight: 600; }
+.fiche__details:hover, .fiche__details:focus-visible { border-color: var(--violet); }
+.fiche__pieces { display: grid; gap: 4px; margin-top: 12px; max-height: 50vh; overflow-y: auto; }
+.fiche__pieces[hidden] { display: none; }
+.fiche__pieces button { display: grid; gap: 2px; width: 100%; padding: 8px 10px; border: 0; border-radius: 10px; background: var(--surface-2); text-align: left; font-size: 0.88rem; font-weight: 600; color: var(--encre); }
+.fiche__pieces button:hover, .fiche__pieces button:focus-visible { background: var(--violet-pale); }
+.fiche__piece-desc { font-weight: 400; font-size: 0.8rem; color: var(--encre-2); }
+.fiche--groupe .fiche__role { font-size: 0.86rem; }
+/* Aller à la suite : quitter la visite vers la maquette */
+.visite__suite { display: inline-flex; align-items: center; gap: 6px; padding: 6px 14px; border-radius: 999px; background: var(--encre); color: #fff; font-size: 0.78rem; font-weight: 600; pointer-events: auto; }
+.visite__suite .icone { width: 14px; height: 14px; }
 .visite__liste { width: min(340px, calc(100vw - 32px)); }
 .visite__categorie + .visite__categorie { margin-top: 6px; padding-top: 6px; border-top: 1px solid var(--ligne); }
-.visite__categorie-titre {
+.visite__categorie summary {
   position: sticky;
   top: -8px;
   z-index: 1;
   display: flex;
   justify-content: space-between;
-  padding: 8px 10px 4px;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 10px;
+  border-radius: 10px;
   background: rgba(255, 255, 255, 0.98);
   font-family: var(--police-mono);
-  font-size: 0.7rem;
+  font-size: 0.72rem;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--violet);
+  cursor: pointer;
+  list-style: none;
 }
+.visite__categorie summary::-webkit-details-marker { display: none; }
+.visite__categorie summary::after { content: ""; width: 6px; height: 6px; margin-left: 6px; border-right: 2px solid currentColor; border-bottom: 2px solid currentColor; transform: rotate(-45deg); transition: transform 0.2s; }
+.visite__categorie details[open] summary::after { transform: rotate(45deg); }
+.visite__categorie summary:hover, .visite__categorie .est-courant summary { background: var(--violet-pale); }
+.visite__categorie summary > :first-child { flex: 1; }
+.visite__categorie ol { padding: 2px 0 6px 8px; }
 .visite__categorie-compte { color: var(--encre-3); }
 .visite__liste button[aria-current] { background: var(--violet-pale); color: var(--violet-fonce); font-weight: 700; }
 /* Note : la maquette ne montre pas tous les petits éléments */
@@ -3393,6 +3416,17 @@ button.visite__compteur:hover, button.visite__compteur:focus-visible { border-co
   overflow: hidden;
 }
 .encyclo__scene { position: absolute; inset: 0; }
+.encyclo__points.est-masque { visibility: hidden; }
+.encyclo__plein-ecran {
+  position: absolute; top: 16px; right: 16px; z-index: 3;
+  display: grid; place-items: center; width: 40px; height: 40px;
+  border: 1px solid var(--ligne); border-radius: 50%; background: rgba(255, 255, 255, 0.92); color: var(--encre);
+}
+.encyclo__plein-ecran svg { width: 18px; height: 18px; }
+/* Plein écran (maquette, tour du propriétaire) : la zone occupe tout l'écran, ses boutons restent */
+.moteur3d:fullscreen, .encyclo:fullscreen { width: 100%; height: 100%; max-width: none; border-radius: 0; overflow: auto; background: var(--fond); }
+.moteur3d:-webkit-full-screen, .encyclo:-webkit-full-screen { width: 100%; height: 100%; border-radius: 0; background: var(--fond); }
+@media (max-width: 719px) { .moteur3d:fullscreen { --scene-h: 68vh; } }
 .encyclo__scene canvas { width: 100%; height: 100%; display: block; }
 .encyclo__points { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
 .encyclo__point {
@@ -3699,6 +3733,8 @@ button.visite__compteur:hover, button.visite__compteur:focus-visible { border-co
   padding: clamp(22px, 4vw, 34px);
   opacity: 1;
 }
+/* Sur mobile, le bandeau de la visite (compteur, « Aller à la suite ») passe au-dessus des cartes */
+@media (max-width: 719px) { .voyage-pret .documentation .carte-3d { --voyage-marge-haut: 96px; } }
 .voyage-pret .documentation__sous-titre.carte-3d { width: auto; max-width: min(460px, calc(100vw - 2 * var(--marge-carte))); }
 /* La voiture de la visite guidée : un décor à plat derrière les cartes de la documentation */
 .voyage-pret .visite {

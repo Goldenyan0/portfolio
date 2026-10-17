@@ -250,21 +250,30 @@ function signature(m) {
    -------------------------------------------------------------------------- */
 function badge520i(THREE) {
   const toile = document.createElement('canvas');
-  toile.width = 256; toile.height = 64;
+  toile.width = 512; toile.height = 128;
   const ctx = toile.getContext('2d');
-  const degrade = ctx.createLinearGradient(0, 8, 0, 56);
-  degrade.addColorStop(0, '#f4f6f8');
-  degrade.addColorStop(0.5, '#8d939b');
-  degrade.addColorStop(1, '#e3e6ea');
-  ctx.fillStyle = degrade;
-  ctx.font = 'bold 52px Arial, Helvetica, sans-serif';
+  // Lettres droites et géométriques (comme le badge d'origine), en chrome : dégradé vertical
+  // clair / sombre / clair avec un reflet net au milieu, et un fin liseré sombre pour le relief
+  ctx.font = '600 104px "Space Grotesk", Arial, Helvetica, sans-serif';
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
-  ctx.fillText('520i', 128, 34);
+  const chrome = ctx.createLinearGradient(0, 18, 0, 110);
+  chrome.addColorStop(0, '#ffffff');
+  chrome.addColorStop(0.35, '#c9ced6');
+  chrome.addColorStop(0.48, '#5c6370');
+  chrome.addColorStop(0.52, '#f2f4f7');
+  chrome.addColorStop(0.75, '#9aa1ab');
+  chrome.addColorStop(1, '#e9ecf0');
+  ctx.lineJoin = 'round';
+  ctx.lineWidth = 6;
+  ctx.strokeStyle = 'rgba(20, 22, 28, 0.55)';
+  ctx.strokeText('520i', 256, 68);
+  ctx.fillStyle = chrome;
+  ctx.fillText('520i', 256, 66);
   const texture = new THREE.CanvasTexture(toile);
   texture.colorSpace = THREE.SRGBColorSpace;
-  texture.anisotropy = 4;
-  return new THREE.MeshStandardMaterial({ map: texture, transparent: true, metalness: 0.6, roughness: 0.25, depthWrite: false });
+  texture.anisotropy = 8;
+  return new THREE.MeshStandardMaterial({ map: texture, transparent: true, metalness: 0.35, roughness: 0.3, emissive: 0x5a5f68, emissiveMap: texture, depthWrite: false });
 }
 
 
