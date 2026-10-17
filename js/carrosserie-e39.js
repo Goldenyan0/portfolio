@@ -54,7 +54,8 @@ function zonePorte(x, y, z, ecart, marge, bas) {
 
 // Petites pièces posées sur le capot (calandre en double haricot, logo) et sur le coffre
 const surCapot = (x, y, z) => Math.abs(x) < 0.285 && z < -2.17 && y > 0.335;
-const surCoffre = (x, y, z) => Math.abs(x) < 0.625 && z > 1.72 && y > 0.47 && y < 0.885;
+// (au-dessus des baguettes sous les feux : elles restent sur la carrosserie)
+const surCoffre = (x, y, z) => Math.abs(x) < 0.625 && z > 1.72 && y > 0.56 && y < 0.885;
 
 // Panneau d'un point qui n'appartient pas à un ouvrant
 function region(x, y, z, interieur) {

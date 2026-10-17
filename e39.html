@@ -445,12 +445,14 @@
             <button type="button" data-zoom="-1" aria-label="Dézoomer"><svg aria-hidden="true"><use href="#i-moins"/></svg></button>
             <button type="button" data-zoom="0" aria-label="Recentrer la vue"><svg aria-hidden="true"><use href="#i-recentrer"/></svg></button>
           </div>
-          <!-- Mobile : flèches pour pivoter la maquette (moteur-3d.js) -->
+          <!-- Flèches pour pivoter la maquette (moteur-3d.js) -->
           <div class="moteur3d__pivot" role="group" aria-label="Pivoter la maquette">
             <button type="button" data-pivot="0,-1" aria-label="Pivoter vers le haut"><svg aria-hidden="true"><use href="#i-fleche"/></svg></button>
             <button type="button" data-pivot="-1,0" aria-label="Pivoter vers la gauche"><svg aria-hidden="true"><use href="#i-fleche"/></svg></button>
             <button type="button" data-pivot="1,0" aria-label="Pivoter vers la droite"><svg aria-hidden="true"><use href="#i-fleche"/></svg></button>
             <button type="button" data-pivot="0,1" aria-label="Pivoter vers le bas"><svg aria-hidden="true"><use href="#i-fleche"/></svg></button>
+            <button type="button" data-hauteur="1" aria-label="Monter"><svg aria-hidden="true"><use href="#i-fleche"/></svg></button>
+            <button type="button" data-hauteur="-1" aria-label="Descendre"><svg aria-hidden="true"><use href="#i-fleche"/></svg></button>
           </div>
           <div class="moteur3d__repli" id="moteur-repli">
             <p>Chargement de la vue 3D…</p>
@@ -542,6 +544,14 @@
             <button class="bouton bouton--clair" type="button" data-encyclo-vue="exterieur" aria-pressed="true"><span class="bouton__texte"><svg aria-hidden="true"><use href="#i-exterieur"/></svg>Extérieur</span></button>
             <button class="bouton bouton--clair" type="button" data-encyclo-vue="interieur" aria-pressed="false"><span class="bouton__texte"><svg aria-hidden="true"><use href="#i-interieur"/></svg>Intérieur</span></button>
             <button class="bouton bouton--clair" type="button" data-encyclo-base><span class="bouton__texte"><svg aria-hidden="true"><use href="#i-recentrer"/></svg>Vue de base</span></button>
+          </div>
+          <div class="moteur3d__pivot encyclo__pivot" role="group" aria-label="Pivoter la maquette">
+            <button type="button" data-pivot="0,-1" aria-label="Pivoter vers le haut"><svg aria-hidden="true"><use href="#i-fleche"/></svg></button>
+            <button type="button" data-pivot="-1,0" aria-label="Pivoter vers la gauche"><svg aria-hidden="true"><use href="#i-fleche"/></svg></button>
+            <button type="button" data-pivot="1,0" aria-label="Pivoter vers la droite"><svg aria-hidden="true"><use href="#i-fleche"/></svg></button>
+            <button type="button" data-pivot="0,1" aria-label="Pivoter vers le bas"><svg aria-hidden="true"><use href="#i-fleche"/></svg></button>
+            <button type="button" data-hauteur="1" aria-label="Monter"><svg aria-hidden="true"><use href="#i-fleche"/></svg></button>
+            <button type="button" data-hauteur="-1" aria-label="Descendre"><svg aria-hidden="true"><use href="#i-fleche"/></svg></button>
           </div>
           <div class="encyclo__carte" id="encyclo-carte" hidden>
             <button class="encyclo__fermer" type="button" data-fermer aria-label="Fermer"><svg class="icone" aria-hidden="true"><use href="#i-fermer"/></svg></button>

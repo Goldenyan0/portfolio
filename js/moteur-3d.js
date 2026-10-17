@@ -2283,7 +2283,7 @@ function demarrer() {
   rendu.domElement.style.touchAction = 'pan-y';
   function limitesMaquette() {
     controles.minPolarAngle = 0.25;
-    controles.maxPolarAngle = 1.62;
+    controles.maxPolarAngle = Math.PI - 0.05;                     // on peut passer sous la voiture
     controles.minDistance = vues.a0.radius * 0.12;
     controles.maxDistance = distanceBase * 1.6;
     controles.enablePan = true;
@@ -2626,14 +2626,26 @@ function demarrer() {
   }
 
   // Zoom au clavier ou au doigt : boutons + / − et recentrage
-  // Mobile : flèches qui font pivoter la maquette autour de sa cible (un cran par appui)
-  cadre.querySelectorAll('[data-pivot]').forEach((b) => b.addEventListener('click', () => {
+  // Flèches qui font pivoter la vue (un cran par appui) : maquette et tour du propriétaire ;
+  // à l'intérieur, c'est le regard qui tourne autour de la place du conducteur
+  // Monter / descendre : la caméra et sa cible se déplacent ensemble à la verticale
+  document.querySelectorAll('[data-hauteur]').forEach((b) => b.addEventListener('click', () => {
+    const interieur = mode === 'encyclo' && encyclo.vue === 'interieur';
+    const pas = Number(b.dataset.hauteur) * (interieur ? 0.15 : Math.max(0.6, camera.position.distanceTo(controles.target) * 0.06));
+    camera.position.y += pas;
+    controles.target.y += pas;
+    controles.update();
+    demanderRendu();
+  }));
+  document.querySelectorAll('[data-pivot]').forEach((b) => b.addEventListener('click', () => {
     const [dx, dy] = b.dataset.pivot.split(',').map(Number);
-    const ecart = camera.position.clone().sub(controles.target);
+    const interieur = mode === 'encyclo' && encyclo.vue === 'interieur';
+    const centre = interieur ? camera.position : controles.target, mobile = interieur ? controles.target : camera.position;
+    const ecart = mobile.clone().sub(centre);
     const sph = new THREE.Spherical().setFromVector3(ecart);
-    sph.theta -= dx * 0.4;
-    sph.phi = THREE.MathUtils.clamp(sph.phi + dy * 0.25, controles.minPolarAngle, controles.maxPolarAngle);
-    camera.position.copy(controles.target).add(ecart.setFromSpherical(sph));
+    sph.theta -= (interieur ? -dx : dx) * 0.4;
+    sph.phi = interieur ? THREE.MathUtils.clamp(sph.phi - dy * 0.25, 0.35, 2.5) : THREE.MathUtils.clamp(sph.phi + dy * 0.25, controles.minPolarAngle, controles.maxPolarAngle);
+    mobile.copy(centre).add(ecart.setFromSpherical(sph));
     controles.update();
     demanderRendu();
   }));
@@ -2943,7 +2955,7 @@ function demarrer() {
       if (animer) allerVers(oeil, cible); else { camera.position.copy(oeil); controles.target.copy(cible); }
     } else {
       controles.minDistance = 6; controles.maxDistance = distanceBase * 1.3;
-      controles.minPolarAngle = 0.2; controles.maxPolarAngle = 1.62;
+      controles.minPolarAngle = 0.2; controles.maxPolarAngle = Math.PI - 0.05;
       controles.enablePan = true; controles.rotateSpeed = 1;
       camera.fov = 35; camera.updateProjectionMatrix();
       const position = vues.a1.center.clone().addScaledVector(DIRECTION, distanceBase * 0.85);
@@ -2954,8 +2966,14 @@ function demarrer() {
   document.querySelectorAll('[data-encyclo-vue]').forEach((b) => b.addEventListener('click', () => vueEncyclo(b.dataset.encycloVue)));
   if (carteEncyclo) {
     const fermer = carteEncyclo.querySelector('[data-fermer]');
-    // La croix fait comme « Vue de base » : extérieur, caméra de départ, tout refermé
-    if (fermer) fermer.addEventListener('click', () => vueEncyclo('exterieur'));
+    // La croix fait comme « Vue de base » : extérieur, caméra de départ, tout refermé ;
+    // dans l'habitacle, elle ferme seulement la fiche (on reste à la place du conducteur)
+    if (fermer) fermer.addEventListener('click', () => {
+      if (encyclo.vue === 'interieur') {
+        carteEncyclo.hidden = true;
+        encyclo.points.concat(encyclo.pointsInterieur).forEach((x) => x.el.classList.remove('est-choisi'));
+      } else vueEncyclo('exterieur');
+    });
   }
   // Les points suivent la voiture à l'écran
   function placerPoints() {
