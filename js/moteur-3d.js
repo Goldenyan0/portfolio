@@ -1052,7 +1052,6 @@ function construireMaquette() {
   levier.add(place(maillage(cylindre(0.07, 3.4, 12), 'acier'), 0, 1.7, 0));
   levier.add(place(maillage(new THREE.SphereGeometry(0.34, 24, 16), 'noir'), 0, 3.5, 0));
   bv.add(levier);
-  bv.add(place(maillage(cone(0.25, 0.6, 0.7, 24), 'caoutchouc'), 11.6, 0.9, 0));
   meca.levier = levier;
 
   // --- Arbre de transmission en deux tronçons : flector, palier central, cardan, brides (tourne) ---
@@ -1475,21 +1474,30 @@ function construireMaquette() {
   const pedale = (id, nom, z, largeur, hauteur) => {
     const p = ajouter(piece(id, nom, 'pedales', [7.0, -2.5, z * 0.4]));
     const pivot = [5.85, 2.4], patin = [7.15, -1.0];
-    p.add(barre([pivot[0], pivot[1], z], [patin[0] - 0.08, patin[1] + hauteur / 2, z], 0.07, 'acier'));
-    p.add(place(maillage(axeZ(cylindre(0.13, 0.36, 12)), 'acier'), pivot[0], pivot[1], z));
+    // Bras mobile : il tourne autour de l'axe transversal du pédalier (enfoncer = rotation négative)
+    const bras = anime(new THREE.Group());
+    bras.position.set(pivot[0], pivot[1], z);
+    const contenu = new THREE.Group();
+    contenu.position.set(-pivot[0], -pivot[1], -z);
+    bras.add(contenu);
+    p.add(bras);
+    p.userData.bras = bras;
+    contenu.add(barre([pivot[0], pivot[1], z], [patin[0] - 0.08, patin[1] + hauteur / 2, z], 0.07, 'acier'));
+    contenu.add(place(maillage(axeZ(cylindre(0.13, 0.36, 12)), 'acier'), pivot[0], pivot[1], z));
     const plaque = place(maillage(boite(0.12, hauteur, largeur, 0.05), 'gomme'), patin[0], patin[1], z);
     plaque.rotation.z = -0.35;
-    p.add(plaque);
+    contenu.add(plaque);
     for (let k = 0; k < 4; k++) {
       const strie = place(maillage(boite(0.03, 0.05, largeur * 0.85, 0.01), 'caoutchouc'), patin[0] + 0.06, patin[1] - hauteur * 0.32 + k * hauteur * 0.21, z);
       strie.rotation.z = -0.35;
-      p.add(strie);
+      contenu.add(strie);
     }
     return p;
   };
   const embrayagePedale = pedale('pedaleEmbrayage', "Pédale d'embrayage", 6.05, 0.62, 0.55);
   const freinPedale = pedale('pedaleFrein', 'Pédale de frein', 4.5, 0.75, 0.6);
-  pedale('pedaleAccelerateur', "Pédale d'accélérateur", 2.8, 0.42, 1.0);
+  const accelerateurPedale = pedale('pedaleAccelerateur', "Pédale d'accélérateur", 2.8, 0.42, 1.0);
+  meca.pedales = { accelerateur: accelerateurPedale.userData.bras, embrayage: embrayagePedale.userData.bras };
   freinPedale.add(barre([5.95, 1.7, 4.5], [4.1, 2.0, 4.9], 0.05, 'acier'));                              // tige de poussée → servofrein
   freinPedale.add(place(maillage(boite(0.8, 0.6, 3.9, 0.08), 'acier'), 5.85, 2.75, 4.4));                 // support du pédalier
   embrayagePedale.add(barre([5.95, 1.8, 6.05], [4.3, 2.1, 6.05], 0.05, 'acier'));
@@ -2008,11 +2016,23 @@ const FICHES_MOTEUR_TOURNANT = ['cycle', 'distribution', 'vanos', 'allumage', 'l
    ========================================================================== */
 const RAPPORTS = [3.72, 2.02, 1.32, 1.0, 0.81];
 const PONT = 3.38;
-const RALENTI = 800, REGIME_MAX = 6200, REGIME_PASSAGE = 5600;
+const RALENTI = 800, REGIME_MAX = 6500, REGIME_PASSAGE = 6000;
 const VITESSE_RALENTI = 2.2;                       // rad/s affichés au ralenti
 const omega = (regime) => VITESSE_RALENTI * regime / RALENTI;
 const regimeDe = (w) => w * RALENTI / VITESSE_RALENTI;
-const MONTEE = [3000, 2100, 1500, 1100, 800];      // montée en régime (tr/min par seconde) selon le rapport
+// Courbe de couple du M54B22 (Nm selon le régime) : 210 Nm vers 3 500 tr/min, 170 ch à 6 100 tr/min
+const COUPLE = [[800, 140], [1500, 165], [2500, 190], [3500, 210], [4500, 205], [5500, 190], [6200, 172], [6500, 155]];
+const couple = (rpm) => {
+  for (let i = 1; i < COUPLE.length; i++) {
+    if (rpm <= COUPLE[i][0]) { const [r0, c0] = COUPLE[i - 1], [r1, c1] = COUPLE[i]; return c0 + (c1 - c0) * (rpm - r0) / (r1 - r0); }
+  }
+  return COUPLE[COUPLE.length - 1][1];
+};
+// Voiture : 1 500 kg avec le conducteur, pneus 235/45 R17 (rayon 0,3215 m), rendement 90 %, SCx 0,65 m² :
+// 0 à 100 km/h en 9,5 s environ, comme une 520i manuelle
+const R_ROUE = 0.3215;
+const acceleration = (rpm, rapport, v) => (couple(rpm) * RAPPORTS[rapport - 1] * PONT * 0.9 / R_ROUE - 0.55 * 0.65 * v * v - 180) / 1500;
+const regimeVitesse = (v, rapport) => v / R_ROUE * RAPPORTS[rapport - 1] * PONT * 60 / (2 * Math.PI);
 // Position du levier dans la grille en H : [avant/arrière, gauche/droite]
 const GRILLE = [[0, 0], [0.22, 0.2], [-0.22, 0.2], [0.22, 0], [-0.22, 0], [0.22, -0.2]];
 
@@ -2048,16 +2068,20 @@ function creerSimulation() {
       if (f >= 1) { s.phase = 'acceleration'; s.t = 0; }
     } else if (s.phase === 'acceleration') {
       s.embraye = true; s.charge = 1;
-      s.regime = Math.min(REGIME_MAX, s.regime + MONTEE[s.rapport - 1] * dt);
+      // Vitesse de la voiture (m/s) intégrée à partir du couple, puis régime imposé par le rapport
+      if (s.vitesse === undefined || s.t < dt * 1.5) s.vitesse = s.regime / (RAPPORTS[s.rapport - 1] * PONT * 60 / (2 * Math.PI)) * R_ROUE;
+      s.vitesse += acceleration(s.regime, s.rapport, s.vitesse) * dt;
+      s.regime = Math.min(REGIME_MAX, regimeVitesse(s.vitesse, s.rapport));
       s.roues = omega(s.regime) / rapportTotal;
-      const fin = s.rapport === 5 ? 4500 : REGIME_PASSAGE;
-      if (s.regime >= fin) { s.phase = s.rapport === 5 ? 'deceleration' : 'passage'; s.t = 0; }
+      // Jusqu'à la 4e (vers 160 km/h), puis pied levé après quelques secondes : la démonstration reste courte
+      if (s.rapport >= 4 && s.t > 3) { s.phase = 'deceleration'; s.t = 0; }
+      else if (s.regime >= REGIME_PASSAGE) { s.phase = 'passage'; s.t = 0; }
     } else if (s.phase === 'passage') {
       // Débrayé : le moteur redescend vers le régime du rapport suivant
       s.embraye = false; s.charge = 0;
       const cible = regimeDe(s.roues * RAPPORTS[s.rapport] * PONT);
       s.regime += (cible - s.regime) * Math.min(1, dt * 7);
-      if (s.t > 0.5) { s.rapport += 1; s.regime = cible; s.phase = 'acceleration'; s.t = 0; }
+      if (s.t > 0.9) { s.rapport += 1; s.regime = cible; s.phase = 'acceleration'; s.t = 0; }
     } else if (s.phase === 'deceleration') {
       // Pied levé : frein moteur, la voiture ralentit en 5e
       s.embraye = true; s.charge = 0;
@@ -2080,7 +2104,7 @@ function creerSimulation() {
     angles.arbre += wArbre * dt;
     angles.roues += s.roues * dt;
     // Levier : il passe par le point mort au début de chaque changement de rapport
-    if (s.phase === 'passage') angles.levier = s.t < 0.25 ? GRILLE[0] : GRILLE[s.rapport + 1];
+    if (s.phase === 'passage') angles.levier = s.t < 0.3 ? GRILLE[s.rapport] : s.t < 0.6 ? GRILLE[0] : GRILLE[s.rapport + 1];
     else angles.levier = GRILLE[s.rapport];
     return angles;
   }
@@ -2218,6 +2242,27 @@ function demarrer() {
   // Volant et pommeau du modèle (posés au chargement de la carrosserie) ; axe de la colonne de direction
   let volantModele = null, pommeauModele = null;
   const AXE_VOLANT = new THREE.Vector3(-Math.sin(1.15), Math.cos(1.15), 0);
+  const BUTEE_VOLANT = Math.PI * 2.5;                 // 900° de butée à butée
+  const DEMULTIPLICATION = 13;                         // tours de volant pour l'angle des roues
+  // Centre et normale du plan d'un ensemble de sommets (analyse en composantes principales)
+  function planPrincipal(geometries) {
+    const c = new THREE.Vector3(), v = new THREE.Vector3();
+    let n = 0;
+    geometries.forEach((g) => { const a = g.attributes.position; for (let i = 0; i < a.count; i++) { c.add(v.fromBufferAttribute(a, i)); n++; } });
+    c.divideScalar(n);
+    const m = [0, 0, 0, 0, 0, 0];                      // xx, xy, xz, yy, yz, zz
+    geometries.forEach((g) => { const a = g.attributes.position; for (let i = 0; i < a.count; i++) {
+      v.fromBufferAttribute(a, i).sub(c);
+      m[0] += v.x * v.x; m[1] += v.x * v.y; m[2] += v.x * v.z; m[3] += v.y * v.y; m[4] += v.y * v.z; m[5] += v.z * v.z;
+    } });
+    const fois = (u) => new THREE.Vector3(m[0] * u.x + m[1] * u.y + m[2] * u.z, m[1] * u.x + m[3] * u.y + m[4] * u.z, m[2] * u.x + m[4] * u.y + m[5] * u.z);
+    // Les deux directions de plus grande variance (puissances itérées) : la normale leur est perpendiculaire
+    let a1 = new THREE.Vector3(1, 0.3, 0.2).normalize();
+    for (let k = 0; k < 40; k++) a1 = fois(a1).normalize();
+    let a2 = new THREE.Vector3(0.2, 1, 0.3).normalize();
+    for (let k = 0; k < 40; k++) { a2 = fois(a2); a2.addScaledVector(a1, -a2.dot(a1)).normalize(); }
+    return { centre: c, normale: new THREE.Vector3().crossVectors(a1, a2).normalize() };
+  }
 
   // Toute la voiture est centrée sur l'origine ; le sol (qui ne montre que l'ombre) passe sous les pneus
   const centreBrut = new THREE.Box3().setFromObject(racine).getCenter(new THREE.Vector3());
@@ -2227,6 +2272,44 @@ function demarrer() {
   sol.position.y = Y_SOL - centreBrut.y;
   sol.receiveShadow = true;
   scene.add(sol);
+
+  // Décor (maquette et tour du propriétaire) : un goudron, sous un ciel en dégradé CSS (aucun coût).
+  // Une seule texture de 256 px, dessinée une fois ; elle défile quand la voiture roule. Le bord
+  // s'efface vers le ciel (masque radial). Masqué quand la caméra passe sous la voiture.
+  const goudron = (function () {
+    const toile = document.createElement('canvas');
+    toile.width = toile.height = 256;
+    const c = toile.getContext('2d');
+    c.fillStyle = '#5b5e64';
+    c.fillRect(0, 0, 256, 256);
+    let g = 11;
+    const hasard = () => { g = (g * 16807) % 2147483647; return (g - 1) / 2147483646; };
+    for (let i = 0; i < 2600; i++) {
+      const v = 70 + Math.floor(hasard() * 60);
+      c.fillStyle = 'rgb(' + v + ',' + v + ',' + (v + 4) + ')';
+      c.fillRect(hasard() * 256, hasard() * 256, 1 + hasard() * 2, 1 + hasard() * 2);
+    }
+    const texture = new THREE.CanvasTexture(toile);
+    texture.colorSpace = THREE.SRGBColorSpace;
+    texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
+    texture.repeat.set(40, 40);
+    const masque = document.createElement('canvas');
+    masque.width = masque.height = 128;
+    const m = masque.getContext('2d');
+    const degrade = m.createRadialGradient(64, 64, 10, 64, 64, 64);
+    degrade.addColorStop(0, '#fff');
+    degrade.addColorStop(0.55, '#fff');
+    degrade.addColorStop(1, '#000');
+    m.fillStyle = degrade;
+    m.fillRect(0, 0, 128, 128);
+    const plan = new THREE.Mesh(new THREE.PlaneGeometry(400, 400), new THREE.MeshBasicMaterial({ map: texture, alphaMap: new THREE.CanvasTexture(masque), transparent: true, depthWrite: false }));
+    plan.rotation.x = -Math.PI / 2;
+    plan.position.y = sol.position.y - 0.03;
+    plan.renderOrder = -1;
+    plan.visible = false;
+    scene.add(plan);
+    return plan;
+  })();
   monde.updateMatrixWorld(true);
   // Point de la maquette → point de la scène
   const versScene = (p) => new THREE.Vector3(p[0], p[1], p[2]).add(monde.position);
@@ -3317,12 +3400,20 @@ function demarrer() {
       const tourne = sim.etat.regime > 0;
       // Pendant la simulation, la voiture roule en serpentant : roues avant et volant braquent,
       // le pommeau suit le levier de la boîte à chaque passage de rapport
-      const cibleBraquage = !mouvementReduit && sim.etat.actif && sim.etat.roues > 0.05 ? Math.sin(performance.now() * 0.0006) * 0.3 : 0;
+      const cibleBraquage = !mouvementReduit && sim.etat.actif && sim.etat.roues > 0.05 ? Math.sin(performance.now() * 0.0004) * 0.2 : 0;
       braquage.angle += (cibleBraquage - braquage.angle) * Math.min(1, dt * 3);
       braquage.pivots.forEach((pv) => { pv.rotation.y = braquage.angle; });
-      if (volantModele) volantModele.quaternion.setFromAxisAngle(AXE_VOLANT, -braquage.angle * 6);
+      if (volantModele) volantModele.quaternion.setFromAxisAngle(AXE_VOLANT, THREE.MathUtils.clamp(-braquage.angle * DEMULTIPLICATION, -BUTEE_VOLANT, BUTEE_VOLANT));
+      // Pédales : accélérateur selon la charge, embrayage enfoncé pendant le démarrage et les passages
+      const pd = meca.pedales;
+      if (pd) {
+        const s = sim.etat, k = Math.min(1, dt * 8);
+        pd.accelerateur.rotation.z += ((s.actif ? -0.32 * s.charge : 0) - pd.accelerateur.rotation.z) * k;
+        pd.embrayage.rotation.z += ((s.actif && !s.embraye ? -0.45 : 0) - pd.embrayage.rotation.z) * k;
+      }
       if (pommeauModele) { pommeauModele.rotation.x = meca.levier.rotation.x * 0.6; pommeauModele.rotation.z = meca.levier.rotation.z * 0.6; }
       majCompteur();
+      if (sim.etat.roues > 0.001) goudron.material.map.offset.x -= regimeDe(sim.etat.roues) * 2.02 / 60 / 0.867 * dt;
       vitesses = { moteur: omega(sim.etat.regime) * 0.35, carburant: tourne ? 0.6 + sim.etat.charge * 0.9 : 0 };
       afficherSimulation();
       anime = !mouvementReduit && (controles.autoRotate || tourne || sim.etat.actif);
@@ -3355,6 +3446,7 @@ function demarrer() {
         fiche.eclairees.forEach((p) => eclairer(p, pulse));
       }
     }
+    goudron.visible = (mode === 'maquette' || mode === 'encyclo') && camera.position.y > goudron.position.y + 0.3;
     // Débit des fluides : pompe à eau et pompe à huile suivent le moteur, la pompe à essence est électrique
     if (fluides.groupe.visible) {
       Object.keys(fluides.textures).forEach((type) => {
@@ -3530,7 +3622,11 @@ function demarrer() {
       pieces.habitacle.add(pivot);
       return pivot;
     };
-    if (panneaux.volantModele && pieces.habitacle) volantModele = pivoter(panneaux.volantModele, P_VOLANT);
+    if (panneaux.volantModele && pieces.habitacle) {
+      const plan = planPrincipal(panneaux.volantModele.map((m) => m.geometrie));
+      AXE_VOLANT.copy(plan.normale);
+      volantModele = pivoter(panneaux.volantModele, plan.centre.toArray());
+    }
     if (pieces.habitacle) poserCombine();
     if (panneaux.pommeau && pieces.habitacle) pommeauModele = pivoter(panneaux.pommeau, depuisGlb(-0.013, 0.37, -0.34));
     // Le volant de secours laisse la place au volant du modèle
