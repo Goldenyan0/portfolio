@@ -703,8 +703,12 @@
   function surveillerMoteur() {
     const cadre = document.getElementById('moteur3d');
     if (!cadre) return;
-    setTimeout(function () {
+    setTimeout(function verifier() {
+      // Onglet en arrière-plan : le navigateur ralentit tout, on revérifie plus tard
+      if (document.hidden) { setTimeout(verifier, 12000); return; }
       if (cadre.classList.contains('est-pret') || cadre.querySelector('.moteur3d__cause')) return;
+      // La librairie est chargée et la maquette se construit par étapes : moteur-3d.js signalera lui-même une panne
+      if (cadre.classList.contains('est-en-cours')) return;
       let cause;
       if (location.protocol === 'file:') {
         cause = 'page ouverte directement depuis le disque (file://) : le navigateur bloque les modules JavaScript. Ouvrez-la via un serveur local ou en ligne.';

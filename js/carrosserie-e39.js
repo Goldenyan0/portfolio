@@ -32,6 +32,15 @@ const VITRES = ['Object_62', 'Object_26'];
 // Derrière la calandre (ventilateur, cadre du bouclier) : restent sur la voiture, pas sur le capot
 const DERRIERE_CALANDRE = ['Object_31', 'Object_51002', 'Object_51003', 'Object_51004'];
 
+// Rend la main au navigateur entre deux lots de triangles (pas ralenti en arrière-plan)
+const respirer = (function () {
+  if (window.scheduler && typeof window.scheduler.yield === 'function') return () => window.scheduler.yield();
+  const canal = new MessageChannel();
+  const attente = [];
+  canal.port1.onmessage = () => { const r = attente.shift(); if (r) r(); };
+  return () => new Promise((r) => { attente.push(r); canal.port2.postMessage(null); });
+})();
+
 // "Object_33_body_0" → "Object_33"
 const prefixe = (nom) => (nom.match(/^Object_\d+/) || [''])[0];
 const dans = (liste, nom) => liste.includes(prefixe(nom));
@@ -284,8 +293,13 @@ export async function chargerCarrosserie(THREE, outils, url, versMaquette, peint
   const v = new THREE.Vector3(), n = new THREE.Vector3();
   const total = new THREE.Matrix4(), normale = new THREE.Matrix3();
 
-  gltf.scene.traverse((objet) => {
-    if (!objet.isMesh || RETIRES.includes(prefixe(objet.name))) return;
+  // Performance : le tri des triangles par panneau se fait maillage par maillage, en rendant la
+  // main au navigateur toutes les douze millisecondes (la page reste fluide pendant le chargement)
+  const maillages = [];
+  gltf.scene.traverse((objet) => { if (objet.isMesh && !RETIRES.includes(prefixe(objet.name))) maillages.push(objet); });
+  let depuis = performance.now();
+  for (const objet of maillages) {
+    if (performance.now() - depuis > 12) { await respirer(); depuis = performance.now(); }
     const geo = objet.geometry;
     const pos = geo.attributes.position, nor = geo.attributes.normal, uv = geo.attributes.uv;
     const indexBrut = geo.index ? geo.index.array : null;
@@ -346,7 +360,7 @@ export async function chargerCarrosserie(THREE, outils, url, versMaquette, peint
       if (!lots.has(cle)) lots.set(cle, { panneau: panneau, materiau: materiau, geos: [] });
       lots.get(cle).geos.push(g);
     });
-  });
+  }
 
   // Fusion par panneau et par matériau
   const panneaux = {};

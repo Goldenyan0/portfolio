@@ -164,18 +164,20 @@ function place(m, x, y, z) {
 }
 
 // Petits raccourcis de géométrie
-const boite = (l, h, p, r) => new RoundedBoxGeometry(l, h, p, 3, r || 0.08);
-const cylindre = (r, h, seg) => new THREE.CylinderGeometry(r, r, h, seg || 32);
-const cone = (rHaut, rBas, h, seg) => new THREE.CylinderGeometry(rHaut, rBas, h, seg || 32);
-const tubeOuvert = (r, h, seg) => new THREE.CylinderGeometry(r, r, h, seg || 40, 1, true);
+// Performance : les finesses de maillage sont choisies pour la taille des pièces à l'écran
+// (la maquette entière approchait 750 000 triangles avec des valeurs plus hautes)
+const boite = (l, h, p, r) => new RoundedBoxGeometry(l, h, p, 2, r || 0.08);
+const cylindre = (r, h, seg) => new THREE.CylinderGeometry(r, r, h, seg || 20);
+const cone = (rHaut, rBas, h, seg) => new THREE.CylinderGeometry(rHaut, rBas, h, seg || 20);
+const tubeOuvert = (r, h, seg) => new THREE.CylinderGeometry(r, r, h, seg || 24, 1, true);
 // Cylindre ouvert, avec une découpe (en radians) tournée vers +Z, le côté vu par la caméra
-const coque = (rHaut, rBas, h, decoupe) => new THREE.CylinderGeometry(rHaut, rBas, h, 48, 1, true,
+const coque = (rHaut, rBas, h, decoupe) => new THREE.CylinderGeometry(rHaut, rBas, h, 28, 1, true,
   decoupe / 2, Math.PI * 2 - decoupe);
 // Couche l'axe d'une géométrie (Y par défaut) le long de X ou de Z
 const axeX = (g) => g.rotateZ(Math.PI / 2);
 const axeZ = (g) => g.rotateX(Math.PI / 2);
 // Tores (anneaux) autour des axes X, Y ou Z
-const toreZ = (R, r, arc) => new THREE.TorusGeometry(R, r, 10, 48, arc);
+const toreZ = (R, r, arc) => new THREE.TorusGeometry(R, r, 8, 32, arc);
 const toreX = (R, r, arc) => toreZ(R, r, arc).rotateY(Math.PI / 2);
 const toreY = (R, r, arc) => toreZ(R, r, arc).rotateX(Math.PI / 2);
 const v3 = (p) => new THREE.Vector3(p[0], p[1], p[2]);
@@ -184,7 +186,7 @@ const v3 = (p) => new THREE.Vector3(p[0], p[1], p[2]);
 function tuyau(points, r, nomMateriau, options) {
   const o = options || {};
   const courbe = new THREE.CatmullRomCurve3(points.map(v3), !!o.ferme, 'centripetal');
-  const geo = new THREE.TubeGeometry(courbe, o.segments || Math.max(24, Math.round(courbe.getLength() * 4)), r, o.cotes || 12, !!o.ferme);
+  const geo = new THREE.TubeGeometry(courbe, o.segments || Math.max(16, Math.round(courbe.getLength() * 3)), r, o.cotes || 8, !!o.ferme);
   return maillage(geo, nomMateriau);
 }
 
@@ -199,7 +201,7 @@ function barre(a, b, r, nomMateriau) {
 
 // Extrusion d'un profil 2D, recentrée, avec l'épaisseur portée par l'axe X
 function extruder(forme, epaisseur) {
-  const g = new THREE.ExtrudeGeometry(forme, { depth: epaisseur, bevelEnabled: false, curveSegments: 16 });
+  const g = new THREE.ExtrudeGeometry(forme, { depth: epaisseur, bevelEnabled: false, curveSegments: 8 });
   g.translate(0, 0, -epaisseur / 2);
   return g.rotateY(Math.PI / 2);
 }
@@ -227,8 +229,8 @@ function denture(rayon, dents, hauteurDent, epaisseur, alesage) {
 // Came en forme d'œuf : cercle de base + bossage tourné vers +Y, axe le long de X
 function lobeCame(base, levee, epaisseur) {
   const forme = new THREE.Shape();
-  for (let i = 0; i <= 48; i++) {
-    const a = i / 48 * Math.PI * 2;
+  for (let i = 0; i <= 24; i++) {
+    const a = i / 24 * Math.PI * 2;
     const r = base + levee * Math.pow(Math.max(0, Math.cos(a)), 3);
     if (i) forme.lineTo(Math.sin(a) * r, Math.cos(a) * r);
     else forme.moveTo(Math.sin(a) * r, Math.cos(a) * r);
@@ -253,7 +255,7 @@ function ressort(rayon, hauteur, spires, r, nomMateriau) {
     const a = i / 12 * Math.PI * 2;
     points.push([Math.cos(a) * rayon, i / n * hauteur, Math.sin(a) * rayon]);
   }
-  return tuyau(points, r, nomMateriau, { segments: n * 2, cotes: 5 });
+  return tuyau(points, r, nomMateriau, { segments: n, cotes: 5 });
 }
 
 // Répète "action(angle, i)" n fois autour d'un cercle
@@ -387,6 +389,17 @@ const calageEchappement = (i) => Math.PI - (COMBUSTION[i] + Math.PI * 1.5) / 2;
 const ANIMES = new Set();
 const anime = (g) => { ANIMES.add(g); return g; };
 
+// Rend la main au navigateur (événements, affichage) entre deux étapes de construction.
+// scheduler.yield quand il existe ; sinon un message (pas ralenti dans un onglet en arrière-plan,
+// contrairement à setTimeout)
+const respirer = (function () {
+  if (window.scheduler && typeof window.scheduler.yield === 'function') return () => window.scheduler.yield();
+  const canal = new MessageChannel();
+  const attente = [];
+  canal.port1.onmessage = () => { const r = attente.shift(); if (r) r(); };
+  return () => new Promise((r) => { attente.push(r); canal.port2.postMessage(null); });
+})();
+
 function piece(id, nom, fiche, eclate, carrosserie) {
   const g = new THREE.Group();
   g.name = id;
@@ -402,7 +415,7 @@ function piece(id, nom, fiche, eclate, carrosserie) {
    - userData.fiche : fiche ouverte au clic (null si aucune fiche)
    - userData.eclate : déplacement en vue éclatée
    ========================================================================== */
-function construireMaquette() {
+async function construireMaquette() {
   ANIMES.clear();
   const racine = new THREE.Group();
   const pieces = {};
@@ -416,6 +429,7 @@ function construireMaquette() {
   };
 
 
+  await respirer();
   /* ---------------- Bas moteur ---------------- */
 
   // --- Bloc moteur (semi-transparent : on voit les pistons travailler) ---
@@ -500,6 +514,7 @@ function construireMaquette() {
   filtreHuile.add(place(maillage(cylindre(0.17, 0.14, 6), 'plastique'), -3.35, 2.62, 1.65));         // six pans
 
 
+  await respirer();
   /* ---------------- Haut moteur ---------------- */
 
   // --- Culasse : joint, paliers d'arbres à cames, puits de bougies, bossages, sortie d'eau ---
@@ -616,6 +631,7 @@ function construireMaquette() {
   [-2.65, 2.95].forEach((x) => cacheBobines.add(place(maillage(cylindre(0.07, 0.05, 12), 'acier'), x, 3.52, 0)));
 
 
+  await respirer();
   /* ---------------- Admission d'air et carburant moteur ---------------- */
 
   // --- Boîte à air (filtre) : le grand boîtier noir du coin avant gauche, derrière le projecteur,
@@ -714,6 +730,7 @@ function construireMaquette() {
   papillon.add(place(maillage(boite(0.16, 0.14, 0.16, 0.03), 'plastique'), -3.5, 1.04, 3.2));
 
 
+  await respirer();
   /* ---------------- Échappement (proportions réelles : tubes de 47 mm) ---------------- */
 
   // --- Collecteurs d'échappement 3 en 1 (cylindres 1-3 et 4-6) : brides, tubes, descentes ---
@@ -790,6 +807,7 @@ function construireMaquette() {
   sondes.add(place(sonde(), 6.6, -2.75, -2.43));
 
 
+  await respirer();
   /* ---------------- Façade : courroie, pompe à eau, thermostat, ventilateur ---------------- */
 
   // Poulies de la courroie d'accessoires (vues de face, plan YZ) dans l'ordre de parcours :
@@ -951,6 +969,7 @@ function construireMaquette() {
   cc.add(tuyau([[0, -0.3, 0], [0, -0.6, 0.05], [0.1, -0.75, -0.2]], 0.06, 'caoutchouc'));
 
 
+  await respirer();
   /* ---------------- Refroidissement ---------------- */
 
   // --- Radiateur : faisceau, boîtes à eau latérales, buse du ventilateur ---
@@ -985,6 +1004,7 @@ function construireMaquette() {
   durites.add(tuyau([[-6.6, 2.55, -3.6], [-6.6, 2.4, -3.95], [-6.6, 2.1, -4.0]], 0.06, 'caoutchouc'));
 
 
+  await respirer();
   /* ---------------- Transmission (propulsion, boîte manuelle) ---------------- */
 
   // --- Volant moteur : disque, couronne de démarreur, face d'appui, vis (tourne) ---
@@ -1175,6 +1195,7 @@ function construireMaquette() {
   [-1, 1].forEach((c) => batterie.add(place(maillage(cylindre(mm(9), mm(18), 12), c > 0 ? 'rouge' : 'conduite'), bx + c * mm(105), by + mm(104), bz - mm(55))));
 
 
+  await respirer();
   /* ---------------- Freinage : 4 disques (ventilés à l'avant), étriers, ABS ---------------- */
 
   // --- Disques : ventilés à l'avant (deux pistes reliées par des ailettes), pleins à l'arrière ;
@@ -1245,6 +1266,7 @@ function construireMaquette() {
   etrier('etrierArD', 'Étrier de frein arrière droit', X_AR, -1);
 
 
+  await respirer();
   /* ---------------- Châssis ---------------- */
 
   // --- Train avant : berceau (traverse et supports moteur), bras, jambes de force McPherson ---
@@ -1313,6 +1335,7 @@ function construireMaquette() {
   });
 
 
+  await respirer();
   /* ---------------- Circuit carburant ---------------- */
 
   // Tracés des conduites (réutilisés pour les fluides animés)
@@ -1360,6 +1383,7 @@ function construireMaquette() {
   duriteEssence.add(place(maillage(cylindre(0.075, 1.6, 12), 'cuivre'), X_POMPE + 0.4, -0.3, Z_POMPE + 0.35));
 
 
+  await respirer();
   /* ---------------- Baie moteur (d'après les photos du compartiment) ---------------- */
 
   // --- Cache moteur BMW (amovible) : capot plastique des bobines avec ses inserts argent nervurés
@@ -1444,6 +1468,7 @@ function construireMaquette() {
   laveGlace.add(place(maillage(cylindre(0.3, 0.16, 24), 'noir'), -3.8, 2.9, -6.35));
   laveGlace.add(place(maillage(axeZ(cylindre(0.12, 0.4, 12)), 'noir'), -5.6, -0.4, -5.7));             // pompe
 
+  await respirer();
   /* ---------------- Freinage hydraulique et pédalier (conduite à gauche) ---------------- */
 
   // --- Servofrein à dépression, sur le tablier côté conducteur ---
@@ -1526,6 +1551,7 @@ function construireMaquette() {
   embrayagePedale.add(barre([5.95, 1.8, 6.05], [4.3, 2.1, 6.05], 0.05, 'acier'));
   embrayagePedale.add(place(maillage(axeX(cylindre(0.17, 0.75, 16)), 'alu'), 3.75, 2.1, 6.05));           // émetteur d'embrayage
 
+  await respirer();
   /* ---------------- Carrosserie (E39 berline, bleu topaze) ---------------- */
   construireCarrosserie(ajouter);
 
@@ -1563,9 +1589,14 @@ function construireMaquette() {
   // Fluides : tracés animés (refroidissement, carburant, huile), hors des pièces cliquables
   const fluides = construireFluides({ DURITE_HAUTE, DURITE_BASSE, LIGNE_POMPE_FILTRE, LIGNE_FILTRE_RAMPE, LIGNE_RETOUR, X_POMPE, Z_POMPE });
 
-  // Fusion des maillages fixes de chaque pièce (beaucoup moins d'appels de dessin)
+  // Fusion des maillages fixes de chaque pièce (beaucoup moins d'appels de dessin),
+  // par lots d'une douzaine de millisecondes pour ne pas figer la page
   racine.updateMatrixWorld(true);
-  Object.values(pieces).forEach(fusionner);
+  let depuis = performance.now();
+  for (const p of Object.values(pieces)) {
+    fusionner(p);
+    if (performance.now() - depuis > 12) { await respirer(); depuis = performance.now(); }
+  }
 
   return { racine: racine, pieces: pieces, meca: meca, fluides: fluides };
 }
@@ -1962,8 +1993,11 @@ function fusionner(racine) {
   Object.keys(lots).forEach((nom) => {
     const liste = lots[nom];
     if (liste.length < 2) return;
+    // Si tous les maillages du lot sont indexés, la fusion l'est aussi : les sommets partagés
+    // ne sont pas tripliqués (mémoire GPU et temps de fusion divisés par environ trois)
+    const tousIndexes = liste.every((m) => m.geometry.index);
     const geos = liste.map((m) => {
-      let geo = m.geometry.index ? m.geometry.toNonIndexed() : m.geometry.clone();
+      let geo = tousIndexes || !m.geometry.index ? m.geometry.clone() : m.geometry.toNonIndexed();
       Object.keys(geo.attributes).forEach((a) => { if (a !== 'position' && a !== 'normal') geo.deleteAttribute(a); });
       return geo.applyMatrix4(inverse.clone().multiply(m.matrixWorld));
     });
@@ -2238,16 +2272,19 @@ const VUE_PHOTO = { position: depuisGlb(0, 1.68, -3.05), cible: depuisGlb(0, 0.4
    - « fiche » : la pièce d'une fiche mise en évidence dans la voiture complète
    Le canvas passe d'une zone à l'autre selon la section visible (ou la fiche ouverte).
    ========================================================================== */
-function demarrer() {
+async function demarrer() {
   const { rendu, scene } = preparerRendu(zoneScene, true);
   const camera = new THREE.PerspectiveCamera(35, 1, 0.3, 800);
   const racineHtml = document.documentElement;
   const petitEcran = () => window.innerWidth < 720;
 
-  const { racine, pieces, meca, fluides } = construireMaquette();
+  const { racine, pieces, meca, fluides } = await construireMaquette();
   const monde = new THREE.Group();
   monde.add(racine, fluides.groupe);
   scene.add(monde);
+  // Les programmes de rendu sont compilés avant la première image (en parallèle quand le
+  // navigateur le permet) : la première image ne fige plus la page une à deux secondes
+  if (!document.hidden) { try { await rendu.compileAsync(scene, camera); } catch (e) { /* ils seront compilés au premier rendu */ } }
   const listePieces = Object.values(pieces);
 
   // Caisse suspendue : tout sauf les roues, disques et étriers bascule autour de l'essieu arrière
@@ -2430,6 +2467,10 @@ function demarrer() {
   // Sur écran tactile : un doigt fait défiler la page, deux doigts font tourner et zoomer
   controles.touches = { ONE: null, TWO: THREE.TOUCH.DOLLY_ROTATE };
   rendu.domElement.style.touchAction = 'pan-y';
+  // Pendant un glisser / zoom de l'utilisateur, la vue est dessinée à pleine cadence
+  let interaction = false;
+  controles.addEventListener('start', () => { interaction = true; });
+  controles.addEventListener('end', () => { interaction = false; });
   function limitesMaquette() {
     controles.minPolarAngle = 0.25;
     controles.maxPolarAngle = Math.PI - 0.05;                     // on peut passer sous la voiture
@@ -2581,11 +2622,24 @@ function demarrer() {
   }
 
   /* ---------- Visibilité, matériaux, fluides ---------- */
+  // Pièces enfermées dans le compartiment moteur : invisibles de l'extérieur quand la voiture est
+  // assemblée, opaque, tous ouvrants fermés (vérifié depuis 40 angles de vue, dessous compris).
+  // Elles ne sont alors pas dessinées : environ 200 000 triangles et 120 appels de dessin de moins
+  const ENFERMEES = new Set(['pistons', 'vilebrequin', 'culasse', 'soupapes', 'aac', 'vanos', 'cache', 'bougies',
+    'bobines', 'cacheBobines', 'debitmetre', 'manchon', 'rampe', 'injecteurs', 'collecteurAdm', 'papillon']);
+  function voitureFermee() {
+    if (mode !== 'maquette' && mode !== 'encyclo') return false;
+    if (eclate > 0.001 || caisse < 0.999 || cacheMoteur.t > 0.001) return false;
+    if (mode === 'maquette' && (transparence || fluidesActifs)) return false;
+    return Object.keys(ouvrants).every((id) => ouvrants[id].t <= 0.001);
+  }
   function appliquerVisibilite() {
+    const fermee = voitureFermee();
     listePieces.forEach((p) => {
       let v = mode !== 'maquette' || !masques.has(p.name);
       if (p.userData.carrosserie && caisse <= 0.01) v = false;
       if (p.name === 'cacheMoteur' && cacheMoteur.t >= 0.999) v = false;
+      if (fermee && ENFERMEES.has(p.name)) v = false;
       p.visible = v;
     });
   }
@@ -2641,6 +2695,7 @@ function demarrer() {
   function appliquerEclate() {
     placerPieces();
     majFluides();
+    appliquerVisibilite();
     cadrer();
   }
 
@@ -2692,6 +2747,7 @@ function demarrer() {
     if (c) c.checked = actifs;
     if (legendeFluides) legendeFluides.hidden = !actifs;
     majFluides();
+    appliquerVisibilite();
     appliquerMateriaux();
     demanderRendu();
   }
@@ -2758,6 +2814,7 @@ function demarrer() {
   const optionTransparence = caseOption('transparence');
   if (optionTransparence) optionTransparence.addEventListener('change', () => {
     transparence = optionTransparence.checked;
+    appliquerVisibilite();
     appliquerMateriaux();
     demanderRendu();
   });
@@ -3426,8 +3483,21 @@ function demarrer() {
   let enCours = false;
   function demanderOmbre() { rendu.shadowMap.needsUpdate = true; }
 
-  function image() {
+  // Performance : quand rien ne bouge vite (lente dérive de la visite, rotation automatique,
+  // pulsation d'une pièce), 30 images par seconde suffisent : moitié moins de travail pour le
+  // GPU et le processeur. Un glisser, un changement de fiche, une transition ou la simulation
+  // repassent à la pleine cadence
+  const CADENCE_REPOS = 1000 / 30;
+  let dernierRendu = 0, transitionLente = false;
+  const positionPrecedente = new THREE.Vector3();
+
+  function image(temps) {
     enCours = false;
+    const maintenant = temps || performance.now();
+    if (transitionLente && !interaction && !sim.etat.actif && maintenant - dernierRendu < CADENCE_REPOS - 1) {
+      demanderRendu();
+      return;
+    }
     const dt = Math.min(horloge.getDelta(), 0.05);
     if (mode === 'aucun' || document.hidden) return;
 
@@ -3523,6 +3593,7 @@ function demarrer() {
       cadrer();
       bouge = true;
     }
+    let ouvrantBouge = false;
     Object.keys(ouvrants).forEach((id) => {
       const o = ouvrants[id], c = cibleOuvrant(id, o);
       if (Math.abs(c - o.t) <= 0.001) return;
@@ -3530,7 +3601,9 @@ function demarrer() {
       else { o.t += Math.sign(c - o.t) * Math.min(Math.abs(c - o.t), dt * 1.6); }
       poserOuvrant(o);
       bouge = true;
+      ouvrantBouge = true;
     });
+    if (ouvrantBouge) appliquerVisibilite();          // les pièces sous le capot réapparaissent dès qu'il s'ouvre
     const cCache = cibleCache();
     if (Math.abs(cCache - cacheMoteur.t) > 0.001) {
       cacheMoteur.t = mouvementReduit ? cCache : cacheMoteur.t + Math.sign(cCache - cacheMoteur.t) * Math.min(Math.abs(cCache - cacheMoteur.t), dt * 1.8);
@@ -3542,6 +3615,13 @@ function demarrer() {
     if (bouge) demanderOmbre();
     if (controles.enabled) controles.update();
     rendu.render(scene, camera);
+    dernierRendu = maintenant;
+    // Image suivante à cadence réduite si la caméra tourne lentement autour de sa cible (moins de
+    // 0,002 radian par image : dérive de la visite, rotation automatique) et que rien ne transite
+    const cibleVue = mode === 'visite' ? visite.regard : controles.target;
+    const angle2 = camera.position.distanceToSquared(positionPrecedente) / Math.max(1e-6, camera.position.distanceToSquared(cibleVue));
+    positionPrecedente.copy(camera.position);
+    transitionLente = anime && !bouge && angle2 < 4e-6 && !(encyclo.anim && mode === 'encyclo');
     if (mode === 'maquette' && (cibleEclate || eclate > 0.01 || survolee)) placerEtiquettes();
     if (mode === 'encyclo') placerPoints();
     // On continue tant que quelque chose bouge (les contrôles relancent eux-mêmes le rendu
@@ -3870,6 +3950,7 @@ async function lancer() {
     mergeGeometries = modules[4].mergeGeometries;
     GLTFLoader = modules[5].GLTFLoader;
     MeshoptDecoder = modules[6].MeshoptDecoder;
+    cadre.classList.add('est-en-cours');          // librairie chargée : la maquette se construit (garde-fou de e39.js)
   } catch (e) {
     afficherEchec('librairie 3D non chargée (' + e.message + ')');
     return;
@@ -3877,7 +3958,7 @@ async function lancer() {
 
   // 3. Construction de la scène
   try {
-    const pieces = demarrer();
+    const pieces = await demarrer();
     brancherMiniMaquette(pieces);
   } catch (e) {
     afficherEchec('erreur JS : ' + e.message);
