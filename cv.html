@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-src 'none'; worker-src 'self' blob:; script-src 'self' https://cdn.jsdelivr.net 'sha256-WOpcrcaksTCD2jAx7Ih4cyDt6LUVXEbEArmaplZb97M='; connect-src 'self'" />
   <title>CV — Yanis Poulain · BTS SIO, alternant informatique</title>
   <meta name="description" content="CV de Yanis Poulain : alternant informatique à l'Établissement Français du Sang, BTS SIO à MyDigitalSchool (2026-2028). Administration systèmes et réseaux, cybersécurité, développement — et passionné d'automobile." />
   <meta name="author" content="Yanis Poulain" />
@@ -18,6 +19,7 @@
   <meta property="og:image" content="https://goldenyan0.github.io/portfolio/img/cv/photo-yanis.jpg" />
   <meta property="og:image:alt" content="Photo de Yanis Poulain" />
   <meta name="twitter:card" content="summary" />
+  <link rel="canonical" href="https://goldenyan0.github.io/portfolio/cv.html" />
 
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%237c3aed'/><text x='50' y='67' font-size='52' font-family='Arial,sans-serif' font-weight='bold' fill='white' text-anchor='middle'>YP</text></svg>" />
 
@@ -280,7 +282,7 @@
   </footer>
 
   <!-- Librairie externe : Lenis (défilement fluide). EmailJS et Three.js ne servent pas ici. -->
-  <script src="https://cdn.jsdelivr.net/npm/lenis@1.1.13/dist/lenis.min.js" defer></script>
+  <script src="js/vendor/lenis.min.js" defer></script>
   <script src="js/commun.js" defer></script>
   <script src="js/cv.js" defer></script>
   <script type="module" src="js/espace-3d.js"></script>

@@ -598,6 +598,28 @@
     const SERVICE = 'service_fei2w6o';
     const MODELE = 'template_9ffu7qt';
 
+    // EmailJS n'est chargé que si le visiteur utilise le formulaire (aucune requête vers un
+    // service tiers sinon) ; l'empreinte SRI garantit que le fichier reçu n'a pas été modifié
+    const URL_EMAILJS = 'https://cdn.jsdelivr.net/npm/@emailjs/browser@4.4.1/dist/email.min.js';
+    const SRI_EMAILJS = 'sha384-SALc35EccAf6RzGw4iNsyj7kTPr33K7RoGzYu+7heZhT8s0GZouafRiCg1qy44AS';
+    let chargementEmailjs = null;
+    function chargerEmailjs() {
+      if (window.emailjs) return Promise.resolve(window.emailjs);
+      if (!chargementEmailjs) {
+        chargementEmailjs = new Promise(function (resoudre, rejeter) {
+          const script = document.createElement('script');
+          script.src = URL_EMAILJS;
+          script.integrity = SRI_EMAILJS;
+          script.crossOrigin = 'anonymous';
+          script.onload = function () { window.emailjs ? resoudre(window.emailjs) : rejeter(); };
+          script.onerror = function () { chargementEmailjs = null; script.remove(); rejeter(); };
+          document.head.appendChild(script);
+        });
+      }
+      return chargementEmailjs;
+    }
+    formulaire.addEventListener('focusin', function () { chargerEmailjs().catch(function () {}); }, { once: true });
+
     function afficherStatut(message, type) {
       statut.textContent = message;
       statut.className = 'formulaire__statut' + (type ? ' est-' + type : '');
@@ -627,26 +649,25 @@
         return;
       }
 
-      if (typeof window.emailjs === 'undefined') {
-        afficherStatut("Le service d'envoi est indisponible. Écrivez-moi directement à y.poulain04@gmail.com.", 'erreur');
-        return;
-      }
-
       bouton.disabled = true;
       bouton.querySelector('.bouton__texte').textContent = 'Envoi…';
       afficherStatut('', '');
 
-      window.emailjs.init({ publicKey: CLE_PUBLIQUE });
-      window.emailjs.send(SERVICE, MODELE, {
-        from_name: formulaire.elements.nom.value,
-        from_email: formulaire.elements.email.value,
-        subject: formulaire.elements.objet.value,
-        message: formulaire.elements.message.value
-      }).then(function () {
-        formulaire.reset();
-        finir('Message envoyé. Je vous réponds vite !', 'succes');
+      chargerEmailjs().then(function (emailjs) {
+        emailjs.init({ publicKey: CLE_PUBLIQUE });
+        return emailjs.send(SERVICE, MODELE, {
+          from_name: formulaire.elements.nom.value.trim(),
+          from_email: formulaire.elements.email.value.trim(),
+          subject: formulaire.elements.objet.value.trim(),
+          message: formulaire.elements.message.value.trim()
+        }).then(function () {
+          formulaire.reset();
+          finir('Message envoyé. Je vous réponds vite !', 'succes');
+        }, function () {
+          finir("L'envoi a échoué. Réessayez ou écrivez-moi à y.poulain04@gmail.com.", 'erreur');
+        });
       }, function () {
-        finir("L'envoi a échoué. Réessayez ou écrivez-moi à y.poulain04@gmail.com.", 'erreur');
+        finir("Le service d'envoi est indisponible. Écrivez-moi directement à y.poulain04@gmail.com.", 'erreur');
       });
     });
   }

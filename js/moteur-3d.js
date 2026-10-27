@@ -2277,14 +2277,15 @@ async function demarrer() {
   const camera = new THREE.PerspectiveCamera(35, 1, 0.3, 800);
   const racineHtml = document.documentElement;
   const petitEcran = () => window.innerWidth < 720;
+  // Matériau jumeau (opaque ↔ transparent) de chaque maillage, voir basculerJumeau()
+  const jumeaux = new WeakMap();
+  // Vrai pendant la compilation des programmes d'une nouvelle partie de la scène (voir prechauffer)
+  let enPrechauffage = false;
 
   const { racine, pieces, meca, fluides } = await construireMaquette();
   const monde = new THREE.Group();
   monde.add(racine, fluides.groupe);
   scene.add(monde);
-  // Les programmes de rendu sont compilés avant la première image (en parallèle quand le
-  // navigateur le permet) : la première image ne fige plus la page une à deux secondes
-  if (!document.hidden) { try { await rendu.compileAsync(scene, camera); } catch (e) { /* ils seront compilés au premier rendu */ } }
   const listePieces = Object.values(pieces);
 
   // Caisse suspendue : tout sauf les roues, disques et étriers bascule autour de l'essieu arrière
@@ -2423,12 +2424,42 @@ async function demarrer() {
   const cacheMoteur = { t: 0, cible: 0 };
 
   // Matériaux d'origine de chaque maillage (vues « fantôme », transparence et fondu de la caisse)
+  // Performance : Three.js dessine un matériau transparent double face en deux passes et le
+  // marque « à recompiler » deux fois par image (vitres, réservoir, caisse en fondu…) ;
+  // forceSinglePass évite ce coût, à peine visible sur des pièces translucides.
   function memoriserMateriaux(objet) {
     objet.traverse((o) => {
-      if (o.isMesh && !o.userData.base) o.userData.base = { opacite: o.material.opacity, transparent: o.material.transparent, depthWrite: o.material.depthWrite };
+      if (!o.isMesh) return;
+      o.material.forceSinglePass = true;
+      if (!o.userData.base) o.userData.base = { opacite: o.material.opacity, transparent: o.material.transparent, depthWrite: o.material.depthWrite };
     });
   }
   memoriserMateriaux(racine);
+
+  // Les programmes de rendu sont compilés avant leur premier usage (en parallèle quand le
+  // navigateur le permet), une fois la scène complète : lumières comprises (le plafonnier change
+  // le programme de chaque matériau) et variantes transparentes des vues « fantôme » comprises.
+  // Sans cela, l'arrivée dans la visite figeait la page plus d'une seconde.
+  async function prechauffer(objet) {
+    if (document.hidden) return;
+    const doublures = new THREE.Group();
+    objet.traverse((o) => {
+      if (!o.isMesh || !o.userData.base || o.userData.base.transparent || jumeaux.has(o)) return;
+      const jumeau = o.material.clone();
+      jumeau.transparent = true;
+      jumeau.depthWrite = false;
+      jumeaux.set(o, jumeau);
+      const doublure = new THREE.Mesh(o.geometry, jumeau);
+      doublure.castShadow = o.castShadow;
+      doublure.receiveShadow = o.receiveShadow;
+      doublures.add(doublure);
+    });
+    try {
+      await rendu.compileAsync(scene, camera);
+      await rendu.compileAsync(doublures, camera, scene);
+    } catch (e) { /* ils seront compilés au premier rendu */ }
+  }
+  await prechauffer(racine);
 
   // Boîtes et sphères mesurées sur la maquette assemblée (ou éclatée)
   function boiteDe(ids, t) {
@@ -2549,9 +2580,12 @@ async function demarrer() {
   function conteneurActuel() {
     return rendu.domElement.parentElement || zoneScene;
   }
+  // Taille de la zone, gardée pour les calculs faits à chaque image (pas de mesure du DOM en boucle)
+  const tailleZone = { l: 1, h: 1 };
   function redimensionner() {
     const zone = conteneurActuel();
     const l = zone.clientWidth || 1, h = zone.clientHeight || 1;
+    tailleZone.l = l; tailleZone.h = h;
     rendu.setSize(l, h, false);
     camera.aspect = l / h;
     if (mode === 'maquette') {
@@ -2666,13 +2700,29 @@ async function demarrer() {
       const interieur = enHabitacle();
       if (o.userData.vitreNoire) o.visible = !interieur;
       if (interieur && o.userData.vitre) opacite = Math.min(opacite, 0.22);
+      if (o.material.transparent !== transparent) basculerJumeau(o, transparent, b);
       o.material.opacity = opacite;
-      if (o.material.transparent !== transparent) {
-        o.material.transparent = transparent;
-        o.material.depthWrite = transparent ? false : b.depthWrite;
-        o.material.needsUpdate = true;
-      }
     });
+  }
+
+  // Performance : passer un matériau d'opaque à transparent oblige Three.js à recalculer son
+  // programme (needsUpdate), ce qui coûtait des centaines de millisecondes à chaque groupe de la
+  // visite. Chaque maillage garde donc deux jumeaux (opaque et transparent) et on échange la
+  // référence : chaque programme n'est préparé qu'une fois.
+  // (rangés hors de userData : Object3D.clone() le copie en JSON)
+  function basculerJumeau(o, transparent, b) {
+    let jumeau = jumeaux.get(o);
+    if (!jumeau) {
+      jumeau = o.material.clone();
+      jumeau.transparent = transparent;
+      jumeau.depthWrite = transparent ? false : b.depthWrite;
+    }
+    if (o.material.emissive) {
+      jumeau.emissive.copy(o.material.emissive);
+      jumeau.emissiveIntensity = o.material.emissiveIntensity;
+    }
+    jumeaux.set(o, o.material);
+    o.material = jumeau;
   }
 
   function majFluides() {
@@ -3188,7 +3238,7 @@ async function demarrer() {
     const d = visite.decalage;
     d.x += (d.cx - d.x) * k;
     d.y += (d.cy - d.y) * k;
-    const zone = conteneurActuel(), l = zone.clientWidth || 1, h = zone.clientHeight || 1;
+    const l = tailleZone.l, h = tailleZone.h;
     camera.setViewOffset(l, h, d.x * l, d.y * h, l, h);
     // La pièce de la fiche pulse doucement
     const pulse = mouvementReduit ? 0.3 : 0.22 + Math.sin(performance.now() * 0.004) * 0.12;
@@ -3490,11 +3540,17 @@ async function demarrer() {
   const CADENCE_REPOS = 1000 / 30;
   let dernierRendu = 0, transitionLente = false;
   const positionPrecedente = new THREE.Vector3();
+  // Cadence adaptative : coût moyen (ms) d'une image 3D sur cet appareil. Sur une machine modeste
+  // (dessin de la voiture complète > 7 ms), la maquette passe à 30 images par seconde hors
+  // manipulation : la page, elle, garde ses 60 images par seconde pendant le défilement.
+  let coutRendu = 0;
+  const machineModeste = () => coutRendu > 7;
 
   function image(temps) {
     enCours = false;
+    if (enPrechauffage) { demanderRendu(); return; }
     const maintenant = temps || performance.now();
-    if (transitionLente && !interaction && !sim.etat.actif && maintenant - dernierRendu < CADENCE_REPOS - 1) {
+    if ((transitionLente || machineModeste()) && !interaction && !sim.etat.actif && maintenant - dernierRendu < CADENCE_REPOS - 1) {
       demanderRendu();
       return;
     }
@@ -3614,7 +3670,9 @@ async function demarrer() {
     }
     if (bouge) demanderOmbre();
     if (controles.enabled) controles.update();
+    const debutRendu = performance.now();
     rendu.render(scene, camera);
+    coutRendu += (performance.now() - debutRendu - coutRendu) * 0.1;
     dernierRendu = maintenant;
     // Image suivante à cadence réduite si la caméra tourne lentement autour de sa cible (moins de
     // 0,002 radian par image : dérive de la visite, rotation automatique) et que rien ne transite
@@ -3688,9 +3746,20 @@ async function demarrer() {
     imageMaquette.closest('.comparaison-photo').classList.add('est-pret');
   }
   if (imageMaquette && 'IntersectionObserver' in window) {
+    // L'instantané (une image complète de la maquette, ~100 ms) est pris quand le navigateur est
+    // libre et que la page ne défile pas : jamais au milieu d'un défilement
+    let dernierDefilement = 0;
+    window.addEventListener('scroll', () => { dernierDefilement = performance.now(); }, { passive: true });
+    const auCalme = (fn) => {
+      const essayer = () => {
+        if (performance.now() - dernierDefilement < 500) { setTimeout(essayer, 300); return; }
+        if (window.requestIdleCallback) window.requestIdleCallback(fn, { timeout: 1500 }); else fn();
+      };
+      essayer();
+    };
     const obs = new IntersectionObserver((entrees) => {
       if (!entrees[0].isIntersecting) return;
-      const attendre = () => (carrosserieDetaillee || carrosserieEchec ? prendreInstantane() : setTimeout(attendre, 400));
+      const attendre = () => (carrosserieDetaillee || carrosserieEchec ? auCalme(prendreInstantane) : setTimeout(attendre, 400));
       attendre();
       obs.disconnect();
     }, { rootMargin: '600px 0px' });
@@ -3725,7 +3794,7 @@ async function demarrer() {
       const contenu = contenuDe(p);
       contenu.children.slice().forEach((c) => {
         contenu.remove(c);
-        c.traverse((o) => { if (o.isMesh) { o.geometry.dispose(); o.material.dispose(); } });
+        c.traverse((o) => { if (o.isMesh) { o.geometry.dispose(); o.material.dispose(); if (jumeaux.has(o)) jumeaux.get(o).dispose(); } });
       });
       const exterieur = id !== 'habitacle';
       panneaux[id].forEach((morceau) => {
@@ -3783,13 +3852,19 @@ async function demarrer() {
       pieces.caisse.add(place(fond, (x0 + x1) / 2, (y0 + y1) / 2, 0));
     }
     memoriserMateriaux(racine);
-    carrosserieDetaillee = true;
-    cadre.classList.add('est-detaillee');
-    appliquerVisibilite();
-    appliquerMateriaux();
-    demanderOmbre();
-    demanderRendu();
+    // Le rendu attend que les programmes des nouveaux panneaux soient prêts (pas de page figée)
+    enPrechauffage = true;
+    return prechauffer(racine).then(() => {
+      enPrechauffage = false;
+      carrosserieDetaillee = true;
+      cadre.classList.add('est-detaillee');
+      appliquerVisibilite();
+      appliquerMateriaux();
+      demanderOmbre();
+      demanderRendu();
+    });
   }).catch((e) => {
+    enPrechauffage = false;
     carrosserieEchec = true;
     console.warn('[Moteur 3D] carrosserie détaillée non chargée, carrosserie simplifiée conservée : ' + e.message);
   });

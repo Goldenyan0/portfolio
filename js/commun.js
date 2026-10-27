@@ -72,6 +72,12 @@
       lenis.raf(temps);
       if (lenis.isScrolling || temps - derniereAction < 300) planifier();
     }
+    // Performance : les effets liés au défilement (qui mesurent la page) passent avant les scènes
+    // 3D (qui écrivent des styles) ; dans l'autre ordre, chaque mesure forçait une mise en page
+    if (miseAJourDemandee) {
+      miseAJourDemandee = false;
+      ecouteursScroll.forEach(function (fn) { fn(); });
+    }
     const liste = Array.from(aFaire);
     aFaire.clear();
     liste.forEach(function (fn) { fn(temps); });
@@ -85,7 +91,15 @@
   function lancerLenis() {
     if (mouvementReduit || typeof window.Lenis === 'undefined') return;
 
-    const lenis = new window.Lenis({ lerp: 0.09, smoothWheel: true });
+    // Un bloc qui défile lui-même (liste de la visite, fiche ouverte, calques, tableau…)
+    // garde la molette et le doigt : sinon Lenis ferait défiler la page derrière lui
+    function defileSeul(noeud) {
+      if (noeud === document.body || noeud === document.documentElement) return false;
+      if (noeud.scrollHeight <= noeud.clientHeight + 1 && noeud.scrollWidth <= noeud.clientWidth + 1) return false;
+      const style = getComputedStyle(noeud);
+      return /(auto|scroll)/.test(style.overflowY + style.overflowX);
+    }
+    const lenis = new window.Lenis({ lerp: 0.09, smoothWheel: true, prevent: defileSeul });
     window.Site.lenis = lenis;
 
     // Un défilement demandé par le site (liens, sommaire, cartes) relance aussi la boucle
@@ -314,14 +328,12 @@
         Une seule boucle par image : toutes les fonctions enregistrées
         avec Site.surScroll() sont appelées quand la page défile.
      ------------------------------------------------------------------ */
+  // (exécutées en tête de la prochaine image, voir executer())
   let miseAJourDemandee = false;
   function demanderMiseAJour() {
     if (miseAJourDemandee) return;
     miseAJourDemandee = true;
-    window.Site.image(function () {
-      miseAJourDemandee = false;
-      ecouteursScroll.forEach(function (fn) { fn(); });
-    });
+    planifier();
   }
   window.addEventListener('scroll', demanderMiseAJour, { passive: true });
   window.addEventListener('resize', demanderMiseAJour);
@@ -402,7 +414,8 @@
     const panneaux = Array.from(document.querySelectorAll(selecteur)).filter(function (el) {
       return !el.closest(exclus) && !el.hasAttribute('data-revele');
     });
-    if (voyage) return;
+    // Vue classique : pas de panneaux inclinés en 3D (page plus sobre et plus légère)
+    if (voyage || document.documentElement.classList.contains('vue-classique')) return;
     panneaux.forEach(function (p, i) {
       p.classList.add('panneau');
       p.style.setProperty('--cote', i % 2 ? '1' : '-1');
@@ -460,6 +473,43 @@
 
 
   /* ------------------------------------------------------------------
+     8. Bascule « vue 3D / vue classique » : la vue classique est une page à défilement
+        simple (sans voyage dans l'espace), plus rapide à parcourir et plus légère.
+        Le choix est mémorisé (script du <head>) ; on revient à la même section.
+     ------------------------------------------------------------------ */
+  function gererBasculeVue() {
+    const boutons = document.querySelectorAll('[data-bascule-vue]');
+    const racine = document.documentElement;
+    const classique = racine.classList.contains('vue-classique');
+    // Sans animations ou sans WebGL, la page est déjà en vue classique : rien à proposer
+    if (!boutons.length || !racine.classList.contains('anime') || !window.WebGLRenderingContext) return;
+
+    // Section affichée : la carte lue pendant le voyage, sinon la dernière section passée
+    function sectionCourante() {
+      if (window.Site.carteVoyage) return window.Site.carteVoyage.etape;
+      let courante = null;
+      document.querySelectorAll('[data-etape]').forEach(function (etape) {
+        if (etape.getBoundingClientRect().top < window.innerHeight * 0.4) courante = etape;
+      });
+      return courante;
+    }
+
+    boutons.forEach(function (bouton) {
+      bouton.hidden = false;
+      bouton.querySelector('[data-libelle]').textContent = classique ? 'Vue 3D' : 'Vue classique';
+      bouton.setAttribute('aria-label', classique
+        ? 'Revenir à la vue 3D : un voyage dans l\'espace, section par section'
+        : 'Passer à la vue classique : une page simple, plus légère');
+      bouton.addEventListener('click', function () {
+        const section = sectionCourante();
+        const ancre = section && (section.id || (section.querySelector('[id]') || {}).id);
+        location.href = location.pathname + '?vue=' + (classique ? '3d' : 'classique') + (ancre ? '#' + ancre : '');
+      });
+    });
+  }
+
+
+  /* ------------------------------------------------------------------
      Démarrage
      ------------------------------------------------------------------ */
   lancerLenis();
@@ -471,4 +521,5 @@
   gererTimelines();
   gererPanneaux();
   gererMagnetisme();
+  gererBasculeVue();
 })();

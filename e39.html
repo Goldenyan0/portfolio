@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-src 'none'; worker-src 'self' blob:; script-src 'self' https://cdn.jsdelivr.net 'wasm-unsafe-eval' 'sha256-SMNcEC8V7pVU6ZnehcFbY/2xVNAvXhjdgHJmLdiN4rA=' 'sha256-KdwMH+AzGDNDosnmI+yteLvITvJmpIAsmYJ9JNR+oPw='; connect-src 'self' blob: data:" />
   <title>Projet automobile — BMW E39 520i (M54B22) · Yanis Poulain</title>
   <meta name="description" content="Ma BMW E39 520i de 2002 : diagnostic d'un mélange pauvre, pompe à essence, débitmètre, refroidissement. Le moteur M54 en vue éclatée 3D, 17 fiches pour le comprendre et les vrais relevés." />
   <meta name="author" content="Yanis Poulain" />
@@ -18,6 +19,7 @@
   <meta property="og:image" content="https://goldenyan0.github.io/portfolio/img/e39/e39-trois-quarts-avant-jour.jpg" />
   <meta property="og:image:alt" content="BMW E39 bleue vue de trois quarts avant, plaque floutée" />
   <meta name="twitter:card" content="summary_large_image" />
+  <link rel="canonical" href="https://goldenyan0.github.io/portfolio/e39.html" />
 
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%237c3aed'/><text x='50' y='67' font-size='52' font-family='Arial,sans-serif' font-weight='bold' fill='white' text-anchor='middle'>YP</text></svg>" />
 
@@ -28,8 +30,18 @@
   <script>
     document.documentElement.classList.add('js');
     if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) document.documentElement.classList.add('anime');
+    // "vue-classique" : choisie avec le bouton de la navigation (mémorisée) ou ?vue=classique,
+    // page à défilement simple, plus légère ; ?vue=3d revient au voyage
+    var classique = /[?&]vue=classique/.test(location.search);
+    try {
+      if (/[?&]vue=3d/.test(location.search)) localStorage.removeItem('vue');
+      else if (classique) localStorage.setItem('vue', 'classique');
+      else classique = localStorage.getItem('vue') === 'classique';
+    } catch (e) { /* stockage indisponible : vue par défaut */ }
+    if (/[?&]vue=/.test(location.search) && history.replaceState) history.replaceState(null, '', location.pathname + location.hash);
+    if (classique) document.documentElement.classList.add('vue-classique');
     // "voyage" : les sections deviennent des cartes posées dans l'espace 3D (espace-3d.js)
-    if (document.documentElement.classList.contains('anime') && window.WebGLRenderingContext) document.documentElement.classList.add('voyage');
+    else if (document.documentElement.classList.contains('anime') && window.WebGLRenderingContext) document.documentElement.classList.add('voyage');
   </script>
 
   <!-- Correspondance des modules Three.js (le moteur 3D importe "three" et ses compléments) -->
@@ -86,6 +98,7 @@
         </ul>
       </nav>
       <div class="nav__actions">
+        <button class="nav__vue" type="button" data-bascule-vue hidden><svg class="icone" viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" d="M12 3 3 8l9 5 9-5-9-5ZM3 13l9 5 9-5M3 17.5l9 5 9-5"/></svg><span data-libelle>Vue classique</span></button>
         <a class="bouton bouton--petit nav__cv" href="cv.html"><span class="bouton__texte">Mon CV</span></a>
         <button class="nav__burger" id="burger" type="button" aria-expanded="false" aria-controls="menu-mobile">
           <span></span><span class="visuellement-cache">Ouvrir le menu</span>
@@ -100,6 +113,7 @@
     <a href="#documentation">Le M54 expliqué</a>
     <a href="#releves">Relevés</a>
     <a href="index.html">Portfolio</a>
+    <button class="menu-mobile__vue" type="button" data-bascule-vue hidden><span data-libelle>Vue classique</span></button>
   </div>
 
   <main id="contenu" class="e39">
@@ -739,7 +753,7 @@
   </footer>
 
   <!-- Librairies externes : Lenis (défilement fluide) et Three.js (moteur 3D, via l'importmap). -->
-  <script src="https://cdn.jsdelivr.net/npm/lenis@1.1.13/dist/lenis.min.js" defer></script>
+  <script src="js/vendor/lenis.min.js" defer></script>
   <script src="js/commun.js" defer></script>
   <script src="js/donnees-releves.js" defer></script>
   <script src="js/pieces-e39.js" defer></script>

@@ -36,11 +36,11 @@ Les trois pages partagent une seule feuille de style : `css/style.css`.
 |---|---|
 | HTML5 / CSS3 / JavaScript vanilla | Structure, mise en page, animations — sans framework |
 | [Three.js](https://threejs.org/) | Espace 3D parcouru au défilement sur les 3 pages (repli : site classique si WebGL est indisponible) et E39 en 3D sur `e39.html` (visite guidée, maquette, fluides) |
-| [Lenis](https://lenis.darkroom.engineering/) | Défilement fluide |
-| [EmailJS](https://www.emailjs.com/) | Envoi du formulaire de contact (avec champ piège anti-spam) |
+| [Lenis](https://lenis.darkroom.engineering/) | Défilement fluide (hébergé dans le dépôt : `js/vendor/`) |
+| [EmailJS](https://www.emailjs.com/) | Envoi du formulaire de contact (avec champ piège anti-spam), chargé seulement quand on utilise le formulaire, avec contrôle d'intégrité (SRI) |
 | Space Grotesk + Inter | Polices hébergées dans le dépôt (`fonts/`) |
 
-3 librairies externes au maximum, chargées depuis jsDelivr.
+3 librairies externes au maximum ; Three.js et EmailJS sont servis par jsDelivr.
 
 ---
 
@@ -54,7 +54,13 @@ Les trois pages partagent une seule feuille de style : `css/style.css`.
 - Projets en grille (3 colonnes sur desktop, 2 sur tablette, 1 sur mobile), filtre animé par catégorie, inclinaison 3D des cartes
 - Parallax multicouche, compteurs, barres de compétences, timelines qui se dessinent
 
-**Accessibilité :** si « réduire les animations » est activé dans le système, le site s'affiche en version statique, sans mouvement. Mise en page pensée d'abord pour le mobile (vérifiée à 360 px).
+- **Vue classique** (bouton de la navigation, ou du menu sur mobile) : la même page en défilement simple, sans voyage 3D ni réseau en arrière-plan — plus rapide à parcourir et plus légère. Le choix est mémorisé ; on revient sur la même section
+
+**Accessibilité :** si « réduire les animations » est activé dans le système, le site s'affiche en version statique, sans mouvement. Contrastes conformes WCAG AA (audit axe-core). Mise en page pensée d'abord pour le mobile (vérifiée à 360 px).
+
+**Performance :** une seule boucle d'animation par page ; les mesures de la page passent avant les écritures de styles à chaque image ; les shaders de la maquette sont compilés à l'avance (y compris les variantes « fantôme ») ; sur une machine modeste, la maquette passe d'elle-même à 30 images/s pendant que la page garde ses 60.
+
+**Sécurité :** chaque page déclare une *Content-Security-Policy* (seuls le site et jsDelivr sont autorisés ; scripts inline autorisés par empreinte). Après toute modification d'un script inline (`<head>`, importmap), relancer `pwsh outils/csp.ps1`.
 
 ---
 
@@ -63,7 +69,9 @@ Les trois pages partagent une seule feuille de style : `css/style.css`.
 ```
 portfolio/
 ├── index.html · cv.html · e39.html
+├── 404.html               # page « introuvable » (servie par GitHub Pages)
 ├── css/style.css          # feuille de style commune
+├── outils/csp.ps1         # met à jour la Content-Security-Policy des pages
 ├── js/
 │   ├── commun.js          # comportements partagés (navigation, révélations, panneaux, scroll…)
 │   ├── index.js           # page d'accueil
@@ -71,7 +79,8 @@ portfolio/
 │   ├── moteur-3d.js       # E39 en 3D : visite guidée et maquette (module Three.js)
 │   ├── carrosserie-e39.js # découpe du modèle de carrosserie en panneaux (module)
 │   ├── pieces-e39.js      # fiches des pièces de la maquette
-│   └── e39.js · cv.js     # pages projet automobile et CV
+│   ├── e39.js · cv.js     # pages projet automobile et CV
+│   └── vendor/lenis.min.js # Lenis (licence MIT)
 ├── fonts/                 # polices auto-hébergées
 ├── img/                   # images du site (projets, E39…)
 ├── modeles/               # modèle 3D de la carrosserie (bmw-e39-web.glb : version allégée)
@@ -91,6 +100,8 @@ cd portfolio
 python -m http.server 8000
 # puis ouvrir http://localhost:8000
 ```
+
+Sans Python (Windows) : `pwsh .claude/serveur.ps1` sert le dossier sur http://localhost:8000.
 
 > ⚠️ Pour que le formulaire de contact fonctionne, un compte **EmailJS** configuré est nécessaire.
 

@@ -48,7 +48,7 @@
   --surface-2: #f4f3f7;
   --encre: #111018;             /* texte principal */
   --encre-2: #4a4857;           /* texte secondaire */
-  --encre-3: #8b8998;           /* texte discret */
+  --encre-3: #696776;           /* texte discret (contraste ≥ 4,5:1 sur les fonds clairs, WCAG AA) */
   --ligne: #e6e3ee;
   --violet: #7c3aed;
   --violet-fonce: #5b21b6;
@@ -426,6 +426,34 @@ button { font: inherit; color: inherit; cursor: pointer; }
 
 .nav__actions { display: flex; align-items: center; gap: 10px; }
 .nav__cv { display: none; }
+/* Bascule vue 3D / vue classique (grand écran : dans la barre ; mobile : dans le menu) */
+.nav__vue {
+  display: none;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  border: 1px solid var(--ligne);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--encre-2);
+  font-size: 0.85rem;
+  font-weight: 600;
+  transition: border-color 0.2s, color 0.2s;
+}
+.nav__vue .icone { width: 16px; height: 16px; }
+.nav__vue:hover, .nav__vue:focus-visible { border-color: var(--violet); color: var(--violet-fonce); }
+.menu-mobile__vue {
+  align-self: flex-start;
+  margin-top: 12px;
+  padding: 10px 18px;
+  border: 1px solid var(--ligne);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--encre-2);
+  font-size: 1rem;
+  font-weight: 600;
+}
+.nav__vue[hidden], .menu-mobile__vue[hidden] { display: none; }
 
 /* Bouton burger (mobile) */
 .nav__burger {
@@ -486,7 +514,7 @@ button { font: inherit; color: inherit; cursor: pointer; }
 
 @media (min-width: 1040px) {
   .nav__liens { display: flex; }
-  .nav__cv { display: inline-flex; }
+  .nav__cv, .nav__vue { display: inline-flex; }
   .nav__burger, .menu-mobile { display: none; }
 }
 
@@ -1616,7 +1644,7 @@ html:not(.js) .timeline__trait { transform: none; }
   text-transform: uppercase;
   color: var(--violet);
 }
-.etape--actuelle .etape__date { color: #059669; }
+.etape--actuelle .etape__date { color: #047857; }
 .etape h3,
 .etape h4 { margin-top: 6px; font-size: 1.25rem; letter-spacing: -0.02em; }
 .etape__lieu { margin-top: 2px; font-weight: 500; color: var(--encre-2); font-size: 0.95rem; }
@@ -1894,7 +1922,8 @@ html:not(.js) .timeline__trait { transform: none; }
   overflow: hidden;
 }
 .formulaire__statut { min-height: 1.4em; font-size: 0.92rem; font-weight: 500; }
-.formulaire__statut.est-succes { color: #059669; }
+.formulaire__statut.est-succes { color: #047857; }
+.formulaire__note { grid-column: 1 / -1; font-size: 0.8rem; line-height: 1.5; color: var(--encre-3); }
 .formulaire__statut.est-erreur { color: #b91c1c; }
 
 
@@ -2018,7 +2047,7 @@ html:not(.js) .timeline__trait { transform: none; }
 /* Dans le CV, la date et l'organisme partagent une ligne, comme sur l'original */
 .cv .etape h3 { margin-top: 0; font-family: var(--police-texte); font-size: 1rem; font-weight: 700; letter-spacing: 0; }
 .cv .etape__lieu .etape__date { margin-right: 8px; font-family: var(--police-texte); font-size: 0.9rem; letter-spacing: 0; text-transform: none; color: var(--encre-3); }
-.cv .etape--actuelle .etape__lieu .etape__date { color: #059669; }
+.cv .etape--actuelle .etape__lieu .etape__date { color: #047857; }
 .cv .etape { padding-bottom: 24px; }
 .cv .etape:last-child { padding-bottom: 0; }
 .etape__texte { margin-top: 4px; font-size: 0.93rem; color: var(--encre-2); }
@@ -2422,7 +2451,7 @@ html:not(.anime) .sch-trace--reel { stroke-dashoffset: 0; }
 .historique-ltft thead th { font-family: var(--police-mono); font-size: 0.75rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--encre-3); font-weight: 500; }
 .historique-ltft tbody th { font-weight: 500; color: var(--encre-2); }
 .historique-ltft td { font-family: var(--police-titre); font-weight: 600; }
-.historique-ltft__final td, .historique-ltft__final th { color: #059669; }
+.historique-ltft__final td, .historique-ltft__final th { color: #047857; }
 
 .jauges {
   margin: 0;
@@ -2444,7 +2473,7 @@ html:not(.anime) .sch-trace--reel { stroke-dashoffset: 0; }
 .jauge-ltft__aiguille { stroke: var(--violet); stroke-width: 4; stroke-linecap: round; }
 .jauge-ltft__axe { fill: var(--encre); }
 .jauge-ltft__valeur { font-family: var(--police-titre); font-size: clamp(2rem, 8vw, 3rem); font-weight: 700; letter-spacing: -0.04em; transition: color 0.4s; }
-.jauges.est-zero .jauge-ltft__valeur { color: #059669; }
+.jauges.est-zero .jauge-ltft__valeur { color: #047857; }
 .jauge-ltft__nom { font-family: var(--police-mono); font-size: 0.78rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--encre-3); }
 
 /* --- Moteur 3D --- */
@@ -2836,7 +2865,7 @@ html:not(.anime) .sch-trace--reel { stroke-dashoffset: 0; }
 .graphique__puce--pointilles { background: repeating-linear-gradient(90deg, var(--couleur) 0 4px, transparent 4px 7px); }
 .graphique__table { margin-top: 14px; font-size: 0.88rem; }
 .graphique__table summary { cursor: pointer; font-weight: 600; color: var(--violet); }
-.graphique__defilement { max-height: 260px; margin-top: 10px; overflow: auto; border: 1px solid var(--ligne); border-radius: 10px; }
+.graphique__defilement { max-height: 260px; margin-top: 10px; overflow: auto; overscroll-behavior: contain; border: 1px solid var(--ligne); border-radius: 10px; }
 .graphique__table table { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; }
 .graphique__table th, .graphique__table td { padding: 6px 10px; border-bottom: 1px solid var(--ligne); text-align: right; }
 .graphique__table thead th { position: sticky; top: 0; background: var(--surface-2); font-weight: 600; }
@@ -2967,19 +2996,25 @@ html:not(.anime) .sch-trace--reel { stroke-dashoffset: 0; }
 /* --- Jauge de progression et annonce de l'étape (le sommaire est en fin de fichier) --- */
 .reperes__jauge { position: fixed; top: 0; left: 0; right: 0; z-index: 120; height: 3px; pointer-events: none; }
 .reperes__jauge span { display: block; height: 100%; background: linear-gradient(90deg, var(--violet-clair), var(--violet)); transform: scaleX(0); transform-origin: left; }
+/* Annonce de l'étape atteinte : en haut, sous la navigation (en bas, elle couvrait le texte
+   des cartes et le bouton du sommaire sur mobile) */
 .reperes__annonce {
   position: fixed;
-  left: 50%; bottom: 26px;
+  left: 50%; top: calc(var(--hauteur-nav) + 10px);
   z-index: 40;
-  padding: 10px 18px;
+  max-width: calc(100vw - 32px);
+  padding: 7px 14px;
   border-radius: 999px;
   background: var(--encre);
   color: #fff;
   font-family: var(--police-mono);
-  font-size: 0.8rem;
+  font-size: 0.74rem;
   letter-spacing: 0.06em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
   opacity: 0;
-  transform: translate(-50%, 12px);
+  transform: translate(-50%, -10px);
   transition: opacity 0.3s, transform 0.3s;
   pointer-events: none;
 }
@@ -3048,6 +3083,7 @@ button.visite__compteur:hover, button.visite__compteur:focus-visible { border-co
   width: min(300px, calc(100vw - 32px));
   max-height: min(55vh, 420px);
   overflow-y: auto;
+  overscroll-behavior: contain;
   padding: 8px;
   border: 1px solid var(--ligne);
   border-radius: 16px;
@@ -3073,7 +3109,7 @@ button.visite__compteur:hover, button.visite__compteur:focus-visible { border-co
 /* Carte d'un groupe de la visite : le détail des pièces se déplie */
 .fiche__details { display: inline-flex; margin-top: 14px; padding: 7px 14px; border: 1px solid var(--ligne); border-radius: 999px; background: #fff; color: var(--violet-fonce); font-size: 0.85rem; font-weight: 600; }
 .fiche__details:hover, .fiche__details:focus-visible { border-color: var(--violet); }
-.fiche__pieces { display: grid; gap: 4px; margin-top: 12px; max-height: 50vh; overflow-y: auto; }
+.fiche__pieces { display: grid; gap: 4px; margin-top: 12px; max-height: 50vh; overflow-y: auto; overscroll-behavior: contain; }
 .fiche__pieces[hidden] { display: none; }
 .fiche__pieces button { display: grid; gap: 2px; width: 100%; padding: 8px 10px; border: 0; border-radius: 10px; background: var(--surface-2); text-align: left; font-size: 0.88rem; font-weight: 600; color: var(--encre); }
 .fiche__pieces button:hover, .fiche__pieces button:focus-visible { background: var(--violet-pale); }
@@ -3208,7 +3244,7 @@ button.visite__compteur:hover, button.visite__compteur:focus-visible { border-co
 .moteur3d__fluides-note { max-width: 230px; font-size: 0.7rem; font-weight: 400; color: var(--encre-3); }
 @media (max-width: 719px) {
   .moteur3d__calques { top: 52px; left: 12px; }
-  .moteur3d__calques fieldset { min-width: 0; max-height: calc(var(--scene-h) - 120px); overflow: auto; }
+  .moteur3d__calques fieldset { min-width: 0; max-height: calc(var(--scene-h) - 120px); overflow: auto; overscroll-behavior: contain; }
   .moteur3d__simulation { top: calc(var(--scene-h) - 76px); right: 10px; left: auto; width: 150px; }
   .moteur3d__fluides { top: calc(var(--scene-h) - 132px); bottom: auto; font-size: 0.68rem; }
 }
@@ -3788,7 +3824,15 @@ button.visite__compteur:hover, button.visite__compteur:focus-visible { border-co
 .voyage-pret .chiffres.carte-3d { background: rgba(17, 16, 24, 0.96); border-color: rgba(255, 255, 255, 0.08); }
 /* Hero de l'accueil : une carte comme les autres (son titre ne s'efface plus au défilement) */
 .voyage-pret .hero-scene.carte-3d { padding-block: 0; }
-.voyage-pret .hero { min-height: 0; padding-bottom: clamp(36px, 6vw, 72px); }
+.voyage-pret .hero { min-height: 0; padding-top: clamp(32px, 6vh, 64px); padding-bottom: clamp(36px, 6vw, 72px); }
+/* Carte d'accueil : nom, présentation et boutons d'action visibles dès le premier écran,
+   y compris sur un portable de 800 px de haut */
+.voyage-pret .hero__titre { margin-top: 18px; font-size: clamp(3.4rem, min(17vw, 15vh), 10.5rem); }
+.voyage-pret .hero__typing, .voyage-pret .hero__texte, .voyage-pret .hero__tags { margin-top: 18px; }
+.voyage-pret .hero__actions { margin-top: 24px; }
+/* L'indicateur « Scroll » passe dans le coin de la carte (au centre, il couvrait les boutons) */
+.voyage-pret .indicateur-scroll { left: auto; right: 28px; bottom: 24px; transform: none; }
+@media (max-width: 1039px) { .voyage-pret .indicateur-scroll { display: none; } }
 /* Cartes étroites de la documentation (en-tête, intertitres, fiches) */
 .voyage-pret .documentation .carte-3d {
   width: min(460px, calc(100vw - 2 * var(--marge-carte)));
@@ -3859,6 +3903,7 @@ button.visite__compteur:hover, button.visite__compteur:focus-visible { border-co
   width: min(290px, calc(100vw - 24px));
   max-height: min(70vh, 560px);
   overflow-y: auto;
+  overscroll-behavior: contain;
   padding: 10px;
   border: 1px solid var(--ligne);
   border-radius: 20px;

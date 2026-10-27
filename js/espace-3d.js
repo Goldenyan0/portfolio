@@ -351,7 +351,9 @@ function creerVoyage(THREE, camera) {
   /* ---------- À chaque image : la caméra rattrape sa cible, les cartes s'estompent au loin ---------- */
   let actif = -1, premier = true, derniereCss = '';
   function suivre(dt) {
-    cible(window.scrollY - origine);
+    // Lu une seule fois, avant toute écriture de style (le relire plus bas forçait une mise en page)
+    const defilementY = window.scrollY;
+    cible(defilementY - origine);
     const k = premier ? 1 : 1 - Math.exp(-dt * 7);
     premier = false;
     camera.position.lerp(vise.p, k);
@@ -387,7 +389,7 @@ function creerVoyage(THREE, camera) {
       const o = Math.round(Math.max(0.12, 1 - ecart * 0.42) * 50) / 50;
       if (o !== c.opacite) { c.opacite = o; c.el.style.opacity = o === 1 ? '' : String(o); }
     });
-    if (sommaire) sommaire.progression(Math.min(1, Math.max(0, (window.scrollY - origine) / total)));
+    if (sommaire) sommaire.progression(Math.min(1, Math.max(0, (defilementY - origine) / total)));
     // Les effets liés à la position à l'écran (traits des timelines…) suivent la caméra
     if (!immobile && window.Site.rafraichir) window.Site.rafraichir();
     return !immobile;
@@ -465,7 +467,8 @@ function creerVoyage(THREE, camera) {
 /* --------------------------------------------------------------------------
    4. L'espace 3D
    -------------------------------------------------------------------------- */
-if (webglDisponible()) {
+// Vue classique (choisie par le visiteur) : pas de réseau 3D en arrière-plan, la page reste légère
+if (webglDisponible() && !racineHtml.classList.contains('vue-classique')) {
   demarrer().catch((e) => {
     // Échec (réseau, pilote graphique…) : la page reste un site classique
     console.warn('[Espace 3D] ' + e.message);

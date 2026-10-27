@@ -67,17 +67,22 @@
     ];
     let i = 0;
     if (mouvementReduit) return;
+    const schemas = document.querySelectorAll('.sch-admission');
+    if (!schemas.length) return;
     setInterval(function () {
+      if (document.hidden) return;
       i = (i + 1) % etats.length;
-      document.querySelectorAll('.sch-admission').forEach(function (s) {
+      schemas.forEach(function (s) {
         const v = s.querySelector('[data-debit]');
         const r = s.querySelector('[data-debit-regime]');
         v.textContent = etats[i].valeur;
         r.textContent = etats[i].regime;
         s.classList.remove('est-pulse');
-        void s.getBoundingClientRect(); // relance l'animation CSS
-        s.classList.add('est-pulse');
         s.classList.toggle('est-charge', i === 1);
+      });
+      // L'animation CSS repart à l'image suivante (sans forcer une mise en page de toute la page)
+      requestAnimationFrame(function () {
+        requestAnimationFrame(function () { schemas.forEach(function (s) { s.classList.add('est-pulse'); }); });
       });
     }, 2600);
   }

@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-src 'none'; worker-src 'self' blob:; script-src 'self' https://cdn.jsdelivr.net 'sha256-SMNcEC8V7pVU6ZnehcFbY/2xVNAvXhjdgHJmLdiN4rA='; connect-src 'self' https://api.emailjs.com" />
   <title>Yanis Poulain — Alternant informatique · BTS SIO</title>
   <meta name="description" content="Portfolio de Yanis Poulain, 21 ans, Rennes. Alternant en administration systèmes et réseaux à l'Établissement Français du Sang, étudiant en BTS SIO à MyDigitalSchool : cybersécurité, réseaux, développement et IA générative." />
   <meta name="author" content="Yanis Poulain" />
@@ -18,6 +19,23 @@
   <meta property="og:image" content="https://goldenyan0.github.io/portfolio/img/logo.png" />
   <meta property="og:image:alt" content="Monogramme YP blanc et bleu sur fond sombre" />
   <meta name="twitter:card" content="summary" />
+  <link rel="canonical" href="https://goldenyan0.github.io/portfolio/" />
+
+  <!-- Données structurées (moteurs de recherche) : uniquement des informations présentes sur le site -->
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Person",
+      "name": "Yanis Poulain",
+      "jobTitle": "Alternant informatique — administration systèmes et réseaux",
+      "worksFor": { "@type": "Organization", "name": "Établissement Français du Sang" },
+      "affiliation": { "@type": "EducationalOrganization", "name": "MyDigitalSchool" },
+      "address": { "@type": "PostalAddress", "addressLocality": "Rennes", "addressCountry": "FR" },
+      "url": "https://goldenyan0.github.io/portfolio/",
+      "sameAs": ["https://github.com/Goldenyan0", "https://tryhackme.com/p/Goldenyan.exe"],
+      "knowsAbout": ["Administration systèmes et réseaux", "Active Directory", "Cybersécurité", "Développement web", "Python", "Lua", "Diagnostic automobile"]
+    }
+  </script>
 
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%237c3aed'/><text x='50' y='67' font-size='52' font-family='Arial,sans-serif' font-weight='bold' fill='white' text-anchor='middle'>YP</text></svg>" />
 
@@ -31,8 +49,18 @@
   <script>
     document.documentElement.classList.add('js');
     if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) document.documentElement.classList.add('anime');
+    // "vue-classique" : choisie avec le bouton de la navigation (mémorisée) ou ?vue=classique,
+    // page à défilement simple, plus légère ; ?vue=3d revient au voyage
+    var classique = /[?&]vue=classique/.test(location.search);
+    try {
+      if (/[?&]vue=3d/.test(location.search)) localStorage.removeItem('vue');
+      else if (classique) localStorage.setItem('vue', 'classique');
+      else classique = localStorage.getItem('vue') === 'classique';
+    } catch (e) { /* stockage indisponible : vue par défaut */ }
+    if (/[?&]vue=/.test(location.search) && history.replaceState) history.replaceState(null, '', location.pathname + location.hash);
+    if (classique) document.documentElement.classList.add('vue-classique');
     // "voyage" : les sections deviennent des cartes posées dans l'espace 3D (espace-3d.js)
-    if (document.documentElement.classList.contains('anime') && window.WebGLRenderingContext) document.documentElement.classList.add('voyage');
+    else if (document.documentElement.classList.contains('anime') && window.WebGLRenderingContext) document.documentElement.classList.add('voyage');
   </script>
 </head>
 
@@ -80,6 +108,7 @@
         </ul>
       </nav>
       <div class="nav__actions">
+        <button class="nav__vue" type="button" data-bascule-vue hidden><svg class="icone" viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" d="M12 3 3 8l9 5 9-5-9-5ZM3 13l9 5 9-5M3 17.5l9 5 9-5"/></svg><span data-libelle>Vue classique</span></button>
         <a class="bouton bouton--petit nav__cv" href="cv.html"><span class="bouton__texte">Mon CV</span></a>
         <button class="nav__burger" id="burger" type="button" aria-expanded="false" aria-controls="menu-mobile">
           <span></span><span class="visuellement-cache">Ouvrir le menu</span>
@@ -97,6 +126,7 @@
     <a href="#apropos">À propos</a>
     <a href="#contact">Contact</a>
     <a class="bouton" href="cv.html"><span class="bouton__texte">Télécharger mon CV</span></a>
+    <button class="menu-mobile__vue" type="button" data-bascule-vue hidden><span data-libelle>Vue classique</span></button>
   </div>
 
   <main id="contenu">
@@ -149,7 +179,8 @@
             <h1 class="hero__titre cascade cascade--2" id="hero-titre"><span class="hero__ligne" id="hero-ligne-1">Yanis</span><span class="hero__ligne" id="hero-ligne-2">Poulain</span></h1>
 
             <div class="hero__suite" id="hero-suite">
-              <p class="hero__typing cascade cascade--3" aria-label="Alternant informatique, étudiant BTS SIO, cybersécurité et réseaux, développeur web et Lua, IA générative au quotidien">
+              <p class="hero__typing cascade cascade--3">
+                <span class="visuellement-cache">Alternant informatique, étudiant BTS SIO, cybersécurité et réseaux, développeur web et Lua, IA générative au quotidien</span>
                 <span class="hero__typing-prefixe" aria-hidden="true">&gt; </span><span id="typing" aria-hidden="true">Alternant informatique</span><span class="hero__curseur" aria-hidden="true"></span>
               </p>
 
@@ -841,19 +872,19 @@
         <form class="formulaire" id="formulaire-contact" novalidate data-revele>
           <div class="champ">
             <label for="c-nom">Nom</label>
-            <input id="c-nom" name="nom" type="text" autocomplete="name" required />
+            <input id="c-nom" name="nom" type="text" autocomplete="name" maxlength="100" required />
           </div>
           <div class="champ">
             <label for="c-email">E-mail</label>
-            <input id="c-email" name="email" type="email" autocomplete="email" required />
+            <input id="c-email" name="email" type="email" autocomplete="email" maxlength="254" required />
           </div>
           <div class="champ champ--large">
             <label for="c-objet">Objet</label>
-            <input id="c-objet" name="objet" type="text" required />
+            <input id="c-objet" name="objet" type="text" maxlength="150" required />
           </div>
           <div class="champ champ--large">
             <label for="c-message">Message</label>
-            <textarea id="c-message" name="message" required data-lenis-prevent></textarea>
+            <textarea id="c-message" name="message" maxlength="5000" required data-lenis-prevent></textarea>
           </div>
           <div class="champ champ--piege" aria-hidden="true">
             <label for="c-site">Ne pas remplir ce champ</label>
@@ -863,6 +894,7 @@
             <span class="bouton__texte">Envoyer le message <svg aria-hidden="true"><use href="#i-fleche"/></svg></span>
           </button>
           <p class="formulaire__statut" id="statut-formulaire" role="status" aria-live="polite"></p>
+          <p class="formulaire__note">Vos informations servent uniquement à vous répondre. Le message est transmis par le service EmailJS ; rien n'est conservé sur ce site.</p>
         </form>
       </div>
     </section>
@@ -889,10 +921,10 @@
     </div>
   </footer>
 
-  <!-- Scripts. Librairies externes (3 au total) : Lenis (défilement fluide), EmailJS (formulaire),
-       Three.js (fond 3D, importé par reseau-3d.js). -->
-  <script src="https://cdn.jsdelivr.net/npm/lenis@1.1.13/dist/lenis.min.js" defer></script>
-  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4.4.1/dist/email.min.js" defer></script>
+  <!-- Scripts. Librairies externes (3 au total) : Lenis (défilement fluide, hébergé dans le dépôt),
+       EmailJS (formulaire, chargé par index.js seulement quand on utilise le formulaire),
+       Three.js (espace 3D, importé par espace-3d.js). -->
+  <script src="js/vendor/lenis.min.js" defer></script>
   <script src="js/commun.js" defer></script>
   <script src="js/index.js" defer></script>
   <script type="module" src="js/espace-3d.js"></script>
