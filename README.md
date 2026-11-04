@@ -25,7 +25,7 @@ Alternant en administration systèmes et réseaux à l'**Établissement Françai
 | `index.html` | Portfolio immersif : domaines, chiffres clés, « Pourquoi moi », projets, stack, parcours, contact |
 | `cv.html` | CV formel, imprimable / exportable en PDF |
 | `e39.html` | Projet BMW E39 520i (M54B22) : mécanique, diagnostic et documentation du moteur |
-| `jarvis.html` | Projet Jarvis : assistant vocal IA personnel (fonctionnement, architecture, sécurité, captures de l'interface) |
+| `jarvis.html` | Projet Jarvis, assistant vocal IA inspiré du J.A.R.V.I.S. d'Iron Man : origine, démonstrations vidéo, architecture (schéma SVG), IA, capacités, skills et connecteurs, ordres vocaux, sécurité, tests et traçabilité |
 
 Les pages partagent une seule feuille de style : `css/style.css`.
 
@@ -52,14 +52,14 @@ Les pages partagent une seule feuille de style : `css/style.css`.
 - Page E39 : visite guidée — la voiture reste à l'écran et la caméra rejoint la pièce de chaque fiche ; la maquette 3D complète (vue éclatée numérotée, accélération, fluides, panneau d'affichage) ; fiches pièces avec la pièce dans la voiture, la pièce seule en 3D et sa photo réelle ; tour du propriétaire (extérieur et intérieur) ; photos agrandies au clic
 - Préchargeur (compteur + rideau), boutons magnétiques (curseur natif du système)
 - Titres révélés mot à mot ; sans navigation immersive (CV, ou WebGL indisponible) : hero en *scrollytelling*, transitions en volets (clip-path), « Pourquoi moi » épinglée
-- Projets en grille (3 colonnes sur desktop, 2 sur tablette, 1 sur mobile), filtre animé par catégorie, inclinaison 3D des cartes
+- Projets en carrousel : piste à défilement natif (scroll-snap), glisser au doigt ou à la souris avec élan, flèches, clavier (← → Début Fin), filtre par catégorie ; « Projets à la une » (Jarvis, Homelab, E39) dès le hero
 - Parallax multicouche, compteurs, barres de compétences, timelines qui se dessinent
 
-- **Vue classique** (bouton de la navigation, ou du menu sur mobile) : la même page en défilement simple, sans voyage 3D ni réseau en arrière-plan — plus rapide à parcourir et plus légère. Le choix est mémorisé ; on revient sur la même section
+- **Vue classique par défaut, mode 3D au choix** : interrupteur « Changer de mode » dans la navigation (version courte « 3D » / « 2D » sur mobile, version complète dans le menu). Le choix est mémorisé dans `localStorage` (clé `mode-affichage`) et vaut pour toutes les pages ; chaque accès au stockage est protégé, et sans stockage le site reste en vue classique. On revient sur la même section
 
 **Accessibilité :** si « réduire les animations » est activé dans le système, le site s'affiche en version statique, sans mouvement. Contrastes conformes WCAG AA (audit axe-core). Mise en page pensée d'abord pour le mobile (vérifiée à 360 px).
 
-**Performance :** une seule boucle d'animation par page ; les mesures de la page passent avant les écritures de styles à chaque image ; les shaders de la maquette sont compilés à l'avance (y compris les variantes « fantôme ») ; sur une machine modeste, la maquette passe d'elle-même à 30 images/s pendant que la page garde ses 60.
+**Performance :** une seule boucle d'animation par page ; pendant le voyage 3D, aucune mesure de la page à chaque image (les cartes révèlent leur contenu elles-mêmes) ; réseau Three.js allégé (densité de pixels plafonnée à 1 sur mobile et 1,25 sur ordinateur, moins de nœuds sur mobile, 30 images/s maximum pour le décor sur mobile, rendu à la demande) ; animations hors écran mises en pause (IntersectionObserver) ; les mesures de la page passent avant les écritures de styles à chaque image ; les shaders de la maquette sont compilés à l'avance (y compris les variantes « fantôme ») ; sur une machine modeste, la maquette passe d'elle-même à 30 images/s pendant que la page garde ses 60.
 
 **Sécurité :** chaque page déclare une *Content-Security-Policy* (seuls le site et jsDelivr sont autorisés ; scripts inline autorisés par empreinte). Après toute modification d'un script inline (`<head>`, importmap), relancer `pwsh outils/csp.ps1`.
 

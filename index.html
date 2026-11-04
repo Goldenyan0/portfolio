@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-src 'none'; worker-src 'self' blob:; script-src 'self' https://cdn.jsdelivr.net 'sha256-SMNcEC8V7pVU6ZnehcFbY/2xVNAvXhjdgHJmLdiN4rA='; connect-src 'self' https://api.emailjs.com" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-src 'none'; worker-src 'self' blob:; script-src 'self' https://cdn.jsdelivr.net 'sha256-SmH1AU+q8wMslBIIh+GpdAlYPebCin25FMs3N1+rY4E='; connect-src 'self' https://api.emailjs.com" />
   <title>Yanis Poulain — Alternant informatique · BTS SIO</title>
   <meta name="description" content="Portfolio de Yanis Poulain, 21 ans, Rennes. Alternant en administration systèmes et réseaux à l'Établissement Français du Sang, étudiant en BTS SIO à MyDigitalSchool : cybersécurité, réseaux, développement et IA générative." />
   <meta name="author" content="Yanis Poulain" />
@@ -47,20 +47,30 @@
   <!-- "js" : JavaScript est actif (les animations d'entrée ne masquent le contenu que dans ce cas).
        "anime" : le visiteur accepte les animations → mises en page épinglées et scrollytelling. -->
   <script>
-    document.documentElement.classList.add('js');
-    if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) document.documentElement.classList.add('anime');
-    // "vue-classique" : choisie avec le bouton de la navigation (mémorisée) ou ?vue=classique,
-    // page à défilement simple, plus légère ; ?vue=3d revient au voyage
-    var classique = /[?&]vue=classique/.test(location.search);
-    try {
-      if (/[?&]vue=3d/.test(location.search)) localStorage.removeItem('vue');
-      else if (classique) localStorage.setItem('vue', 'classique');
-      else classique = localStorage.getItem('vue') === 'classique';
-    } catch (e) { /* stockage indisponible : vue par défaut */ }
-    if (/[?&]vue=/.test(location.search) && history.replaceState) history.replaceState(null, '', location.pathname + location.hash);
-    if (classique) document.documentElement.classList.add('vue-classique');
-    // "voyage" : les sections deviennent des cartes posées dans l'espace 3D (espace-3d.js)
-    else if (document.documentElement.classList.contains('anime') && window.WebGLRenderingContext) document.documentElement.classList.add('voyage');
+    // Classes posées avant l'affichage (aucun saut de mise en page) :
+    // "js" : JavaScript actif ; "anime" : le visiteur accepte les animations.
+    // Mode d'affichage commun à tout le site, mémorisé dans localStorage ("mode-affichage") :
+    // "vue-classique" par défaut (page simple et légère) ; "mode-3d" sur choix du visiteur.
+    // ?vue=3d ou ?vue=classique (posé par l'interrupteur) l'emporte, même sans stockage.
+    (function () {
+      var racine = document.documentElement;
+      racine.classList.add('js');
+      var anime = !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (anime) racine.classList.add('anime');
+      var demande = /[?&]vue=(3d|classique)\b/.exec(location.search);
+      var mode = demande ? demande[1] : 'classique';
+      try {
+        if (demande) localStorage.setItem('mode-affichage', mode);
+        else mode = localStorage.getItem('mode-affichage') === '3d' ? '3d' : 'classique';
+        localStorage.removeItem('vue');
+      } catch (e) { /* stockage indisponible : mode classique (ou celui de l'adresse) */ }
+      if (demande && history.replaceState) history.replaceState(null, '', location.pathname + location.hash);
+      // La 3D demande les animations et WebGL ; sinon la page reste classique
+      var en3d = mode === '3d' && anime && !!window.WebGLRenderingContext;
+      racine.classList.add(en3d ? 'mode-3d' : 'vue-classique');
+      // "voyage" : les sections deviennent des cartes posées dans l'espace 3D (espace-3d.js)
+      if (en3d && racine.hasAttribute('data-voyage')) racine.classList.add('voyage');
+    })();
   </script>
 </head>
 
@@ -108,7 +118,6 @@
         </ul>
       </nav>
       <div class="nav__actions">
-        <button class="nav__vue" type="button" data-bascule-vue hidden><svg class="icone" viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" d="M12 3 3 8l9 5 9-5-9-5ZM3 13l9 5 9-5M3 17.5l9 5 9-5"/></svg><span data-libelle>Vue classique</span></button>
         <a class="bouton bouton--petit nav__cv" href="cv.html"><span class="bouton__texte">Mon CV</span></a>
         <button class="nav__burger" id="burger" type="button" aria-expanded="false" aria-controls="menu-mobile">
           <span></span><span class="visuellement-cache">Ouvrir le menu</span>
@@ -126,7 +135,6 @@
     <a href="#apropos">À propos</a>
     <a href="#contact">Contact</a>
     <a class="bouton" href="cv.html"><span class="bouton__texte">Télécharger mon CV</span></a>
-    <button class="menu-mobile__vue" type="button" data-bascule-vue hidden><span data-libelle>Vue classique</span></button>
   </div>
 
   <main id="contenu">
@@ -200,10 +208,20 @@
                 <a class="bouton magnetique" href="cv.html">
                   <span class="bouton__texte"><svg aria-hidden="true"><use href="#i-telecharger"/></svg>Télécharger mon CV</span>
                 </a>
-                <a class="bouton bouton--clair magnetique" href="e39.html">
-                  <span class="bouton__texte"><svg aria-hidden="true"><use href="#i-voiture"/></svg>Voir mon projet auto</span>
+                <a class="bouton bouton--clair magnetique" href="#projets">
+                  <span class="bouton__texte">Voir mes projets<svg aria-hidden="true"><use href="#i-fleche"/></svg></span>
                 </a>
               </div>
+
+              <!-- Projets à la une : accès direct depuis le premier écran -->
+              <nav class="hero__projets cascade cascade--6" aria-label="Projets à la une">
+                <p class="hero__projets-titre">Projets à la une</p>
+                <ul>
+                  <li><a href="jarvis.html"><strong>Jarvis</strong><span>Assistant vocal IA, inspiré du J.A.R.V.I.S. d'Iron Man</span></a></li>
+                  <li><a href="#projets" data-aller-projet="projet--homelab"><strong>Homelab</strong><span>Proxmox VE, pfSense, VLAN, supervision</span></a></li>
+                  <li><a href="e39.html"><strong>BMW E39</strong><span>Mécanique, diagnostic et maquette 3D</span></a></li>
+                </ul>
+              </nav>
             </div>
           </div>
 
@@ -379,7 +397,7 @@
                     <p class="projet__vedette">Projet phare</p>
                     <p class="projet__meta"><span>Assistant vocal IA</span><time>2026</time></p>
                     <h3>Jarvis</h3>
-                    <p>Mon assistant vocal personnel, écrit en Python : écoute et transcription locales sur GPU, Claude Code comme cerveau et coordinateur avec relais automatique vers Codex quand le quota est atteint, réponses à voix haute. Commandes instantanées, mémoire, interface web locale sécurisée et 329 tests automatisés.</p>
+                    <p>Mon assistant vocal personnel, écrit en Python, dont le nom et l'idée viennent de J.A.R.V.I.S., l'IA de Tony Stark dans Iron Man. Écoute et transcription locales sur GPU, Claude Code comme cerveau et coordinateur, Codex en relais, des IA locales pour le routage et la recherche : il pilote le PC, les fichiers, le web, le code et des agents. Plus de 400 tests automatisés.</p>
                     <ul class="projet__tags"><li>Python</li><li>Whisper</li><li>Claude Code</li><li>Codex</li><li>edge-tts</li></ul>
                   </div>
                   <a class="projet__lien" href="jarvis.html"><span class="visuellement-cache">Voir le projet Jarvis</span></a>
@@ -593,14 +611,13 @@
               </article>
 
             </div>
-            <!-- Sélecteur immersif : carrousel 3D qui tourne à 360° (activé par index.js) -->
+            <!-- Carrousel : piste à défilement fluide, flèches et clavier (activé par index.js) -->
             <div class="carrousel__commandes" id="carrousel-commandes" hidden>
               <button class="carrousel__fleche" type="button" data-sens="-1" aria-label="Projet précédent"><svg class="icone" aria-hidden="true"><use href="#i-fleche"/></svg></button>
               <p class="carrousel__etat" aria-live="polite"><span class="carrousel__rang"><span data-rang>1</span> / <span data-total>11</span></span><strong data-nom></strong></p>
               <button class="carrousel__fleche" type="button" data-sens="1" aria-label="Projet suivant"><svg class="icone" aria-hidden="true"><use href="#i-fleche"/></svg></button>
             </div>
-            <div class="carrousel__molette" id="carrousel-molette" hidden><span class="carrousel__repere" aria-hidden="true"></span></div>
-            <p class="carrousel__aide" hidden>Glissez, utilisez les flèches ou cliquez une carte pour la faire venir devant.</p>
+            <p class="carrousel__aide" hidden>Glissez au doigt ou à la souris, utilisez les flèches ou le clavier.</p>
           </div>
         </div>
       </div>
@@ -709,6 +726,11 @@
                   <h4>Projet automobile</h4>
                   <p class="etape__lieu">Ma voiture — entretien et diagnostic</p>
                   <p>Mécanique et diagnostic électronique menés moi-même, chaque intervention documentée dans un carnet de bord. <a class="lien-texte" href="e39.html">Voir le projet</a></p>
+                  <!-- Clin d'œil à ma voiture : une E39 façon Alpina (image générée, ce n'est pas ma voiture) -->
+                  <a class="clin-oeil-e39" href="e39.html" aria-label="Voir le projet automobile">
+                    <img src="img/e39/e39-alpina-clin-oeil.webp" width="720" height="332" loading="lazy" decoding="async" alt="" />
+                    <span>BMW E39 façon Alpina, bleu Topas · illustration</span>
+                  </a>
                 </li>
                 <li class="etape" data-revele>
                   <p class="etape__date">Depuis février 2026</p>

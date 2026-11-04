@@ -349,7 +349,7 @@ function creerVoyage(THREE, camera) {
   }
 
   /* ---------- À chaque image : la caméra rattrape sa cible, les cartes s'estompent au loin ---------- */
-  let actif = -1, premier = true, derniereCss = '';
+  let actif = -1, premier = true, derniereCss = '', arrete = false;
   function suivre(dt) {
     // Lu une seule fois, avant toute écriture de style (le relire plus bas forçait une mise en page)
     const defilementY = window.scrollY;
@@ -378,7 +378,12 @@ function creerVoyage(THREE, camera) {
     cartes.forEach((c) => {
       const ecart = Math.abs(c.i - vise.continu);
       const visible = ecart < 2.6;
-      if (visible !== c.visible) { c.visible = visible; c.el.style.visibility = visible ? '' : 'hidden'; }
+      if (visible !== c.visible) {
+        c.visible = visible;
+        c.el.style.visibility = visible ? '' : 'hidden';
+        // Carte invisible : ses animations CSS (schémas, bandeaux…) sont mises en pause
+        c.el.classList.toggle('hors-ecran', !visible);
+      }
       if (!visible) return;
       // Le contenu d'une carte apparaît quand elle approche (les révélations de commun.js
       // attendent un défilement de la page ; ici, c'est la caméra qui bouge)
@@ -390,8 +395,11 @@ function creerVoyage(THREE, camera) {
       if (o !== c.opacite) { c.opacite = o; c.el.style.opacity = o === 1 ? '' : String(o); }
     });
     if (sommaire) sommaire.progression(Math.min(1, Math.max(0, (defilementY - origine) / total)));
-    // Les effets liés à la position à l'écran (traits des timelines…) suivent la caméra
-    if (!immobile && window.Site.rafraichir) window.Site.rafraichir();
+    // Performance : les effets mesurés dans la page (révélations, compteurs…) ne sont plus
+    // recalculés à chaque image du voyage (chaque mesure forçait une mise en page de toute
+    // la scène 3D) ; une seule mise à jour quand la caméra se pose sur une carte
+    if (immobile && !arrete && window.Site.rafraichir) window.Site.rafraichir();
+    arrete = immobile;
     return !immobile;
   }
 
@@ -486,7 +494,9 @@ async function demarrer() {
   document.body.prepend(couche);
 
   const rendu = new THREE.WebGLRenderer({ antialias: !petitEcran, alpha: true, powerPreference: 'low-power' });
-  rendu.setPixelRatio(Math.min(window.devicePixelRatio, petitEcran ? 1.15 : 1.4));
+  // Performance : densité de pixels plafonnée (le réseau est un décor flou et lumineux,
+  // un rendu en 1x sur mobile et 1,25x sur ordinateur suffit et divise le travail du GPU)
+  rendu.setPixelRatio(Math.min(window.devicePixelRatio, petitEcran ? 1 : 1.25));
   rendu.setClearColor(0x000000, 0);
   couche.appendChild(rendu.domElement);
 
@@ -515,10 +525,11 @@ async function demarrer() {
 
   /* ---------- Réglages (allégés sur petit écran) ---------- */
   const longueur = voyage ? voyage.cartes.length : NB_ETAPES;
-  const NB_NOEUDS = Math.min(petitEcran ? 900 : 1600, Math.round((petitEcran ? 22 : 40) * longueur + (petitEcran ? 60 : 110)));
+  // Moins de nœuds sur mobile (le réseau reste dense à l'écran, mais deux fois moins de calcul)
+  const NB_NOEUDS = Math.min(petitEcran ? 480 : 1400, Math.round((petitEcran ? 12 : 34) * longueur + (petitEcran ? 40 : 100)));
   const VOISINS = 3;
   const DISTANCE_MAX = 320 * E;
-  const NB_PAQUETS = petitEcran ? 18 : 46;
+  const NB_PAQUETS = petitEcran ? 12 : 40;
 
   const violet = new THREE.Color('#7c3aed');
   const lavande = new THREE.Color('#d9ccfb');
@@ -848,8 +859,11 @@ async function demarrer() {
           p.t = 0;
         }
       }
-      const a = noeuds[p.de], b = noeuds[p.vers];
-      posPaquets.set([a.x + (b.x - a.x) * p.t, a.y + (b.y - a.y) * p.t, a.z + (b.z - a.z) * p.t], k * 3);
+      // Écriture directe dans le tampon (aucun tableau créé à chaque image)
+      const a = noeuds[p.de], b = noeuds[p.vers], o = k * 3;
+      posPaquets[o] = a.x + (b.x - a.x) * p.t;
+      posPaquets[o + 1] = a.y + (b.y - a.y) * p.t;
+      posPaquets[o + 2] = a.z + (b.z - a.z) * p.t;
     });
     geoPaquets.attributes.position.needsUpdate = true;
 
@@ -857,7 +871,7 @@ async function demarrer() {
       cables.forEach((c, k) => {
         if (!c.ligne.visible) return;
         c.courbe.getPoint(((temps || 0) * 0.00018 + k * 0.23) % 1, tmp);
-        posAttaches.set([tmp.x, tmp.y, tmp.z], k * 3);
+        posAttaches[k * 3] = tmp.x; posAttaches[k * 3 + 1] = tmp.y; posAttaches[k * 3 + 2] = tmp.z;
       });
       geoAttaches.attributes.position.needsUpdate = true;
     }
@@ -868,7 +882,7 @@ async function demarrer() {
      pause si l'onglet est caché ou si une scène plein écran (visite de la E39) le recouvre ---------- */
   // Performance : à l'arrêt (caméra immobile, aucun défilement depuis un instant), 15 images par seconde ;
   // sans aucune interaction pendant 20 s, le réseau ne se redessine plus
-  let enCours = false, dernier = performance.now(), dernierDefilement = 0;
+  let enCours = false, dernier = performance.now(), dernierDefilement = 0, dernierDessin = 0;
   window.addEventListener('scroll', () => { dernierDefilement = performance.now(); demander(); }, { passive: true });
   // Toute interaction relance le réseau (la lueur suit la souris)
   ['pointermove', 'pointerdown', 'keydown', 'wheel', 'touchstart'].forEach((type) => window.addEventListener(type, () => { dernierDefilement = Math.max(dernierDefilement, performance.now() - 1000); demander(); }, { passive: true }));
@@ -885,10 +899,13 @@ async function demarrer() {
     // Au repos : 15 images par seconde ; après 20 s sans interaction, plus aucune image
     if (!mouvementReduit && auRepos && temps - dernierDefilement > 20000) { dernier = temps; return; }
     if (!mouvementReduit && auRepos && temps - dernier < 62) { demander(); return; }
+    // Sur mobile, le réseau (décor) est redessiné au plus 30 fois par seconde ; la caméra
+    // CSS du voyage, elle, suit chaque image pour que le défilement reste fluide
+    const reseauEnPause = petitEcran && !mouvementReduit && temps - dernierDessin < 30;
     dernier = temps;
     if (!voyage) active = placerCameraChemin(temps, dt);
     const recouvert = racineHtml.classList.contains('visite-active');
-    if (!recouvert) dessiner(temps, dt, active);
+    if (!recouvert && !reseauEnPause) { dessiner(temps, dt, active); dernierDessin = temps; }
     if (!mouvementReduit) demander();
   }
   function demander() {

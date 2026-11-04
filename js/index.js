@@ -6,7 +6,8 @@
      (sauf pendant le voyage 3D : le hero et "Pourquoi moi" sont alors des cartes fixes)
    - Compteurs, barres de compétences (les timelines sont dans commun.js)
    - Filtre de la grille des projets (animation fluide) + inclinaison 3D des cartes
-   - Carrousel : flèches, glisser, molette circulaire à tourner ; bouton « Voir le projet »
+   - Carrousel : piste à défilement natif (scroll-snap), glisser à la souris avec élan,
+     flèches et clavier ; bouton « Voir le projet »
      sur les cartes qui ont un lien (même destination que la carte)
    - Formulaire de contact (EmailJS + champ piège anti-spam)
    Dépend de commun.js (objet window.Site).
@@ -251,10 +252,12 @@
 
 
   /* ------------------------------------------------------------------
-     6 bis. Sélecteur immersif des projets : carrousel 3D qui tourne à 360°
-        Les cartes sont posées en anneau ; l'anneau tourne pour amener la carte
-        choisie devant. Flèches, glisser (souris ou doigt), clavier (← →) et clic
-        sur une carte de côté. Le filtre reconstruit l'anneau avec les projets retenus.
+     6 bis. Carrousel des projets : une piste horizontale à défilement natif
+        (scroll-snap), donc fluide au doigt comme au pavé tactile.
+        - souris : on attrape la piste et on la fait glisser, avec un élan au lâcher ;
+        - flèches (boutons), clavier (← → Début Fin), clic sur une carte de côté ;
+        - la carte au centre est mise en avant (classe seulement : transform et opacity) ;
+        - la position n'est lue qu'une fois par image (requestAnimationFrame).
         Sans JavaScript, la grille d'origine reste affichée.
      ------------------------------------------------------------------ */
   function gererCarrousel() {
@@ -264,79 +267,22 @@
     const projets = Array.from(grille.querySelectorAll('.projet'));
     if (projets.length < 2) return null;
 
-    const anneau = document.createElement('div');
-    anneau.className = 'carrousel__anneau';
-    projets.forEach(function (p) { anneau.appendChild(p); });
-    grille.appendChild(anneau);
     racine.classList.add('carrousel-actif');
     commandes.hidden = false;
     const aide = document.querySelector('.carrousel__aide');
     if (aide) aide.hidden = false;
-    grille.setAttribute('tabindex', '0');
+    grille.tabIndex = 0;
     grille.setAttribute('role', 'region');
     grille.setAttribute('aria-roledescription', 'carrousel');
-    grille.setAttribute('aria-label', 'Projets : flèches gauche et droite pour changer de projet');
+    grille.setAttribute('aria-label', 'Projets : faites glisser, ou utilisez les flèches gauche et droite');
 
     const texteRang = commandes.querySelector('[data-rang]');
     const texteTotal = commandes.querySelector('[data-total]');
     const texteNom = commandes.querySelector('[data-nom]');
+    const fleches = commandes.querySelectorAll('[data-sens]');
     let visibles = projets.slice();
-    let index = 0, angle = 0, pas = 360 / projets.length;
-
-    // Rayon de l'anneau : assez grand pour que les cartes ne se chevauchent pas
-    function mesurer() {
-      const largeur = projets[0].offsetWidth || 320;
-      pas = 360 / Math.max(1, visibles.length);
-      const rayon = visibles.length < 2 ? 0 : Math.round(largeur / 2 / Math.tan(Math.PI / Math.max(3, visibles.length)) + 36);
-      grille.style.setProperty('--rayon-anneau', rayon + 'px');
-      // Hauteur : celle de la plus haute carte retenue (la carte de devant ne déborde jamais)
-      const haute = Math.max.apply(null, visibles.map(function (p) { return p.offsetHeight; }).concat([300]));
-      grille.style.height = (haute + 28) + 'px';
-    }
-    function placer() {
-      projets.forEach(function (p) {
-        const i = visibles.indexOf(p);
-        p.classList.toggle('est-filtre', i < 0);
-        if (i >= 0) p.style.setProperty('--a', (i * pas).toFixed(2) + 'deg');
-      });
-      anneau.style.setProperty('--angle', angle.toFixed(2) + 'deg');
-      majEtat();
-    }
-    function majEtat() {
-      visibles.forEach(function (p, i) {
-        const active = i === index;
-        p.classList.toggle('est-active', active);
-        p.setAttribute('aria-hidden', String(!active));
-        p.querySelectorAll('a, button').forEach(function (l) { l.tabIndex = active ? 0 : -1; });
-      });
-      texteRang.textContent = String(index + 1);
-      texteTotal.textContent = String(visibles.length);
-      texteNom.textContent = visibles[index] ? visibles[index].querySelector('h3').textContent : '';
-      const molette = document.getElementById('carrousel-molette');
-      if (molette) {
-        molette.style.setProperty('--tour', (-angle).toFixed(1) + 'deg');
-        molette.setAttribute('aria-valuemin', '1');
-        molette.setAttribute('aria-valuemax', String(visibles.length));
-        molette.setAttribute('aria-valuenow', String(index + 1));
-        molette.setAttribute('aria-valuetext', texteNom.textContent);
-      }
-    }
-    // Va au projet i (le chemin le plus court autour de l'anneau)
-    function aller(i) {
-      const n = visibles.length;
-      if (!n) return;
-      let d = i - index;
-      if (d > n / 2) d -= n;
-      if (d < -n / 2) d += n;
-      angle -= d * pas;
-      index = ((index + d) % n + n) % n;
-      anneau.style.setProperty('--angle', angle.toFixed(2) + 'deg');
-      majEtat();
-    }
-
-    commandes.querySelectorAll('[data-sens]').forEach(function (b) {
-      b.addEventListener('click', function () { aller(index + Number(b.dataset.sens)); });
-    });
+    let index = -1;
+    let centres = [];
 
     // Bouton « Voir le projet » : sur chaque carte qui a un lien, vers la même destination
     projets.forEach(function (p) {
@@ -347,103 +293,132 @@
       b.href = lien.href;
       if (lien.target) { b.target = lien.target; b.rel = lien.rel; }
       b.innerHTML = 'Voir le projet <svg class="icone" aria-hidden="true"><use href="#i-fleche"/></svg>';
+      b.setAttribute('aria-label', lien.textContent.trim() || 'Voir le projet');
       p.querySelector('.projet__corps').appendChild(b);
     });
 
-    // Molette : un cadran qu'on fait tourner (glisser circulaire) ; un cran = un projet
-    const molette = document.getElementById('carrousel-molette');
-    if (molette) {
-      molette.hidden = false;
-      molette.tabIndex = 0;
-      molette.setAttribute('role', 'slider');
-      molette.setAttribute('aria-label', grille.getAttribute('aria-label'));
-      let tour = null;
-      const angleDe = function (e) {
-        const z = molette.getBoundingClientRect();
-        return Math.atan2(e.clientY - (z.top + z.height / 2), e.clientX - (z.left + z.width / 2)) * 180 / Math.PI;
-      };
-      molette.addEventListener('pointerdown', function (e) {
-        tour = { dernier: angleDe(e), cumul: 0 };
-        molette.setPointerCapture(e.pointerId);
-        e.preventDefault();
-      });
-      molette.addEventListener('pointermove', function (e) {
-        if (!tour) return;
-        const a = angleDe(e);
-        let d = a - tour.dernier;
-        if (d > 180) d -= 360;
-        if (d < -180) d += 360;
-        tour.dernier = a;
-        tour.cumul += d;
-        // Sens horaire : projet suivant
-        while (tour.cumul >= pas) { tour.cumul -= pas; aller(index + 1); }
-        while (tour.cumul <= -pas) { tour.cumul += pas; aller(index - 1); }
-        molette.style.setProperty('--tour', (-angle + tour.cumul).toFixed(1) + 'deg');
-      });
-      const lacher = function () { tour = null; molette.style.setProperty('--tour', (-angle).toFixed(1) + 'deg'); };
-      molette.addEventListener('pointerup', lacher);
-      molette.addEventListener('pointercancel', lacher);
-      molette.addEventListener('keydown', function (e) {
-        if (e.key === 'ArrowRight' || e.key === 'ArrowUp') { aller(index + 1); e.preventDefault(); }
-        else if (e.key === 'ArrowLeft' || e.key === 'ArrowDown') { aller(index - 1); e.preventDefault(); }
-      });
+    // Centre de chaque carte dans la piste (mesuré seulement quand la taille change)
+    function mesurer() {
+      centres = visibles.map(function (p) { return p.offsetLeft + p.offsetWidth / 2; });
     }
+    function plusProche(x) {
+      let k = 0;
+      for (let i = 1; i < centres.length; i++) if (Math.abs(centres[i] - x) < Math.abs(centres[k] - x)) k = i;
+      return k;
+    }
+    function gauchePour(i) { return centres[i] - grille.clientWidth / 2; }
+
+    function majEtat(i, force) {
+      if (i === index && !force) return;
+      index = i;
+      visibles.forEach(function (p, k) { p.classList.toggle('est-active', k === i); });
+      texteRang.textContent = String(i + 1);
+      texteTotal.textContent = String(visibles.length);
+      texteNom.textContent = visibles[i] ? visibles[i].querySelector('h3').textContent : '';
+    }
+
+    // Va au projet i (en boucle avec les flèches)
+    function aller(i, immediat) {
+      const n = visibles.length;
+      if (!n) return;
+      i = ((i % n) + n) % n;
+      if (!centres.length) mesurer();
+      grille.scrollTo({ left: gauchePour(i), behavior: immediat || mouvementReduit ? 'auto' : 'smooth' });
+      majEtat(i);
+    }
+
+    // Défilement (doigt, pavé tactile, molette horizontale) : une lecture par image au plus
+    let lecture = false;
+    grille.addEventListener('scroll', function () {
+      if (lecture || glisse) return;
+      lecture = true;
+      requestAnimationFrame(function () {
+        lecture = false;
+        majEtat(plusProche(grille.scrollLeft + grille.clientWidth / 2));
+      });
+    }, { passive: true });
+
+    fleches.forEach(function (b) {
+      b.addEventListener('click', function () { aller(index + Number(b.dataset.sens)); });
+    });
     grille.addEventListener('keydown', function (e) {
-      if (e.key === 'ArrowRight') { aller(index + 1); e.preventDefault(); }
-      else if (e.key === 'ArrowLeft') { aller(index - 1); e.preventDefault(); }
+      const touches = { ArrowRight: index + 1, ArrowLeft: index - 1, Home: 0, End: visibles.length - 1 };
+      // Début / Fin seulement sur la piste elle-même (pas dans un lien d'une carte)
+      if (!(e.key in touches) || (e.key === 'Home' || e.key === 'End') && e.target !== grille) return;
+      e.preventDefault();
+      aller(touches[e.key]);
+    });
+    // Tabulation : la carte qui reçoit le focus vient au centre
+    grille.addEventListener('focusin', function (e) {
+      const p = e.target.closest('.projet');
+      const i = p ? visibles.indexOf(p) : -1;
+      if (i >= 0 && i !== index) aller(i);
     });
 
-    // Glisser : l'anneau suit la souris ou le doigt, puis se cale sur la carte la plus proche
-    let depart = null, dernierGlisse = 0;
+    // Souris : glisser la piste, puis élan et calage sur la carte la plus proche
+    let glisse = null, dernierGlisse = 0;
     grille.addEventListener('pointerdown', function (e) {
-      if (e.button !== 0) return;
-      depart = { x: e.clientX, angle: angle, glisse: false };
+      if (e.pointerType !== 'mouse' || e.button !== 0) return;
+      glisse = { x: e.clientX, gauche: grille.scrollLeft, bouge: false, v: 0, t: performance.now(), dernierX: e.clientX };
     });
     window.addEventListener('pointermove', function (e) {
-      if (!depart) return;
-      const dx = e.clientX - depart.x;
-      if (!depart.glisse && Math.abs(dx) < 8) return;
-      depart.glisse = true;
-      anneau.classList.add('est-glisse');
-      anneau.style.setProperty('--angle', (depart.angle + dx * 0.22).toFixed(2) + 'deg');
+      if (!glisse) return;
+      const dx = e.clientX - glisse.x;
+      if (!glisse.bouge && Math.abs(dx) < 6) return;
+      if (!glisse.bouge) { glisse.bouge = true; grille.classList.add('est-glisse'); }
+      const t = performance.now();
+      // Vitesse lissée (px/ms) pour l'élan au lâcher
+      glisse.v = glisse.v * 0.7 + ((e.clientX - glisse.dernierX) / Math.max(1, t - glisse.t)) * 0.3;
+      glisse.t = t;
+      glisse.dernierX = e.clientX;
+      grille.scrollLeft = glisse.gauche - dx;
+    }, { passive: true });
+    window.addEventListener('pointerup', function () {
+      if (!glisse) return;
+      const fini = glisse;
+      glisse = null;
+      if (!fini.bouge) return;
+      dernierGlisse = performance.now();
+      grille.classList.remove('est-glisse');
+      // Élan : la piste continue dans le sens du geste, proportionnellement à sa vitesse
+      const projete = grille.scrollLeft + grille.clientWidth / 2 - fini.v * 260;
+      aller(Math.max(0, Math.min(visibles.length - 1, plusProche(projete))));
     });
-    window.addEventListener('pointerup', function (e) {
-      if (!depart) return;
-      if (depart.glisse) {
-        dernierGlisse = performance.now();
-        anneau.classList.remove('est-glisse');
-        const pasFaits = Math.round(-((e.clientX - depart.x) * 0.22) / pas);
-        anneau.style.setProperty('--angle', angle.toFixed(2) + 'deg');
-        aller(index + pasFaits);
-      }
-      depart = null;
-    });
-    // Clic : une carte de côté vient devant (au lieu d'ouvrir son lien) ; pas de clic après un glisser
-    anneau.addEventListener('click', function (e) {
+    // Après un glisser, pas de clic ; une carte de côté vient au centre au lieu d'ouvrir son lien
+    grille.addEventListener('click', function (e) {
+      if (performance.now() - dernierGlisse < 250) { e.preventDefault(); e.stopPropagation(); return; }
       const p = e.target.closest('.projet');
-      if (!p) return;
-      if (performance.now() - dernierGlisse < 300) { e.preventDefault(); e.stopPropagation(); return; }
-      const i = visibles.indexOf(p);
+      const i = p ? visibles.indexOf(p) : -1;
       if (i >= 0 && i !== index) { e.preventDefault(); e.stopPropagation(); aller(i); }
     }, true);
+    grille.addEventListener('dragstart', function (e) { e.preventDefault(); });
 
+    // Taille de l'écran ou des cartes (polices, images) : on remesure et on garde la carte courante
+    const remesurer = function () { mesurer(); if (index >= 0) grille.scrollLeft = gauchePour(index); };
+    if ('ResizeObserver' in window) new ResizeObserver(remesurer).observe(grille);
+    else window.addEventListener('resize', remesurer);
     mesurer();
-    placer();
-    window.addEventListener('resize', function () { mesurer(); placer(); });
-    // Les polices et les images changent la hauteur des cartes : on remesure
-    if ('ResizeObserver' in window) {
-      const obs = new ResizeObserver(function () { mesurer(); });
-      projets.forEach(function (p) { obs.observe(p); });
-    }
+    majEtat(0, true);
 
     return {
+      // Amène un projet au centre (liens « Projets à la une » du hero)
+      montrer: function (p) {
+        if (visibles.indexOf(p) < 0) {
+          const tout = document.querySelector('.filtre[data-filtre="tout"]');
+          if (tout) tout.click();
+        }
+        aller(visibles.indexOf(p), true);
+      },
       filtrer: function (filtre) {
         visibles = projets.filter(function (p) { return filtre === 'tout' || p.dataset.categories.split(' ').indexOf(filtre) !== -1; });
-        projets.forEach(function (p) { p.classList.toggle('est-filtre', visibles.indexOf(p) < 0); });
-        index = 0;
-        angle = 0;
+        projets.forEach(function (p) {
+          p.classList.toggle('est-filtre', visibles.indexOf(p) < 0);
+          p.classList.remove('est-active');
+        });
         mesurer();
-        placer();
+        grille.scrollLeft = 0;
+        majEtat(0, true);
+        aller(0, true);
         Site.rafraichir();
       }
     };
@@ -684,7 +659,15 @@
   gererPourquoi();
   gererCompteurs();
   gererBarres();
-  gererFiltre(gererCarrousel());
+  const carrousel = gererCarrousel();
+  gererFiltre(carrousel);
+  // Liens « Projets à la une » du hero : la section Projets s'ouvre sur le bon projet
+  document.querySelectorAll('[data-aller-projet]').forEach(function (lien) {
+    lien.addEventListener('click', function () {
+      const projet = document.querySelector('.projet.' + lien.dataset.allerProjet);
+      if (carrousel && projet) carrousel.montrer(projet);
+    });
+  });
   gererInclinaison();
   gererFormulaire();
 })();

@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-src 'none'; worker-src 'self' blob:; script-src 'self' https://cdn.jsdelivr.net 'wasm-unsafe-eval' 'sha256-SMNcEC8V7pVU6ZnehcFbY/2xVNAvXhjdgHJmLdiN4rA=' 'sha256-KdwMH+AzGDNDosnmI+yteLvITvJmpIAsmYJ9JNR+oPw='; connect-src 'self' blob: data:" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-src 'none'; worker-src 'self' blob:; script-src 'self' https://cdn.jsdelivr.net 'wasm-unsafe-eval' 'sha256-SmH1AU+q8wMslBIIh+GpdAlYPebCin25FMs3N1+rY4E=' 'sha256-KdwMH+AzGDNDosnmI+yteLvITvJmpIAsmYJ9JNR+oPw='; connect-src 'self' blob: data:" />
   <title>Projet automobile — BMW E39 520i (M54B22) · Yanis Poulain</title>
   <meta name="description" content="Ma BMW E39 520i de 2002 : diagnostic d'un mélange pauvre, pompe à essence, débitmètre, refroidissement. Le moteur M54 en vue éclatée 3D, 17 fiches pour le comprendre et les vrais relevés." />
   <meta name="author" content="Yanis Poulain" />
@@ -28,20 +28,30 @@
   <link rel="stylesheet" href="css/style.css" />
 
   <script>
-    document.documentElement.classList.add('js');
-    if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) document.documentElement.classList.add('anime');
-    // "vue-classique" : choisie avec le bouton de la navigation (mémorisée) ou ?vue=classique,
-    // page à défilement simple, plus légère ; ?vue=3d revient au voyage
-    var classique = /[?&]vue=classique/.test(location.search);
-    try {
-      if (/[?&]vue=3d/.test(location.search)) localStorage.removeItem('vue');
-      else if (classique) localStorage.setItem('vue', 'classique');
-      else classique = localStorage.getItem('vue') === 'classique';
-    } catch (e) { /* stockage indisponible : vue par défaut */ }
-    if (/[?&]vue=/.test(location.search) && history.replaceState) history.replaceState(null, '', location.pathname + location.hash);
-    if (classique) document.documentElement.classList.add('vue-classique');
-    // "voyage" : les sections deviennent des cartes posées dans l'espace 3D (espace-3d.js)
-    else if (document.documentElement.classList.contains('anime') && window.WebGLRenderingContext) document.documentElement.classList.add('voyage');
+    // Classes posées avant l'affichage (aucun saut de mise en page) :
+    // "js" : JavaScript actif ; "anime" : le visiteur accepte les animations.
+    // Mode d'affichage commun à tout le site, mémorisé dans localStorage ("mode-affichage") :
+    // "vue-classique" par défaut (page simple et légère) ; "mode-3d" sur choix du visiteur.
+    // ?vue=3d ou ?vue=classique (posé par l'interrupteur) l'emporte, même sans stockage.
+    (function () {
+      var racine = document.documentElement;
+      racine.classList.add('js');
+      var anime = !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (anime) racine.classList.add('anime');
+      var demande = /[?&]vue=(3d|classique)\b/.exec(location.search);
+      var mode = demande ? demande[1] : 'classique';
+      try {
+        if (demande) localStorage.setItem('mode-affichage', mode);
+        else mode = localStorage.getItem('mode-affichage') === '3d' ? '3d' : 'classique';
+        localStorage.removeItem('vue');
+      } catch (e) { /* stockage indisponible : mode classique (ou celui de l'adresse) */ }
+      if (demande && history.replaceState) history.replaceState(null, '', location.pathname + location.hash);
+      // La 3D demande les animations et WebGL ; sinon la page reste classique
+      var en3d = mode === '3d' && anime && !!window.WebGLRenderingContext;
+      racine.classList.add(en3d ? 'mode-3d' : 'vue-classique');
+      // "voyage" : les sections deviennent des cartes posées dans l'espace 3D (espace-3d.js)
+      if (en3d && racine.hasAttribute('data-voyage')) racine.classList.add('voyage');
+    })();
   </script>
 
   <!-- Correspondance des modules Three.js (le moteur 3D importe "three" et ses compléments) -->
@@ -98,7 +108,6 @@
         </ul>
       </nav>
       <div class="nav__actions">
-        <button class="nav__vue" type="button" data-bascule-vue hidden><svg class="icone" viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" d="M12 3 3 8l9 5 9-5-9-5ZM3 13l9 5 9-5M3 17.5l9 5 9-5"/></svg><span data-libelle>Vue classique</span></button>
         <a class="bouton bouton--petit nav__cv" href="cv.html"><span class="bouton__texte">Mon CV</span></a>
         <button class="nav__burger" id="burger" type="button" aria-expanded="false" aria-controls="menu-mobile">
           <span></span><span class="visuellement-cache">Ouvrir le menu</span>
@@ -113,7 +122,6 @@
     <a href="#documentation">Le M54 expliqué</a>
     <a href="#releves">Relevés</a>
     <a href="index.html">Portfolio</a>
-    <button class="menu-mobile__vue" type="button" data-bascule-vue hidden><span data-libelle>Vue classique</span></button>
   </div>
 
   <main id="contenu" class="e39">

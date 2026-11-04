@@ -315,7 +315,6 @@ button { font: inherit; color: inherit; cursor: pointer; }
   overflow: hidden;
   isolation: isolate;
   transition: background 0.3s, border-color 0.3s, color 0.3s, box-shadow 0.3s;
-  will-change: transform;
 }
 .bouton svg { width: 18px; height: 18px; flex-shrink: 0; }
 
@@ -426,34 +425,64 @@ button { font: inherit; color: inherit; cursor: pointer; }
 
 .nav__actions { display: flex; align-items: center; gap: 10px; }
 .nav__cv { display: none; }
-/* Bascule vue 3D / vue classique (grand écran : dans la barre ; mobile : dans le menu) */
-.nav__vue {
-  display: none;
+/* Interrupteur « Changer de mode » (commun.js) : vue classique par défaut, mode 3D au choix.
+   Grand écran : dans la barre de navigation ; ailleurs : flottant en bas à droite
+   (le sommaire est en bas à gauche). Le choix vaut pour tout le site. */
+.bascule-mode {
+  display: inline-flex;
   align-items: center;
-  gap: 8px;
-  padding: 8px 14px;
+  gap: 10px;
+  min-height: 44px;
+  padding: 5px 5px 5px 14px;
   border: 1px solid var(--ligne);
   border-radius: 999px;
   background: var(--surface);
-  color: var(--encre-2);
-  font-size: 0.85rem;
-  font-weight: 600;
-  transition: border-color 0.2s, color 0.2s;
+  color: var(--encre);
+  text-align: left;
+  transition: border-color 0.25s, box-shadow 0.25s;
 }
-.nav__vue .icone { width: 16px; height: 16px; }
-.nav__vue:hover, .nav__vue:focus-visible { border-color: var(--violet); color: var(--violet-fonce); }
-.menu-mobile__vue {
-  align-self: flex-start;
-  margin-top: 12px;
-  padding: 10px 18px;
-  border: 1px solid var(--ligne);
-  border-radius: 999px;
-  background: var(--surface);
-  color: var(--encre-2);
-  font-size: 1rem;
-  font-weight: 600;
+.bascule-mode__texte { display: grid; line-height: 1.15; }
+.bascule-mode__texte small {
+  font-family: var(--police-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.04em;
+  color: var(--encre-3);
 }
-.nav__vue[hidden], .menu-mobile__vue[hidden] { display: none; }
+.bascule-mode__texte span { font-size: 0.84rem; font-weight: 700; white-space: nowrap; }
+.bascule-mode__fleche {
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  padding: 8px;
+  border-radius: 50%;
+  background: var(--violet);
+  color: #fff;
+  transition: transform 0.35s var(--ease-sortie), background 0.25s;
+}
+.bascule-mode.est-3d .bascule-mode__fleche { background: var(--encre); transform: scaleX(-1); }
+.bascule-mode:hover { border-color: var(--violet); box-shadow: 0 10px 26px -14px var(--violet-ombre); }
+.bascule-mode:hover .bascule-mode__fleche { transform: translateX(3px); }
+.bascule-mode.est-3d:hover .bascule-mode__fleche { transform: scaleX(-1) translateX(3px); }
+.bascule-mode:focus-visible { outline: 3px solid var(--violet); outline-offset: 3px; }
+/* Mobile : version courte dans la barre (« 3D » / « 2D »), version complète dans le menu */
+.bascule-mode__court { display: none; }
+.bascule-mode--nav { gap: 6px; min-height: 40px; padding: 4px 4px 4px 12px; }
+.bascule-mode--nav small, .bascule-mode--nav .bascule-mode__libelle { display: none; }
+.bascule-mode--nav .bascule-mode__court { display: inline; font-family: var(--police-mono); font-size: 0.85rem; }
+.bascule-mode--nav .bascule-mode__fleche { width: 30px; height: 30px; }
+.bascule-mode--menu { align-self: flex-start; margin-top: 16px; }
+.bascule-mode--flottant {
+  position: fixed;
+  right: 12px;
+  bottom: 12px;
+  z-index: 60;
+  background: rgba(255, 255, 255, 0.95);
+  box-shadow: 0 12px 30px -16px rgba(76, 29, 149, 0.45);
+}
+.menu-ouvert .bascule-mode--flottant { visibility: hidden; }
+/* Animations hors écran mises en pause (commun.js, IntersectionObserver) */
+.hors-ecran, .hors-ecran * { animation-play-state: paused !important; }
+@media print { .bascule-mode { display: none !important; } }
 
 /* Bouton burger (mobile) */
 .nav__burger {
@@ -514,7 +543,12 @@ button { font: inherit; color: inherit; cursor: pointer; }
 
 @media (min-width: 1040px) {
   .nav__liens { display: flex; }
-  .nav__cv, .nav__vue { display: inline-flex; }
+  .nav__cv { display: inline-flex; }
+  .bascule-mode--nav { gap: 10px; min-height: 44px; padding: 5px 5px 5px 14px; }
+  .bascule-mode--nav small, .bascule-mode--nav .bascule-mode__libelle { display: inline; }
+  .bascule-mode--nav small { display: block; }
+  .bascule-mode--nav .bascule-mode__court { display: none; }
+  .bascule-mode--nav .bascule-mode__fleche { width: 32px; height: 32px; }
   .nav__burger, .menu-mobile { display: none; }
 }
 
@@ -3183,7 +3217,7 @@ button.visite__compteur:hover, button.visite__compteur:focus-visible { border-co
   margin: 0 0 72svh;
   background: rgba(255, 255, 255, 0.9);
   box-shadow: 0 30px 70px -40px rgba(76, 29, 149, 0.4);
-  opacity: 0.55;
+  opacity: 0.9; /* lisible même hors focus (contraste WCAG AA) */
   transition: opacity 0.4s, transform 0.5s var(--ease-sortie), box-shadow 0.4s, border-color 0.4s;
 }
 .visite-3d .fiches > .fiche.est-active {
@@ -3645,75 +3679,60 @@ button.visite__compteur:hover, button.visite__compteur:focus-visible { border-co
 .anime:not(.voyage) .comparaison__contre { font-size: clamp(1.25rem, 3.2vw, 2.5rem); line-height: 1.12; }
 @media (max-height: 700px) { .anime:not(.voyage) .comparaison__contre { font-size: clamp(1.1rem, 2.6vw, 1.9rem); } }
 
-/* --- Sélecteur immersif : carrousel 3D (index.js pose .carrousel-actif sur <html>) --- */
+/* --- Carrousel des projets (index.js pose .carrousel-actif sur <html>) ---
+   Piste horizontale à défilement natif + scroll-snap : fluide au doigt et au pavé tactile.
+   La carte du centre est mise en avant par transform et opacity seulement. */
 .carrousel-actif .grille-projets {
-  --largeur-carte: min(340px, 78vw);
+  --largeur-carte: min(360px, 82vw);
   position: relative;
-  display: block;
-  height: clamp(470px, 62vh, 540px);
-  perspective: 1500px;
-  perspective-origin: 50% 40%;
-  touch-action: pan-y;
-  user-select: none;
-  outline-offset: 8px;
+  display: flex;
+  gap: clamp(14px, 2vw, 24px);
+  overflow-x: auto;
+  overflow-y: hidden;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x mandatory;
+  scroll-padding-inline: calc(50% - var(--largeur-carte) / 2);
+  padding: 18px calc(50% - var(--largeur-carte) / 2) 30px;
+  scrollbar-width: none;
+  cursor: grab;
+  outline-offset: 6px;
   border-radius: var(--rayon);
+  /* Les bords de la piste s'estompent : on devine les projets suivants */
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
 }
-.carrousel__anneau {
-  position: absolute;
-  inset: 0;
-  transform-style: preserve-3d;
-  transform: translateZ(calc(var(--rayon-anneau, 600px) * -1)) rotateY(var(--angle, 0deg));
-  transition: transform 0.9s var(--ease-sortie);
-}
-.carrousel__anneau.est-glisse { transition: none; }
+.carrousel-actif .grille-projets::-webkit-scrollbar { display: none; }
+.carrousel-actif .grille-projets.est-glisse { scroll-snap-type: none; cursor: grabbing; user-select: none; }
 .carrousel-actif .grille-projets .projet,
 .carrousel-actif .grille-projets .projet[data-revele],
 .carrousel-actif .grille-projets .projet[data-revele].est-visible {
-  position: absolute;
-  top: 0;
-  left: 50%;
-  width: var(--largeur-carte);
-  margin-left: calc(var(--largeur-carte) / -2);
+  flex: 0 0 var(--largeur-carte);
+  scroll-snap-align: center;
+  scroll-snap-stop: normal;
   clip-path: none;
-  transform: rotateY(var(--a, 0deg)) translateZ(var(--rayon-anneau, 600px));
-  backface-visibility: hidden;
-  transition: none;
+  transform: scale(0.94);
+  opacity: 0.62;
+  transition: transform 0.45s var(--ease-sortie), opacity 0.45s;
 }
+.carrousel-actif .grille-projets .projet.est-active,
+.carrousel-actif .grille-projets .projet[data-revele].est-visible.est-active { transform: none; opacity: 1; }
 .carrousel-actif .grille-projets .projet.est-filtre { display: none; }
-.carrousel-actif .projet .projet__carte { transition: transform 0.6s var(--ease-sortie), box-shadow 0.6s, border-color 0.4s, opacity 0.6s, filter 0.6s; }
-.carrousel-actif .projet:not(.est-active) .projet__carte { opacity: 0.5; filter: saturate(0.5); cursor: pointer; }
-.carrousel-actif .projet.est-active .projet__carte { box-shadow: 0 40px 90px -35px color-mix(in srgb, var(--accent) 55%, transparent); border-color: color-mix(in srgb, var(--accent) 40%, transparent); }
+.carrousel-actif .projet .projet__carte { transition: box-shadow 0.45s, border-color 0.4s; }
+.carrousel-actif .projet.est-active .projet__carte { box-shadow: 0 30px 70px -35px color-mix(in srgb, var(--accent) 55%, transparent); border-color: color-mix(in srgb, var(--accent) 40%, transparent); }
+.carrousel-actif .projet:not(.est-active) .projet__carte { cursor: pointer; }
+/* Pendant un glisser à la souris : pas d'inclinaison ni de sélection de texte */
+.carrousel-actif .grille-projets.est-glisse .projet__carte { pointer-events: none; }
+.carrousel-actif .projet img { -webkit-user-drag: none; }
 /* Flèches à position fixe : la colonne du titre a une largeur fixe, le titre tient sur une ligne */
 .carrousel__commandes {
   display: grid;
-  grid-template-columns: 44px minmax(0, 1fr) 44px;
+  grid-template-columns: 48px minmax(0, 1fr) 48px;
   align-items: center;
   gap: 12px;
   width: min(420px, 100%);
-  margin: 18px auto 0;
+  margin: 6px auto 0;
 }
 .carrousel__etat strong { display: block; max-width: 100%; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
-/* Molette : cadran à faire tourner, crans = projets */
-.carrousel__molette {
-  position: relative;
-  width: 92px;
-  height: 92px;
-  margin: 14px auto 0;
-  border-radius: 50%;
-  border: 1px solid var(--ligne);
-  background:
-    radial-gradient(circle, #fff 0 56%, transparent 57%),
-    repeating-conic-gradient(from var(--tour, 0deg), var(--violet-clair) 0 2deg, var(--surface-2) 2deg 20deg);
-  box-shadow: 0 10px 24px -14px rgba(76, 29, 149, 0.5);
-  cursor: grab;
-  touch-action: none;
-  user-select: none;
-  transition: box-shadow 0.2s;
-}
-.carrousel__molette:active { cursor: grabbing; }
-.carrousel__molette:focus-visible { outline: 3px solid var(--violet); outline-offset: 3px; }
-.carrousel__molette[hidden] { display: none; }
-.carrousel__repere { position: absolute; left: 50%; top: 4px; width: 4px; height: 14px; margin-left: -2px; border-radius: 2px; background: var(--violet); }
 /* Bouton « Voir le projet » des cartes (au-dessus du lien qui couvre la carte) */
 .projet__bouton {
   position: relative;
@@ -3750,9 +3769,6 @@ button.visite__compteur:hover, button.visite__compteur:focus-visible { border-co
 .carrousel__rang { font-family: var(--police-mono); font-size: 0.78rem; color: var(--encre-3); }
 .carrousel__etat strong { font-family: var(--police-titre); font-size: 1.1rem; }
 .carrousel__aide { margin-top: 6px; text-align: center; font-size: 0.82rem; color: var(--encre-3); }
-@media (max-width: 719px) {
-  .carrousel-actif .grille-projets { height: clamp(440px, 70vh, 520px); perspective: 1100px; }
-}
 
 
 /* ==========================================================================
@@ -4123,3 +4139,152 @@ button.visite__compteur:hover, button.visite__compteur:focus-visible { border-co
 @media (min-width: 1040px) { .jarvis-galerie { grid-template-columns: repeat(2, 1fr); } }
 .jarvis-galerie figure { margin: 0; }
 @media (min-width: 1040px) { .page-jarvis .e39-hero__grille { grid-template-columns: 1fr 1fr; } }
+
+
+/* Jarvis (refonte détaillée) : origine, vidéos, schéma, IA, capacités, connecteurs, ordres */
+.jarvis-hero__actions { margin-top: 28px; }
+.jarvis-origine { display: grid; gap: 14px; }
+@media (min-width: 900px) { .jarvis-origine { grid-template-columns: repeat(3, 1fr); gap: 18px; } }
+.jarvis-origine li {
+  padding: 24px;
+  border-radius: var(--rayon);
+  background: linear-gradient(160deg, #0b1418, #10232b);
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 0.96rem;
+}
+.jarvis-origine strong { display: block; margin-bottom: 8px; color: #67e8f9; font-family: var(--police-titre); font-size: 1.15rem; }
+
+.jarvis-videos { display: grid; gap: 28px; }
+@media (min-width: 1040px) { .jarvis-videos { grid-template-columns: repeat(2, 1fr); } }
+.jarvis-video { margin: 0; }
+.jarvis-video video {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 8 / 5;
+  border-radius: 16px;
+  background: #0b1418;
+  box-shadow: var(--ombre-forte);
+}
+.jarvis-video figcaption { margin-top: 12px; font-size: 0.92rem; color: var(--encre-2); }
+.jarvis-video figcaption strong { color: var(--encre); }
+
+/* Architecture : schéma vertical (lisible sur mobile) à côté de la liste des modules */
+.jarvis-archi { display: grid; gap: 32px; align-items: start; }
+@media (min-width: 1040px) {
+  .jarvis-archi { grid-template-columns: minmax(0, 440px) minmax(0, 1fr); gap: 40px; }
+  .jarvis-archi .jarvis-modules { margin-top: 0; }
+  .jarvis-archi .jarvis-modules ul { grid-template-columns: 1fr; }
+}
+.jarvis-schema { margin: 0 auto; width: 100%; max-width: 440px; }
+.jarvis-schema svg { display: block; width: 100%; height: auto; font-family: var(--police-texte); }
+.jarvis-schema figcaption { margin-top: 10px; font-size: 0.85rem; color: var(--encre-3); text-align: center; }
+.jarvis-schema text { font-size: 13px; font-weight: 600; fill: var(--encre); text-anchor: middle; }
+.jarvis-schema .jarvis-schema__petit { font-size: 10.5px; font-weight: 500; fill: var(--encre-2); }
+.jarvis-schema .jarvis-schema__fort { font-size: 15px; font-weight: 700; }
+.jarvis-schema .jarvis-schema__titre { font-size: 11px; font-weight: 600; fill: var(--encre-3); letter-spacing: 0.04em; }
+.jarvis-schema__boite rect { fill: var(--surface); stroke: var(--ligne); stroke-width: 1.5; }
+.jarvis-schema__boite--local rect { fill: #ecfdf5; stroke: #6ee7b7; }
+.jarvis-schema__boite--reflexe rect { fill: #fff7ed; stroke: #fdba74; }
+.jarvis-schema__boite--cerveau rect { fill: var(--violet); stroke: var(--violet); }
+.jarvis-schema .jarvis-schema__boite--cerveau text { fill: #fff; }
+.jarvis-schema__boite--codex rect { fill: var(--violet-pale); stroke: var(--violet-clair); }
+.jarvis-schema__cadre { fill: var(--surface-2); stroke: var(--ligne); stroke-dasharray: 5 5; }
+.jarvis-schema__puce rect { fill: var(--surface); stroke: var(--violet-clair); }
+.jarvis-schema .jarvis-schema__puce text { font-size: 11.5px; }
+.jarvis-schema__liens path { fill: none; stroke: var(--violet-clair); stroke-width: 2; }
+.jarvis-schema__pointe { fill: var(--violet-clair); }
+.jarvis-schema__flux { fill: none; stroke: var(--violet); stroke-width: 2.5; stroke-dasharray: 6 18; stroke-linecap: round; opacity: 0.8; }
+.anime .jarvis-schema__flux { animation: jarvis-flux 1.6s linear infinite; }
+.anime .jarvis-schema__flux--lent { animation-duration: 2.4s; }
+@keyframes jarvis-flux { to { stroke-dashoffset: -48; } }
+
+/* Les IA : rôle au-dessus du nom */
+.jarvis-bloc .jarvis-bloc__role { margin: 0 0 6px; font-family: var(--police-mono); font-size: 0.74rem; color: var(--violet-fonce); }
+.jarvis-bloc--cerveau { border-color: rgba(124, 58, 237, 0.35); box-shadow: 0 20px 50px -30px var(--violet-ombre); }
+.jarvis-bloc--codex { border-color: rgba(16, 163, 127, 0.4); }
+.jarvis-bloc--local { border-color: #a7f3d0; }
+.jarvis-bloc--codex .jarvis-bloc__role, .jarvis-bloc--local .jarvis-bloc__role { color: #047857; }
+
+/* Capacités par catégorie */
+.jarvis-capacites { display: grid; gap: 16px; }
+@media (min-width: 720px) { .jarvis-capacites { grid-template-columns: repeat(2, 1fr); } }
+@media (min-width: 1100px) { .jarvis-capacites { grid-template-columns: repeat(3, 1fr); } }
+.jarvis-capacite {
+  padding: 24px;
+  border: 1px solid var(--ligne);
+  border-top: 3px solid var(--violet);
+  border-radius: var(--rayon);
+  background: var(--surface);
+}
+.jarvis-capacite h3 { font-size: 1.15rem; }
+.jarvis-capacite ul { display: grid; gap: 8px; margin-top: 12px; }
+.jarvis-capacite li { position: relative; padding-left: 16px; color: var(--encre-2); font-size: 0.93rem; }
+.jarvis-capacite li::before { content: ""; position: absolute; left: 0; top: 0.6em; width: 6px; height: 6px; border-radius: 50%; background: var(--violet-clair); }
+
+/* Skills et connecteurs */
+.jarvis-connecteurs { display: grid; gap: 16px; }
+@media (min-width: 720px) { .jarvis-connecteurs { grid-template-columns: repeat(2, 1fr); } }
+@media (min-width: 1100px) { .jarvis-connecteurs { grid-template-columns: repeat(3, 1fr); } }
+.jarvis-connecteurs article { padding: 24px; border: 1px solid var(--ligne); border-radius: var(--rayon); background: var(--surface); }
+.jarvis-connecteurs h3 { font-size: 1.1rem; }
+.jarvis-connecteurs p { margin-top: 10px; color: var(--encre-2); font-size: 0.93rem; }
+.jarvis-puces { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
+.jarvis-puces li { padding: 5px 11px; border-radius: 999px; background: var(--violet-pale); color: var(--violet-fonce); font-size: 0.82rem; font-weight: 600; }
+
+/* Ordres vocaux : bulles de dialogue */
+.jarvis-ordres { display: flex; flex-wrap: wrap; gap: 10px; }
+.jarvis-ordres li {
+  padding: 10px 16px;
+  border: 1px solid var(--ligne);
+  border-radius: 18px 18px 18px 4px;
+  background: var(--surface);
+  color: var(--encre);
+  font-size: 0.95rem;
+}
+.jarvis-stack { margin-top: 36px; }
+
+
+/* ==========================================================================
+   16. Accueil : projets à la une dans le hero, clin d'œil à la E39
+   ========================================================================== */
+.hero__projets { margin-top: 26px; }
+.hero__projets-titre { font-family: var(--police-mono); font-size: 0.74rem; color: var(--encre-3); }
+.hero__projets ul { display: grid; gap: 8px; margin-top: 10px; }
+@media (min-width: 720px) { .hero__projets ul { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+.hero__projets a {
+  display: grid;
+  gap: 2px;
+  height: 100%;
+  padding: 10px 14px;
+  border: 1px solid var(--ligne);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.86);
+  transition: border-color 0.25s, transform 0.3s var(--ease-sortie), box-shadow 0.25s;
+}
+.hero__projets a:hover, .hero__projets a:focus-visible { border-color: var(--violet); transform: translateY(-2px); box-shadow: 0 14px 30px -18px var(--violet-ombre); }
+.hero__projets strong { font-family: var(--police-titre); font-size: 1rem; }
+.hero__projets strong::after { content: " →"; color: var(--violet); }
+.hero__projets span { font-size: 0.8rem; line-height: 1.35; color: var(--encre-2); }
+
+/* Clin d'œil : une E39 façon Alpina (illustration générée) sous l'étape « Projet automobile » */
+.clin-oeil-e39 {
+  display: inline-grid;
+  justify-items: start;
+  gap: 4px;
+  margin-top: 14px;
+  max-width: 260px;
+}
+.clin-oeil-e39 img {
+  width: 100%;
+  height: auto;
+  filter: drop-shadow(0 14px 14px rgba(17, 16, 24, 0.16));
+  transition: transform 0.6s var(--ease-sortie);
+}
+.clin-oeil-e39:hover img, .clin-oeil-e39:focus-visible img { transform: translateX(10px); }
+.clin-oeil-e39 span { font-family: var(--police-mono); font-size: 0.68rem; color: var(--encre-3); }
+@media (prefers-reduced-motion: reduce) {
+  .clin-oeil-e39 img, .hero__projets a { transition: none; }
+}
+
+@media (min-width: 1100px) { .jarvis-capacite:last-child:nth-child(3n + 1) { grid-column: 1 / -1; } }

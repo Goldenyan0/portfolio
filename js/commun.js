@@ -297,19 +297,48 @@
      5. Révélations au scroll : ajoute .est-visible aux [data-revele] et [data-mots]
      ------------------------------------------------------------------ */
   function gererRevelations() {
-    const elements = Array.from(document.querySelectorAll('[data-revele], [data-mots]'));
-
-    if (mouvementReduit) {
-      elements.forEach(function (el) { el.classList.add('est-visible'); });
-      return;
-    }
-
+    const selecteur = '[data-revele], [data-mots]';
+    const racine = document.documentElement;
     // Remarque : on n'utilise pas IntersectionObserver ici, car il tient compte
     // du clip-path — un élément encore "replié" (clip-path à 100 %) n'est jamais vu.
     // getBoundingClientRect, lui, donne la vraie place de l'élément.
-    let enAttente = elements;
+    let enAttente = Array.from(document.querySelectorAll(selecteur));
+    if (mouvementReduit) {
+      enAttente.forEach(function (el) { el.classList.add('est-visible'); });
+      enAttente = [];
+    }
+
+    // Éléments ajoutés après le chargement (fiches de la documentation E39 créées par
+    // e39.js, etc.) : ils rejoignent la file. Sans cela, ils restaient masqués pour
+    // toujours en vue classique (la file n'était lue qu'une fois, au démarrage).
+    if ('MutationObserver' in window) {
+      new MutationObserver(function (mutations) {
+        let ajout = false;
+        mutations.forEach(function (m) {
+          m.addedNodes.forEach(function (n) {
+            if (n.nodeType !== 1) return;
+            const nouveaux = Array.from(n.querySelectorAll(selecteur));
+            if (n.matches(selecteur)) nouveaux.push(n);
+            nouveaux.forEach(function (el) {
+              if (el.classList.contains('est-visible')) return;
+              if (mouvementReduit) { el.classList.add('est-visible'); return; }
+              if (enAttente.indexOf(el) === -1) { enAttente.push(el); ajout = true; }
+            });
+          });
+        });
+        if (ajout) demanderMiseAJour();
+      }).observe(document.body, { childList: true, subtree: true });
+    }
+    if (mouvementReduit) return;
+
     window.Site.surScroll(function () {
       if (!enAttente.length) return;
+      // Voyage 3D en place : les cartes révèlent elles-mêmes leur contenu (espace-3d.js) ;
+      // on ne mesure plus ces éléments à chaque image (mesures coûteuses dans l'espace 3D)
+      if (racine.classList.contains('voyage-pret')) {
+        enAttente = enAttente.filter(function (el) { return !el.closest('main'); });
+        if (!enAttente.length) return;
+      }
       const h = window.innerHeight;
       const l = window.innerWidth;
       enAttente = enAttente.filter(function (el) {
@@ -390,7 +419,14 @@
       return;
     }
 
+    let traitsComplets = false;
     window.Site.surScroll(function () {
+      // Voyage 3D : trait dessiné en entier, sans mesurer la page à chaque image
+      if (document.documentElement.classList.contains('voyage-pret')) {
+        if (!traitsComplets) timelines.forEach(function (t) { t.style.setProperty('--progression', '1'); });
+        traitsComplets = true;
+        return;
+      }
       const repere = window.innerHeight * 0.7; // le trait suit ce point de l'écran
       timelines.forEach(function (t) {
         const zone = t.getBoundingClientRect();
@@ -473,16 +509,17 @@
 
 
   /* ------------------------------------------------------------------
-     8. Bascule « vue 3D / vue classique » : la vue classique est une page à défilement
-        simple (sans voyage dans l'espace), plus rapide à parcourir et plus légère.
-        Le choix est mémorisé (script du <head>) ; on revient à la même section.
+     8. Interrupteur « Changer de mode » : vue classique (par défaut) ou mode 3D.
+        Le choix vaut pour tout le site : il est mémorisé dans localStorage par le
+        script du <head> (chaque accès est protégé : sans stockage, le site reste en
+        vue classique). Dans la barre de navigation (libellé court sur mobile) et dans le
+        menu mobile (libellé complet). On revient à la même section.
      ------------------------------------------------------------------ */
   function gererBasculeVue() {
-    const boutons = document.querySelectorAll('[data-bascule-vue]');
     const racine = document.documentElement;
-    const classique = racine.classList.contains('vue-classique');
-    // Sans animations ou sans WebGL, la page est déjà en vue classique : rien à proposer
-    if (!boutons.length || !racine.classList.contains('anime') || !window.WebGLRenderingContext) return;
+    const en3d = racine.classList.contains('mode-3d');
+    // Sans animations (préférence du système) ou sans WebGL, la 3D est impossible : rien à proposer
+    if (!racine.classList.contains('anime') || !window.WebGLRenderingContext) return;
 
     // Section affichée : la carte lue pendant le voyage, sinon la dernière section passée
     function sectionCourante() {
@@ -494,18 +531,63 @@
       return courante;
     }
 
-    boutons.forEach(function (bouton) {
-      bouton.hidden = false;
-      bouton.querySelector('[data-libelle]').textContent = classique ? 'Vue 3D' : 'Vue classique';
-      bouton.setAttribute('aria-label', classique
-        ? 'Revenir à la vue 3D : un voyage dans l\'espace, section par section'
-        : 'Passer à la vue classique : une page simple, plus légère');
-      bouton.addEventListener('click', function () {
-        const section = sectionCourante();
-        const ancre = section && (section.id || (section.querySelector('[id]') || {}).id);
-        location.href = location.pathname + '?vue=' + (classique ? '3d' : 'classique') + (ancre ? '#' + ancre : '');
-      });
+    function changer() {
+      const cible = en3d ? 'classique' : '3d';
+      // Mémorisé ici aussi : le choix suit le visiteur sur les autres pages
+      try { localStorage.setItem('mode-affichage', cible); } catch (e) { /* l'adresse suffit pour cette page */ }
+      const section = sectionCourante();
+      const ancre = section && (section.id || (section.querySelector('[id]') || {}).id);
+      location.href = location.pathname + '?vue=' + cible + (ancre ? '#' + encodeURIComponent(ancre) : '');
+    }
+
+    const libelle = en3d ? 'Vue classique' : 'Passer en 3D';
+    const aide = en3d
+      ? 'Changer de mode : revenir à la vue classique, une page simple et plus légère. Le choix vaut pour tout le site.'
+      : 'Changer de mode : passer en 3D, un voyage dans l\'espace section par section. Le choix vaut pour tout le site.';
+    const icone = '<svg class="bascule-mode__fleche" viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" d="M5 12h14M13 6l6 6-6 6"/></svg>';
+    function creer(classe) {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'bascule-mode ' + classe + (en3d ? ' est-3d' : '');
+      b.setAttribute('aria-label', aide);
+      b.innerHTML = '<span class="bascule-mode__texte" aria-hidden="true"><small>Changer de mode</small>' +
+        '<span class="bascule-mode__libelle"></span><span class="bascule-mode__court"></span></span>' + icone;
+      b.querySelector('.bascule-mode__libelle').textContent = libelle;
+      // Libellé court pour la barre de navigation sur mobile (le libellé complet reste dans aria-label)
+      b.querySelector('.bascule-mode__court').textContent = en3d ? '2D' : '3D';
+      b.addEventListener('click', changer);
+      return b;
+    }
+    // Barre de navigation (version courte sur mobile) et menu mobile (version complète)
+    const actions = document.querySelector('.nav__actions');
+    if (actions) actions.insertBefore(creer('bascule-mode--nav'), actions.firstChild);
+    const menu = document.getElementById('menu-mobile');
+    if (menu) menu.appendChild(creer('bascule-mode--menu'));
+    if (!actions && !menu) document.body.appendChild(creer('bascule-mode--flottant'));
+
+    // Retour arrière (page gardée en mémoire par le navigateur) : si le mode a changé
+    // entre-temps sur une autre page, on recharge pour l'appliquer ici aussi
+    window.addEventListener('pageshow', function (e) {
+      if (!e.persisted) return;
+      let voulu;
+      try { voulu = localStorage.getItem('mode-affichage') === '3d'; } catch (err) { return; }
+      if (voulu !== en3d) location.reload();
     });
+  }
+
+
+  /* ------------------------------------------------------------------
+     9. Animations hors écran mises en pause (IntersectionObserver) :
+        schémas animés, décors du hero, bandeau… ne tournent que s'ils sont visibles
+     ------------------------------------------------------------------ */
+  function gererHorsEcran() {
+    if (mouvementReduit || !('IntersectionObserver' in window)) return;
+    const elements = document.querySelectorAll('[data-pause-hors-ecran], .schema-site, .schema-lab, .hero__formes, .ticker');
+    if (!elements.length) return;
+    const obs = new IntersectionObserver(function (entrees) {
+      entrees.forEach(function (e) { e.target.classList.toggle('hors-ecran', !e.isIntersecting); });
+    }, { rootMargin: '120px 0px' });
+    elements.forEach(function (el) { obs.observe(el); });
   }
 
 
@@ -522,4 +604,5 @@
   gererPanneaux();
   gererMagnetisme();
   gererBasculeVue();
+  gererHorsEcran();
 })();

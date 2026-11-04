@@ -46,5 +46,29 @@
     });
   }
 
+  /* ------------------------------------------------------------------
+     Vidéos de démonstration : lecture muette en boucle quand elles sont à
+     l'écran, en pause sinon (IntersectionObserver). Rien n'est chargé avant
+     (preload="none"). Si le visiteur a demandé moins d'animations, aucune
+     lecture automatique : les commandes de la vidéo restent disponibles.
+     ------------------------------------------------------------------ */
+  function gererVideos() {
+    const videos = Array.from(document.querySelectorAll('.jarvis-video video'));
+    const mouvementReduit = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (!videos.length || mouvementReduit || !('IntersectionObserver' in window)) return;
+    const obs = new IntersectionObserver(function (entrees) {
+      entrees.forEach(function (e) {
+        const v = e.target;
+        if (e.isIntersecting) {
+          // La lecture peut être refusée par le navigateur (économie de données) : sans conséquence
+          const lecture = v.play();
+          if (lecture && lecture.catch) lecture.catch(function () {});
+        } else if (!v.paused) v.pause();
+      });
+    }, { threshold: 0.45 });
+    videos.forEach(function (v) { obs.observe(v); });
+  }
+
   gererAgrandissement();
+  gererVideos();
 })();
