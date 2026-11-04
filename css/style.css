@@ -2103,6 +2103,9 @@ html:not(.js) .timeline__trait { transform: none; }
 }
 .cv-puces strong { color: var(--encre); }
 
+/* Liens du CV : la version écran est cliquable, la version papier affiche l'adresse en clair */
+.cv-lien-papier { display: none; }
+
 /* --- Impression / export PDF : une page A4, fidèle au CV d'origine --- */
 @page { size: A4; margin: 0; }
 
@@ -2168,10 +2171,15 @@ html:not(.js) .timeline__trait { transform: none; }
   .cv .etape__lieu { font-size: 1rem; margin-top: 0; }
   .cv .etape__lieu .etape__date { font-size: 1rem; }
   .cv .etape--actuelle .etape__lieu .etape__date { color: var(--encre-3); }
-  .etape__texte { font-size: 1rem; margin-top: 0.4mm; }
+  .cv .etape p.etape__texte { font-size: 1rem; margin-top: 0.4mm; }
   .cv-puces { margin-top: 0.8mm; gap: 0.4mm; }
   .cv-puces li { font-size: 1rem; padding-left: 3.2mm; }
   .cv-puces li::before { width: 1.2mm; height: 1.2mm; top: 0.55em; }
+
+  /* Liens : pas d'appel à cliquer sur papier, l'adresse utile est écrite en clair et en petit */
+  .cv-lien-ecran { display: none; }
+  .cv-lien-papier { display: inline; margin-left: 1mm; font-size: 0.9rem; color: var(--encre-3); white-space: nowrap; }
+  .cv-feuille a { color: inherit; font-weight: inherit; text-decoration: none; background: none; }
 
   /* Les couleurs et les formes de fond sont conservées à l'impression */
   * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
