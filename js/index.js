@@ -283,6 +283,8 @@
     let visibles = projets.slice();
     let index = -1;
     let centres = [];
+    let aGauche = false;   // grand écran : cartes calées à gauche (alignées sur le titre), sinon centrées
+    let marge = 0;
 
     // Bouton « Voir le projet » : sur chaque carte qui a un lien, vers la même destination
     projets.forEach(function (p) {
@@ -299,14 +301,18 @@
 
     // Centre de chaque carte dans la piste (mesuré seulement quand la taille change)
     function mesurer() {
-      centres = visibles.map(function (p) { return p.offsetLeft + p.offsetWidth / 2; });
+      aGauche = visibles.length > 0 && getComputedStyle(visibles[0]).scrollSnapAlign.indexOf('start') !== -1;
+      marge = parseFloat(getComputedStyle(grille).paddingLeft) || 0;
+      centres = visibles.map(function (p) { return aGauche ? p.offsetLeft : p.offsetLeft + p.offsetWidth / 2; });
     }
+    // Point de lecture de la piste : son bord gauche (cartes calées à gauche) ou son centre
+    function repere() { return aGauche ? grille.scrollLeft + marge : grille.scrollLeft + grille.clientWidth / 2; }
     function plusProche(x) {
       let k = 0;
       for (let i = 1; i < centres.length; i++) if (Math.abs(centres[i] - x) < Math.abs(centres[k] - x)) k = i;
       return k;
     }
-    function gauchePour(i) { return centres[i] - grille.clientWidth / 2; }
+    function gauchePour(i) { return aGauche ? centres[i] - marge : centres[i] - grille.clientWidth / 2; }
 
     function majEtat(i, force) {
       if (i === index && !force) return;
@@ -334,7 +340,7 @@
       lecture = true;
       requestAnimationFrame(function () {
         lecture = false;
-        majEtat(plusProche(grille.scrollLeft + grille.clientWidth / 2));
+        majEtat(plusProche(repere()));
       });
     }, { passive: true });
 
@@ -381,7 +387,7 @@
       dernierGlisse = performance.now();
       grille.classList.remove('est-glisse');
       // Élan : la piste continue dans le sens du geste, proportionnellement à sa vitesse
-      const projete = grille.scrollLeft + grille.clientWidth / 2 - fini.v * 260;
+      const projete = repere() - fini.v * 260;
       aller(Math.max(0, Math.min(visibles.length - 1, plusProche(projete))));
     });
     // Après un glisser, pas de clic ; une carte de côté vient au centre au lieu d'ouvrir son lien
