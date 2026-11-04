@@ -3963,7 +3963,7 @@ button.visite__compteur:hover, button.visite__compteur:focus-visible { border-co
    13. Projets Jarvis (mis en avant) et Homelab (en cours) — accueil
    ========================================================================== */
 .projet--jarvis { --accent: #0891b2; }
-.projet--homelab { --accent: #475569; }
+.projet--homelab { --accent: #0f766e; }
 .projet__media--jarvis { background: #0b1418; }
 .projet__media--jarvis img { object-position: left top; }
 /* Grille classique : Jarvis occupe deux colonnes, image à gauche et texte à droite (pas dans le carrousel 3D) */
@@ -3985,24 +3985,35 @@ button.visite__compteur:hover, button.visite__compteur:focus-visible { border-co
   letter-spacing: 0.06em;
   text-transform: uppercase;
 }
-/* Homelab : carte sobre, sans image */
-.projet__media--attente {
-  display: grid;
-  place-items: center;
-  background: repeating-linear-gradient(135deg, var(--surface-2) 0 12px, var(--fond) 12px 24px);
+/* Homelab : schéma SVG de l'architecture du lab (mêmes codes que le schéma Maison du Don) */
+.schema-lab { width: 100%; height: 100%; padding: 3%; }
+.schema-lab__lien { fill: none; stroke: var(--ligne); stroke-width: 2; }
+.schema-lab__flux {
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  stroke-dasharray: 6 18;
+  animation: flux 1.6s linear infinite;
 }
-.projet__media--attente span {
-  padding: 6px 14px;
-  border: 1px dashed var(--encre-3);
-  border-radius: 999px;
-  background: var(--surface);
+.schema-lab__coeur { fill: var(--accent); }
+.schema-lab__noeud { fill: var(--surface); stroke: var(--encre); stroke-width: 1.5; }
+.schema-lab__hote {
+  fill: color-mix(in srgb, var(--accent) 8%, transparent);
+  stroke: var(--accent);
+  stroke-width: 1.5;
+  stroke-dasharray: 5 4;
+}
+.schema-lab text {
   font-family: var(--police-mono);
-  font-size: 0.8rem;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--encre-2);
+  font-size: 10px;
+  font-weight: 600;
+  fill: var(--encre);
+  text-anchor: middle;
 }
-.projet--homelab .projet__carte { border-style: dashed; }
+.schema-lab text.schema-lab__petit { font-size: 8.5px; font-weight: 400; fill: var(--encre-2); }
+.schema-lab text.schema-lab__titre { fill: var(--accent); font-size: 10.5px; }
+.schema-lab text.schema-lab__blanc { fill: #fff; }
 .projet__encours {
   display: inline-flex;
   align-items: center;

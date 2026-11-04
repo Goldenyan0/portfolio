@@ -423,12 +423,47 @@
 
               <article class="projet projet--homelab" data-categories="infra" data-revele>
                 <div class="projet__carte">
-                  <div class="projet__media projet__media--attente" aria-hidden="true"><span>En cours</span></div>
+                  <div class="projet__media projet__media--schema">
+                    <!-- Schéma de l'architecture du homelab : pfSense en tête, VLAN, hôte Proxmox VE, NAS et supervision -->
+                    <svg class="schema-lab" viewBox="0 0 320 200" role="img" aria-labelledby="schema-lab-titre">
+                      <title id="schema-lab-titre">Architecture du homelab : Internet et le VPN WireGuard arrivent sur le pare-feu pfSense, qui distribue des VLAN segmentés vers l'hyperviseur Proxmox VE (VM Windows Server avec Active Directory, conteneurs LXC Debian, Docker avec Portainer et Nginx Proxy Manager, DNS Pi-hole), le NAS de sauvegarde et la supervision Uptime Kuma et Grafana</title>
+                      <!-- Liens -->
+                      <path class="schema-lab__lien" d="M84 21H124M236 21H196M160 34V50M60 50H272M120 50V62M272 50V62M272 118V130M224 90H236"/>
+                      <path class="schema-lab__flux" d="M84 21H124"/><path class="schema-lab__flux" d="M236 21H196"/>
+                      <path class="schema-lab__flux" d="M160 34V50H120V62"/><path class="schema-lab__flux" d="M160 50H272V62"/>
+                      <path class="schema-lab__flux" d="M224 90H236"/>
+                      <!-- Entrées : Internet, pfSense, WireGuard -->
+                      <rect class="schema-lab__noeud" x="12" y="8" width="72" height="26" rx="5"/>
+                      <rect class="schema-lab__coeur" x="124" y="8" width="72" height="26" rx="5"/>
+                      <rect class="schema-lab__noeud" x="236" y="8" width="72" height="26" rx="5"/>
+                      <text x="48" y="25">Internet</text>
+                      <text class="schema-lab__blanc" x="160" y="25">pfSense</text>
+                      <text x="272" y="25">WireGuard</text>
+                      <text class="schema-lab__petit" x="88" y="46">VLAN segmentés</text>
+                      <!-- Hôte Proxmox VE et ses machines -->
+                      <rect class="schema-lab__hote" x="12" y="62" width="212" height="130" rx="8"/>
+                      <text class="schema-lab__titre" x="118" y="77">Proxmox VE</text>
+                      <rect class="schema-lab__noeud" x="20" y="84" width="96" height="46" rx="4"/>
+                      <rect class="schema-lab__noeud" x="120" y="84" width="96" height="46" rx="4"/>
+                      <rect class="schema-lab__noeud" x="20" y="138" width="96" height="46" rx="4"/>
+                      <rect class="schema-lab__noeud" x="120" y="138" width="96" height="46" rx="4"/>
+                      <text x="68" y="104">Windows Server</text><text class="schema-lab__petit" x="68" y="118">VM · AD de lab</text>
+                      <text x="168" y="104">Debian</text><text class="schema-lab__petit" x="168" y="118">conteneurs LXC</text>
+                      <text x="68" y="158">Docker</text><text class="schema-lab__petit" x="68" y="172">Portainer · NPM</text>
+                      <text x="168" y="158">Pi-hole</text><text class="schema-lab__petit" x="168" y="172">DNS</text>
+                      <!-- NAS et supervision -->
+                      <rect class="schema-lab__noeud" x="236" y="62" width="72" height="56" rx="5"/>
+                      <rect class="schema-lab__noeud" x="236" y="130" width="72" height="62" rx="5"/>
+                      <text x="272" y="86">NAS</text><text class="schema-lab__petit" x="272" y="100">sauvegardes</text>
+                      <text x="272" y="150">Supervision</text><text class="schema-lab__petit" x="272" y="164">Uptime Kuma</text><text class="schema-lab__petit" x="272" y="177">Grafana</text>
+                    </svg>
+                  </div>
                   <div class="projet__corps">
                     <p class="projet__meta"><span>Systèmes &amp; réseaux</span><time>En cours</time></p>
                     <h3>Homelab</h3>
-                    <p>Mise en place d'un homelab personnel pour pratiquer l'administration systèmes et réseaux.</p>
-                    <p class="projet__encours">Projet en cours, détails à venir</p>
+                    <p>Mon lab pour pratiquer l'administration systèmes et réseaux : hyperviseur Proxmox VE (VM et LXC Debian), pare-feu pfSense avec VLAN segmentés, Active Directory de lab sous Windows Server, Docker avec Portainer et Nginx Proxy Manager, DNS Pi-hole, VPN WireGuard, supervision Uptime Kuma / Grafana, NAS et sauvegardes.</p>
+                    <ul class="projet__tags"><li>Proxmox VE</li><li>pfSense</li><li>Docker</li><li>WireGuard</li></ul>
+                    <p class="projet__encours">En cours d'évolution</p>
                   </div>
                 </div>
               </article>
