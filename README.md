@@ -25,8 +25,9 @@ Alternant en administration systèmes et réseaux à l'**Établissement Françai
 | `index.html` | Portfolio immersif : domaines, chiffres clés, « Pourquoi moi », projets, stack, parcours, contact |
 | `cv.html` | CV formel, imprimable / exportable en PDF |
 | `e39.html` | Projet BMW E39 520i (M54B22) : mécanique, diagnostic et documentation du moteur |
+| `jarvis.html` | Projet Jarvis : assistant vocal IA personnel (fonctionnement, architecture, sécurité, captures de l'interface) |
 
-Les trois pages partagent une seule feuille de style : `css/style.css`.
+Les pages partagent une seule feuille de style : `css/style.css`.
 
 ---
 

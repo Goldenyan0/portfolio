@@ -3909,7 +3909,7 @@ button.visite__compteur:hover, button.visite__compteur:focus-visible { border-co
   border-radius: 20px;
   background: rgba(255, 255, 255, 0.97);
   box-shadow: 0 30px 70px -30px rgba(76, 29, 149, 0.5);
-  counter-reset: none;
+ 
 }
 .sommaire.est-ouvert .sommaire__liste { display: grid; gap: 2px; }
 .sommaire__lien {
@@ -3958,3 +3958,157 @@ button.visite__compteur:hover, button.visite__compteur:focus-visible { border-co
 @media (min-width: 1280px) {
   html:not(.voyage-pret) body:has(.sommaire) :is(main, .pied) { padding-left: var(--sommaire-largeur); }
 }
+
+/* ==========================================================================
+   13. Projets Jarvis (mis en avant) et Homelab (en cours) — accueil
+   ========================================================================== */
+.projet--jarvis { --accent: #0891b2; }
+.projet--homelab { --accent: #475569; }
+.projet__media--jarvis { background: #0b1418; }
+.projet__media--jarvis img { object-position: left top; }
+/* Grille classique : Jarvis occupe deux colonnes, image à gauche et texte à droite (pas dans le carrousel 3D) */
+@media (min-width: 720px) {
+  html:not(.carrousel-actif) .projet--jarvis { grid-column: span 2; }
+}
+@media (min-width: 1024px) {
+  html:not(.carrousel-actif) .projet--jarvis .projet__carte { flex-direction: row; }
+  html:not(.carrousel-actif) .projet--jarvis .projet__media { flex: 0 0 56%; aspect-ratio: auto; min-height: 100%; }
+}
+.projet__corps p.projet__vedette {
+  align-self: flex-start;
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: #0e7490;   /* cyan foncé : contraste AA avec le texte blanc */
+  color: #fff;
+  font-family: var(--police-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+/* Homelab : carte sobre, sans image */
+.projet__media--attente {
+  display: grid;
+  place-items: center;
+  background: repeating-linear-gradient(135deg, var(--surface-2) 0 12px, var(--fond) 12px 24px);
+}
+.projet__media--attente span {
+  padding: 6px 14px;
+  border: 1px dashed var(--encre-3);
+  border-radius: 999px;
+  background: var(--surface);
+  font-family: var(--police-mono);
+  font-size: 0.8rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--encre-2);
+}
+.projet--homelab .projet__carte { border-style: dashed; }
+.projet__encours {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--encre-2);
+  font-size: 0.9rem;
+}
+.projet__encours::before {
+  content: "";
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: var(--accent);
+}
+
+/* ==========================================================================
+   14. Page Jarvis (jarvis.html) — mêmes bases que la page E39
+   ========================================================================== */
+.jarvis-hero__capture { margin: 0; }
+.jarvis-hero__capture img,
+.jarvis-galerie img {
+  width: 100%;
+  height: auto;
+  border-radius: 16px;
+  box-shadow: var(--ombre-forte);
+  background: #0b1418;
+}
+.jarvis-hero__capture figcaption,
+.jarvis-galerie figcaption {
+  margin-top: 10px;
+  font-size: 0.85rem;
+  color: var(--encre-3);
+}
+
+/* Chaîne : de la voix à l'action */
+.jarvis-chaine { display: grid; gap: 12px; }
+@media (min-width: 720px) { .jarvis-chaine { grid-template-columns: repeat(2, 1fr); } }
+@media (min-width: 1040px) { .jarvis-chaine { grid-template-columns: repeat(3, 1fr); gap: 16px; } }
+.jarvis-chaine li {
+  padding: 22px;
+  border: 1px solid var(--ligne);
+  border-radius: var(--rayon);
+  background: var(--surface);
+  color: var(--encre-2);
+  font-size: 0.97rem;
+}
+.jarvis-chaine span {
+  display: block;
+  font-family: var(--police-mono);
+  font-size: 0.8rem;
+  letter-spacing: 0.1em;
+  color: var(--violet);
+}
+.jarvis-chaine strong {
+  display: block;
+  margin: 6px 0 6px;
+  font-family: var(--police-titre);
+  font-size: 1.15rem;
+  color: var(--encre);
+}
+
+/* Architecture : blocs et modules */
+.jarvis-blocs { display: grid; gap: 16px; }
+@media (min-width: 720px) { .jarvis-blocs { grid-template-columns: repeat(2, 1fr); } }
+@media (min-width: 1040px) { .jarvis-blocs { grid-template-columns: repeat(3, 1fr); } }
+.jarvis-bloc {
+  padding: 26px;
+  border: 1px solid var(--ligne);
+  border-radius: var(--rayon);
+  background: var(--surface);
+}
+.jarvis-bloc h3 { font-size: 1.2rem; }
+.jarvis-bloc p { margin-top: 10px; color: var(--encre-2); font-size: 0.97rem; }
+.jarvis-modules {
+  margin-top: 32px;
+  padding: 26px;
+  border-radius: var(--rayon);
+  background: var(--encre);
+  color: rgba(255, 255, 255, 0.82);
+}
+.jarvis-modules h3 { color: #fff; font-size: 1.2rem; margin-bottom: 14px; }
+.jarvis-modules ul { display: grid; gap: 10px; }
+@media (min-width: 1040px) { .jarvis-modules ul { grid-template-columns: repeat(2, 1fr); column-gap: 32px; } }
+.jarvis-modules li { font-size: 0.95rem; overflow-wrap: anywhere; }
+.jarvis-modules code {
+  display: inline-block;
+  margin-right: 8px;
+  font-family: var(--police-mono);
+  color: var(--violet-clair);
+}
+
+/* Sécurité */
+.jarvis-securite { display: grid; gap: 12px; }
+@media (min-width: 720px) { .jarvis-securite { grid-template-columns: repeat(2, 1fr); gap: 16px; } }
+.jarvis-securite li {
+  padding: 22px 22px 22px 24px;
+  border-left: 4px solid var(--violet);
+  border-radius: var(--rayon-petit);
+  background: var(--surface);
+  box-shadow: var(--ombre);
+  color: var(--encre-2);
+  font-size: 0.97rem;
+}
+.jarvis-securite strong { display: block; margin-bottom: 6px; color: var(--encre); font-family: var(--police-titre); font-size: 1.08rem; }
+
+/* Galerie des captures */
+.jarvis-galerie { display: grid; gap: 24px; }
+@media (min-width: 1040px) { .jarvis-galerie { grid-template-columns: repeat(2, 1fr); } }
+.jarvis-galerie figure { margin: 0; }
+@media (min-width: 1040px) { .page-jarvis .e39-hero__grille { grid-template-columns: 1fr 1fr; } }

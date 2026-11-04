@@ -369,6 +369,23 @@
           <div class="projets__fenetre">
             <div class="grille-projets" id="grille-projets" data-cascade>
 
+              <article class="projet projet--jarvis" data-categories="dev" data-revele>
+                <div class="projet__carte">
+                  <div class="projet__media projet__media--jarvis">
+                    <img src="img/jarvis/jarvis-interface-960.webp" srcset="img/jarvis/jarvis-interface-480.webp 480w, img/jarvis/jarvis-interface-960.webp 960w" sizes="(max-width: 1023px) 90vw, 640px" width="1440" height="900" loading="lazy" alt="Interface de Jarvis : colonnes Dialogue et Activité en direct, réacteur animé au centre, mémoire à droite" />
+                    <div class="projet__voile" aria-hidden="true"><span>Voir le projet <svg class="icone"><use href="#i-fleche"/></svg></span></div>
+                  </div>
+                  <div class="projet__corps">
+                    <p class="projet__vedette">Projet phare</p>
+                    <p class="projet__meta"><span>Assistant vocal IA</span><time>2026</time></p>
+                    <h3>Jarvis</h3>
+                    <p>Mon assistant vocal personnel, écrit en Python : écoute et transcription locales sur GPU, Claude Code comme cerveau et coordinateur avec relais automatique vers Codex quand le quota est atteint, réponses à voix haute. Commandes instantanées, mémoire, interface web locale sécurisée et 329 tests automatisés.</p>
+                    <ul class="projet__tags"><li>Python</li><li>Whisper</li><li>Claude Code</li><li>Codex</li><li>edge-tts</li></ul>
+                  </div>
+                  <a class="projet__lien" href="jarvis.html"><span class="visuellement-cache">Voir le projet Jarvis</span></a>
+                </div>
+              </article>
+
               <article class="projet projet--mdd" data-categories="infra" data-revele>
                 <div class="projet__carte">
                   <div class="projet__media projet__media--schema">
@@ -400,6 +417,18 @@
                     <h3>Maison du Don Rennes Longchamps</h3>
                     <p>Chef de projet du volet informatique — ouverture du nouveau site : déploiement des postes de travail, imprimantes, réseau et automates ; coordination des prestataires et des équipes ; suivi des commandes, directives, recettes et mise en service.</p>
                     <ul class="projet__tags"><li>Déploiement</li><li>Réseau</li><li>Coordination</li><li>Recette</li></ul>
+                  </div>
+                </div>
+              </article>
+
+              <article class="projet projet--homelab" data-categories="infra" data-revele>
+                <div class="projet__carte">
+                  <div class="projet__media projet__media--attente" aria-hidden="true"><span>En cours</span></div>
+                  <div class="projet__corps">
+                    <p class="projet__meta"><span>Systèmes &amp; réseaux</span><time>En cours</time></p>
+                    <h3>Homelab</h3>
+                    <p>Mise en place d'un homelab personnel pour pratiquer l'administration systèmes et réseaux.</p>
+                    <p class="projet__encours">Projet en cours, détails à venir</p>
                   </div>
                 </div>
               </article>
@@ -532,7 +561,7 @@
             <!-- Sélecteur immersif : carrousel 3D qui tourne à 360° (activé par index.js) -->
             <div class="carrousel__commandes" id="carrousel-commandes" hidden>
               <button class="carrousel__fleche" type="button" data-sens="-1" aria-label="Projet précédent"><svg class="icone" aria-hidden="true"><use href="#i-fleche"/></svg></button>
-              <p class="carrousel__etat" aria-live="polite"><span class="carrousel__rang"><span data-rang>1</span> / <span data-total>9</span></span><strong data-nom></strong></p>
+              <p class="carrousel__etat" aria-live="polite"><span class="carrousel__rang"><span data-rang>1</span> / <span data-total>11</span></span><strong data-nom></strong></p>
               <button class="carrousel__fleche" type="button" data-sens="1" aria-label="Projet suivant"><svg class="icone" aria-hidden="true"><use href="#i-fleche"/></svg></button>
             </div>
             <div class="carrousel__molette" id="carrousel-molette" hidden><span class="carrousel__repere" aria-hidden="true"></span></div>
@@ -909,6 +938,7 @@
         <ul class="pied__liens">
           <li><a href="cv.html">CV</a></li>
           <li><a href="e39.html">Projet automobile</a></li>
+          <li><a href="jarvis.html">Jarvis</a></li>
           <li><a href="#creation">Ce site</a></li>
           <li><a href="https://github.com/Goldenyan0" target="_blank" rel="noopener">GitHub</a></li>
           <li><a href="mailto:y.poulain04@gmail.com">E-mail</a></li>

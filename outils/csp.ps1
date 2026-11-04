@@ -19,6 +19,7 @@ $pages = [ordered]@{
   # Three.js + décodeur Meshopt du modèle GLB (WebAssembly) ; textures du modèle en blob:
   'e39.html'   = @{ script = "https://cdn.jsdelivr.net 'wasm-unsafe-eval'"; connect = "'self' blob: data:" }
   'cv.html'    = @{ script = "https://cdn.jsdelivr.net"; connect = "'self'" }
+  'jarvis.html' = @{ script = "https://cdn.jsdelivr.net"; connect = "'self'" }
 }
 
 $sha = [Security.Cryptography.SHA256]::Create()

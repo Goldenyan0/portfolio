@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-src 'none'; worker-src 'self' blob:; script-src 'self' https://cdn.jsdelivr.net 'sha256-WOpcrcaksTCD2jAx7Ih4cyDt6LUVXEbEArmaplZb97M='; connect-src 'self'" />
+  <title>Jarvis — assistant vocal IA personnel · Yanis Poulain</title>
+  <meta name="description" content="Jarvis, mon assistant vocal IA personnel : écoute et transcription locales sur GPU, Claude Code comme cerveau avec relais automatique vers Codex, voix edge-tts, interface web locale sécurisée et tests automatisés." />
+  <meta name="author" content="Yanis Poulain" />
+  <meta name="theme-color" content="#fafaf9" />
+
+  <!-- Open Graph (aperçu lors d'un partage de lien) -->
+  <meta property="og:type" content="article" />
+  <meta property="og:locale" content="fr_FR" />
+  <meta property="og:site_name" content="Yanis Poulain" />
+  <meta property="og:title" content="Jarvis — assistant vocal IA personnel" />
+  <meta property="og:description" content="Écoute locale sur GPU, Claude Code comme cerveau, relais Codex, voix edge-tts, interface web locale sécurisée." />
+  <meta property="og:url" content="https://goldenyan0.github.io/portfolio/jarvis.html" />
+  <meta property="og:image" content="https://goldenyan0.github.io/portfolio/img/jarvis/jarvis-interface.webp" />
+  <meta property="og:image:alt" content="Interface de Jarvis : dialogue, activité en direct, réacteur central et mémoire" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <link rel="canonical" href="https://goldenyan0.github.io/portfolio/jarvis.html" />
+
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%237c3aed'/><text x='50' y='67' font-size='52' font-family='Arial,sans-serif' font-weight='bold' fill='white' text-anchor='middle'>YP</text></svg>" />
+
+  <link rel="preload" href="fonts/space-grotesk-latin.woff2" as="font" type="font/woff2" crossorigin />
+  <link rel="preload" href="fonts/inter-latin.woff2" as="font" type="font/woff2" crossorigin />
+  <link rel="stylesheet" href="css/style.css" />
+
+  <script>
+    document.documentElement.classList.add('js');
+    if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) document.documentElement.classList.add('anime');
+  </script>
+</head>
+
+<body class="page-jarvis">
+
+  <!-- Icônes SVG réutilisées dans la page -->
+  <svg width="0" height="0" class="visuellement-cache" aria-hidden="true">
+    <symbol id="i-fleche-retour" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" d="M19 12H5m6-6-6 6 6 6"/></symbol>
+    <symbol id="i-fermer" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" d="M6 6l12 12M18 6 6 18"/></symbol>
+  </svg>
+
+  <a class="lien-evitement" href="#contenu">Aller au contenu</a>
+
+
+  <!-- ══ Navigation ══ -->
+  <header class="nav" id="nav">
+    <div class="conteneur nav__interieur">
+      <a class="nav__logo" href="index.html" aria-label="Yanis Poulain, retour au portfolio">
+        <span class="nav__monogramme" aria-hidden="true">YP</span>
+        <span>Yanis Poulain</span>
+      </a>
+      <nav aria-label="Navigation principale">
+        <ul class="nav__liens">
+          <li><a href="#fonctionnement">Fonctionnement</a></li>
+          <li><a href="#architecture">Architecture</a></li>
+          <li><a href="#securite">Sécurité</a></li>
+          <li><a href="#interface">Interface</a></li>
+          <li><a href="index.html">Portfolio</a></li>
+        </ul>
+      </nav>
+      <div class="nav__actions">
+        <a class="bouton bouton--petit nav__cv" href="cv.html"><span class="bouton__texte">Mon CV</span></a>
+        <button class="nav__burger" id="burger" type="button" aria-expanded="false" aria-controls="menu-mobile">
+          <span></span><span class="visuellement-cache">Ouvrir le menu</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <div class="menu-mobile" id="menu-mobile">
+    <a href="#fonctionnement">Fonctionnement</a>
+    <a href="#architecture">Architecture</a>
+    <a href="#securite">Sécurité</a>
+    <a href="#interface">Interface</a>
+    <a href="index.html">Portfolio</a>
+  </div>
+
+  <main id="contenu" class="jarvis">
+
+    <!-- ══ Hero ══ -->
+    <section class="e39-hero" data-etape="Jarvis" aria-labelledby="jarvis-titre">
+      <div class="conteneur e39-hero__grille">
+        <div>
+          <p class="surtitre" data-revele>Projet personnel · assistant vocal IA</p>
+          <h1 class="e39-hero__titre" id="jarvis-titre" data-mots>Jarvis<em>.</em></h1>
+          <p class="e39-hero__texte" data-revele>
+            Mon assistant vocal personnel, sur mon PC Windows. Je lui parle, il écoute et transcrit en local sur la carte graphique,
+            confie la demande à Claude Code — ou à Codex quand le quota est atteint — puis répond à voix haute.
+            Écrit sur mesure en Python, ce n'est pas un projet récupéré sur GitHub.
+          </p>
+          <ul class="fiche-technique" data-revele>
+            <li><span>Langage</span>Python</li>
+            <li><span>Code</span>≈ 38 fichiers</li>
+            <li><span>Volume</span>~12 000 lignes</li>
+            <li><span>Tests</span>329 unitaires</li>
+            <li><span>Écoute</span>Whisper local</li>
+            <li><span>Voix</span>edge-tts</li>
+          </ul>
+        </div>
+        <figure class="jarvis-hero__capture" data-revele>
+          <img src="img/jarvis/jarvis-interface-960.webp" srcset="img/jarvis/jarvis-interface-480.webp 480w, img/jarvis/jarvis-interface-960.webp 960w" sizes="(max-width: 1039px) 100vw, 45vw" data-grande="img/jarvis/jarvis-interface.webp" width="1440" height="900" alt="Interface de Jarvis : colonnes Dialogue, Activité en direct et Sessions Claude, réacteur animé au centre, Forfaits IA, Journal et Mémoire à droite, boutons de commande en bas" />
+          <figcaption>Interface locale, capturée sur une instance de test sans micro.</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <!-- ══ Le problème ══ -->
+    <section class="section volet" id="probleme" data-volet data-etape="Le problème" aria-labelledby="probleme-titre">
+      <div class="conteneur">
+        <div class="entete-section">
+          <p class="surtitre" data-revele>Le problème</p>
+          <h2 class="titre-section" id="probleme-titre" data-mots>Parler à son PC, <em>sans s'arrêter.</em></h2>
+          <p data-revele>Ouvrir une fenêtre, taper une demande à une IA, attendre la réponse, revenir à ce qu'on faisait : chaque aller-retour casse le rythme. Jarvis prend les demandes à la voix, depuis n'importe quelle fenêtre, et les traite en arrière-plan pendant que je continue de travailler.</p>
+        </div>
+        <ol class="methode" data-cascade>
+          <li data-revele>
+            <span class="methode__etape">01 · Instantané</span>
+            <p>Les commandes simples sont exécutées <strong>sans IA</strong>, directement sur la fenêtre active : efface tout, écris…, copie, colle, annule, son, musique, ouvre une appli, cherche sur YouTube, organise l'écran.</p>
+          </li>
+          <li data-revele>
+            <span class="methode__etape">02 · En parallèle</span>
+            <p>Chaque demande devient une <strong>tâche en arrière-plan</strong> (3 en parallèle). On peut parler pendant qu'il travaille : « où tu en es ? », « annule ça ».</p>
+          </li>
+          <li data-revele>
+            <span class="methode__etape">03 · Sous contrôle</span>
+            <p>Pour l'important, il <strong>demande l'accord à voix haute</strong> : « Je dois …, tu confirmes ? ». Sans réponse, rien n'est fait.</p>
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- ══ Fonctionnement ══ -->
+    <section class="section" id="fonctionnement" data-etape="Fonctionnement" aria-labelledby="fonctionnement-titre">
+      <div class="conteneur">
+        <div class="entete-section">
+          <p class="surtitre" data-revele>Fonctionnement</p>
+          <h2 class="titre-section" id="fonctionnement-titre" data-mots>De la voix <em>à l'action.</em></h2>
+          <p data-revele>On l'appelle en disant « Jarvis, … » en début de phrase, « Hey Jarvis », ou en maintenant la touche F9. Après une réponse, on peut enchaîner quelques secondes sans redire son nom.</p>
+        </div>
+        <ol class="jarvis-chaine" data-cascade>
+          <li data-revele><span>01</span><strong>Micro</strong>Le micro est coupé pendant que Jarvis parle : il ne s'entend pas répondre.</li>
+          <li data-revele><span>02</span><strong>Détection de la parole</strong>Silero repère quand quelqu'un parle.</li>
+          <li data-revele><span>03</span><strong>Transcription locale</strong>Whisper large-v3-turbo, sur la carte graphique. Rien ne part sur Internet à cette étape.</li>
+          <li data-revele><span>04</span><strong>Corrections apprises</strong>« Tu as mal compris, j'ai dit X » : la correction s'applique ensuite à toutes les transcriptions.</li>
+          <li data-revele><span>05</span><strong>Commande ou tâche IA</strong>Commande instantanée, ou tâche confiée à Claude Code (Codex en relais) dans un fil séparé.</li>
+          <li data-revele><span>06</span><strong>Voix</strong>Réponse dite à voix haute avec edge-tts, dans une file séparée.</li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- ══ Architecture ══ -->
+    <section class="section volet" id="architecture" data-volet data-etape="Architecture" aria-labelledby="architecture-titre">
+      <div class="conteneur">
+        <div class="entete-section">
+          <p class="surtitre" data-revele>Architecture</p>
+          <h2 class="titre-section" id="architecture-titre" data-mots>Un cerveau, <em>un relais.</em></h2>
+        </div>
+        <div class="jarvis-blocs" data-cascade>
+          <article class="jarvis-bloc" data-revele>
+            <h3>Claude Code, cerveau et coordinateur</h3>
+            <p>Claude Code est le moteur par défaut. Le modèle est choisi automatiquement selon la demande : un petit modèle pour le très court, un plus puissant pour le code, l'analyse ou un plan. Un mode « moteur chaud » peut garder le client connecté pour répondre en une à deux secondes aux questions simples.</p>
+          </article>
+          <article class="jarvis-bloc" data-revele>
+            <h3>Relais automatique vers Codex</h3>
+            <p>Quand la limite de Claude est atteinte, la même demande part une seule fois vers Codex (ChatGPT), et seulement si aucun outil n'a encore été appelé : jamais de rejeu après une action. Claude est ensuite évité pendant 30 minutes. L'inverse marche aussi.</p>
+          </article>
+          <article class="jarvis-bloc" data-revele>
+            <h3>Mémoire et vault Obsidian</h3>
+            <p>« Retiens que… » crée un souvenir permanent (jamais de secret). Les notes du vault sont cherchées à chaque demande et les extraits utiles lui sont joints. Un fil de conversation partagé permet à Claude et Codex de reprendre là où l'autre s'est arrêté.</p>
+          </article>
+          <article class="jarvis-bloc" data-revele>
+            <h3>Auto-amélioration</h3>
+            <p>Corrections de transcription, vocabulaire, calibrage du mot-clé sur ma voix et auto-révision régulière des erreurs : Jarvis apprend de ce qui s'est mal passé.</p>
+          </article>
+          <article class="jarvis-bloc" data-revele>
+            <h3>Interface web locale</h3>
+            <p>Dialogue, activité en direct étape par étape (outil utilisé, durée, état), sessions Claude, journal, mémoire et réglages complets : micro, réveil, touche, sensibilités, voix, modèle.</p>
+          </article>
+          <article class="jarvis-bloc" data-revele>
+            <h3>Archive complète des actions</h3>
+            <p>Tout ce que fait Jarvis est archivé jour par jour en traces JSONL, relisibles avec un petit outil dédié : on sait toujours quel outil a été appelé, quand, et avec quel résultat.</p>
+          </article>
+        </div>
+
+        <div class="jarvis-modules" data-revele>
+          <h3>Quelques modules</h3>
+          <ul>
+            <li><code>jarvis.py</code> boucle d'écoute (jamais bloquée), réveil, tâches en arrière-plan, autorisations</li>
+            <li><code>audio.py</code> micro, détection de la parole, touche F9</li>
+            <li><code>commandes.py</code> commandes instantanées, rattrapage des erreurs de transcription</li>
+            <li><code>actions.py</code> clavier, presse-papiers, fenêtres, applis en liste blanche</li>
+            <li><code>cerveau.py</code> choix du modèle et appel du moteur IA</li>
+            <li><code>mcp_pc.py</code> serveur d'outils pour le PC, le vault et la mémoire</li>
+            <li><code>traces.py</code> archive JSONL et lecture des traces</li>
+            <li><code>interface.py</code> serveur local de l'interface</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══ Sécurité ══ -->
+    <section class="section" id="securite" data-etape="Sécurité" aria-labelledby="securite-titre">
+      <div class="conteneur">
+        <div class="entete-section">
+          <p class="surtitre" data-revele>Sécurité</p>
+          <h2 class="titre-section" id="securite-titre" data-mots>Un assistant qui agit, <em>donc encadré.</em></h2>
+          <p data-revele>Jarvis peut taper au clavier, ouvrir des applis et lancer des outils : la sécurité fait partie de la conception, pas d'une couche ajoutée après.</p>
+        </div>
+        <ul class="jarvis-securite" data-cascade>
+          <li data-revele><strong>Interface sur 127.0.0.1 seulement</strong>Jeton aléatoire obligatoire et Origin vérifiée sur la page comme sur le WebSocket ; Content-Security-Policy, texte toujours échappé.</li>
+          <li data-revele><strong>Secrets masqués</strong>Mots de passe, jetons et clés sont masqués à l'affichage.</li>
+          <li data-revele><strong>Accord explicite</strong>Action destructrice ou système, installation, envoi de message, action après lecture d'une page web : l'accord est demandé à voix haute, pour un seul appel.</li>
+          <li data-revele><strong>Listes blanches</strong>Applis et liens autorisés seulement (https uniquement) ; les fenêtres sont déplacées, jamais fermées.</li>
+          <li data-revele><strong>Pas d'injection par la ligne de commande</strong>Le texte dicté est transmis au moteur par l'entrée standard, jamais en argument.</li>
+          <li data-revele><strong>Fichiers reçus inertes</strong>Taille limitée, nom nettoyé, jamais exécutés : leur contenu est une donnée, jamais un ordre.</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ══ Interface ══ -->
+    <section class="section volet" id="interface" data-volet data-etape="Interface" aria-labelledby="interface-titre">
+      <div class="conteneur">
+        <div class="entete-section">
+          <p class="surtitre" data-revele>Interface</p>
+          <h2 class="titre-section" id="interface-titre" data-mots>Ce qu'il fait, <em>en direct.</em></h2>
+          <p data-revele>Captures d'une instance de test, lancée sans micro. Cliquez pour agrandir.</p>
+        </div>
+        <div class="jarvis-galerie" data-cascade>
+          <figure data-revele>
+            <img src="img/jarvis/jarvis-interface-960.webp" srcset="img/jarvis/jarvis-interface-480.webp 480w, img/jarvis/jarvis-interface-960.webp 960w" sizes="(max-width: 1039px) 100vw, 50vw" data-grande="img/jarvis/jarvis-interface.webp" width="1440" height="900" loading="lazy" alt="Jarvis après la question écrite « où tu en es ? » : le dialogue affiche la réponse « Je n'ai rien en cours », la transcription en direct reprend la question" />
+            <figcaption>Dialogue, activité en direct, réacteur et mémoire.</figcaption>
+          </figure>
+          <figure data-revele>
+            <img src="img/jarvis/jarvis-reglages-960.webp" srcset="img/jarvis/jarvis-reglages-480.webp 480w, img/jarvis/jarvis-reglages-960.webp 960w" sizes="(max-width: 1039px) 100vw, 50vw" data-grande="img/jarvis/jarvis-reglages.webp" width="1440" height="900" loading="lazy" alt="Panneau Réglages de Jarvis ouvert à droite : choix du micro, modes de réveil, touche F9, sensibilité du mot-clé, silence avant coupure et durée maximale d'une phrase" />
+            <figcaption>Réglages : micro, réveil, touche, sensibilités.</figcaption>
+          </figure>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══ Tests et stack ══ -->
+    <section class="section" id="qualite" data-etape="Tests et stack" aria-labelledby="qualite-titre">
+      <div class="conteneur">
+        <div class="entete-section">
+          <p class="surtitre" data-revele>Tests et stack</p>
+          <h2 class="titre-section" id="qualite-titre" data-mots>Vérifié, <em>pas supposé.</em></h2>
+          <p data-revele>329 tests unitaires passent (au 03/11/2026). Une instance de test séparée, sans micro et sur un autre port, permet d'essayer des demandes écrites sans écouter la pièce ni toucher à l'instance principale : journal, tâches et échanges y sont isolés.</p>
+        </div>
+        <ul class="fiche-technique" data-revele>
+          <li><span>Langage</span>Python</li>
+          <li><span>Transcription</span>Whisper (local, GPU)</li>
+          <li><span>Détection de parole</span>Silero</li>
+          <li><span>Cerveau</span>Claude Code</li>
+          <li><span>Relais</span>Codex / ChatGPT</li>
+          <li><span>Voix</span>edge-tts</li>
+          <li><span>Interface</span>Web locale</li>
+          <li><span>Mémoire</span>Vault Obsidian</li>
+          <li><span>Archive</span>Traces JSONL</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ══ Suite ══ -->
+    <section class="section e39-suite" data-etape="Suite de la visite" aria-label="Suite de la visite">
+      <div class="conteneur e39-suite__contenu" data-revele>
+        <p class="pied__signature">Informatique &amp; IA<span>.</span></p>
+        <div class="hero__actions">
+          <a class="bouton magnetique" href="index.html#projets"><span class="bouton__texte"><svg aria-hidden="true"><use href="#i-fleche-retour"/></svg>Retour aux projets</span></a>
+          <a class="bouton bouton--clair magnetique" href="cv.html"><span class="bouton__texte">Voir mon CV</span></a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="pied">
+    <div class="conteneur">
+      <div class="pied__haut">
+        <p class="pied__signature">Yanis Poulain<span>.</span></p>
+        <ul class="pied__liens">
+          <li><a href="index.html">Portfolio</a></li>
+          <li><a href="cv.html">CV</a></li>
+          <li><a href="https://github.com/Goldenyan0" target="_blank" rel="noopener">GitHub</a></li>
+          <li><a href="mailto:y.poulain04@gmail.com">E-mail</a></li>
+        </ul>
+      </div>
+      <div class="pied__bas">
+        <p>© 2026 Yanis Poulain</p>
+        <p>Rennes, France</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Librairie externe : Lenis (défilement fluide) ; Three.js est chargé par espace-3d.js. -->
+  <script src="js/vendor/lenis.min.js" defer></script>
+  <script src="js/commun.js" defer></script>
+  <script src="js/jarvis.js" defer></script>
+  <script type="module" src="js/espace-3d.js"></script>
+</body>
+</html>
