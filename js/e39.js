@@ -733,6 +733,12 @@
   }
 
 
+  // Outils de graphique partagés avec mesures-e39.js (mesures du 14/11)
+  window.E39Graphiques = {
+    svg: svg, fr: fr, quandVisible: quandVisible, montrerInfobulle: montrerInfobulle,
+    cacherInfobulle: cacherInfobulle, tableau: tableau, legende: legende
+  };
+
   /* ------------------------------------------------------------------
      Démarrage
      ------------------------------------------------------------------ */

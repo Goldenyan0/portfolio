@@ -134,7 +134,7 @@ window.PIECES_E39 = [
       brasAr: { nom: 'Bras de suspension arrière', systeme: 'suspension', description: 'Plusieurs bras par roue (essieu multibras) tiennent précisément les roues arrière motrices.' },
       ressortsAr: { nom: 'Ressorts arrière', systeme: 'suspension', description: 'Ils portent le poids de l\'arrière de la voiture et absorbent les bosses.' },
       amortisseursAr: { nom: 'Amortisseurs arrière', systeme: 'suspension', description: 'Ils freinent les oscillations des ressorts pour garder les roues au contact de la route.' },
-      roue: { nom: 'Roues (jantes et pneus)', systeme: 'freinage', pieces: ['roueAvG', 'roueAvD', 'roueArG', 'roueArD'], description: 'Sur ma voiture : jantes 17 pouces à branches doubles et pneus 235/45 R17. Les roues arrière sont motrices, les roues avant directrices.' },
+      roue: { nom: 'Roues (jantes et pneus)', systeme: 'freinage', pieces: ['roueAvG', 'roueAvD', 'roueArG', 'roueArD'], description: 'Sur la maquette : jantes 17 pouces à branches doubles et pneus 235/45 R17. Ma voiture est aujourd’hui en 15 pouces, changement de jantes prévu. Les roues arrière sont motrices, les roues avant directrices.' },
       roueSecours: { nom: 'Roue de secours', systeme: 'freinage', description: 'Rangée à plat sous le plancher du coffre, dans son logement.' }
     }
   },
