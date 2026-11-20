@@ -785,7 +785,7 @@
     barre.className = 'carto__commandes';
     barre.innerHTML = '<div class="carto__vues" role="group" aria-label="Valeurs affichées">' + vues.map(function (v) {
       return '<button type="button" class="carto__bouton" data-vue="' + v[0] + '" aria-pressed="' + (v[0] === vue) + '">' + v[1] + '</button>';
-    }).join('') + '</div>' + (deuxD ? '<button type="button" class="carto__bouton carto__bouton--3d" data-3d aria-pressed="false">Surface 3D</button>' : '');
+    }).join('') + '</div>' + (deuxD ? '<button type="button" class="carto__bouton carto__bouton--3d" data-3d aria-pressed="true">Surface 3D</button>' : '');
     zone.appendChild(barre);
 
     const boite = document.createElement('div');
@@ -798,10 +798,41 @@
     const echelle = document.createElement('p');
     echelle.className = 'carto__echelle';
     zone.appendChild(echelle);
+    // Surface 3D affichée d'office pour les tables à deux dimensions (chargée quand la carte arrive à l'écran)
     const cadre3d = document.createElement('div');
     cadre3d.className = 'carto__3d';
-    cadre3d.hidden = true;
+    cadre3d.hidden = !deuxD;
     zone.appendChild(cadre3d);
+    let chargement = null;
+    function charger3d() {
+      if (chargement) return;
+      cadre3d.innerHTML = '<p class="carto__info">Chargement de la vue 3D…</p>';
+      chargement = surface3d(cadre3d, t).then(function (s) { scene3d = s; dessiner(); }).catch(function () {
+        cadre3d.innerHTML = '<p class="carto__info">La vue 3D n\'a pas pu se charger (librairie Three.js indisponible). Le tableau ci-dessus contient toutes les valeurs.</p>';
+      });
+    }
+    if (deuxD) quandVisible(zone, charger3d);
+
+    // Table à une dimension (pré-injection) : la courbe, en plus de la bande colorée
+    if (!deuxD) {
+      const courbe = document.createElement('div');
+      courbe.className = 'carto__courbe';
+      zone.appendChild(courbe);
+      const temp = t.colonnes.valeurs.map(function (v) { return fr(v, v % 1 ? 2 : 0) + ' °C'; });
+      const reel = t.flex[0].map(function (v) { return v * BASE_FLEX; });
+      graphiqueCourbes(courbe, {
+        series: [
+          { nom: 'Origine', valeurs: t.origine[0], couleur: 'var(--serie-neutre)', pointilles: true },
+          { nom: 'Flex v1 (valeur stockée)', valeurs: t.flex[0], couleur: 'var(--serie-1)' },
+          { nom: 'Flex v1 réel (×1,297)', valeurs: reel, couleur: 'var(--serie-2)' }
+        ],
+        etiquettes: temp, axeX: t.colonnes.nom.toLowerCase(), min: 0, max: 240, pas: 40, unite: t.unite, decimalesValeur: 1, hauteur: 260,
+        description: t.titre + ' selon la température d\'eau : origine de 176 ms à -30 °C à 12,3 ms à 90 °C ; flex v1 réel de 229 ms à -30 °C à 14 ms à 90 °C'
+      });
+      tableau(courbe, ['Température', 'Origine', 'Flex v1 stocké', 'Flex v1 réel'], temp.map(function (tt, j) {
+        return [tt, fr(t.origine[0][j], 3) + ' ms', fr(t.flex[0][j], 3) + ' ms', fr(reel[j], 1) + ' ms'];
+      }));
+    }
 
     function enteteColonne(j) {
       const c = t.colonnes, o = fr(c.valeurs[j], c.valeurs[j] % 1 ? 2 : 0), f = c.valeursFlex ? fr(c.valeursFlex[j], 0) : o;
@@ -832,7 +863,12 @@
       echelle.innerHTML = divergent
         ? '<span>' + signe(-borne) + ' %</span><span class="carto__degrade carto__degrade--ecart" aria-hidden="true"></span><span>' + signe(borne) + ' %</span>'
         : '<span>' + avecUnite(fr(min, t.decimales), t.unite) + '</span><span class="carto__degrade" aria-hidden="true"></span><span>' + avecUnite(fr(max, t.decimales), t.unite) + '</span>';
-      if (scene3d) scene3d.maj(t.origine.map(function (l, i) { return l.map(function (_, j) { return position(valeur(vue, i, j)); }); }), divergent);
+      if (scene3d) scene3d.maj(t.origine.map(function (l, i) { return l.map(function (_, j) { return position(valeur(vue, i, j)); }); }), divergent, {
+        // en 3D, l'unité est dans le titre de l'axe : les valeurs restent courtes et ne se chevauchent pas
+        colonnes: t.colonnes.valeurs.map(function (_, j) { return enteteColonne(j).replace(' ' + t.colonnes.unite, ''); }),
+        lignes: t.lignes.valeurs.map(function (v) { return fr(v, v % 1 ? 2 : 0); }),
+        echelle: divergent ? [signe(-borne) + ' %', signe(borne) + ' %'] : [avecUnite(fr(min, t.decimales), t.unite), avecUnite(fr(max, t.decimales), t.unite)]
+      });
     }
 
     barre.addEventListener('click', function (e) {
@@ -846,12 +882,7 @@
         const ouvrir = b.getAttribute('aria-pressed') !== 'true';
         b.setAttribute('aria-pressed', String(ouvrir));
         cadre3d.hidden = !ouvrir;
-        if (ouvrir && !scene3d) {
-          cadre3d.innerHTML = '<p class="carto__info">Chargement de la vue 3D…</p>';
-          surface3d(cadre3d, t).then(function (s) { scene3d = s; dessiner(); }).catch(function () {
-            cadre3d.innerHTML = '<p class="carto__info">La vue 3D n\'a pas pu se charger (librairie Three.js indisponible). Le tableau ci-dessus contient toutes les valeurs.</p>';
-          });
-        }
+        if (ouvrir) charger3d();
       }
     });
     dessiner();
@@ -874,6 +905,7 @@
       const controles = new m[1].OrbitControls(camera, rendu.domElement);
       controles.enableZoom = false; // la molette reste au défilement de la page
       controles.enablePan = false;
+      rendu.domElement.style.touchAction = 'pan-y'; // OrbitControls bloque tout ; on rend le glissé vertical à la page
       controles.target.set(0, 0.45, 0);
 
       // Grille nx × ny : x = colonne, z = ligne, y = valeur
@@ -902,15 +934,53 @@
       socle.scale.z = 2 / 3;
       scene.add(socle);
 
+      // Étiquettes façon logiciel de calibration : textes dessinés sur un canevas, toujours face à la caméra
+      function etiquette(x, y, z, gras) {
+        const toile = document.createElement('canvas');
+        toile.width = 512; toile.height = 96;
+        const texture = new THREE.CanvasTexture(toile);
+        texture.colorSpace = THREE.SRGBColorSpace;
+        const s = new THREE.Sprite(new THREE.SpriteMaterial({ map: texture, depthTest: false, transparent: true }));
+        s.position.set(x, y, z);
+        s.renderOrder = 2;
+        s.userData = { toile: toile, gras: gras };
+        scene.add(s);
+        return s;
+      }
+      function ecrire(s, texte) {
+        const ctx = s.userData.toile.getContext('2d');
+        ctx.clearRect(0, 0, 512, 96);
+        ctx.font = (s.userData.gras ? '700 ' : '600 ') + '42px system-ui, sans-serif';
+        const l = Math.min(512, ctx.measureText(texte).width + 16);
+        ctx.fillStyle = s.userData.gras ? '#1c1b22' : '#4a4955';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(texte, 256, 50);
+        s.material.map.needsUpdate = true;
+        // échelle : 0,15 unité de haut, largeur proportionnelle au texte (marges du canevas comprises)
+        s.scale.set(0.24 * 512 / 96, 0.24, 1);
+        s.userData.largeur = l;
+      }
+      const ex = function (j) { return (j / (nx - 1) - 0.5) * 3; }, ez = function (i) { return (i / (ny - 1) - 0.5) * 2; };
+      const etColonnes = t.colonnes.valeurs.map(function (_, j) { return etiquette(ex(j), 0, 1.3, false); });
+      const etLignes = t.lignes.valeurs.map(function (_, i) { return etiquette(1.95, 0, ez(i), false); });
+      const titreAxe = function (a) { return a.unite ? a.nom + ' (' + a.unite + ')' : a.nom; };
+      ecrire(etiquette(0, 0, 1.72, true), titreAxe(t.colonnes));
+      ecrire(etiquette(1.95, 0, -1.45, true), titreAxe(t.lignes)); // derrière la 1re ligne : ne chevauche pas les valeurs
+      // Axe vertical à l'arrière gauche : la hauteur va du minimum au maximum de la vue
+      const axeV = new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(-1.5, 0, -1), new THREE.Vector3(-1.5, 0.9, -1)]);
+      scene.add(new THREE.Line(axeV, new THREE.LineBasicMaterial({ color: 0x6b6978 })));
+      const etMin = etiquette(-1.75, 0, -1, false), etMax = etiquette(-1.75, 0.9, -1, false);
+
       function rendre() { rendu.render(scene, camera); }
       function taille() {
-        const l = cadre.clientWidth || 300, h = Math.min(360, Math.max(240, l * 0.6));
+        const l = cadre.clientWidth || 300, h = l < 520 ? Math.round(l * 0.95) : Math.min(380, Math.max(260, l * 0.6)); // presque carré sur mobile
         rendu.setSize(l, h);
         camera.aspect = l / h;
         camera.updateProjectionMatrix();
         // Cadre étroit (mobile) : la caméra recule pour garder toute la surface
-        const recul = Math.max(1, 1.45 / camera.aspect);
-        camera.position.sub(controles.target).setLength(4.6 * recul).add(controles.target);
+        const recul = Math.max(0.85, 1.15 / camera.aspect);
+        camera.position.sub(controles.target).setLength(5.4 * recul).add(controles.target);
         controles.update();
         rendre();
       }
@@ -920,7 +990,12 @@
 
       return {
         // hauteurs : valeurs ramenées entre 0 et 1 (ou -1 et 1 pour les écarts)
-        maj: function (hauteurs, divergent) {
+        maj: function (hauteurs, divergent, etiquettes) {
+          etiquettes.colonnes.forEach(function (txt, j) { ecrire(etColonnes[j], txt); });
+          etiquettes.lignes.forEach(function (txt, i) { ecrire(etLignes[i], txt); });
+          ecrire(etMin, etiquettes.echelle[0]);
+          ecrire(etMax, etiquettes.echelle[1]);
+          socle.position.y = divergent ? 0.45 : 0; // en vue écart, le plan de référence marque le 0 %
           hauteurs.forEach(function (l, i) {
             l.forEach(function (v, j) {
               const k = i * nx + j, c = couleurCase(v, divergent).rgb;
@@ -986,7 +1061,7 @@
       graphiqueCourbes(z2, {
         titre: 'Sondes lambda amont', series: bancs(F.s1, F.s2), legende: false, etiquettes: F.t, axeX: 'heure (19/11)',
         min: 0, max: 1, pas: 0.2, decimales: 1, decimalesValeur: 2, unite: 'V', hauteur: 220,
-        description: 'Sondes lambda amont pendant le même ralenti : elles restent hautes, vers 0,85 à 0,93 volt, signe d\'un mélange riche'
+        description: 'Sondes lambda amont pendant le même ralenti : elles restent hautes, vers 0,83 à 0,93 volt, signe d\'un mélange riche'
       });
       tableau(z2, ['Heure', 'Régime', 'Corr. banc 1', 'Corr. banc 2', 'Sonde 1', 'Sonde 2'], F.t.map(function (t, i) {
         return [t, F.rpm[i] + ' tr/min', fr(F.li1[i]) + ' %', fr(F.li2[i]) + ' %', fr(F.s1[i], 2) + ' V', fr(F.s2[i], 2) + ' V'];

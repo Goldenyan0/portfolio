@@ -4015,7 +4015,7 @@ button.visite__compteur:hover, button.visite__compteur:focus-visible { border-co
 .carto__degrade { flex: 1; max-width: 260px; height: 10px; border-radius: 5px; background: linear-gradient(90deg, hsl(235 72% 52%), hsl(176 72% 52%), hsl(118 72% 52%), hsl(59 72% 52%), hsl(0 72% 52%)); }
 .carto__degrade--ecart { background: linear-gradient(90deg, hsl(215 75% 50%), hsl(215 75% 96%) 50%, hsl(4 75% 96%) 50%, hsl(4 75% 50%)); }
 .carto__3d { margin-top: 14px; }
-.carto__3d canvas { display: block; width: 100%; border-radius: 12px; background: var(--fond); touch-action: none; cursor: grab; }
+.carto__3d canvas { display: block; width: 100%; border-radius: 12px; background: var(--fond); touch-action: pan-y; cursor: grab; } /* au doigt, le glissé vertical fait toujours défiler la page */
 .carto__info { margin-bottom: 8px; font-size: 0.85rem; color: var(--encre-2); }
 /* Une carte de la grille ne doit pas s'élargir à la taille de son tableau (le défilement reste dans le tableau) */
 .ethanol__graphiques > .graphique { min-width: 0; }
@@ -4495,3 +4495,8 @@ button.visite__compteur:hover, button.visite__compteur:focus-visible { border-co
 .plan-ethanol__fait span { background: #d1fae5; color: #047857; }
 .plan-ethanol__encours span { background: var(--violet-pale); color: var(--violet); }
 .outils-e39 { background: var(--surface); }
+/* Bandeau de photos réelles sous un chantier */
+.chantier__galerie { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; margin-top: 18px; }
+.chantier__galerie figure { margin: 0; }
+.chantier__galerie img { width: 100%; aspect-ratio: 3 / 4; object-fit: cover; border-radius: 10px; cursor: zoom-in; }
+.chantier__galerie figcaption { margin-top: 6px; font-size: 0.8rem; line-height: 1.35; color: var(--encre-3); }
