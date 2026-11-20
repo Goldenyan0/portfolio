@@ -2845,6 +2845,8 @@ html:not(.anime) .sch-trace--reel { stroke-dashoffset: 0; }
 .graphique__courbe--pointilles { stroke-dasharray: 0.008 0.006; }
 .graphique__barre { transition: opacity 0.2s; }
 .graphique__barre.est-survol { opacity: 0.8; }
+.graphique__seuil { stroke: var(--encre-3); stroke-width: 1; stroke-dasharray: 5 4; }
+.graphique__repere { font-family: var(--police-mono); font-size: 11px; fill: var(--encre-2); paint-order: stroke; stroke: #ffffff; stroke-width: 3px; stroke-linejoin: round; }
 .graphique__reticule { stroke: var(--encre-3); stroke-width: 1; stroke-dasharray: 3 3; opacity: 0; }
 .graphique__reticule.est-visible { opacity: 1; }
 /* Animation à l'apparition : les courbes se dessinent, les barres poussent */
@@ -3958,3 +3960,41 @@ button.visite__compteur:hover, button.visite__compteur:focus-visible { border-co
 @media (min-width: 1280px) {
   html:not(.voyage-pret) body:has(.sommaire) :is(main, .pied) { padding-left: var(--sommaire-largeur); }
 }
+
+/* --- Section conversion éthanol (e39.html) --- */
+.ethanol__titre { margin: 72px 0 20px; font-size: clamp(1.4rem, 4vw, 1.9rem); letter-spacing: -0.02em; }
+.ethanol__intro { margin-bottom: 20px; max-width: 72ch; color: var(--encre-2); }
+.ethanol__notes { display: grid; gap: 6px; margin-top: 16px; padding-left: 1.2em; list-style: disc; font-size: 0.92rem; color: var(--encre-2); }
+.ethanol__graphiques { margin-top: 28px; }
+.ethanol code, .chantier code { font-family: var(--police-mono); font-size: 0.85em; overflow-wrap: anywhere; }
+/* Tableaux larges : défilement horizontal sur mobile plutôt qu'une page qui déborde */
+.tableau-defilement { overflow-x: auto; overscroll-behavior-x: contain; }
+.tableau-defilement .historique-ltft { margin-top: 0; }
+.tableau-flex { min-width: 760px; font-size: 0.88rem; }
+.tableau-flex td { vertical-align: top; }
+.tableau-flex td:nth-child(2), .tableau-flex td:nth-child(5) { font-family: var(--police-texte); font-weight: 400; color: var(--encre-2); }
+.chiffres-cles--colonne { grid-template-columns: 1fr; margin: 0; }
+.chantier__photo--double { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.chantier__photo--double figcaption { grid-column: 1 / -1; margin-top: 0; }
+/* Cartographies façon logiciel de calibration : tableau coloré + surface 3D à la demande */
+.carto__commandes { display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+.carto__vues { display: inline-flex; flex-wrap: wrap; gap: 4px; padding: 4px; border-radius: 999px; background: var(--fond); border: 1px solid var(--ligne); }
+.carto__bouton { min-height: 36px; padding: 6px 14px; border: 0; border-radius: 999px; background: transparent; color: var(--encre-2); font: inherit; font-size: 0.85rem; font-weight: 600; cursor: pointer; }
+.carto__bouton[aria-pressed="true"] { background: var(--encre); color: #ffffff; }
+.carto__bouton--3d { border: 1px solid var(--ligne); }
+.carto__bouton:focus-visible { outline: 2px solid var(--violet); outline-offset: 2px; }
+.carto { width: 100%; border-collapse: separate; border-spacing: 2px; font-family: var(--police-mono); font-size: 0.78rem; font-variant-numeric: tabular-nums; }
+.carto th { padding: 6px 4px; font-weight: 600; color: var(--encre-2); background: var(--surface-2, #f1f0ec); white-space: nowrap; }
+.carto td { min-width: 44px; padding: 8px 4px; text-align: center; border-radius: 4px; }
+.carto__coin { font-family: var(--police-texte); font-weight: 500; text-align: left; }
+.carto__echelle { display: flex; align-items: center; gap: 10px; margin-top: 10px; font-family: var(--police-mono); font-size: 0.78rem; color: var(--encre-2); }
+.carto__degrade { flex: 1; max-width: 260px; height: 10px; border-radius: 5px; background: linear-gradient(90deg, hsl(235 72% 52%), hsl(176 72% 52%), hsl(118 72% 52%), hsl(59 72% 52%), hsl(0 72% 52%)); }
+.carto__degrade--ecart { background: linear-gradient(90deg, hsl(215 75% 50%), hsl(215 75% 96%) 50%, hsl(4 75% 96%) 50%, hsl(4 75% 50%)); }
+.carto__3d { margin-top: 14px; }
+.carto__3d canvas { display: block; width: 100%; border-radius: 12px; background: var(--fond); touch-action: none; cursor: grab; }
+.carto__info { margin-bottom: 8px; font-size: 0.85rem; color: var(--encre-2); }
+/* Une carte de la grille ne doit pas s'élargir à la taille de son tableau (le défilement reste dans le tableau) */
+.ethanol__graphiques > .graphique { min-width: 0; }
+.carto__vues { max-width: 100%; border-radius: 20px; }
+.carto th[scope="row"], .carto__coin { position: sticky; left: 0; z-index: 1; }
+.carto .carto__coin { min-width: 96px; white-space: normal; font-size: 0.72rem; line-height: 1.25; }

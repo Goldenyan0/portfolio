@@ -9,7 +9,9 @@
    - Photos de la page : un clic (ou Entrée) les ouvre en grand
    - Graphiques natifs SVG des relevés du 08/10/2026, animés au scroll,
      avec infobulle au survol et tableau des valeurs
-   Dépend de commun.js (window.Site) et donnees-releves.js (window.RELEVES).
+   - Graphiques de la conversion éthanol (08 au 20/11/2026), axe X en heures
+   Dépend de commun.js (window.Site), donnees-releves.js (window.RELEVES)
+   donnees-ethanol.js (window.ETHANOL) et donnees-cartos.js (window.CARTOS).
    ========================================================================== */
 
 (function () {
@@ -529,58 +531,68 @@
     zone.appendChild(ul);
   }
 
-  /* --- Graphique en barres : corrections carburant --- */
-  function graphiqueBarres(zone) {
-    const barres = [
-      { nom: 'Banc 1', groupe: 'LTFT ralenti', valeur: 7.0, couleur: 'var(--serie-1)' },
-      { nom: 'Banc 2', groupe: 'LTFT ralenti', valeur: 4.7, couleur: 'var(--serie-1)' },
-      { nom: 'Banc 1', groupe: 'MUL en charge', valeur: 7.1, couleur: 'var(--serie-2)' },
-      { nom: 'Banc 2', groupe: 'MUL en charge', valeur: 5.2, couleur: 'var(--serie-2)' }
-    ];
+  /* --- Graphique en barres, groupées (o.barres[].groupe) ; une barre peut flotter (bas ≠ 0) ---
+     o : { barres: [{ nom, groupe, valeur, bas?, couleur, texte? }], min?, max, pas, unite,
+           decimales?, legende?, seuils?, description, tableau: [entetes, lignes] } */
+  function graphiqueBarres(zone, o) {
+    const barres = o.barres;
+    const groupes = barres.map(function (b) { return b.groupe; }).filter(function (gr, i, t) { return t.indexOf(gr) === i; });
+    const min = o.min || 0;
     const L = 640, H = 300, g = 48, d = 16, h = 24, b = 56;
     const largeurUtile = L - g - d, hauteurUtile = H - h - b;
-    const y = function (v) { return h + hauteurUtile - (v / 8) * hauteurUtile; };
+    const y = function (v) { return h + hauteurUtile - ((v - min) / (o.max - min)) * hauteurUtile; };
+    const texte = function (barre) { return barre.texte || ((barre.valeur > 0 && min >= 0 && o.signe ? '+' : '') + fr(barre.valeur, o.decimales) + ' ' + o.unite); };
 
-    legende(zone, [{ nom: 'LTFT au ralenti', couleur: 'var(--serie-1)' }, { nom: 'MUL en charge', couleur: 'var(--serie-2)' }]);
-    const s = svg('svg', { viewBox: '0 0 ' + L + ' ' + H, class: 'graphique__svg', role: 'img', 'aria-label': 'Corrections carburant du 08/10/2026 : LTFT au ralenti +7,0 % banc 1 et +4,7 % banc 2 ; MUL en charge +7,1 % banc 1 et +5,2 % banc 2' });
+    if (o.legende) legende(zone, o.legende);
+    const s = svg('svg', { viewBox: '0 0 ' + L + ' ' + H, class: 'graphique__svg', role: 'img', 'aria-label': o.description });
     zone.appendChild(s);
 
     // Grille et axe
-    [0, 2, 4, 6, 8].forEach(function (v) {
+    for (let v = min; v <= o.max + 1e-9; v += o.pas) {
       svg('line', { class: 'graphique__grille', x1: g, x2: L - d, y1: y(v), y2: y(v) }, s);
-      svg('text', { class: 'graphique__axe', x: g - 10, y: y(v) + 4, 'text-anchor': 'end' }, s).textContent = v + ' %';
-    });
+      svg('text', { class: 'graphique__axe', x: g - 10, y: y(v) + 4, 'text-anchor': 'end' }, s).textContent = fr(v, o.decimalesAxe || 0) + ' ' + o.unite;
+    }
 
-    const largeurGroupe = largeurUtile / 2;
-    const largeurBarre = Math.min(70, largeurGroupe / 3);
-    barres.forEach(function (barre, i) {
-      const groupe = Math.floor(i / 2);
-      const cx = g + largeurGroupe * groupe + largeurGroupe / 2 + (i % 2 ? 1 : -1) * (largeurBarre / 2 + 4);
+    const largeurGroupe = largeurUtile / groupes.length;
+    barres.forEach(function (barre) {
+      const membres = barres.filter(function (x) { return x.groupe === barre.groupe; });
+      const k = membres.indexOf(barre), nb = membres.length;
+      const largeurBarre = Math.min(70, (largeurGroupe - 8) / Math.max(nb, 2) - 8);
+      const cx = g + largeurGroupe * groupes.indexOf(barre.groupe) + largeurGroupe / 2 + (k - (nb - 1) / 2) * (largeurBarre + 8);
       const haut = y(barre.valeur);
-      // Barre arrondie en haut seulement (4 px), ancrée sur la ligne de base
-      const r = 4, x0 = cx - largeurBarre / 2, x1 = cx + largeurBarre / 2, y0 = y(0);
+      // Barre arrondie en haut seulement (4 px), ancrée sur sa base
+      const r = 4, x0 = cx - largeurBarre / 2, x1 = cx + largeurBarre / 2, y0 = y(barre.bas || min);
       const rect = svg('path', {
         class: 'graphique__barre',
         d: 'M' + x0 + ' ' + y0 + ' V' + (haut + r) + ' Q' + x0 + ' ' + haut + ' ' + (x0 + r) + ' ' + haut + ' H' + (x1 - r) + ' Q' + x1 + ' ' + haut + ' ' + x1 + ' ' + (haut + r) + ' V' + y0 + ' Z',
         style: 'fill:' + barre.couleur + ';transform-origin:' + cx + 'px ' + y0 + 'px'
       }, s);
-      svg('text', { class: 'graphique__etiquette', x: cx, y: haut - 8, 'text-anchor': 'middle' }, s).textContent = '+' + fr(barre.valeur) + ' %';
-      svg('text', { class: 'graphique__axe', x: cx, y: H - b + 20, 'text-anchor': 'middle' }, s).textContent = barre.nom;
+      svg('text', { class: 'graphique__etiquette', x: cx, y: haut - 8, 'text-anchor': 'middle' }, s).textContent = texte(barre);
+      if (barre.nom) svg('text', { class: 'graphique__axe', x: cx, y: H - b + 20, 'text-anchor': 'middle' }, s).textContent = barre.nom;
       // Zone de survol plus large que la barre
       const cible = svg('rect', { x: cx - largeurBarre / 2 - 6, y: h, width: largeurBarre + 12, height: hauteurUtile, fill: 'transparent' }, s);
       cible.addEventListener('pointermove', function (e) {
-        montrerInfobulle(e, '<strong>' + barre.groupe + ' · ' + barre.nom + '</strong><br>+' + fr(barre.valeur) + ' %');
+        montrerInfobulle(e, '<strong>' + barre.groupe + (barre.nom ? ' · ' + barre.nom : '') + '</strong><br>' + (barre.aide || texte(barre)));
         rect.classList.add('est-survol');
       });
       cible.addEventListener('pointerleave', function () { cacherInfobulle(); rect.classList.remove('est-survol'); });
     });
-    ['LTFT au ralenti', 'MUL en charge'].forEach(function (t, i) {
-      svg('text', { class: 'graphique__groupe', x: g + largeurGroupe * i + largeurGroupe / 2, y: H - b + 44, 'text-anchor': 'middle' }, s).textContent = t;
+    groupes.forEach(function (t, i) {
+      svg('text', { class: 'graphique__groupe', x: g + largeurGroupe * i + largeurGroupe / 2, y: H - b + (barres.some(function (x) { return x.nom; }) ? 44 : 22), 'text-anchor': 'middle' }, s).textContent = t;
     });
-    svg('line', { class: 'graphique__base', x1: g, x2: L - d, y1: y(0), y2: y(0) }, s);
+    svg('line', { class: 'graphique__base', x1: g, x2: L - d, y1: y(min), y2: y(min) }, s);
+    tracerSeuils(s, o.seuils, y, g, L - d);
 
-    tableau(zone, ['Mesure', 'Banc 1', 'Banc 2'], [['LTFT au ralenti', '+7,0 %', '+4,7 %'], ['MUL en charge', '+7,1 %', '+5,2 %']]);
+    tableau(zone, o.tableau[0], o.tableau[1]);
     quandVisible(zone, function () { s.classList.add('est-anime'); });
+  }
+
+  // Lignes horizontales de référence (butée, valeur d'origine…), en pointillés et étiquetées
+  function tracerSeuils(s, seuils, y, xDebut, xFin) {
+    (seuils || []).forEach(function (seuil) {
+      svg('line', { class: 'graphique__seuil', x1: xDebut, x2: xFin, y1: y(seuil.v), y2: y(seuil.v) }, s);
+      svg('text', { class: 'graphique__repere', x: xFin - 4, y: y(seuil.v) - 6, 'text-anchor': 'end' }, s).textContent = seuil.texte;
+    });
   }
 
   /* --- Graphique en courbes (un ou plusieurs panneaux) --- */
@@ -606,10 +618,21 @@
       svg('line', { class: 'graphique__grille', x1: g, x2: L - d, y1: y(v), y2: y(v) }, s);
       svg('text', { class: 'graphique__axe', x: g - 8, y: y(v) + 4, 'text-anchor': 'end' }, s).textContent = fr(v, options.decimales || 0);
     }
-    [0, 20, 40, 60, 80, 100].forEach(function (i) {
-      svg('text', { class: 'graphique__axe', x: x(i), y: H - b + 20, 'text-anchor': 'middle' }, s).textContent = i;
+    // Axe X : numéros d'échantillons (relevés du 08/10) ou étiquettes fournies (heures, trajets),
+    // dont 5 sont affichées à intervalles réguliers ; l'infobulle donne l'étiquette exacte
+    const etiquettes = options.etiquettes;
+    const reperesX = etiquettes ? [0, 1, 2, 3, 4].map(function (k) { return Math.round(k * (n - 1) / 4); }) : [0, 20, 40, 60, 80, 100];
+    reperesX.forEach(function (i, k) {
+      svg('text', { class: 'graphique__axe', x: x(i), y: H - b + 20, 'text-anchor': etiquettes ? ['start', 'middle', 'middle', 'middle', 'end'][k] : 'middle' }, s).textContent = etiquettes ? etiquettes[i] : i;
     });
-    svg('text', { class: 'graphique__axe', x: L - d, y: H - 4, 'text-anchor': 'end' }, s).textContent = 'échantillons';
+    svg('text', { class: 'graphique__axe', x: L - d, y: H - 4, 'text-anchor': 'end' }, s).textContent = options.axeX || 'échantillons';
+
+    // Seuils horizontaux et repères verticaux (plein, flash…)
+    tracerSeuils(s, options.seuils, y, g, L - d);
+    (options.reperes || []).forEach(function (r) {
+      svg('line', { class: 'graphique__seuil', x1: x(r.i), x2: x(r.i), y1: h, y2: h + hauteurUtile }, s);
+      svg('text', { class: 'graphique__repere', x: x(r.i) + (r.gauche ? -4 : 4), y: h + 12 + (r.ligne || 0) * 14, 'text-anchor': r.gauche ? 'end' : 'start' }, s).textContent = r.texte;
+    });
 
     // Courbes (2 px)
     options.series.forEach(function (serie) {
@@ -627,7 +650,7 @@
       reticule.setAttribute('x1', x(i));
       reticule.setAttribute('x2', x(i));
       reticule.classList.add('est-visible');
-      montrerInfobulle(e, '<strong>Échantillon ' + i + '</strong>' + options.series.map(function (serie) {
+      montrerInfobulle(e, '<strong>' + (etiquettes ? etiquettes[i] : 'Échantillon ' + i) + '</strong>' + options.series.map(function (serie) {
         return '<br><span class="infobulle__puce" style="--couleur:' + serie.couleur + '"></span>' + serie.nom + ' : ' + fr(serie.valeurs[i], options.decimalesValeur || 1) + ' ' + options.unite;
       }).join(''));
     });
@@ -642,7 +665,20 @@
     if (!R) return;
 
     const corrections = document.querySelector('[data-graphique="corrections"]');
-    if (corrections) graphiqueBarres(corrections);
+    if (corrections) {
+      graphiqueBarres(corrections, {
+        barres: [
+          { nom: 'Banc 1', groupe: 'LTFT au ralenti', valeur: 7.0, couleur: 'var(--serie-1)' },
+          { nom: 'Banc 2', groupe: 'LTFT au ralenti', valeur: 4.7, couleur: 'var(--serie-1)' },
+          { nom: 'Banc 1', groupe: 'MUL en charge', valeur: 7.1, couleur: 'var(--serie-2)' },
+          { nom: 'Banc 2', groupe: 'MUL en charge', valeur: 5.2, couleur: 'var(--serie-2)' }
+        ],
+        max: 8, pas: 2, unite: '%', signe: true,
+        legende: [{ nom: 'LTFT au ralenti', couleur: 'var(--serie-1)' }, { nom: 'MUL en charge', couleur: 'var(--serie-2)' }],
+        description: 'Corrections carburant du 08/10/2026 : LTFT au ralenti +7,0 % banc 1 et +4,7 % banc 2 ; MUL en charge +7,1 % banc 1 et +5,2 % banc 2',
+        tableau: [['Mesure', 'Banc 1', 'Banc 2'], [['LTFT au ralenti', '+7,0 %', '+4,7 %'], ['MUL en charge', '+7,1 %', '+5,2 %']]]
+      });
+    }
 
     const vanos = document.querySelector('[data-graphique="vanos"]');
     if (vanos) {
@@ -701,6 +737,366 @@
   }
 
 
+  /* --- Cartographies façon logiciel de calibration (donnees-cartos.js : window.CARTOS) ---
+     Le tableau coloré EST la vue accessible (vraies cellules, en-têtes, valeurs écrites) ;
+     la surface 3D (Three.js, déjà utilisé par la page) ne se charge qu'à la demande. */
+  const BASE_FLEX = 1.296875; // facteur d'injection ajouté par le flex v1, appliqué aussi au démarrage
+
+  // Couleur d'une case : arc-en-ciel bleu → rouge (valeurs) ou bleu / blanc / rouge (écarts)
+  function couleurCase(t, divergent) {
+    const hsl = divergent
+      ? [t < 0 ? 215 : 4, 75, 96 - Math.min(Math.abs(t), 1) * 46]
+      : [235 * (1 - t), 72, 52];
+    const s = hsl[1] / 100, l = hsl[2] / 100;
+    const k = function (n) { return (n + hsl[0] / 30) % 12; };
+    const a = s * Math.min(l, 1 - l);
+    const rgb = [0, 8, 4].map(function (n) { return l - a * Math.max(-1, Math.min(k(n) - 3, 9 - k(n), 1)); });
+    // Texte noir ou blanc selon la luminance relative (contraste le plus fort)
+    const lum = rgb.map(function (c) { return c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4); });
+    const L = 0.2126 * lum[0] + 0.7152 * lum[1] + 0.0722 * lum[2];
+    return { fond: 'rgb(' + rgb.map(function (c) { return Math.round(c * 255); }).join(',') + ')', texte: (L + 0.05) / 0.05 > 1.05 / (L + 0.05) ? '#111111' : '#ffffff', rgb: rgb };
+  }
+
+  function cartographies() {
+    const C = window.CARTOS;
+    if (!C) return;
+    document.querySelectorAll('[data-carto]').forEach(function (zone) {
+      const t = C[zone.dataset.carto];
+      if (t) cartographie(zone, t);
+    });
+  }
+
+  function cartographie(zone, t) {
+    const avecBase = t.unite === 'ms'; // les deux tables C3 passent par le facteur ×1,297
+    const vues = [['origine', 'Origine'], ['flex', 'Flex v1'], ['ecart', 'Écart %']];
+    if (avecBase) vues.push(['reel', 'Écart réel %']);
+    const deuxD = t.lignes.valeurs.length > 1;
+    const plat = function (m) { return m.reduce(function (a, l) { return a.concat(l); }, []); };
+    const tous = plat(t.origine).concat(plat(t.flex));
+    const min = Math.min.apply(null, tous), max = Math.max.apply(null, tous);
+    const ecart = function (i, j, reel) { return (t.flex[i][j] * (reel ? BASE_FLEX : 1) / t.origine[i][j] - 1) * 100; };
+    const valeur = function (vue, i, j) { return vue === 'origine' || vue === 'flex' ? t[vue][i][j] : ecart(i, j, vue === 'reel'); };
+    const signe = function (v) { return (v > 0.05 ? '+' : '') + fr(v); };
+    const avecUnite = function (v, u) { return u ? v + ' ' + u : v; };
+    let vue = 'flex', scene3d = null;
+
+    // Commandes : vue affichée, puis surface 3D pour les tables à deux dimensions
+    const barre = document.createElement('div');
+    barre.className = 'carto__commandes';
+    barre.innerHTML = '<div class="carto__vues" role="group" aria-label="Valeurs affichées">' + vues.map(function (v) {
+      return '<button type="button" class="carto__bouton" data-vue="' + v[0] + '" aria-pressed="' + (v[0] === vue) + '">' + v[1] + '</button>';
+    }).join('') + '</div>' + (deuxD ? '<button type="button" class="carto__bouton carto__bouton--3d" data-3d aria-pressed="false">Surface 3D</button>' : '');
+    zone.appendChild(barre);
+
+    const boite = document.createElement('div');
+    boite.className = 'tableau-defilement carto__defilement';
+    boite.setAttribute('data-lenis-prevent', '');
+    const table = document.createElement('table');
+    table.className = 'carto';
+    boite.appendChild(table);
+    zone.appendChild(boite);
+    const echelle = document.createElement('p');
+    echelle.className = 'carto__echelle';
+    zone.appendChild(echelle);
+    const cadre3d = document.createElement('div');
+    cadre3d.className = 'carto__3d';
+    cadre3d.hidden = true;
+    zone.appendChild(cadre3d);
+
+    function enteteColonne(j) {
+      const c = t.colonnes, o = fr(c.valeurs[j], c.valeurs[j] % 1 ? 2 : 0), f = c.valeursFlex ? fr(c.valeursFlex[j], 0) : o;
+      const texte = o === f ? o : vue === 'origine' ? o : vue === 'flex' ? f : o + ' → ' + f;
+      return avecUnite(texte, c.unite);
+    }
+
+    function dessiner() {
+      const divergent = vue === 'ecart' || vue === 'reel';
+      let borne = 1;
+      if (divergent) t.origine.forEach(function (l, i) { l.forEach(function (_, j) { borne = Math.max(borne, Math.abs(valeur(vue, i, j))); }); });
+      const position = function (v) { return divergent ? v / borne : (v - min) / (max - min || 1); };
+      const libelle = vues.filter(function (v) { return v[0] === vue; })[0][1];
+      let html = '<caption class="visuellement-cache">' + t.titre + ' (' + t.nom + ') : ' + libelle + '</caption><thead><tr><th scope="col" class="carto__coin">' +
+        (deuxD ? t.lignes.nom + ' \\ ' + t.colonnes.nom : t.colonnes.nom) + '</th>';
+      t.colonnes.valeurs.forEach(function (_, j) { html += '<th scope="col">' + enteteColonne(j) + '</th>'; });
+      html += '</tr></thead><tbody>';
+      t.origine.forEach(function (ligne, i) {
+        html += '<tr><th scope="row">' + (deuxD ? avecUnite(fr(t.lignes.valeurs[i], t.lignes.valeurs[i] % 1 ? 2 : 0), t.lignes.unite) : libelle) + '</th>';
+        ligne.forEach(function (_, j) {
+          const v = valeur(vue, i, j), c = couleurCase(position(v), divergent);
+          const detail = 'Origine ' + avecUnite(fr(t.origine[i][j], 3), t.unite) + ' · flex ' + avecUnite(fr(t.flex[i][j], 3), t.unite) + ' · écart ' + signe(ecart(i, j)) + ' %' + (avecBase ? ' · écart réel ' + signe(ecart(i, j, true)) + ' %' : '');
+          html += '<td style="background:' + c.fond + ';color:' + c.texte + '" title="' + detail + '">' + (divergent ? signe(v) : fr(v, t.decimales)) + '</td>';
+        });
+        html += '</tr>';
+      });
+      table.innerHTML = html + '</tbody>';
+      echelle.innerHTML = divergent
+        ? '<span>' + signe(-borne) + ' %</span><span class="carto__degrade carto__degrade--ecart" aria-hidden="true"></span><span>' + signe(borne) + ' %</span>'
+        : '<span>' + avecUnite(fr(min, t.decimales), t.unite) + '</span><span class="carto__degrade" aria-hidden="true"></span><span>' + avecUnite(fr(max, t.decimales), t.unite) + '</span>';
+      if (scene3d) scene3d.maj(t.origine.map(function (l, i) { return l.map(function (_, j) { return position(valeur(vue, i, j)); }); }), divergent);
+    }
+
+    barre.addEventListener('click', function (e) {
+      const b = e.target.closest('button');
+      if (!b) return;
+      if (b.dataset.vue) {
+        vue = b.dataset.vue;
+        barre.querySelectorAll('[data-vue]').forEach(function (x) { x.setAttribute('aria-pressed', String(x === b)); });
+        dessiner();
+      } else if (b.hasAttribute('data-3d')) {
+        const ouvrir = b.getAttribute('aria-pressed') !== 'true';
+        b.setAttribute('aria-pressed', String(ouvrir));
+        cadre3d.hidden = !ouvrir;
+        if (ouvrir && !scene3d) {
+          cadre3d.innerHTML = '<p class="carto__info">Chargement de la vue 3D…</p>';
+          surface3d(cadre3d, t).then(function (s) { scene3d = s; dessiner(); }).catch(function () {
+            cadre3d.innerHTML = '<p class="carto__info">La vue 3D n\'a pas pu se charger (librairie Three.js indisponible). Le tableau ci-dessus contient toutes les valeurs.</p>';
+          });
+        }
+      }
+    });
+    dessiner();
+  }
+
+  // Surface 3D multicolore : rendu à la demande seulement (pas de boucle d'animation)
+  function surface3d(cadre, t) {
+    return Promise.all([import('three'), import('three/addons/controls/OrbitControls.js')]).then(function (m) {
+      const THREE = m[0], nx = t.colonnes.valeurs.length, ny = t.lignes.valeurs.length;
+      const bas = function (s) { return s === s.toUpperCase() ? s : s.toLowerCase(); }; // « MUL » reste en capitales
+      const sens = function (axe) { return axe.unite === '°C' ? ' (froid à gauche)' : ' (bas à gauche)'; };
+      cadre.innerHTML = '<p class="carto__info">Glissez pour tourner. Largeur : ' + bas(t.colonnes.nom) + sens(t.colonnes) + ' ; profondeur : ' + bas(t.lignes.nom) + ' ; hauteur et couleur : la valeur.</p>';
+      const rendu = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+      rendu.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+      rendu.domElement.setAttribute('aria-hidden', 'true');
+      cadre.appendChild(rendu.domElement);
+      const scene = new THREE.Scene();
+      const camera = new THREE.PerspectiveCamera(40, 1, 0.1, 100);
+      camera.position.set(-2.2, 2.4, 3.4);
+      const controles = new m[1].OrbitControls(camera, rendu.domElement);
+      controles.enableZoom = false; // la molette reste au défilement de la page
+      controles.enablePan = false;
+      controles.target.set(0, 0.45, 0);
+
+      // Grille nx × ny : x = colonne, z = ligne, y = valeur
+      const positions = new Float32Array(nx * ny * 3), couleurs = new Float32Array(nx * ny * 3), indices = [], aretes = [];
+      for (let i = 0; i < ny; i++) {
+        for (let j = 0; j < nx; j++) {
+          const k = i * nx + j;
+          positions[k * 3] = (j / (nx - 1) - 0.5) * 3;
+          positions[k * 3 + 2] = (i / (ny - 1) - 0.5) * 2;
+          if (j < nx - 1 && i < ny - 1) indices.push(k, k + nx, k + 1, k + 1, k + nx, k + nx + 1);
+          if (j < nx - 1) aretes.push(k, k + 1);
+          if (i < ny - 1) aretes.push(k, k + nx);
+        }
+      }
+      const geo = new THREE.BufferGeometry();
+      geo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+      geo.setAttribute('color', new THREE.BufferAttribute(couleurs, 3));
+      geo.setIndex(indices);
+      scene.add(new THREE.Mesh(geo, new THREE.MeshBasicMaterial({ vertexColors: true, side: THREE.DoubleSide })));
+      const geoAretes = new THREE.BufferGeometry();
+      geoAretes.setAttribute('position', geo.getAttribute('position'));
+      geoAretes.setIndex(aretes);
+      scene.add(new THREE.LineSegments(geoAretes, new THREE.LineBasicMaterial({ color: 0x1c1b22, transparent: true, opacity: 0.55 })));
+      // Socle : le plan zéro, en grille discrète
+      const socle = new THREE.GridHelper(3, nx - 1, 0xb9b7ad, 0xd8d6cd);
+      socle.scale.z = 2 / 3;
+      scene.add(socle);
+
+      function rendre() { rendu.render(scene, camera); }
+      function taille() {
+        const l = cadre.clientWidth || 300, h = Math.min(360, Math.max(240, l * 0.6));
+        rendu.setSize(l, h);
+        camera.aspect = l / h;
+        camera.updateProjectionMatrix();
+        // Cadre étroit (mobile) : la caméra recule pour garder toute la surface
+        const recul = Math.max(1, 1.45 / camera.aspect);
+        camera.position.sub(controles.target).setLength(4.6 * recul).add(controles.target);
+        controles.update();
+        rendre();
+      }
+      controles.addEventListener('change', rendre);
+      if (window.ResizeObserver) new ResizeObserver(taille).observe(cadre);
+      taille();
+
+      return {
+        // hauteurs : valeurs ramenées entre 0 et 1 (ou -1 et 1 pour les écarts)
+        maj: function (hauteurs, divergent) {
+          hauteurs.forEach(function (l, i) {
+            l.forEach(function (v, j) {
+              const k = i * nx + j, c = couleurCase(v, divergent).rgb;
+              positions[k * 3 + 1] = divergent ? 0.45 + v * 0.45 : v * 0.9;
+              // couleurs du tableau, converties en linéaire pour le rendu
+              c.forEach(function (x, n) { couleurs[k * 3 + n] = Math.pow(x, 2.2); });
+            });
+          });
+          geo.attributes.position.needsUpdate = true;
+          geo.attributes.color.needsUpdate = true;
+          geo.computeBoundingSphere();
+          rendre();
+        }
+      };
+    });
+  }
+
+
+  /* --- Graphiques de la conversion éthanol (donnees-ethanol.js : window.ETHANOL) --- */
+  function graphiquesEthanol() {
+    const E = window.ETHANOL;
+    if (!E) return;
+    const zone = function (nom) { return document.querySelector('[data-graphique="' + nom + '"]'); };
+    const bancs = function (a, b) {
+      return [{ nom: 'Banc 1', valeurs: a, couleur: 'var(--serie-1)' }, { nom: 'Banc 2', valeurs: b, couleur: 'var(--serie-2)' }];
+    };
+    const pc = function (v) { return (v > 0 ? '+' : '') + fr(v, 2) + ' %'; };
+
+    // 1. MUL en fin de chaque trajet, du 08/11 au 20/11
+    const z1 = zone('eth-mul');
+    if (z1) {
+      const P = E.parcours;
+      const indice = function (jour, heure) { return P.findIndex(function (p) { return p.jour === jour && p.heure === heure; }); };
+      graphiqueCourbes(z1, {
+        series: bancs(P.map(function (p) { return p.fin[0]; }), P.map(function (p) { return p.fin[1]; })),
+        etiquettes: P.map(function (p) { return p.jour + ' ' + p.heure; }), axeX: 'fin de chaque trajet',
+        min: -30, max: 10, pas: 5, unite: '%', decimalesValeur: 2, hauteur: 300,
+        seuils: [{ v: -30, texte: 'butée basse de la MUL dans le flex v1 : -30 %' }],
+        reperes: [
+          { i: indice('14/11', '20h20'), texte: '+10 L E85' },
+          { i: indice('15/11', '18h39'), texte: '+5,22 L E85' },
+          { i: indice('19/11', '18h24'), texte: '+10 L SP98', gauche: true, ligne: 2 },
+          { i: indice('19/11', '21h17'), texte: 'flash' },
+          { i: indice('19/11', '22h11'), texte: '+15 L E85', gauche: true, ligne: 1 }
+        ],
+        description: 'Adaptation multiplicative (MUL) en fin de trajet du 08/11 au 20/11/2026 : autour de -2 à -4 % au SP98, elle monte jusqu\'à +8,84 % le 18/11 avec l\'éthanol, repart de 0 après le flash du 19/11 puis descend vers -17 et -20 %'
+      });
+      tableau(z1, ['Trajet', 'MUL banc 1', 'MUL banc 2', 'ADD banc 1', 'ADD banc 2', 'Eau max', 'Vitesse max'], P.map(function (p) {
+        return [p.jour + ' ' + p.heure, pc(p.fin[0]), pc(p.fin[1]), fr(p.fin[2], 3) + ' ms', fr(p.fin[3], 3) + ' ms', fr(p.eauMax) + ' °C', p.vitMax + ' km/h'];
+      }));
+    }
+
+    // 2. Premier ralenti après le flash : correction collée à la butée
+    const z2 = zone('eth-flash');
+    if (z2 && E.ralentiFlash) {
+      const F = E.ralentiFlash;
+      graphiqueCourbes(z2, {
+        titre: 'Correction lambda instantanée', series: bancs(F.li1, F.li2), etiquettes: F.t, axeX: 'heure (19/11)',
+        min: -35, max: 5, pas: 5, unite: '%', hauteur: 240,
+        seuils: [{ v: -31.25, texte: 'butée -31,25 %' }],
+        description: 'Premier ralenti après le flash, le 19/11/2026 de 21:17 à 21:20 : la correction lambda descend jusqu\'à -31,2 % et y reste collée près d\'une minute avant de revenir à 0'
+      });
+      graphiqueCourbes(z2, {
+        titre: 'Sondes lambda amont', series: bancs(F.s1, F.s2), legende: false, etiquettes: F.t, axeX: 'heure (19/11)',
+        min: 0, max: 1, pas: 0.2, decimales: 1, decimalesValeur: 2, unite: 'V', hauteur: 220,
+        description: 'Sondes lambda amont pendant le même ralenti : elles restent hautes, vers 0,85 à 0,93 volt, signe d\'un mélange riche'
+      });
+      tableau(z2, ['Heure', 'Régime', 'Corr. banc 1', 'Corr. banc 2', 'Sonde 1', 'Sonde 2'], F.t.map(function (t, i) {
+        return [t, F.rpm[i] + ' tr/min', fr(F.li1[i]) + ' %', fr(F.li2[i]) + ' %', fr(F.s1[i], 2) + ' V', fr(F.s2[i], 2) + ' V'];
+      }));
+    }
+
+    // 3. Route du 19/11 : la MUL apprend ; les trois trajets sont mis bout à bout
+    const z3 = zone('eth-route');
+    if (z3 && E.route) {
+      const R = E.route;
+      // Début du 2e trajet et plein de 22:12 (le log du retour reprend juste après)
+      const apres = function (h) { return R.t.findIndex(function (t) { return t >= h; }); };
+      const reperes = [{ i: apres('21:41'), texte: 'trajet 21:41' }, { i: apres('22:12'), texte: '+15 L E85 (22:12)', gauche: true }];
+      graphiqueCourbes(z3, {
+        titre: 'MUL (adaptation multiplicative)', series: bancs(R.mul1, R.mul2), etiquettes: R.t, axeX: 'heure (19/11)',
+        min: -25, max: 5, pas: 5, unite: '%', decimalesValeur: 2, hauteur: 260, reperes: reperes,
+        description: 'Route du 19/11/2026 après le flash : la MUL part de 0, monte vers +4,6 %, saute à -7,7 et -8,9 % vers 21:30 puis descend jusqu\'à -17,4 et -20,2 %, et remonte légèrement à -16,4 et -18,8 % après le plein de 15 litres d\'E85'
+      });
+      graphiqueCourbes(z3, {
+        titre: 'Vitesse', series: [{ nom: 'Vitesse', valeurs: R.vit, couleur: 'var(--serie-3)' }], legende: false, etiquettes: R.t, axeX: 'heure (19/11)',
+        min: 0, max: 120, pas: 20, unite: 'km/h', decimalesValeur: 0, hauteur: 200, reperes: reperes.map(function (r) { return { i: r.i, texte: '' }; }),
+        description: 'Vitesse pendant les mêmes trajets, jusqu\'à 100 km/h'
+      });
+      tableau(z3, ['Heure', 'MUL banc 1', 'MUL banc 2', 'Vitesse', 'Eau'], R.t.map(function (t, i) {
+        return [t, pc(R.mul1[i]), pc(R.mul2[i]), R.vit[i] + ' km/h', fr(R.eau[i]) + ' °C'];
+      }));
+    }
+
+    // 4. Démarrage à froid du 20/11
+    const z4 = zone('eth-froid');
+    if (z4 && E.froid) {
+      const C = E.froid;
+      graphiqueCourbes(z4, {
+        titre: 'Régime', series: [{ nom: 'Régime', valeurs: C.rpm, couleur: 'var(--serie-1)' }], legende: false, etiquettes: C.t, axeX: 'heure (20/11)',
+        min: 0, max: 2500, pas: 500, unite: 'tr/min', decimalesValeur: 0, hauteur: 220,
+        description: 'Démarrage à froid du 20/11/2026 à 08:41 : régime vers 1 000 tr/min au ralenti froid, puis trajet'
+      });
+      graphiqueCourbes(z4, {
+        titre: 'Température d\'eau', series: [{ nom: 'Eau', valeurs: C.eau, couleur: 'var(--serie-2)' }], legende: false, etiquettes: C.t, axeX: 'heure (20/11)',
+        min: 0, max: 70, pas: 10, unite: '°C', hauteur: 200,
+        description: 'Température d\'eau du même démarrage : de 15 °C à 64,5 °C en fin de trajet'
+      });
+      graphiqueCourbes(z4, {
+        titre: 'Correction lambda instantanée', series: bancs(C.li1, C.li2), etiquettes: C.t, axeX: 'heure (20/11)',
+        min: -10, max: 25, pas: 5, unite: '%', hauteur: 220,
+        description: 'Correction lambda instantanée du même trajet : autour de +4 % en roulant, jusqu\'à +20 % au ralenti'
+      });
+      tableau(z4, ['Heure', 'Régime', 'Eau', 'Corr. banc 1', 'Corr. banc 2', 'Vitesse'], C.t.map(function (t, i) {
+        return [t, C.rpm[i] + ' tr/min', fr(C.eau[i]) + ' °C', fr(C.li1[i]) + ' %', fr(C.li2[i]) + ' %', C.vit[i] + ' km/h'];
+      }));
+    }
+
+    // 5. Pression d'essence du 19/11 : relevés au manomètre (barres), puis régime pendant les essais
+    const z5 = zone('eth-pression');
+    if (z5) {
+      const mesures = [['Contact mis', 3.1, 'moteur arrêté'], ['Ralenti', 3.5, 'stable'], ['Accélérations', 3.5, 'constante jusqu\'à 6 107 tr/min'], ['Arrêt 18:32', 3.0, 'juste après l\'arrêt'], ['18:42', 2.9, 'dix minutes après']];
+      graphiqueBarres(z5, {
+        barres: mesures.map(function (m) { return { nom: '', groupe: m[0], valeur: m[1], couleur: 'var(--serie-1)', aide: fr(m[1]) + ' bar, ' + m[2] }; }),
+        max: 4, pas: 1, unite: 'bar', decimales: 1, seuils: [{ v: 3.5, texte: 'valeur BMW : 3,5 bar' }],
+        description: 'Pression d\'essence du 19/11/2026 au manomètre : 3,1 bar contact mis, 3,5 bar au ralenti et pendant les accélérations, 3,0 bar juste après l\'arrêt, 2,9 bar dix minutes plus tard',
+        tableau: [['Moment', 'Pression', 'Détail'], mesures.map(function (m) { return [m[0], fr(m[1]) + ' bar', m[2]]; })]
+      });
+      if (E.pression) {
+        const Pr = E.pression;
+        graphiqueCourbes(z5, {
+          titre: 'Régime pendant les essais', series: [{ nom: 'Régime', valeurs: Pr.rpm, couleur: 'var(--serie-2)' }], legende: false, etiquettes: Pr.t, axeX: 'heure (19/11)',
+          min: 0, max: 7000, pas: 1000, unite: 'tr/min', decimalesValeur: 0, hauteur: 220,
+          description: 'Régime pendant les essais de pression : ralenti vers 750 tr/min et accélérations à vide jusqu\'à 6 107 tr/min'
+        });
+        tableau(z5, ['Heure', 'Régime', 'Eau'], Pr.t.map(function (t, i) { return [t, Pr.rpm[i] + ' tr/min', fr(Pr.eau[i]) + ' °C']; }));
+      }
+    }
+
+    // 6. Mélange estimé après chaque plein (fourchettes : barres flottantes)
+    const z6 = zone('eth-melange');
+    if (z6) {
+      const plein = 'var(--serie-1)', mul = 'var(--serie-3)';
+      graphiqueBarres(z6, {
+        barres: [
+          { nom: '', groupe: '14/11', bas: 18, valeur: 24, texte: 'E18-E24', couleur: plein },
+          { nom: '', groupe: '15/11', bas: 22, valeur: 32, texte: 'E22-E32', couleur: plein },
+          { nom: '', groupe: '19/11 avant 18h', bas: 12, valeur: 20, texte: 'E12-E20', couleur: plein },
+          { nom: '', groupe: '18/11', bas: 31, valeur: 33, texte: 'E31-E33', couleur: mul },
+          { nom: '', groupe: '19/11 22:12', bas: 34, valeur: 50, texte: 'E34-E50', couleur: plein }
+        ],
+        max: 60, pas: 10, unite: '%', seuils: [{ v: 40, texte: 'E40 : hypothèse de calcul' }],
+        legende: [{ nom: 'Calcul d\'après le plein', couleur: plein }, { nom: 'D\'après la MUL', couleur: mul }],
+        description: 'Taux d\'éthanol estimé : E18 à E24 après le plein du 14/11, E22 à E32 après celui du 15/11, E31 à E33 d\'après la MUL le 18/11, E12 à E20 après les 10 litres de SP98 du 19/11, E34 à E50 après les 15 litres d\'E85 du soir',
+        tableau: [['Après', 'Mélange estimé', 'Source'], [['14/11', 'E18-E24', 'calcul du plein'], ['15/11', 'E22-E32', 'calcul du plein'], ['18/11', 'E31-E33', 'MUL'], ['19/11, avant 18h', 'E12-E20', 'calcul du plein'], ['19/11, 22:12', 'E34-E50 (E40 : hypothèse)', 'calcul du plein']]]
+      });
+    }
+
+    // 7. Profil de démarrage C3 : facteur flex v1 par rapport à l'origine (origine = 1)
+    const z7 = zone('eth-c3');
+    if (z7) {
+      const pre = [1.30, 1.55, 1.58, 1.58, 1.41, 1.16, 1.14, 1.14];
+      const temp = ['-30', '-20', '-10', '0', '10', '30', '60', '90'];
+      const lanc = [['-30 à 0 °C', 1.41], ['9,75 °C', 1.22], ['30 à 90 °C', 1.16]];
+      graphiqueBarres(z7, {
+        barres: pre.map(function (v, i) { return { nom: temp[i], groupe: 'Pré-injection (°C)', valeur: v, texte: fr(v, 2), couleur: 'var(--serie-1)', aide: '×' + fr(v, 2) + ' à ' + temp[i] + ' °C' }; })
+          .concat(lanc.map(function (l) { return { nom: l[0], groupe: 'Lancement', valeur: l[1], texte: fr(l[1], 2), couleur: 'var(--serie-2)', aide: '×' + fr(l[1], 2) + ' de l\'injection de lancement' }; })),
+        max: 1.6, pas: 0.4, decimalesAxe: 1, unite: '×', seuils: [{ v: 1, texte: 'origine = 1' }],
+        description: 'Profil de démarrage du flex v1 : pré-injection multipliée par 1,14 à 1,58 selon la température, injection de lancement par 1,41 au grand froid, 1,22 vers 10 °C et 1,16 moteur chaud',
+        tableau: [['Élément', 'Température', 'Facteur réel'], pre.map(function (v, i) { return ['Pré-injection', temp[i] + ' °C', '×' + fr(v, 2)]; })
+          .concat(lanc.map(function (l) { return ['Lancement', l[0], '×' + fr(l[1], 2)]; }))]
+      });
+    }
+  }
+
+
   /* ------------------------------------------------------------------
      7. Garde-fou du moteur 3D : si le module moteur-3d.js n'a même pas pu
         s'exécuter (il signale lui-même les autres pannes), on l'explique ici.
@@ -745,4 +1141,6 @@
   gererPleinEcran();
   gererInfobulles();
   graphiquesReleves();
+  graphiquesEthanol();
+  cartographies();
 })();
