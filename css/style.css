@@ -4500,3 +4500,68 @@ button.visite__compteur:hover, button.visite__compteur:focus-visible { border-co
 .chantier__galerie figure { margin: 0; }
 .chantier__galerie img { width: 100%; aspect-ratio: 3 / 4; object-fit: cover; border-radius: 10px; cursor: zoom-in; }
 .chantier__galerie figcaption { margin-top: 6px; font-size: 0.8rem; line-height: 1.35; color: var(--encre-3); }
+
+/* Sélecteur de tables : onglets groupés (modifiées / contexte), une table affichée à la fois */
+.cartos { margin-top: 24px; padding: 20px; border-radius: var(--rayon); border: 1px solid var(--ligne); background: #ffffff; }
+.cartos__nav { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; padding-bottom: 16px; border-bottom: 1px solid var(--ligne); }
+.cartos__groupe { flex-basis: 100%; margin: 6px 0 2px; font-family: var(--police-mono); font-size: 0.72rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--encre-3); }
+.cartos__onglet { display: inline-flex; align-items: center; gap: 8px; min-height: 40px; padding: 6px 12px; border: 1px solid var(--ligne); border-radius: 999px; background: var(--fond); color: var(--encre-2); font: inherit; font-size: 0.85rem; font-weight: 600; cursor: pointer; text-align: left; }
+.cartos__onglet[aria-selected="true"] { background: var(--encre); border-color: var(--encre); color: #ffffff; }
+.cartos__onglet:focus-visible { outline: 2px solid var(--violet); outline-offset: 2px; }
+.cartos__repere { font-family: var(--police-mono); font-size: 0.72rem; padding: 1px 6px; border-radius: 6px; background: var(--violet-pale); color: var(--violet); }
+.cartos__onglet--contexte .cartos__repere { background: #ecebe6; color: var(--encre-3); }
+.cartos__onglet[aria-selected="true"] .cartos__repere { background: rgba(255, 255, 255, 0.18); color: #ffffff; }
+.cartos__panneau { padding-top: 18px; }
+.cartos__entete h4 { font-size: 1.25rem; margin-top: 4px; }
+.cartos__entete p { margin-top: 6px; font-size: 0.92rem; color: var(--encre-2); max-width: 75ch; }
+.cartos__statut { display: inline-block; padding: 2px 10px; border-radius: 999px; background: #dcfce7; color: #166534 !important; font-family: var(--police-mono); font-size: 0.72rem !important; letter-spacing: 0.04em; text-transform: uppercase; }
+.cartos__statut--contexte { background: #ecebe6; color: var(--encre-2) !important; }
+.cartos__code { font-size: 0.85rem !important; }
+.cartos__source { font-size: 0.8rem !important; color: var(--encre-3) !important; }
+/* Grandes tables (avance 20 × 16) : cases plus serrées */
+.carto--dense { font-size: 0.7rem; border-spacing: 1px; }
+.carto--dense td { min-width: 36px; padding: 5px 2px; }
+@media (max-width: 719px) { .cartos { padding: 14px; } }
+
+/* Section E85 : sous-sommaire, numéros et dates des parties */
+.sous-sommaire { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 24px; }
+.sous-sommaire a { display: inline-flex; align-items: center; gap: 8px; min-height: 40px; padding: 6px 14px; border: 1px solid var(--ligne); border-radius: 999px; background: #ffffff; color: var(--encre); font-size: 0.88rem; font-weight: 600; text-decoration: none; }
+.sous-sommaire a:hover, .sous-sommaire a:focus-visible { border-color: var(--violet); color: var(--violet); }
+.sous-sommaire span, .ethanol__num { font-family: var(--police-mono); font-size: 0.75em; color: var(--violet); }
+.ethanol__num { display: block; margin-bottom: 4px; font-size: 0.8rem; letter-spacing: 0.08em; }
+.ethanol__date { display: block; margin-top: 6px; font-family: var(--police-mono); font-size: 0.78rem; font-weight: 500; letter-spacing: 0.04em; color: var(--encre-3); }
+.ethanol__titre { scroll-margin-top: 90px; }
+.ethanol__sous-titre { margin: 36px 0 12px; font-size: 1.15rem; }
+
+/* En bref : frise datée et accès aux 4 parties */
+.partie-badge { display: inline-block; margin-bottom: 10px; padding: 4px 12px; border-radius: 999px; background: var(--encre); color: #ffffff; font-family: var(--police-mono); font-size: 0.72rem; letter-spacing: 0.06em; text-transform: uppercase; }
+.frise { display: grid; gap: 0; margin-top: 28px; border-left: 2px solid var(--ligne); padding-left: 18px; }
+.frise li { position: relative; padding: 0 0 16px; }
+.frise li::before { content: ""; position: absolute; left: -24px; top: 5px; width: 10px; height: 10px; border-radius: 50%; background: var(--violet); }
+.frise__date { font-family: var(--police-mono); font-size: 0.78rem; letter-spacing: 0.04em; color: var(--violet); }
+.frise p + p { margin-top: 2px; color: var(--encre-2); }
+.frise a { white-space: nowrap; font-weight: 600; }
+.parties { display: grid; gap: 10px; margin-top: 24px; }
+@media (min-width: 720px) { .parties { grid-template-columns: repeat(2, 1fr); } }
+@media (min-width: 1040px) { .parties { grid-template-columns: repeat(4, 1fr); } }
+.parties a { display: grid; gap: 4px; height: 100%; padding: 16px; border: 1px solid var(--ligne); border-radius: 14px; background: #ffffff; color: var(--encre); font-weight: 700; text-decoration: none; }
+.parties a:hover, .parties a:focus-visible { border-color: var(--violet); }
+.parties span { font-family: var(--police-mono); font-size: 0.72rem; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; color: var(--violet); }
+.parties small { font-size: 0.82rem; font-weight: 400; color: var(--encre-2); }
+
+/* Zone visée dans une table (projet d'avance) : cases encadrées */
+.carto td.carto__zone { box-shadow: inset 0 0 0 2px #111111; }
+.carto__zone-note { display: flex; align-items: center; gap: 8px; margin-top: 8px; font-size: 0.82rem; color: var(--encre-2); }
+.carto__zone-note span { flex: none; width: 16px; height: 12px; border-radius: 3px; box-shadow: inset 0 0 0 2px #111111; }
+
+/* Inventaire des pièces montées : cartes datées avec la photo produit */
+.pieces-montees__grille { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; }
+.pieces-montees__carte { display: flex; flex-direction: column; gap: 4px; padding: 12px; border: 1px solid var(--ligne); border-radius: 14px; background: #ffffff; }
+.pieces-montees__carte figure { margin: 0 0 6px; }
+.pieces-montees__carte img, .pieces-montees__vide { width: 100%; height: 120px; object-fit: contain; cursor: zoom-in; }
+.pieces-montees__vide { display: grid; place-items: center; border-radius: 10px; background: var(--fond); color: var(--encre-3); font-size: 0.78rem; cursor: default; }
+.pieces-montees__date { font-family: var(--police-mono); font-size: 0.72rem; color: var(--violet); }
+.pieces-montees__carte h3 { font-size: 0.95rem; line-height: 1.25; }
+.pieces-montees__ref { font-size: 0.82rem; color: var(--encre-2); }
+/* Vignettes de produits dans un chantier : produit entier sur fond blanc, pas recadré */
+.chantier__galerie--produits img { aspect-ratio: 1; object-fit: contain; background: #ffffff; border: 1px solid var(--ligne); padding: 8px; }

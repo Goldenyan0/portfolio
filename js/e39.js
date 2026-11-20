@@ -740,7 +740,6 @@
   /* --- Cartographies façon logiciel de calibration (donnees-cartos.js : window.CARTOS) ---
      Le tableau coloré EST la vue accessible (vraies cellules, en-têtes, valeurs écrites) ;
      la surface 3D (Three.js, déjà utilisé par la page) ne se charge qu'à la demande. */
-  const BASE_FLEX = 1.296875; // facteur d'injection ajouté par le flex v1, appliqué aussi au démarrage
 
   // Couleur d'une case : arc-en-ciel bleu → rouge (valeurs) ou bleu / blanc / rouge (écarts)
   function couleurCase(t, divergent) {
@@ -760,39 +759,112 @@
   function cartographies() {
     const C = window.CARTOS;
     if (!C) return;
+    // Sélecteur : une table affichée à la fois, regroupées en « modifiées » et « contexte »
+    document.querySelectorAll('[data-cartos]').forEach(function (bloc) { selecteurCartos(bloc, C); });
+    // Cartes isolées (une seule table, sans sélecteur)
     document.querySelectorAll('[data-carto]').forEach(function (zone) {
-      const t = C[zone.dataset.carto];
-      if (t) cartographie(zone, t);
+      if (!zone.closest('[data-cartos]') && C[zone.dataset.carto]) cartographie(zone, C[zone.dataset.carto]);
     });
   }
 
+  function selecteurCartos(bloc, C) {
+    const cles = bloc.dataset.cartos.split(',').map(function (s) { return s.trim(); }).filter(function (k) { return C[k]; });
+    const groupes = [['Modifiées par le flex v1', cles.filter(function (k) { return C[k].modifiee; })], ['Non modifiées (contexte)', cles.filter(function (k) { return !C[k].modifiee; })]];
+    const nav = document.createElement('div');
+    nav.className = 'cartos__nav';
+    nav.setAttribute('role', 'tablist');
+    nav.setAttribute('aria-label', 'Choisir une table');
+    const panneaux = {};
+    groupes.forEach(function (g) {
+      if (!g[1].length) return;
+      const titre = document.createElement('p');
+      titre.className = 'cartos__groupe';
+      titre.textContent = g[0];
+      nav.appendChild(titre);
+      g[1].forEach(function (k) {
+        const t = C[k];
+        const b = document.createElement('button');
+        b.type = 'button';
+        b.className = 'cartos__onglet' + (t.modifiee ? '' : ' cartos__onglet--contexte');
+        b.setAttribute('role', 'tab');
+        b.id = 'onglet-' + k;
+        b.setAttribute('aria-controls', 'panneau-' + k);
+        b.dataset.cle = k;
+        b.innerHTML = '<span class="cartos__repere">' + t.repere + '</span>' + t.titre;
+        nav.appendChild(b);
+        const p = document.createElement('div');
+        p.className = 'cartos__panneau';
+        p.id = 'panneau-' + k;
+        p.setAttribute('role', 'tabpanel');
+        p.setAttribute('aria-labelledby', b.id);
+        p.hidden = true;
+        p.innerHTML = '<div class="cartos__entete"><p class="cartos__statut' + (t.modifiee ? '' : ' cartos__statut--contexte') + '">' + (t.modifiee ? 'Modifiée · repère ' + t.repere : 'Non modifiée') + '</p>' +
+          '<h4>' + t.titre + '</h4><p class="cartos__code"><code>' + t.nom + '</code></p><p>' + t.role + '</p><p class="cartos__source">Source : ' + t.source + '.</p></div>';
+        const zone = document.createElement('div');
+        zone.className = 'graphique__zone';
+        p.appendChild(zone);
+        bloc.appendChild(p);
+        panneaux[k] = { bouton: b, panneau: p, zone: zone, fait: false };
+      });
+    });
+    bloc.insertBefore(nav, bloc.firstChild);
+
+    function choisir(k, focus) {
+      Object.keys(panneaux).forEach(function (c) {
+        const x = panneaux[c], actif = c === k;
+        x.bouton.setAttribute('aria-selected', String(actif));
+        x.bouton.tabIndex = actif ? 0 : -1;
+        x.panneau.hidden = !actif;
+      });
+      const x = panneaux[k];
+      if (!x.fait) { x.fait = true; cartographie(x.zone, C[k]); }
+      if (x.zone.afficher3d) x.zone.afficher3d();
+      if (focus) x.bouton.focus();
+    }
+    nav.addEventListener('click', function (e) { const b = e.target.closest('[data-cle]'); if (b) choisir(b.dataset.cle); });
+    // Clavier : flèches entre les onglets (motif ARIA des onglets)
+    nav.addEventListener('keydown', function (e) {
+      const ordre = Object.keys(panneaux), i = ordre.indexOf(document.activeElement.dataset.cle);
+      if (i < 0) return;
+      const pas = { ArrowRight: 1, ArrowDown: 1, ArrowLeft: -1, ArrowUp: -1 }[e.key];
+      if (pas) { e.preventDefault(); choisir(ordre[(i + pas + ordre.length) % ordre.length], true); }
+    });
+    choisir(bloc.dataset.premier && panneaux[bloc.dataset.premier] ? bloc.dataset.premier : Object.keys(panneaux)[0]);
+  }
+
   function cartographie(zone, t) {
-    const avecBase = t.unite === 'ms'; // les deux tables C3 passent par le facteur ×1,297
-    const vues = [['origine', 'Origine'], ['flex', 'Flex v1'], ['ecart', 'Écart %']];
-    if (avecBase) vues.push(['reel', 'Écart réel %']);
-    const deuxD = t.lignes.valeurs.length > 1;
+    const base = t.base || 0; // tables de démarrage : le facteur A s'ajoute à l'injection
+    const modifiee = t.modifiee !== false;
+    const vues = modifiee ? [['origine', 'Origine'], ['flex', 'Flex v1'], ['ecart', t.ecartPoints ? 'Écart (points)' : 'Écart %']] : [['origine', 'Valeurs']];
+    if (modifiee && base) vues.push(['reel', 'Écart réel %']);
+    const deuxD = t.lignes.valeurs.length > 1 && t.colonnes.valeurs.length > 1;
     const plat = function (m) { return m.reduce(function (a, l) { return a.concat(l); }, []); };
     const tous = plat(t.origine).concat(plat(t.flex));
     const min = Math.min.apply(null, tous), max = Math.max.apply(null, tous);
-    const ecart = function (i, j, reel) { return (t.flex[i][j] * (reel ? BASE_FLEX : 1) / t.origine[i][j] - 1) * 100; };
+    const ecart = function (i, j, reel) {
+      if (t.ecartPoints) return t.flex[i][j] - t.origine[i][j];
+      return (t.flex[i][j] * (reel ? base : 1) / t.origine[i][j] - 1) * 100;
+    };
     const valeur = function (vue, i, j) { return vue === 'origine' || vue === 'flex' ? t[vue][i][j] : ecart(i, j, vue === 'reel'); };
+    const uniteEcart = t.ecartPoints ? ' pts' : ' %';
     const signe = function (v) { return (v > 0.05 ? '+' : '') + fr(v); };
     const avecUnite = function (v, u) { return u ? v + ' ' + u : v; };
-    let vue = 'flex', scene3d = null;
+    const libelleAxe = function (v) { return typeof v === 'number' ? fr(v, v % 1 ? 2 : 0) : v; };
+    let vue = modifiee ? 'flex' : 'origine', scene3d = null;
 
     // Commandes : vue affichée, puis surface 3D pour les tables à deux dimensions
     const barre = document.createElement('div');
     barre.className = 'carto__commandes';
-    barre.innerHTML = '<div class="carto__vues" role="group" aria-label="Valeurs affichées">' + vues.map(function (v) {
+    barre.innerHTML = (vues.length > 1 ? '<div class="carto__vues" role="group" aria-label="Valeurs affichées">' + vues.map(function (v) {
       return '<button type="button" class="carto__bouton" data-vue="' + v[0] + '" aria-pressed="' + (v[0] === vue) + '">' + v[1] + '</button>';
-    }).join('') + '</div>' + (deuxD ? '<button type="button" class="carto__bouton carto__bouton--3d" data-3d aria-pressed="true">Surface 3D</button>' : '');
+    }).join('') + '</div>' : '') + (deuxD ? '<button type="button" class="carto__bouton carto__bouton--3d" data-3d aria-pressed="true">Surface 3D</button>' : '');
     zone.appendChild(barre);
 
     const boite = document.createElement('div');
     boite.className = 'tableau-defilement carto__defilement';
     boite.setAttribute('data-lenis-prevent', '');
     const table = document.createElement('table');
-    table.className = 'carto';
+    table.className = 'carto' + (t.colonnes.valeurs.length > 10 ? ' carto--dense' : '');
     boite.appendChild(table);
     zone.appendChild(boite);
     const echelle = document.createElement('p');
@@ -805,21 +877,22 @@
     zone.appendChild(cadre3d);
     let chargement = null;
     function charger3d() {
-      if (chargement) return;
+      if (chargement || !deuxD || cadre3d.hidden) return;
       cadre3d.innerHTML = '<p class="carto__info">Chargement de la vue 3D…</p>';
       chargement = surface3d(cadre3d, t).then(function (s) { scene3d = s; dessiner(); }).catch(function () {
         cadre3d.innerHTML = '<p class="carto__info">La vue 3D n\'a pas pu se charger (librairie Three.js indisponible). Le tableau ci-dessus contient toutes les valeurs.</p>';
       });
     }
-    if (deuxD) quandVisible(zone, charger3d);
+    zone.afficher3d = function () { if (zone.offsetParent) charger3d(); };
+    if (deuxD) quandVisible(zone, function () { zone.afficher3d(); });
 
-    // Table à une dimension (pré-injection) : la courbe, en plus de la bande colorée
-    if (!deuxD) {
+    // Table à une dimension avec courbe (pré-injection) : origine, flex stocké, flex réel
+    if (t.courbe) {
       const courbe = document.createElement('div');
       courbe.className = 'carto__courbe';
       zone.appendChild(courbe);
       const temp = t.colonnes.valeurs.map(function (v) { return fr(v, v % 1 ? 2 : 0) + ' °C'; });
-      const reel = t.flex[0].map(function (v) { return v * BASE_FLEX; });
+      const reel = t.flex[0].map(function (v) { return v * base; });
       graphiqueCourbes(courbe, {
         series: [
           { nom: 'Origine', valeurs: t.origine[0], couleur: 'var(--serie-neutre)', pointilles: true },
@@ -835,39 +908,46 @@
     }
 
     function enteteColonne(j) {
-      const c = t.colonnes, o = fr(c.valeurs[j], c.valeurs[j] % 1 ? 2 : 0), f = c.valeursFlex ? fr(c.valeursFlex[j], 0) : o;
+      const c = t.colonnes, o = libelleAxe(c.valeurs[j]), f = c.valeursFlex ? libelleAxe(c.valeursFlex[j]) : o;
       const texte = o === f ? o : vue === 'origine' ? o : vue === 'flex' ? f : o + ' → ' + f;
       return avecUnite(texte, c.unite);
     }
 
     function dessiner() {
       const divergent = vue === 'ecart' || vue === 'reel';
-      let borne = 1;
+      let borne = t.ecartPoints ? 0.5 : 1;
       if (divergent) t.origine.forEach(function (l, i) { l.forEach(function (_, j) { borne = Math.max(borne, Math.abs(valeur(vue, i, j))); }); });
       const position = function (v) { return divergent ? v / borne : (v - min) / (max - min || 1); };
       const libelle = vues.filter(function (v) { return v[0] === vue; })[0][1];
+      const unite = divergent ? uniteEcart : (t.unite ? ' ' + t.unite : '');
       let html = '<caption class="visuellement-cache">' + t.titre + ' (' + t.nom + ') : ' + libelle + '</caption><thead><tr><th scope="col" class="carto__coin">' +
-        (deuxD ? t.lignes.nom + ' \\ ' + t.colonnes.nom : t.colonnes.nom) + '</th>';
+        (deuxD ? t.lignes.nom + ' \\ ' + t.colonnes.nom : (t.lignes.nom || t.colonnes.nom)) + '</th>';
       t.colonnes.valeurs.forEach(function (_, j) { html += '<th scope="col">' + enteteColonne(j) + '</th>'; });
       html += '</tr></thead><tbody>';
       t.origine.forEach(function (ligne, i) {
-        html += '<tr><th scope="row">' + (deuxD ? avecUnite(fr(t.lignes.valeurs[i], t.lignes.valeurs[i] % 1 ? 2 : 0), t.lignes.unite) : libelle) + '</th>';
+        const tete = t.lignes.valeurs.length > 1 ? avecUnite(libelleAxe(t.lignes.valeurs[i]), t.lignes.unite) : libelle;
+        html += '<tr><th scope="row">' + tete + '</th>';
         ligne.forEach(function (_, j) {
           const v = valeur(vue, i, j), c = couleurCase(position(v), divergent);
-          const detail = 'Origine ' + avecUnite(fr(t.origine[i][j], 3), t.unite) + ' · flex ' + avecUnite(fr(t.flex[i][j], 3), t.unite) + ' · écart ' + signe(ecart(i, j)) + ' %' + (avecBase ? ' · écart réel ' + signe(ecart(i, j, true)) + ' %' : '');
-          html += '<td style="background:' + c.fond + ';color:' + c.texte + '" title="' + detail + '">' + (divergent ? signe(v) : fr(v, t.decimales)) + '</td>';
+          const detail = modifiee
+            ? 'Origine ' + avecUnite(fr(t.origine[i][j], 3), t.unite) + ' · flex ' + avecUnite(fr(t.flex[i][j], 3), t.unite) + ' · écart ' + signe(ecart(i, j)) + uniteEcart + (base ? ' · écart réel ' + signe(ecart(i, j, true)) + ' %' : '')
+            : avecUnite(fr(t.origine[i][j], 3), t.unite) + ' (non modifiée)';
+          const dansZone = t.zone && i >= t.zone.lignes[0] && i <= t.zone.lignes[1] && j >= t.zone.colonnes[0] && j <= t.zone.colonnes[1];
+          html += '<td' + (dansZone ? ' class="carto__zone"' : '') + ' style="background:' + c.fond + ';color:' + c.texte + '" title="' + detail + (dansZone ? ' · zone visée' : '') + '">' + (divergent ? signe(v) : fr(v, t.decimales)) + '</td>';
         });
         html += '</tr>';
       });
       table.innerHTML = html + '</tbody>';
       echelle.innerHTML = divergent
-        ? '<span>' + signe(-borne) + ' %</span><span class="carto__degrade carto__degrade--ecart" aria-hidden="true"></span><span>' + signe(borne) + ' %</span>'
-        : '<span>' + avecUnite(fr(min, t.decimales), t.unite) + '</span><span class="carto__degrade" aria-hidden="true"></span><span>' + avecUnite(fr(max, t.decimales), t.unite) + '</span>';
+        ? '<span>' + signe(-borne) + uniteEcart + '</span><span class="carto__degrade carto__degrade--ecart" aria-hidden="true"></span><span>' + signe(borne) + uniteEcart + '</span>'
+        : '<span>' + fr(min, t.decimales) + unite + '</span><span class="carto__degrade" aria-hidden="true"></span><span>' + fr(max, t.decimales) + unite + '</span>';
+      zone.querySelectorAll('.carto__zone-note').forEach(function (n) { n.remove(); });
+      if (t.zone) echelle.insertAdjacentHTML('afterend', '<p class="carto__zone-note"><span aria-hidden="true"></span>' + t.zone.texte + '</p>');
       if (scene3d) scene3d.maj(t.origine.map(function (l, i) { return l.map(function (_, j) { return position(valeur(vue, i, j)); }); }), divergent, {
         // en 3D, l'unité est dans le titre de l'axe : les valeurs restent courtes et ne se chevauchent pas
-        colonnes: t.colonnes.valeurs.map(function (_, j) { return enteteColonne(j).replace(' ' + t.colonnes.unite, ''); }),
-        lignes: t.lignes.valeurs.map(function (v) { return fr(v, v % 1 ? 2 : 0); }),
-        echelle: divergent ? [signe(-borne) + ' %', signe(borne) + ' %'] : [avecUnite(fr(min, t.decimales), t.unite), avecUnite(fr(max, t.decimales), t.unite)]
+        colonnes: t.colonnes.valeurs.map(function (_, j) { return t.colonnes.unite ? enteteColonne(j).replace(' ' + t.colonnes.unite, '') : enteteColonne(j); }),
+        lignes: t.lignes.valeurs.map(function (v) { return libelleAxe(v); }),
+        echelle: divergent ? [signe(-borne) + uniteEcart, signe(borne) + uniteEcart] : [fr(min, t.decimales) + unite, fr(max, t.decimales) + unite]
       });
     }
 
@@ -991,8 +1071,12 @@
       return {
         // hauteurs : valeurs ramenées entre 0 et 1 (ou -1 et 1 pour les écarts)
         maj: function (hauteurs, divergent, etiquettes) {
-          etiquettes.colonnes.forEach(function (txt, j) { ecrire(etColonnes[j], txt); });
-          etiquettes.lignes.forEach(function (txt, i) { ecrire(etLignes[i], txt); });
+          // au plus 8 étiquettes par axe (tables d'avance : 16 × 20 cases)
+          const pasC = Math.ceil(nx / 8), pasL = Math.ceil(ny / 8);
+          // la dernière valeur n'est écrite que si elle est assez loin de la précédente affichée
+          const montre = function (k, n, pas) { return k % pas === 0 || (k === n - 1 && (n - 1) % pas >= pas / 2); };
+          etiquettes.colonnes.forEach(function (txt, j) { ecrire(etColonnes[j], montre(j, nx, pasC) ? txt : ''); });
+          etiquettes.lignes.forEach(function (txt, i) { ecrire(etLignes[i], montre(i, ny, pasL) ? txt : ''); });
           ecrire(etMin, etiquettes.echelle[0]);
           ecrire(etMax, etiquettes.echelle[1]);
           socle.position.y = divergent ? 0.45 : 0; // en vue écart, le plan de référence marque le 0 %

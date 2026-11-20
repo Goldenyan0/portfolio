@@ -100,12 +100,11 @@
       </a>
       <nav aria-label="Navigation principale">
         <ul class="nav__liens">
-          <li><a href="#chantiers">Chantiers</a></li>
-          <li><a href="#moteur">Moteur 3D</a></li>
-          <li><a href="#documentation">Le M54 expliqué</a></li>
-          <li><a href="#releves">Relevés</a></li>
-          <li><a href="#mesures">Mesures</a></li>
-          <li><a href="#ethanol">Éthanol</a></li>
+          <li><a href="#en-bref">En bref</a></li>
+          <li><a href="#fiche-technique">La voiture</a></li>
+          <li><a href="#fil-rouge">Remise en état</a></li>
+          <li><a href="#ethanol">E85</a></li>
+          <li><a href="#galerie">Galerie</a></li>
           <li><a href="index.html">Portfolio</a></li>
         </ul>
       </nav>
@@ -119,12 +118,16 @@
   </header>
 
   <div class="menu-mobile" id="menu-mobile">
-    <a href="#chantiers">Chantiers</a>
-    <a href="#moteur">Moteur 3D</a>
-    <a href="#documentation">Le M54 expliqué</a>
-    <a href="#releves">Relevés</a>
-    <a href="#mesures">Mesures</a>
-    <a href="#ethanol">Éthanol</a>
+    <a href="#en-bref">En bref</a>
+    <a href="#fiche-technique">La voiture</a>
+    <a href="#fil-rouge">Remise en état</a>
+    <a href="#chantiers">· Les chantiers</a>
+    <a href="#pieces-montees">· Les pièces montées</a>
+    <a href="#mesures">· Les mesures du 14/11</a>
+    <a href="#ethanol">E85</a>
+    <a href="#e85-valeurs">· Toutes les valeurs</a>
+    <a href="#e85-avance">· L'avance et la puissance</a>
+    <a href="#galerie">Galerie</a>
     <a href="index.html">Portfolio</a>
   </div>
 
@@ -155,10 +158,46 @@
         </div>
       </div>
     </section>
+    <!-- ══ En bref : le résumé de tout le projet, daté, avec un lien vers chaque étape ══ -->
+    <section class="section en-bref" id="en-bref" data-etape="En bref" aria-labelledby="en-bref-titre">
+      <div class="conteneur">
+        <div class="entete-section">
+          <p class="surtitre" data-revele>En bref · état au 20/11/2026</p>
+          <h2 class="titre-section" id="en-bref-titre" data-mots>Ce qui a été fait, <em>en bref.</em></h2>
+          <p data-revele>Trois mois de travail sur une E39 520i : d'abord la remettre en état, puis la convertir à l'E85. La page suit cet ordre, en quatre parties.</p>
+        </div>
+        <ul class="chiffres-cles chiffres-cles--resume" data-revele>
+          <li><strong>≈ 164 000 km</strong><span>à l'achat, le 16/08/2026</span></li>
+          <li><strong>0 %</strong><span>de correction de mélange après la réparation (octobre)</span></li>
+          <li><strong>≈ 170 ch</strong><span>mesurés le 14/11 (calcul à partir des logs et du GPS)</span></li>
+          <li><strong>81 octets</strong><span>modifiés dans le calculateur, flashés le 19/11</span></li>
+        </ul>
+        <ol class="frise" data-revele>
+          <li><p class="frise__date">16/08/2026</p><p>Achat de la voiture, environ 164 000 km. <a href="#chantiers">Les chantiers</a></p></li>
+          <li><p class="frise__date">Vers le 23/08 · fin août</p><p>Vidange à 164 292 km, capteur d'arbre à cames, puis filtre à essence. <a href="#pieces-montees">Les pièces</a></p></li>
+          <li><p class="frise__date">Fin août · septembre</p><p>Mélange pauvre : premiers codes défaut. <a href="#chantiers">Les chantiers</a></p></li>
+          <li><p class="frise__date">03/10/2026</p><p>Pompe à essence AEM 340 L/h. <a href="#chantiers">Les chantiers</a></p></li>
+          <li><p class="frise__date">08 · 14/10/2026</p><p>Diagnostic, débitmètre neuf, fuite trouvée au test fumée : corrections revenues à 0 %. <a href="#resultat">Le résultat</a></p></li>
+          <li><p class="frise__date">18/10/2026</p><p>Refroidissement refait : radiateur, pompe à eau, thermostat. <a href="#chantiers">Les chantiers</a></p></li>
+          <li><p class="frise__date">06 · 11/11/2026</p><p>Diagnostic complet au PC, copie du calculateur, cartographies lues. <a href="#chantiers">Les chantiers</a></p></li>
+          <li><p class="frise__date">14/11/2026</p><p>Puissance mesurée (environ 170 ch) et premiers litres d'E85. <a href="#mesures">Les mesures</a></p></li>
+          <li><p class="frise__date">19/11/2026</p><p>Bougies, pression d'essence, puis flash du fichier flex v1. <a href="#e85-flash">Le flash</a></p></li>
+          <li><p class="frise__date">20/11/2026</p><p>Démarrage à froid à l'E85 : propre. <a href="#e85-flash">Le flash</a></p></li>
+          <li><p class="frise__date">Ensuite</p><p>Paliers d'éthanol, pleine charge, puis l'avance pour gagner en puissance. <a href="#e85-avance">La suite</a></p></li>
+        </ol>
+        <ol class="parties" data-revele>
+          <li><a href="#fiche-technique"><span>Partie 1</span>La voiture<small>Fiche technique, tour en 3D, le moteur expliqué, les pièces</small></a></li>
+          <li><a href="#fil-rouge"><span>Partie 2</span>La remise en état<small>Août au 14/11/2026 : méthode, chantiers, relevés, mesures, outils</small></a></li>
+          <li><a href="#ethanol"><span>Partie 3</span>La conversion E85<small>09/10 au 20/11/2026 : valeurs, flash, essais, suite</small></a></li>
+          <li><a href="#galerie"><span>Partie 4</span>Galerie<small>La voiture en photos</small></a></li>
+        </ol>
+      </div>
+    </section>
     <!-- ══ Fiche technique ══ -->
     <section class="section caracteristiques volet" id="fiche-technique" data-volet data-etape="Fiche technique" aria-labelledby="caracteristiques-titre">
       <div class="conteneur">
         <div class="entete-section">
+          <p class="partie-badge" data-revele>Partie 1 · La voiture</p>
           <p class="surtitre" data-revele>Fiche technique</p>
           <h2 class="titre-section" id="caracteristiques-titre" data-mots>La 520i, <em>en chiffres.</em></h2>
           <p data-revele>BMW 520i E39 berline, 2002, boîte manuelle.</p>
@@ -434,6 +473,7 @@
     <section class="section fil-rouge" id="fil-rouge" data-etape="La méthode" aria-labelledby="fil-titre">
       <div class="conteneur">
         <div class="entete-section">
+          <p class="partie-badge" data-revele>Partie 2 · La remise en état · août au 14/11/2026</p>
           <p class="surtitre" data-revele>La méthode</p>
           <h2 class="titre-section" id="fil-titre" data-mots>Mesure, hypothèse, <em>vérification.</em></h2>
           <p data-revele>Une seule modification à la fois, puis relecture des valeurs avant de conclure. C'est la règle qui évite de remplacer trois pièces pour une panne qui n'en demandait qu'une.</p>
@@ -494,6 +534,47 @@
               </div>
             </li>
 
+            <!-- Vidange et capteur d'arbre à cames -->
+            <li class="etape chantier" data-revele>
+              <p class="etape__date">Vers le 23/08/2026 · 164 292 km</p>
+              <h4>Vidange et capteur d'arbre à cames d'échappement</h4>
+              <div class="chantier__corps">
+                <div>
+                  <p>Vidange à <strong>164 292 km</strong> : moteur rincé au <strong>Liqui Moly Engine Flush</strong> (300 ml), puis huile <strong>Motul 8100 X-cess 5W40</strong> avec un filtre <strong>Mann-Filter HU 925/4 x</strong>, et additif céramique <strong>Liqui Moly Cera Tec 3721</strong>.</p>
+                  <p>Au même moment, le capteur de position d'arbre à cames d'échappement, en défaut à l'achat, est remplacé par un <strong>Hella 6PU 009 121-701</strong>.</p>
+                </div>
+                <ul class="chantier__refs" aria-label="Références">
+                  <li>Huile · Motul 8100 X-cess 5W40</li>
+                  <li>Filtre à huile · Mann-Filter HU 925/4 x</li>
+                  <li>Rinçage · Liqui Moly Engine Flush 300 ml</li>
+                  <li>Additif · Liqui Moly Cera Tec 3721</li>
+                  <li>Capteur · Hella 6PU 009 121-701</li>
+                </ul>
+              </div>
+              <div class="chantier__galerie chantier__galerie--produits" aria-label="Les produits de la vidange">
+                <figure><img src="img/pieces-montees/engine-flush-320.png" data-grande="img/pieces-montees/engine-flush.png" loading="lazy" alt="Bidon de Liqui Moly Engine Flush, 300 ml" /><figcaption>Engine Flush, avant la vidange.</figcaption></figure>
+                <figure><img src="img/pieces-montees/huile-motul-320.png" data-grande="img/pieces-montees/huile-motul.png" loading="lazy" alt="Bidon d'huile Motul 8100 X-cess 5W40" /><figcaption>Motul 8100 X-cess 5W40.</figcaption></figure>
+                <figure><img src="img/pieces-montees/cera-tec-320.png" data-grande="img/pieces-montees/cera-tec.png" loading="lazy" alt="Flacon et boîte de Liqui Moly Cera Tec, 300 ml" /><figcaption>Cera Tec 3721.</figcaption></figure>
+                <figure><img src="img/pieces-montees/capteur-aac-echappement-320.png" data-grande="img/pieces-montees/capteur-aac-echappement.png" loading="lazy" alt="Capteur Hella de position d'arbre à cames, avec sa boîte" /><figcaption>Capteur Hella 6PU 009 121-701.</figcaption></figure>
+              </div>
+            </li>
+
+            <!-- Filtre à essence et durites -->
+            <li class="etape chantier" data-revele>
+              <p class="etape__date">Fin août 2026 · quelques jours après la vidange</p>
+              <h4>Filtre à essence Purflux EP200 et durites</h4>
+              <div class="chantier__corps chantier__corps--photo">
+                <div>
+                  <p>Quelques jours après la vidange : <strong>filtre à essence Purflux EP200</strong> à régulateur intégré, avec <strong>3 durites neuves</strong> et leurs colliers.</p>
+                  <p>Entretien prévu ensuite : un filtre à essence chaque année.</p>
+                </div>
+                <figure class="chantier__photo">
+                  <img src="img/e39/filtre-essence-purflux-960.jpg" srcset="img/e39/filtre-essence-purflux-480.jpg 480w, img/e39/filtre-essence-purflux-960.jpg 960w, img/e39/filtre-essence-purflux.jpg 1600w" sizes="(max-width: 1039px) 100vw, 360px" data-grande="img/e39/filtre-essence-purflux.jpg" width="1600" height="901" loading="lazy" alt="Sous la caisse : le filtre à essence cylindrique noir, ses durites neuves et leurs colliers, le long des conduites métalliques" />
+                  <figcaption>Photo réelle : le filtre Purflux et ses durites neuves, sous la voiture.</figcaption>
+                </figure>
+              </div>
+            </li>
+
             <!-- ══ Septembre 2026 ══ -->
             <li class="timeline__mois"><h3>Septembre 2026</h3></li>
 
@@ -511,6 +592,21 @@
                   </ul>
                   <p>Le 27/09, recherche sur la pompe à essence AEM 340, compatible E85, avant de la commander.</p>
                 </div>
+              </div>
+            </li>
+
+            <!-- Autoradio bloqué -->
+            <li class="etape chantier" data-revele>
+              <p class="etape__date">03/09/2026</p>
+              <h4>Autoradio bloqué : tableau de bord démonté</h4>
+              <div class="chantier__corps chantier__corps--photo">
+                <div>
+                  <p>L'autoradio d'origine était bloqué. Pour le débloquer, la façade du tableau de bord et la garniture de porte sont démontées.</p>
+                </div>
+                <figure class="chantier__photo">
+                  <img src="img/e39/tableau-de-bord-autoradio-960.jpg" srcset="img/e39/tableau-de-bord-autoradio-480.jpg 480w, img/e39/tableau-de-bord-autoradio-960.jpg 960w, img/e39/tableau-de-bord-autoradio.jpg 1600w" sizes="(max-width: 1039px) 100vw, 360px" data-grande="img/e39/tableau-de-bord-autoradio.jpg" width="1600" height="1627" loading="lazy" alt="L'habitacle vu par la portière ouverte : façade du tableau de bord déposée, faisceaux à nu derrière le volant, outils et câbles sur le siège" />
+                  <figcaption>Photo réelle : le tableau de bord démonté pour débloquer l'autoradio.</figcaption>
+                </figure>
               </div>
             </li>
 
@@ -532,6 +628,10 @@
                   <li>Pression attendue : ~3,5 bar (spécification)</li>
                 </ul>
               </div>
+              <div class="chantier__galerie" aria-label="Photos réelles du 03/10">
+                <figure><img src="img/e39/pompe-essence-trappe-480.jpg" srcset="img/e39/pompe-essence-trappe-480.jpg 480w, img/e39/pompe-essence-trappe-960.jpg 960w, img/e39/pompe-essence-trappe.jpg 1600w" sizes="(max-width: 719px) 50vw, 200px" data-grande="img/e39/pompe-essence-trappe.jpg" width="1600" height="901" loading="lazy" alt="La trappe sous la banquette arrière ouverte : le module de pompe et de jauge d'origine en place, avec son connecteur et sa durite" /><figcaption>17h42 : accès à la pompe par la trappe sous la banquette.</figcaption></figure>
+                <figure><img src="img/e39/pompe-essence-module-480.jpg" srcset="img/e39/pompe-essence-module-480.jpg 480w, img/e39/pompe-essence-module-960.jpg 960w, img/e39/pompe-essence-module.jpg 1600w" sizes="(max-width: 719px) 50vw, 200px" data-grande="img/e39/pompe-essence-module.jpg" width="1600" height="2844" loading="lazy" alt="Le module de pompe et de jauge déposé sur une table, câblage refait avec de la gaine thermorétractable" /><figcaption>21h08 : le module démonté pour poser la pompe AEM 340, compatible E85.</figcaption></figure>
+              </div>
             </li>
 
             <!-- Diagnostic mélange pauvre -->
@@ -540,7 +640,7 @@
               <h4>Diagnostic du mélange pauvre</h4>
               <div class="chantier__corps chantier__corps--photo">
                 <div>
-                  <p>Log complet du calculateur (MS430DS0, environ 110 points) et lectures à la valise V519. Les corrections carburant montent des deux côtés, le banc 1 devant.</p>
+                  <p>Le 08/10, le câble K+DCAN arrive (commandé début octobre) : premiers logs du calculateur. Log complet (MS430DS0, environ 110 points) et lectures à la valise V519. Les corrections carburant montent des deux côtés, le banc 1 devant.</p>
                   <ul class="chiffres-cles">
                     <li><strong>42 %</strong><span>ouverture des injecteurs à 4 646 tr/min : sains, loin du seuil de 85 %</span></li>
                     <li><strong>121 g/s</strong><span>débit d'air mesuré, contre 129 à 140 g/s attendus : le débitmètre sous-lit</span></li>
@@ -553,6 +653,10 @@
                   <figcaption>Photo réelle : le code P0171 lu au V519.</figcaption>
                 </figure>
               </div>
+              <div class="chantier__galerie" aria-label="Photos réelles du 08/10">
+                <figure><img src="img/e39/cable-kdcan-480.jpg" srcset="img/e39/cable-kdcan-480.jpg 480w, img/e39/cable-kdcan-960.jpg 960w, img/e39/cable-kdcan.jpg 1600w" sizes="(max-width: 719px) 50vw, 200px" data-grande="img/e39/cable-kdcan.jpg" width="1600" height="2844" loading="lazy" alt="Le câble « K+DCAN USB Interface (INPA Compatible) » tenu en main, avec son interrupteur" /><figcaption>08/10 : le câble K+DCAN reçu, avec son interrupteur K-Line / D-CAN.</figcaption></figure>
+                <figure><img src="img/e39/cable-kdcan-prise-obd-480.jpg" srcset="img/e39/cable-kdcan-prise-obd-480.jpg 480w, img/e39/cable-kdcan-prise-obd-960.jpg 960w, img/e39/cable-kdcan-prise-obd.jpg 1600w" sizes="(max-width: 719px) 50vw, 200px" data-grande="img/e39/cable-kdcan-prise-obd.jpg" width="1600" height="2844" loading="lazy" alt="La prise OBD-II à 16 broches du câble, vue de face" /><figcaption>La prise OBD-II à 16 broches de l'interface.</figcaption></figure>
+              </div>
             </li>
 
             <!-- Premier plein mélangé -->
@@ -564,6 +668,21 @@
                   <p><strong>30 L de SP98 et 15 L d'E85</strong> à 165 509 km, avec la nouvelle pompe. Soit environ E27 à E32 selon la teneur de l'E85 (estimation).</p>
                   <p>L'effet sur les corrections n'a pas pu être isolé : le débitmètre a été changé entre deux logs, et la prise d'air était encore là.</p>
                 </div>
+              </div>
+            </li>
+
+            <!-- Vanne de ralenti -->
+            <li class="etape chantier" data-revele>
+              <p class="etape__date">11/10/2026</p>
+              <h4>Nettoyage de la vanne de ralenti (ICV)</h4>
+              <div class="chantier__corps">
+                <div>
+                  <p>La vanne de ralenti Bosch, logée sous l'admission, est déposée pour être nettoyée.</p>
+                </div>
+              </div>
+              <div class="chantier__galerie" aria-label="Photos réelles du 11/10">
+                <figure><img src="img/e39/icv-acces-admission-480.jpg" srcset="img/e39/icv-acces-admission-480.jpg 480w, img/e39/icv-acces-admission-960.jpg 960w, img/e39/icv-acces-admission.jpg 1600w" sizes="(max-width: 719px) 50vw, 200px" data-grande="img/e39/icv-acces-admission.jpg" width="1600" height="2842" loading="lazy" alt="Le compartiment moteur côté admission, pendant la dépose de la vanne de ralenti" /><figcaption>L'accès à l'ICV, sous l'admission.</figcaption></figure>
+                <figure><img src="img/e39/icv-deposee-480.jpg" srcset="img/e39/icv-deposee-480.jpg 480w, img/e39/icv-deposee-960.jpg 960w, img/e39/icv-deposee.jpg 1600w" sizes="(max-width: 719px) 50vw, 200px" data-grande="img/e39/icv-deposee.jpg" width="1600" height="2842" loading="lazy" alt="La vanne de ralenti Bosch déposée, posée au sol" /><figcaption>La vanne de ralenti déposée pour nettoyage.</figcaption></figure>
               </div>
             </li>
 
@@ -674,37 +793,15 @@
                 </svg>
                 <figcaption>Froid : clapet fermé, petit circuit. Chaud : la cire se dilate, le clapet s'ouvre, le radiateur entre en jeu. Sur le roulage du 08/10, le liquide est resté entre 83 et 98 °C.</figcaption>
               </figure>
-            </li>
-
-            <!-- Caisson de basses -->
-            <li class="etape chantier" data-revele>
-              <p class="etape__date">21 · 25/10/2026</p>
-              <h4>Caisson de basses, posé et mesuré</h4>
-              <div class="chantier__corps">
-                <div>
-                  <p>Un caisson <strong>MTX RTP12x2</strong> (double 30 cm, 360 W RMS) dans le coffre, avec un passage découpé dans la cloison. La chute est gardée pour pouvoir refermer.</p>
-                  <ul class="chiffres-cles">
-                    <li><strong>125,2 dB</strong><span>niveau moyen mesuré au siège conducteur (dB(Z))</span></li>
-                    <li><strong>90 A</strong><span>alternateur vérifié</span></li>
-                    <li><strong>13,7 V</strong><span>charge en roulant</span></li>
-                  </ul>
-                  <details class="repli">
-                    <summary>Mesures et réglages</summary>
-                    <ul class="repli__liste">
-                      <li>Mesure de référence du 23/10, moteur coupé : moyenne 125,2, maximum 130,2, crête 130,5 dB(Z). Le micro du téléphone plafonne vers 130 dB.</li>
-                      <li>Réglages retenus : caisson activé, filtre passe-bas à 80 Hz, phase normale.</li>
-                      <li>La découpe reste au format d'origine (environ 540 cm²) : ce panneau tient la caisse entre les coupelles d'amortisseurs.</li>
-                      <li>Reste à faire : la malle qui vibre, puis le réglage final du gain après rodage.</li>
-                    </ul>
-                  </details>
-                </div>
+              <div class="chantier__galerie" aria-label="Photo réelle du 18/10">
+                <figure><img src="img/e39/thermostat-pompe-eau-neufs-480.jpg" srcset="img/e39/thermostat-pompe-eau-neufs-480.jpg 480w, img/e39/thermostat-pompe-eau-neufs-960.jpg 960w, img/e39/thermostat-pompe-eau-neufs.jpg 1600w" sizes="(max-width: 719px) 50vw, 200px" data-grande="img/e39/thermostat-pompe-eau-neufs.jpg" width="1600" height="901" loading="lazy" alt="Le haut du moteur, courroie déposée : thermostat piloté Mahle et pompe à eau Meyle neufs, en place" /><figcaption>18/10 : thermostat piloté Mahle et pompe à eau Meyle neufs (préventif).</figcaption></figure>
               </div>
             </li>
 
             <!-- Fin octobre : pneus et suivi -->
             <li class="etape chantier" data-revele>
               <p class="etape__date">23 · 31/10/2026</p>
-              <h4>Pneus, huile et alternateur : les points à suivre</h4>
+              <h4>Pneus et huile : les points à suivre</h4>
               <div class="chantier__corps">
                 <div>
                   <p>Les <strong>pneus arrière sont presque aux témoins</strong>, usés au centre (surgonflage). Leur remplacement passe en priorité ; en attendant, moins de 100 km/h.</p>
@@ -715,7 +812,6 @@
                       <li>Huile : consommation nulle en conduite normale. Une mesure après des passages au rupteur n'est pas valable (voiture penchée). Le recyclage des vapeurs d'huile (CCV) est soupçonné.</li>
                       <li>27/10 : pas de nettoyage des pistons pour l'instant. Ordre retenu : jauge à froid sur sol plat, huile dans le manchon, puis compression.</li>
                       <li>Bougies : NGK BKR6EQUP, 31 ± 2 Nm, filets secs (remplacées le 19/11 par des Denso IK20TT).</li>
-                      <li>31/10 : c'est la chaleur des diodes qui use un alternateur chargé. Éviter le plein volume prolongé au ralenti.</li>
                     </ul>
                   </details>
                 </div>
@@ -889,22 +985,6 @@
               </div>
             </li>
 
-            <!-- Filtre, durites, vidange -->
-            <li class="etape chantier" data-revele>
-              <p class="etape__date">Vers le 14/11/2026 · environ 168 000 km</p>
-              <h4>Filtre à essence, durites et vidange</h4>
-              <div class="chantier__corps chantier__corps--photo">
-                <div>
-                  <p>Vers cette date (le jour exact n'a pas été noté) : <strong>filtre à essence Purflux</strong> à régulateur intégré, avec <strong>3 durites neuves</strong> et leurs colliers, et <strong>vidange</strong> à la Motul 8100 X-cess 5W40.</p>
-                  <p>Entretien prévu ensuite : un filtre à essence chaque année.</p>
-                </div>
-                <figure class="chantier__photo">
-                  <img src="img/e39/filtre-essence-purflux-960.jpg" srcset="img/e39/filtre-essence-purflux-480.jpg 480w, img/e39/filtre-essence-purflux-960.jpg 960w, img/e39/filtre-essence-purflux.jpg 1600w" sizes="(max-width: 1039px) 100vw, 360px" data-grande="img/e39/filtre-essence-purflux.jpg" width="1600" height="901" loading="lazy" alt="Sous la caisse : le filtre à essence cylindrique noir, ses durites neuves et leurs colliers, le long des conduites métalliques" />
-                  <figcaption>Photo réelle : le filtre Purflux et ses durites neuves, sous la voiture.</figcaption>
-                </figure>
-              </div>
-            </li>
-
             <!-- 15 au 18/11 : mélanges et préparation -->
             <li class="etape chantier" data-revele>
               <p class="etape__date">15 au 18/11/2026</p>
@@ -970,6 +1050,120 @@
             </li>
           </ol>
         </div>
+      </div>
+    </section>
+    <!-- ══ Les pièces montées : inventaire daté ══ -->
+    <section class="section pieces-montees" id="pieces-montees" data-etape="Les pièces montées" aria-labelledby="pieces-montees-titre">
+      <div class="conteneur">
+        <div class="entete-section">
+          <p class="surtitre" data-revele>Les pièces montées · état au 20/11/2026</p>
+          <h2 class="titre-section" id="pieces-montees-titre" data-mots>Tout ce qui a été <em>changé.</em></h2>
+          <p data-revele>Chaque pièce neuve posée depuis l'achat, dans l'ordre, avec sa référence et sa date. Quand seule la date de commande est connue, elle est indiquée comme telle : ce n'est pas la date de pose. Les photos sont celles des produits (fabricants et boutiques) ; les photos réelles sont dans les chantiers.</p>
+        </div>
+        <ol class="pieces-montees__grille" data-revele>
+          <li class="pieces-montees__carte">
+            <figure><img src="img/pieces-montees/capteur-aac-echappement-320.png" data-grande="img/pieces-montees/capteur-aac-echappement.png" loading="lazy" alt="Capteur d'arbre à cames d'échappement, Hella 6PU 009 121-701" /></figure>
+            <p class="pieces-montees__date">Vers le 23/08/2026</p>
+            <h3>Capteur d'arbre à cames d'échappement</h3>
+            <p class="pieces-montees__ref">Hella 6PU 009 121-701</p>
+          </li>
+          <li class="pieces-montees__carte">
+            <figure><img src="img/pieces-montees/huile-motul-320.png" data-grande="img/pieces-montees/huile-motul.png" loading="lazy" alt="Huile moteur, Motul 8100 X-cess 5W40" /></figure>
+            <p class="pieces-montees__date">Vers le 23/08/2026 · 164 292 km</p>
+            <h3>Huile moteur</h3>
+            <p class="pieces-montees__ref">Motul 8100 X-cess 5W40</p>
+          </li>
+          <li class="pieces-montees__carte">
+            <figure><img src="img/pieces-montees/filtre-huile-320.png" data-grande="img/pieces-montees/filtre-huile.png" loading="lazy" alt="Filtre à huile, Mann-Filter HU 925/4 x" /></figure>
+            <p class="pieces-montees__date">Vers le 23/08/2026 · 164 292 km</p>
+            <h3>Filtre à huile</h3>
+            <p class="pieces-montees__ref">Mann-Filter HU 925/4 x</p>
+          </li>
+          <li class="pieces-montees__carte">
+            <figure><img src="img/pieces-montees/engine-flush-320.png" data-grande="img/pieces-montees/engine-flush.png" loading="lazy" alt="Rinçage moteur, Liqui Moly Engine Flush 300 ml" /></figure>
+            <p class="pieces-montees__date">Vers le 23/08/2026</p>
+            <h3>Rinçage moteur</h3>
+            <p class="pieces-montees__ref">Liqui Moly Engine Flush 300 ml</p>
+          </li>
+          <li class="pieces-montees__carte">
+            <figure><img src="img/pieces-montees/cera-tec-320.png" data-grande="img/pieces-montees/cera-tec.png" loading="lazy" alt="Additif d'huile céramique, Liqui Moly Cera Tec 3721" /></figure>
+            <p class="pieces-montees__date">Vers le 23/08/2026</p>
+            <h3>Additif d'huile céramique</h3>
+            <p class="pieces-montees__ref">Liqui Moly Cera Tec 3721</p>
+          </li>
+          <li class="pieces-montees__carte">
+            <figure><img src="img/pieces-montees/filtreEssence-320.png" data-grande="img/pieces-montees/filtreEssence.png" loading="lazy" alt="Filtre à essence à régulateur, Purflux EP200" /></figure>
+            <p class="pieces-montees__date">Fin août 2026</p>
+            <h3>Filtre à essence à régulateur</h3>
+            <p class="pieces-montees__ref">Purflux EP200</p>
+          </li>
+          <li class="pieces-montees__carte">
+            <figure><img src="img/pieces-montees/pompeEssence-320.png" data-grande="img/pieces-montees/pompeEssence.png" loading="lazy" alt="Pompe à essence 340 L/h, compatible E85, AEM 50-1220" /></figure>
+            <p class="pieces-montees__date">03/10/2026</p>
+            <h3>Pompe à essence 340 L/h, compatible E85</h3>
+            <p class="pieces-montees__ref">AEM 50-1220</p>
+          </li>
+          <li class="pieces-montees__carte">
+            <figure><img src="img/pieces-montees/debitmetre-320.png" data-grande="img/pieces-montees/debitmetre.png" loading="lazy" alt="Débitmètre d'air, Pierburg 7.07759.09.0" /></figure>
+            <p class="pieces-montees__date">13/10/2026</p>
+            <h3>Débitmètre d'air</h3>
+            <p class="pieces-montees__ref">Pierburg 7.07759.09.0</p>
+          </li>
+          <li class="pieces-montees__carte pieces-montees__carte--sans-photo">
+            <div class="pieces-montees__vide" aria-hidden="true">Pas de photo</div>
+            <p class="pieces-montees__date">13/10/2026</p>
+            <h3>Joint de la DISA</h3>
+            <p class="pieces-montees__ref">BMW</p>
+          </li>
+          <li class="pieces-montees__carte pieces-montees__carte--sans-photo">
+            <div class="pieces-montees__vide" aria-hidden="true">Pas de photo</div>
+            <p class="pieces-montees__date">14 · 16/10/2026</p>
+            <h3>Manchon d'admission et raccord en F</h3>
+            <p class="pieces-montees__ref">BMW 13 32 7 503 677 (raccord)</p>
+          </li>
+          <li class="pieces-montees__carte">
+            <figure><img src="img/pieces-montees/radiateur-320.png" data-grande="img/pieces-montees/radiateur.png" loading="lazy" alt="Dessin technique Nissens du radiateur 60648A : 650 × 438 mm" /></figure>
+            <p class="pieces-montees__date">Vers le 18/10/2026 (commandé le 28/09 avec la pompe et le thermostat)</p>
+            <h3>Radiateur</h3>
+            <p class="pieces-montees__ref">Nissens 60648A</p>
+          </li>
+          <li class="pieces-montees__carte">
+            <figure><img src="img/pieces-montees/pompeEau-320.png" data-grande="img/pieces-montees/pompeEau.png" loading="lazy" alt="Pompe à eau, Meyle 313 011 2001" /></figure>
+            <p class="pieces-montees__date">18/10/2026</p>
+            <h3>Pompe à eau</h3>
+            <p class="pieces-montees__ref">Meyle 313 011 2001</p>
+          </li>
+          <li class="pieces-montees__carte">
+            <figure><img src="img/pieces-montees/thermostat-320.png" data-grande="img/pieces-montees/thermostat.png" loading="lazy" alt="Thermostat piloté, Mahle TM 13 97" /></figure>
+            <p class="pieces-montees__date">18/10/2026</p>
+            <h3>Thermostat piloté</h3>
+            <p class="pieces-montees__ref">Mahle TM 13 97</p>
+          </li>
+          <li class="pieces-montees__carte">
+            <figure><img src="img/pieces-montees/courroie-320.png" data-grande="img/pieces-montees/courroie.png" loading="lazy" alt="Courroie d'accessoires, Continental 6PK1548" /></figure>
+            <p class="pieces-montees__date">Commandée le 12/10/2026, reçue le 13/10</p>
+            <h3>Courroie d'accessoires</h3>
+            <p class="pieces-montees__ref">Continental 6PK1548</p>
+          </li>
+          <li class="pieces-montees__carte">
+            <figure><img src="img/pieces-montees/liquide-refroidissement-320.png" data-grande="img/pieces-montees/liquide-refroidissement.png" loading="lazy" alt="Liquide de refroidissement, Mannol MN4013 (AG13)" /></figure>
+            <p class="pieces-montees__date">Commandé le 14/09/2026</p>
+            <h3>Liquide de refroidissement</h3>
+            <p class="pieces-montees__ref">Mannol MN4013 (AG13)</p>
+          </li>
+          <li class="pieces-montees__carte">
+            <figure><img src="img/pieces-montees/filtre-air-320.png" data-grande="img/pieces-montees/filtre-air.png" loading="lazy" alt="Filtre à air, Mann-Filter C 25 114/1" /></figure>
+            <p class="pieces-montees__date">Commandé le 27/09/2026</p>
+            <h3>Filtre à air</h3>
+            <p class="pieces-montees__ref">Mann-Filter C 25 114/1</p>
+          </li>
+          <li class="pieces-montees__carte">
+            <figure><img src="img/pieces-montees/bougies-320.png" data-grande="img/pieces-montees/bougies.png" loading="lazy" alt="Bougies d'allumage (×6), Denso IK20TT" /></figure>
+            <p class="pieces-montees__date">19/11/2026</p>
+            <h3>Bougies d'allumage (×6)</h3>
+            <p class="pieces-montees__ref">Denso IK20TT</p>
+          </li>
+        </ol>
       </div>
     </section>
     <!-- ══ Le résultat ══ -->
@@ -1239,26 +1433,24 @@
     <section class="section ethanol" id="ethanol" data-etape="L'éthanol" aria-labelledby="ethanol-titre">
       <div class="conteneur">
         <div class="entete-section">
+          <p class="partie-badge" data-revele>Partie 3 · La conversion E85 · 09/10 au 20/11/2026</p>
           <p class="surtitre" data-revele>La conversion éthanol</p>
           <h2 class="titre-section" id="ethanol-titre" data-mots>Rouler <em>à l'E85.</em></h2>
-          <p data-revele>Du premier plein mélangé du 09/10 au démarrage à froid du 20/11 : le calculateur Siemens MS43 reprogrammé pour accepter aussi bien le SP98 que l'E85, sans capteur d'éthanol. Tout est journalisé ; ce qui est marqué « estimé » est un calcul, pas une mesure.</p>
+          <p data-revele>Du premier plein mélangé (09/10/2026) au démarrage à froid à l'E85 (20/11/2026) : le calculateur Siemens MS43 reprogrammé pour accepter aussi bien le SP98 que l'E85, sans capteur d'éthanol. Tout est journalisé et daté ; ce qui est marqué « estimé » est un calcul, pas une mesure. État au 20/11/2026.</p>
         </div>
+        <nav class="sous-sommaire" aria-label="Dans cette partie" data-revele>
+          <a href="#e85-principe"><span>3.1</span>Le principe</a>
+          <a href="#e85-valeurs"><span>3.2</span>Toutes les valeurs</a>
+          <a href="#e85-flash"><span>3.3</span>Le flash du 19/11</a>
+          <a href="#e85-carburant"><span>3.4</span>Le carburant</a>
+          <a href="#e85-essais"><span>3.5</span>Les essais</a>
+          <a href="#e85-avance"><span>3.6</span>L'avance et la puissance</a>
+          <a href="#e85-suite"><span>3.7</span>À venir</a>
+        </nav>
 
-
-        <!-- Le plan, mis à jour -->
-        <h3 class="ethanol__titre" data-revele>Le plan, étape par étape</h3>
-        <ol class="plan-ethanol" data-revele>
-          <li class="plan-ethanol__fait"><span>Fait</span>Lecture du calculateur, enregistreur complété, logs de référence au SP98.</li>
-          <li class="plan-ethanol__fait"><span>Fait</span>Petits mélanges sans reprog : 10 L d'E85 le 14/11, puis 5,22 L le 15/11.</li>
-          <li class="plan-ethanol__fait"><span>Fait</span>Remise en état : filtre à essence, durites, bougies neuves, pression mesurée au manomètre.</li>
-          <li class="plan-ethanol__fait"><span>Fait</span>Fichier préparé sur le PC fixe : injection ×1,297, démarrage pour un mélange intermédiaire, avance d'origine.</li>
-          <li class="plan-ethanol__fait"><span>Fait</span>Flash le 19/11 depuis le PC portable, original sauvegardé en deux copies.</li>
-          <li class="plan-ethanol__encours"><span>En cours</span>Mise au point : paliers d'éthanol, apprentissage de la MUL.</li>
-          <li><span>À faire</span>Validation à pleine charge, puis passage au banc avec mesure de richesse.</li>
-        </ol>
 
         <!-- Principe -->
-        <h3 class="ethanol__titre" data-revele>Le principe : un flex sans capteur</h3>
+        <h3 class="ethanol__titre" id="e85-principe" data-revele><span class="ethanol__num">3.1</span>Le principe : un flex sans capteur <span class="ethanol__date">décidé le 15/11, flashé le 19/11/2026</span></h3>
         <div class="chantier__corps" data-revele>
           <div>
             <p>L'éthanol demande environ <strong>30 à 40 % de carburant en plus</strong> que l'essence. Sans capteur d'éthanol, le calculateur ne sait pas ce qu'il y a dans le réservoir : il le découvre par les sondes lambda, et son adaptation long terme par banc, la <strong>MUL</strong> (correction multiplicative), apprend l'écart.</p>
@@ -1273,8 +1465,21 @@
           </ul>
         </div>
 
+        <!-- Le plan, mis à jour -->
+        <h4 class="ethanol__sous-titre" data-revele>Le plan, étape par étape (état au 20/11/2026)</h4>
+        <ol class="plan-ethanol" data-revele>
+          <li class="plan-ethanol__fait"><span>Fait</span>Lecture du calculateur, enregistreur complété, logs de référence au SP98.</li>
+          <li class="plan-ethanol__fait"><span>Fait</span>Petits mélanges sans reprog : 10 L d'E85 le 14/11, puis 5,22 L le 15/11.</li>
+          <li class="plan-ethanol__fait"><span>Fait</span>Remise en état : filtre à essence, durites, bougies neuves, pression mesurée au manomètre.</li>
+          <li class="plan-ethanol__fait"><span>Fait</span>Fichier préparé sur le PC fixe : injection ×1,297, démarrage pour un mélange intermédiaire, avance d'origine.</li>
+          <li class="plan-ethanol__fait"><span>Fait</span>Flash le 19/11 depuis le PC portable, original sauvegardé en deux copies.</li>
+          <li class="plan-ethanol__encours"><span>En cours</span>Mise au point : paliers d'éthanol, apprentissage de la MUL.</li>
+          <li><span>À faire</span>Validation à pleine charge, puis passage au banc avec mesure de richesse.</li>
+        </ol>
+
         <!-- Valeurs modifiées -->
-        <h3 class="ethanol__titre" data-revele>Les valeurs modifiées : origine contre flex v1</h3>
+        <h3 class="ethanol__titre" id="e85-valeurs" data-revele><span class="ethanol__num">3.2</span>Toutes les valeurs : modifiées et d'origine <span class="ethanol__date">fichier flex v1 du 18/11, validé le 19/11/2026</span></h3>
+        <p class="ethanol__intro" data-revele>D'abord le résumé des 81 octets modifiés, puis chaque table en détail, comme dans un logiciel de calibration.</p>
         <div class="tableau-defilement" data-revele data-lenis-prevent>
           <table class="historique-ltft tableau-flex">
             <caption class="visuellement-cache">Valeurs du calculateur modifiées par le fichier flex v1</caption>
@@ -1301,24 +1506,12 @@
             <div class="graphique__zone" data-graphique="eth-c3"></div>
           </figure>
         </div>
-        <p class="ethanol__intro ethanol__intro--cartos" data-revele>Les trois tables modifiées, comme dans un logiciel de calibration : chaque case est colorée du bleu (valeur basse) au rouge (valeur haute). « Écart % » compare la valeur stockée ; pour les deux tables de démarrage, « Écart réel % » ajoute la base ×1,297, appliquée elle aussi au démarrage. Survolez une case pour le détail.</p>
-        <div class="graphiques ethanol__graphiques">
-          <figure class="graphique graphique--large" data-revele>
-            <figcaption><h3>Injection de lancement (C3)</h3><p><code>ip_ti_cst__n__tco</code> · temps d'injection de base au lancement, en ms, selon le régime et la température d'eau.</p></figcaption>
-            <div class="graphique__zone" data-carto="lancement"></div>
-          </figure>
-          <figure class="graphique graphique--large" data-revele>
-            <figcaption><h3>Pré-injection au démarrage (C3)</h3><p><code>ip_tipr_cst__tco</code> · temps de pré-injection de base, en ms, selon la température d'eau.</p></figcaption>
-            <div class="graphique__zone" data-carto="preinjection"></div>
-          </figure>
-          <figure class="graphique graphique--large" data-revele>
-            <figcaption><h3>Prise en compte de la MUL à froid (C2)</h3><p><code>ip_ti_ad_fac_fac__tco__ti_ad_fac</code> · facteur appliqué à l'adaptation apprise pendant la montée en température. Le premier point de l'axe MUL passe de -12 % à -30 %, et sa colonne à 0,996 (la valeur maximale du format, celle de 90 °C d'origine). En vue « Écart % », cette première colonne compare donc la case à -12 % d'origine à la case à -30 % du flex.</p></figcaption>
-            <div class="graphique__zone" data-carto="adaptation"></div>
-          </figure>
-        </div>
+        <h4 class="ethanol__sous-titre" data-revele>Chaque table, case par case</h4>
+        <p class="ethanol__intro" data-revele>Choisissez une table. Les cases vont du bleu (valeur basse) au rouge (valeur haute) ; survolez-en une pour le détail. « Origine » et « Flex v1 » montrent les valeurs stockées ; « Écart » les compare (en points pour les pourcentages) ; pour les deux tables de démarrage, « Écart réel % » ajoute le facteur A (×1,297), appliqué lui aussi au démarrage. Les tables à deux dimensions ont leur surface 3D. Les tables « non modifiées » sont là pour le contexte : elles sont identiques dans l'original et dans le flex v1 (vérifié octet par octet le 20/11/2026). Dans la table C2, la première colonne de la vue « Écart » compare la case à -12 % d'origine à la case à -30 % du flex, l'axe ayant changé.</p>
+        <div class="cartos" data-cartos="facteurs,constantes,axeAdaptation,adaptation,lancement,preinjection,pleineCharge" data-premier="lancement" data-revele></div>
 
         <!-- Le flash, heure par heure -->
-        <h3 class="ethanol__titre" data-revele>Le flash du 19/11, heure par heure</h3>
+        <h3 class="ethanol__titre" id="e85-flash" data-revele><span class="ethanol__num">3.3</span>Le flash, heure par heure <span class="ethanol__date">19/11/2026, et démarrage à froid du 20/11</span></h3>
         <p class="ethanol__intro" data-revele>Heures du PC portable. La veille au soir, le fichier flex v1 avait été construit sur le PC fixe et relu par 3 revues indépendantes ; il n'était pas encore validé.</p>
         <div class="timeline ethanol__chrono" data-timeline>
           <span class="timeline__trait" aria-hidden="true"></span>
@@ -1387,7 +1580,7 @@
         </div>
 
         <!-- Carburant -->
-        <h3 class="ethanol__titre" data-revele>Le carburant, plein par plein</h3>
+        <h3 class="ethanol__titre" id="e85-carburant" data-revele><span class="ethanol__num">3.4</span>Le carburant, plein par plein <span class="ethanol__date">du 09/10 au 19/11/2026</span></h3>
         <div class="tableau-defilement" data-revele data-lenis-prevent>
           <table class="historique-ltft">
             <caption class="visuellement-cache">Quantités de carburant ajoutées et mélange estimé après chaque plein</caption>
@@ -1414,7 +1607,7 @@
         </div>
 
         <!-- Essais -->
-        <h3 class="ethanol__titre" data-revele>Les essais, logs à l'appui</h3>
+        <h3 class="ethanol__titre" id="e85-essais" data-revele><span class="ethanol__num">3.5</span>Les essais, logs à l'appui <span class="ethanol__date">du 08/11 au 20/11/2026</span></h3>
         <div class="timeline ethanol__chrono" data-timeline>
           <span class="timeline__trait" aria-hidden="true"></span>
           <ol>
@@ -1464,12 +1657,33 @@
           </figure>
         </div>
 
+        <!-- 3.6 L'avance et la puissance -->
+        <h3 class="ethanol__titre" id="e85-avance" data-revele><span class="ethanol__num">3.6</span>La suite : l'avance pour gagner en puissance <span class="ethanol__date">prévu, rien n'est modifié au 20/11/2026</span></h3>
+        <div class="chantier__corps" data-revele>
+          <div>
+            <p>Le flex v1 ne touche <strong>pas</strong> à l'allumage : les tables d'avance ci-dessous sont celles d'origine, identiques dans l'original et dans le flex v1 (vérifié le 20/11/2026). Elles seront le cœur du prochain fichier, « éthanol avec puissance ».</p>
+            <p><strong>Pourquoi l'éthanol le permet</strong> : il résiste mieux au cliquetis que le SP98, ce qui laisse en principe de la marge pour avancer l'allumage à forte charge.</p>
+            <p><strong>Ce qui est déjà mesuré</strong> : le 14/11/2026 au SP98, l'avance réelle pied au plancher (<a href="#mesures">voir les mesures du 14/11</a>) ; le 15/11, au mélange, une avance à fond identique et environ 174 ch.</p>
+            <p><strong>Décidé par Yanis (20/11/2026)</strong> : rouler à l'E85 pendant environ un an, avec un fichier « éthanol seul », sans patch et sans mode de démarrage au volant. Le flex v1 reste le fichier de secours.</p>
+            <p><strong>Prévu, rien n'est construit</strong> : après les paliers d'éthanol, l'essai à pleine charge et un démarrage à froid à l'E85, le PC fixe construira le fichier ; Yanis le validera ligne par ligne, puis viendront le flash et des pas successifs, cliquetis enregistré à chaque fois. Avance augmentée seulement à forte charge, surtout entre 2 000 et 4 500 tr/min, là où l'origine est limitée par le cliquetis, et peu en haut des tours. Objectif estimé : +5 à 8 % de puissance et de couple (environ 179 à 184 ch), avec un premier pas prudent de +1,5 à 2°. Préalables : MUL stabilisée entre -8 et -12 %, pleine charge validée (injecteurs sous 85 %, KR 0, 0 raté), injecteurs de M54B30 si nécessaire en été. Puis un passage au banc pour confirmer.</p>
+            <p><strong>Les tables concernées</strong> : <code>ip_iga_ron_98_pl_ivvt__n__maf</code> (la table principale) et <code>ip_iga_ron_91_pl_ivvt__n__maf</code>, montrées ci-dessous ; <code>ip_iga_optm_tco_2__n__maf</code> (avance optimale moteur chaud, référence du modèle de couple), probablement à garder cohérente, pas encore étudiée ; <code>ip_iga_tco_1_pl_ivvt__n__maf</code> (moteur froid), citée seulement. Le ralenti, le mode de secours VANOS et l'anti-à-coups ne sont pas visés : l'amortissement des à-coups reste d'origine, pour le confort.</p>
+          </div>
+          <ul class="chiffres-cles chiffres-cles--colonne">
+            <li><strong>+5 à 8 %</strong><span>de puissance et de couple visés (estimé)</span></li>
+            <li><strong>+1,5 à 2°</strong><span>premier pas d'avance, à forte charge seulement</span></li>
+            <li><strong>0</strong><span>valeur d'avance modifiée à ce jour</span></li>
+          </ul>
+        </div>
+        <h4 class="ethanol__sous-titre" data-revele>Les tables d'avance, telles qu'elles sont aujourd'hui</h4>
+        <p class="ethanol__intro" data-revele>En degrés vilebrequin avant le point mort haut, selon le régime (lignes) et la charge en mg d'air par coup (colonnes). Les valeurs négatives, à très bas régime et forte charge, sont un retard. La table SP98 est la cible normale ; la table RON 91 est le repli, plus prudent, vers lequel le calculateur glisse quand il détecte du cliquetis.</p>
+        <div class="cartos" data-cartos="avance98,avance91" data-premier="avance98" data-revele></div>
+
         <!-- À venir -->
-        <h3 class="ethanol__titre" data-revele>À venir</h3>
+        <h3 class="ethanol__titre" id="e85-suite" data-revele><span class="ethanol__num">3.7</span>À venir <span class="ethanol__date">prévu au 20/11/2026</span></h3>
         <ol class="methode methode--outils" data-cascade>
           <li data-revele>
             <span class="methode__etape">01 · Paliers d'éthanol</span>
-            <p>Un trajet chaud de 20 à 30 minutes pour que la MUL apprenne, puis environ +15 L d'E85 (E50), puis le plein complet (E70-E80).</p>
+            <p>Un trajet chaud de 20 à 30 minutes pour que la MUL apprenne, puis environ +15 L d'E85 (environ E50, estimé), puis le plein complet (E70-E80, estimé).</p>
           </li>
           <li data-revele>
             <span class="methode__etape">02 · Pleine charge</span>
@@ -1489,7 +1703,7 @@
           </li>
           <li data-revele>
             <span class="methode__etape">05 · Entretien</span>
-            <p>Vidange vers novembre 2027 ou dans 7 500 km, filtre à essence chaque année, premier contrôle des bougies vers 5 000 km d'E85, niveau d'huile chaque mois l'hiver.</p>
+            <p>Prochaine vidange un an après celle de fin août 2026 ou 7 500 km plus loin (vers 171 800 km, calcul), au premier atteint ; filtre à essence chaque année, premier contrôle des bougies vers 5 000 km d'E85, niveau d'huile chaque mois l'hiver.</p>
           </li>
         </ol>
 
@@ -1542,6 +1756,7 @@
     <section class="section galerie volet" id="galerie" data-volet data-etape="Galerie" aria-labelledby="galerie-titre">
       <div class="conteneur">
         <div class="entete-section">
+          <p class="partie-badge" data-revele>Partie 4 · Galerie</p>
           <p class="surtitre" data-revele>Galerie</p>
           <h2 class="titre-section" id="galerie-titre" data-mots>Ma <em>voiture.</em></h2>
         </div>
