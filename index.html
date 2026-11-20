@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-src 'none'; worker-src 'self' blob:; script-src 'self' https://cdn.jsdelivr.net 'sha256-SMNcEC8V7pVU6ZnehcFbY/2xVNAvXhjdgHJmLdiN4rA='; connect-src 'self' https://api.emailjs.com" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-src 'none'; worker-src 'self' blob:; script-src 'self' https://cdn.jsdelivr.net 'sha256-SmH1AU+q8wMslBIIh+GpdAlYPebCin25FMs3N1+rY4E='; connect-src 'self' https://api.emailjs.com" />
   <title>Yanis Poulain — Alternant informatique · BTS SIO</title>
   <meta name="description" content="Portfolio de Yanis Poulain, 21 ans, Rennes. Alternant en administration systèmes et réseaux à l'Établissement Français du Sang, étudiant en BTS SIO à MyDigitalSchool : cybersécurité, réseaux, développement et IA générative." />
   <meta name="author" content="Yanis Poulain" />
@@ -47,20 +47,30 @@
   <!-- "js" : JavaScript est actif (les animations d'entrée ne masquent le contenu que dans ce cas).
        "anime" : le visiteur accepte les animations → mises en page épinglées et scrollytelling. -->
   <script>
-    document.documentElement.classList.add('js');
-    if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) document.documentElement.classList.add('anime');
-    // "vue-classique" : choisie avec le bouton de la navigation (mémorisée) ou ?vue=classique,
-    // page à défilement simple, plus légère ; ?vue=3d revient au voyage
-    var classique = /[?&]vue=classique/.test(location.search);
-    try {
-      if (/[?&]vue=3d/.test(location.search)) localStorage.removeItem('vue');
-      else if (classique) localStorage.setItem('vue', 'classique');
-      else classique = localStorage.getItem('vue') === 'classique';
-    } catch (e) { /* stockage indisponible : vue par défaut */ }
-    if (/[?&]vue=/.test(location.search) && history.replaceState) history.replaceState(null, '', location.pathname + location.hash);
-    if (classique) document.documentElement.classList.add('vue-classique');
-    // "voyage" : les sections deviennent des cartes posées dans l'espace 3D (espace-3d.js)
-    else if (document.documentElement.classList.contains('anime') && window.WebGLRenderingContext) document.documentElement.classList.add('voyage');
+    // Classes posées avant l'affichage (aucun saut de mise en page) :
+    // "js" : JavaScript actif ; "anime" : le visiteur accepte les animations.
+    // Mode d'affichage commun à tout le site, mémorisé dans localStorage ("mode-affichage") :
+    // "vue-classique" par défaut (page simple et légère) ; "mode-3d" sur choix du visiteur.
+    // ?vue=3d ou ?vue=classique (posé par l'interrupteur) l'emporte, même sans stockage.
+    (function () {
+      var racine = document.documentElement;
+      racine.classList.add('js');
+      var anime = !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (anime) racine.classList.add('anime');
+      var demande = /[?&]vue=(3d|classique)\b/.exec(location.search);
+      var mode = demande ? demande[1] : 'classique';
+      try {
+        if (demande) localStorage.setItem('mode-affichage', mode);
+        else mode = localStorage.getItem('mode-affichage') === '3d' ? '3d' : 'classique';
+        localStorage.removeItem('vue');
+      } catch (e) { /* stockage indisponible : mode classique (ou celui de l'adresse) */ }
+      if (demande && history.replaceState) history.replaceState(null, '', location.pathname + location.hash);
+      // La 3D demande les animations et WebGL ; sinon la page reste classique
+      var en3d = mode === '3d' && anime && !!window.WebGLRenderingContext;
+      racine.classList.add(en3d ? 'mode-3d' : 'vue-classique');
+      // "voyage" : les sections deviennent des cartes posées dans l'espace 3D (espace-3d.js)
+      if (en3d && racine.hasAttribute('data-voyage')) racine.classList.add('voyage');
+    })();
   </script>
 </head>
 
@@ -108,7 +118,6 @@
         </ul>
       </nav>
       <div class="nav__actions">
-        <button class="nav__vue" type="button" data-bascule-vue hidden><svg class="icone" viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" d="M12 3 3 8l9 5 9-5-9-5ZM3 13l9 5 9-5M3 17.5l9 5 9-5"/></svg><span data-libelle>Vue classique</span></button>
         <a class="bouton bouton--petit nav__cv" href="cv.html"><span class="bouton__texte">Mon CV</span></a>
         <button class="nav__burger" id="burger" type="button" aria-expanded="false" aria-controls="menu-mobile">
           <span></span><span class="visuellement-cache">Ouvrir le menu</span>
@@ -126,7 +135,6 @@
     <a href="#apropos">À propos</a>
     <a href="#contact">Contact</a>
     <a class="bouton" href="cv.html"><span class="bouton__texte">Télécharger mon CV</span></a>
-    <button class="menu-mobile__vue" type="button" data-bascule-vue hidden><span data-libelle>Vue classique</span></button>
   </div>
 
   <main id="contenu">
@@ -189,21 +197,31 @@
                 Deux passions : <strong>l'informatique et l'automobile</strong>. J'apprends en faisant — serveurs, scripts, réseaux, et le diagnostic de ma voiture.
               </p>
 
-              <ul class="hero__tags cascade cascade--5" aria-label="Domaines">
-                <li>Systèmes &amp; réseaux</li>
-                <li>Cybersécurité</li>
-                <li>Dev web</li>
-                <li>Automobile</li>
-              </ul>
-
-              <div class="hero__actions cascade cascade--6">
-                <a class="bouton magnetique" href="cv.html">
-                  <span class="bouton__texte"><svg aria-hidden="true"><use href="#i-telecharger"/></svg>Télécharger mon CV</span>
+              <div class="hero__actions cascade cascade--5">
+                <a class="bouton magnetique" href="#projets">
+                  <span class="bouton__texte">Voir mes projets<svg aria-hidden="true"><use href="#i-fleche"/></svg></span>
                 </a>
-                <a class="bouton bouton--clair magnetique" href="e39.html">
-                  <span class="bouton__texte"><svg aria-hidden="true"><use href="#i-voiture"/></svg>Voir mon projet auto</span>
+                <a class="bouton bouton--clair magnetique" href="cv.html">
+                  <span class="bouton__texte"><svg aria-hidden="true"><use href="#i-telecharger"/></svg>Mon CV</span>
                 </a>
               </div>
+
+              <!-- Preuves : des faits déjà présents sur le site -->
+              <ul class="hero__preuves cascade cascade--6" aria-label="En bref">
+                <li><strong>EFS</strong><span>alternant systèmes et réseaux</span></li>
+                <li><strong>100+</strong><span>joueurs sur mon serveur FiveM</span></li>
+                <li><strong>402</strong><span>tests automatisés sur Jarvis</span></li>
+              </ul>
+
+              <!-- Projets à la une : accès direct depuis le premier écran -->
+              <nav class="hero__projets cascade cascade--6" aria-label="Projets à la une">
+                <p class="hero__projets-titre">Projets à la une</p>
+                <ul>
+                  <li><a href="jarvis.html"><strong>Jarvis</strong><span>Assistant vocal IA, inspiré du J.A.R.V.I.S. d'Iron Man</span></a></li>
+                  <li><a href="#projets" data-aller-projet="projet--homelab"><strong>Homelab</strong><span>Proxmox VE, pfSense, VLAN, supervision</span></a></li>
+                  <li><a href="e39.html"><strong>BMW E39</strong><span>Mécanique, diagnostic et maquette 3D</span></a></li>
+                </ul>
+              </nav>
             </div>
           </div>
 
@@ -331,7 +349,7 @@
             <div class="comparaison" data-revele>
               <div class="conteneur">
                 <p class="comparaison__cliche"><s class="comparaison__rature">Découvre le monde de l'entreprise</s></p>
-                <p class="comparaison__contre"><span class="comparaison__fleche" aria-hidden="true"><svg><use href="#i-fleche"/></svg></span>En poste à l'EFS depuis août 2026 — et 4 expériences avant.</p>
+                <p class="comparaison__contre"><span class="comparaison__fleche" aria-hidden="true"><svg><use href="#i-fleche"/></svg></span>En poste à l'EFS depuis 2026 — et 4 expériences avant.</p>
               </div>
             </div>
             <div class="comparaison" data-revele>
@@ -369,6 +387,24 @@
           <div class="projets__fenetre">
             <div class="grille-projets" id="grille-projets" data-cascade>
 
+              <article class="projet projet--jarvis" data-categories="dev" data-revele>
+                <div class="projet__carte">
+                  <div class="projet__media projet__media--jarvis">
+                    <img src="img/jarvis/jarvis-interface-960.webp" srcset="img/jarvis/jarvis-interface-480.webp 480w, img/jarvis/jarvis-interface-960.webp 960w" sizes="(max-width: 1023px) 90vw, 640px" width="1440" height="900" loading="lazy" alt="Interface de Jarvis : colonnes Dialogue et Activité en direct, réacteur animé au centre, mémoire à droite" />
+                    <div class="projet__voile" aria-hidden="true"><span>Voir le projet <svg class="icone"><use href="#i-fleche"/></svg></span></div>
+                  </div>
+                  <div class="projet__corps">
+                    <p class="projet__vedette">Projet phare</p>
+                    <p class="projet__meta"><span>Assistant vocal IA</span><time>2026</time></p>
+                    <h3>Jarvis</h3>
+                    <p class="projet__resultat">48 modules · 402 tests automatisés</p>
+                    <p>Mon assistant vocal personnel, écrit en Python, dont le nom et l'idée viennent de J.A.R.V.I.S., l'IA de Tony Stark dans Iron Man. Écoute et transcription locales sur GPU, Claude Code comme cerveau et coordinateur, Codex en relais, des IA locales pour le routage et la recherche : il pilote le PC, les fichiers, le web, le code et des agents. Plus de 400 tests automatisés.</p>
+                    <ul class="projet__tags"><li>Python</li><li>Whisper</li><li>Claude Code</li><li>Codex</li><li>edge-tts</li></ul>
+                  </div>
+                  <a class="projet__lien" href="jarvis.html"><span class="visuellement-cache">Voir le projet Jarvis</span></a>
+                </div>
+              </article>
+
               <article class="projet projet--mdd" data-categories="infra" data-revele>
                 <div class="projet__carte">
                   <div class="projet__media projet__media--schema">
@@ -404,6 +440,53 @@
                 </div>
               </article>
 
+              <article class="projet projet--homelab" data-categories="infra" data-revele>
+                <div class="projet__carte">
+                  <div class="projet__media projet__media--schema">
+                    <!-- Schéma de l'architecture du homelab : pfSense en tête, VLAN, hôte Proxmox VE, NAS et supervision -->
+                    <svg class="schema-lab" viewBox="0 0 320 200" role="img" aria-labelledby="schema-lab-titre">
+                      <title id="schema-lab-titre">Architecture du homelab : Internet et le VPN WireGuard arrivent sur le pare-feu pfSense, qui distribue des VLAN segmentés vers l'hyperviseur Proxmox VE (VM Windows Server avec Active Directory, conteneurs LXC Debian, Docker avec Portainer et Nginx Proxy Manager, DNS Pi-hole), le NAS de sauvegarde et la supervision Uptime Kuma et Grafana</title>
+                      <!-- Liens -->
+                      <path class="schema-lab__lien" d="M84 21H124M236 21H196M160 34V50M60 50H272M120 50V62M272 50V62M272 118V130M224 90H236"/>
+                      <path class="schema-lab__flux" d="M84 21H124"/><path class="schema-lab__flux" d="M236 21H196"/>
+                      <path class="schema-lab__flux" d="M160 34V50H120V62"/><path class="schema-lab__flux" d="M160 50H272V62"/>
+                      <path class="schema-lab__flux" d="M224 90H236"/>
+                      <!-- Entrées : Internet, pfSense, WireGuard -->
+                      <rect class="schema-lab__noeud" x="12" y="8" width="72" height="26" rx="5"/>
+                      <rect class="schema-lab__coeur" x="124" y="8" width="72" height="26" rx="5"/>
+                      <rect class="schema-lab__noeud" x="236" y="8" width="72" height="26" rx="5"/>
+                      <text x="48" y="25">Internet</text>
+                      <text class="schema-lab__blanc" x="160" y="25">pfSense</text>
+                      <text x="272" y="25">WireGuard</text>
+                      <text class="schema-lab__petit" x="88" y="46">VLAN segmentés</text>
+                      <!-- Hôte Proxmox VE et ses machines -->
+                      <rect class="schema-lab__hote" x="12" y="62" width="212" height="130" rx="8"/>
+                      <text class="schema-lab__titre" x="118" y="77">Proxmox VE</text>
+                      <rect class="schema-lab__noeud" x="20" y="84" width="96" height="46" rx="4"/>
+                      <rect class="schema-lab__noeud" x="120" y="84" width="96" height="46" rx="4"/>
+                      <rect class="schema-lab__noeud" x="20" y="138" width="96" height="46" rx="4"/>
+                      <rect class="schema-lab__noeud" x="120" y="138" width="96" height="46" rx="4"/>
+                      <text x="68" y="104">Windows Server</text><text class="schema-lab__petit" x="68" y="118">VM · AD de lab</text>
+                      <text x="168" y="104">Debian</text><text class="schema-lab__petit" x="168" y="118">conteneurs LXC</text>
+                      <text x="68" y="158">Docker</text><text class="schema-lab__petit" x="68" y="172">Portainer · NPM</text>
+                      <text x="168" y="158">Pi-hole</text><text class="schema-lab__petit" x="168" y="172">DNS</text>
+                      <!-- NAS et supervision -->
+                      <rect class="schema-lab__noeud" x="236" y="62" width="72" height="56" rx="5"/>
+                      <rect class="schema-lab__noeud" x="236" y="130" width="72" height="62" rx="5"/>
+                      <text x="272" y="86">NAS</text><text class="schema-lab__petit" x="272" y="100">sauvegardes</text>
+                      <text x="272" y="150">Supervision</text><text class="schema-lab__petit" x="272" y="164">Uptime Kuma</text><text class="schema-lab__petit" x="272" y="177">Grafana</text>
+                    </svg>
+                  </div>
+                  <div class="projet__corps">
+                    <p class="projet__meta"><span>Systèmes &amp; réseaux</span><time>En cours</time></p>
+                    <h3>Homelab</h3>
+                    <p>Mon lab pour pratiquer l'administration systèmes et réseaux : hyperviseur Proxmox VE (VM et LXC Debian), pare-feu pfSense avec VLAN segmentés, Active Directory de lab sous Windows Server, Docker avec Portainer et Nginx Proxy Manager, DNS Pi-hole, VPN WireGuard, supervision Uptime Kuma / Grafana, NAS et sauvegardes.</p>
+                    <ul class="projet__tags"><li>Proxmox VE</li><li>pfSense</li><li>Docker</li><li>WireGuard</li></ul>
+                    <p class="projet__encours">En cours d'évolution</p>
+                  </div>
+                </div>
+              </article>
+
               <article class="projet projet--iris" data-categories="jeux dev" data-revele>
                 <div class="projet__carte">
                   <div class="projet__media">
@@ -412,6 +495,7 @@
                   <div class="projet__corps">
                     <p class="projet__meta"><span>Serveur FiveM</span><time>2021-2023</time></p>
                     <h3>Iris RP</h3>
+                    <p class="projet__resultat">100+ joueurs actifs</p>
                     <p>Création et gestion complète d'un serveur GTA V roleplay : scripting Lua, architecture serveur, base MySQL, communauté de 100+ joueurs actifs.</p>
                     <ul class="projet__tags"><li>Lua</li><li>MySQL</li><li>FiveM</li></ul>
                   </div>
@@ -457,7 +541,7 @@
                   <div class="projet__corps">
                     <p class="projet__meta"><span>Cybersécurité</span><time>CTF</time></p>
                     <h3>TryHackMe &amp; HackTheBox</h3>
-                    <p>Salles CTF et machines : réseau, Linux, Nmap, chiffrement, pentest. Classement actif sous le pseudo Goldenyan.exe.</p>
+                    <p>Salles CTF et machines : réseau, Linux, Nmap, chiffrement, pentest. 44 rooms complétées, niveau 8, top 3 % de la plateforme (pseudo Goldenyan.exe).</p>
                     <ul class="projet__tags"><li>Nmap</li><li>Burp Suite</li><li>Linux</li></ul>
                   </div>
                   <a class="projet__lien" href="https://tryhackme.com/p/Goldenyan.exe" target="_blank" rel="noopener"><span class="visuellement-cache">Voir le profil TryHackMe (nouvel onglet)</span></a>
@@ -529,14 +613,13 @@
               </article>
 
             </div>
-            <!-- Sélecteur immersif : carrousel 3D qui tourne à 360° (activé par index.js) -->
+            <!-- Carrousel : piste à défilement fluide, flèches et clavier (activé par index.js) -->
             <div class="carrousel__commandes" id="carrousel-commandes" hidden>
               <button class="carrousel__fleche" type="button" data-sens="-1" aria-label="Projet précédent"><svg class="icone" aria-hidden="true"><use href="#i-fleche"/></svg></button>
-              <p class="carrousel__etat" aria-live="polite"><span class="carrousel__rang"><span data-rang>1</span> / <span data-total>9</span></span><strong data-nom></strong></p>
+              <p class="carrousel__etat" aria-live="polite"><span class="carrousel__rang"><span data-rang>1</span> / <span data-total>11</span></span><strong data-nom></strong></p>
               <button class="carrousel__fleche" type="button" data-sens="1" aria-label="Projet suivant"><svg class="icone" aria-hidden="true"><use href="#i-fleche"/></svg></button>
             </div>
-            <div class="carrousel__molette" id="carrousel-molette" hidden><span class="carrousel__repere" aria-hidden="true"></span></div>
-            <p class="carrousel__aide" hidden>Glissez, utilisez les flèches ou cliquez une carte pour la faire venir devant.</p>
+            <p class="carrousel__aide" hidden>Glissez au doigt ou à la souris, utilisez les flèches ou le clavier.</p>
           </div>
         </div>
       </div>
@@ -635,19 +718,24 @@
               <span class="timeline__trait" aria-hidden="true"></span>
               <ol>
                 <li class="etape etape--actuelle" data-revele>
-                  <p class="etape__date">Depuis août 2026</p>
+                  <p class="etape__date">Depuis 2026</p>
                   <h4>Alternant informatique</h4>
                   <p class="etape__lieu">Établissement Français du Sang</p>
                   <p>Administration systèmes et réseaux : Active Directory, sauvegardes Veeam, déploiement de postes, GLPI, support utilisateurs N1. Chef de projet du volet informatique de l'ouverture de la Maison du Don Rennes Longchamps.</p>
                 </li>
                 <li class="etape etape--actuelle" data-revele>
-                  <p class="etape__date">Depuis août 2026</p>
+                  <p class="etape__date">Depuis 2026</p>
                   <h4>Projet automobile</h4>
                   <p class="etape__lieu">Ma voiture — entretien et diagnostic</p>
                   <p>Mécanique et diagnostic électronique menés moi-même, chaque intervention documentée dans un carnet de bord. <a class="lien-texte" href="e39.html">Voir le projet</a></p>
+                  <!-- Clin d'œil à ma voiture : une E39 façon Alpina (image générée, ce n'est pas ma voiture) -->
+                  <a class="clin-oeil-e39" href="e39.html" aria-label="Voir le projet automobile">
+                    <img src="img/e39/e39-alpina-clin-oeil.webp" width="720" height="332" loading="lazy" decoding="async" alt="" />
+                    <span>BMW E39 façon Alpina, bleu Topas · illustration</span>
+                  </a>
                 </li>
                 <li class="etape" data-revele>
-                  <p class="etape__date">Depuis février 2026</p>
+                  <p class="etape__date">2026</p>
                   <h4>Responsable préparation automobile</h4>
                   <p class="etape__lieu">AAA Locatour / Europcar — Rennes</p>
                   <p>Accueil et check-out clients, contrôle des véhicules (niveaux, carburant, pression), suivi des immobilisations et coordination avec l'atelier.</p>
@@ -686,7 +774,7 @@
                   <p>Ma reconversion après la licence : services informatiques aux organisations, en alternance à l'Établissement Français du Sang.</p>
                 </li>
                 <li class="etape" data-revele>
-                  <p class="etape__date">2024</p>
+                  <p class="etape__date">2024–2026</p>
                   <h4>Licence informatique, 1<sup>re</sup> année</h4>
                   <p class="etape__lieu">Université de Rennes 1 — ISTIC</p>
                   <p>Algorithmique, bases de données, développement web, réseaux, génie logiciel. Après cette première année, je me suis réorienté vers le BTS SIO en alternance.</p>
@@ -815,6 +903,7 @@
                 <p class="version__date">2022 — 2024</p>
                 <h4>La première version</h4>
                 <p>Créée à 17 ans, en anglais, sur un thème clair, avec un objectif affiché : la cybersécurité. En 2024, une seule mise à jour : l'âge.</p>
+                <p><a class="version__lien" href="v1/index.html">Voir la première version, codée entièrement à la main →</a></p>
               </figcaption>
             </figure>
           </li>
@@ -909,7 +998,9 @@
         <ul class="pied__liens">
           <li><a href="cv.html">CV</a></li>
           <li><a href="e39.html">Projet automobile</a></li>
+          <li><a href="jarvis.html">Jarvis</a></li>
           <li><a href="#creation">Ce site</a></li>
+          <li><a href="v1/index.html">Première version (codée à la main)</a></li>
           <li><a href="https://github.com/Goldenyan0" target="_blank" rel="noopener">GitHub</a></li>
           <li><a href="mailto:y.poulain04@gmail.com">E-mail</a></li>
         </ul>

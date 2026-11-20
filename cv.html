@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-src 'none'; worker-src 'self' blob:; script-src 'self' https://cdn.jsdelivr.net 'sha256-WOpcrcaksTCD2jAx7Ih4cyDt6LUVXEbEArmaplZb97M='; connect-src 'self'" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-src 'none'; worker-src 'self' blob:; script-src 'self' https://cdn.jsdelivr.net 'sha256-SmH1AU+q8wMslBIIh+GpdAlYPebCin25FMs3N1+rY4E='; connect-src 'self'" />
   <title>CV — Yanis Poulain · BTS SIO, alternant informatique</title>
   <meta name="description" content="CV de Yanis Poulain : alternant informatique à l'Établissement Français du Sang, BTS SIO à MyDigitalSchool (2026-2028). Administration systèmes et réseaux, cybersécurité, développement — et passionné d'automobile." />
   <meta name="author" content="Yanis Poulain" />
@@ -28,8 +28,30 @@
   <link rel="stylesheet" href="css/style.css" />
 
   <script>
-    document.documentElement.classList.add('js');
-    if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) document.documentElement.classList.add('anime');
+    // Classes posées avant l'affichage (aucun saut de mise en page) :
+    // "js" : JavaScript actif ; "anime" : le visiteur accepte les animations.
+    // Mode d'affichage commun à tout le site, mémorisé dans localStorage ("mode-affichage") :
+    // "vue-classique" par défaut (page simple et légère) ; "mode-3d" sur choix du visiteur.
+    // ?vue=3d ou ?vue=classique (posé par l'interrupteur) l'emporte, même sans stockage.
+    (function () {
+      var racine = document.documentElement;
+      racine.classList.add('js');
+      var anime = !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (anime) racine.classList.add('anime');
+      var demande = /[?&]vue=(3d|classique)\b/.exec(location.search);
+      var mode = demande ? demande[1] : 'classique';
+      try {
+        if (demande) localStorage.setItem('mode-affichage', mode);
+        else mode = localStorage.getItem('mode-affichage') === '3d' ? '3d' : 'classique';
+        localStorage.removeItem('vue');
+      } catch (e) { /* stockage indisponible : mode classique (ou celui de l'adresse) */ }
+      if (demande && history.replaceState) history.replaceState(null, '', location.pathname + location.hash);
+      // La 3D demande les animations et WebGL ; sinon la page reste classique
+      var en3d = mode === '3d' && anime && !!window.WebGLRenderingContext;
+      racine.classList.add(en3d ? 'mode-3d' : 'vue-classique');
+      // "voyage" : les sections deviennent des cartes posées dans l'espace 3D (espace-3d.js)
+      if (en3d && racine.hasAttribute('data-voyage')) racine.classList.add('voyage');
+    })();
   </script>
 </head>
 
@@ -103,7 +125,7 @@
 
         <!-- Gauche, haut : photo et coordonnées -->
         <div class="cv-identite" data-revele>
-          <img class="cv-photo" src="img/cv/photo-yanis.jpg" width="600" height="600" alt="Photo de Yanis Poulain, portrait de face sur fond clair" />
+          <img class="cv-photo" src="img/cv/photo-yanis.jpg" width="600" height="600" alt="Photo de Yanis Poulain, portrait de face en polo blanc sur fond gris" />
           <ul class="cv-contacts">
             <li><svg class="icone" aria-hidden="true"><use href="#i-mail"/></svg><a href="mailto:y.poulain04@gmail.com">y.poulain04@gmail.com</a></li>
             <li><svg class="icone" aria-hidden="true"><use href="#i-tel"/></svg><a href="tel:+33763531310">07 63 53 13 10</a></li>
@@ -119,11 +141,11 @@
         <!-- Droite, haut : nom, titre, profil -->
         <header class="cv-titre" data-etape="Yanis Poulain">
           <h1 class="cv-titre__nom" data-mots>Yanis Poulain</h1>
-          <p class="cv-titre__poste" data-revele>BTS SIO – Alternant informatique</p>
+          <p class="cv-titre__poste" data-revele>Alternant informatique · BTS SIO</p>
           <p class="cv-titre__profil" data-revele>
-            Après une première année de licence informatique à l'université de Rennes 1, j'ai choisi une reconversion
+            Après une première année de licence informatique à l'Université de Rennes&nbsp;1, j'ai choisi une reconversion
             vers le BTS SIO en alternance. Aujourd'hui alternant en administration systèmes et réseaux à l'Établissement
-            Français du Sang. Deux passions : l'informatique et l'automobile. Autodidacte et rigoureux, j'apprends par la pratique.
+            Français du Sang. Deux passions&nbsp;: l'informatique et l'automobile. Autodidacte et rigoureux, j'apprends par la pratique.
           </p>
         </header>
 
@@ -142,10 +164,10 @@
             </div>
             <div class="cv-groupe" data-revele>
               <h3>Langages de programmation</h3>
-              <ul class="cv-groupe__liste"><li>HTML / CSS</li><li>JavaScript / Python</li><li>Lua</li><li>SQL</li><li>PowerShell</li></ul>
+              <ul class="cv-groupe__liste"><li>HTML / CSS</li><li>JavaScript / Python</li><li>Lua</li><li>SQL</li></ul>
             </div>
             <div class="cv-groupe" data-revele>
-              <h3>OS, systèmes réseaux et protocoles</h3>
+              <h3>OS, systèmes, réseaux et protocoles</h3>
               <ul class="cv-groupe__liste"><li>PowerShell &amp; CMD</li><li>Linux (Kali, Debian)</li><li>Machines virtuelles</li><li>TCP/IP, DNS, DHCP</li><li>SSH, FTP, SMTP</li></ul>
             </div>
             <div class="cv-groupe" data-revele>
@@ -153,8 +175,8 @@
               <ul class="cv-groupe__liste"><li>Nmap</li><li>Wireshark</li><li>Metasploit</li><li>Burp Suite</li><li>VirtualBox / VMware</li><li>Cisco Packet Tracer</li></ul>
             </div>
             <div class="cv-groupe" data-revele>
-              <h3>IA générative</h3>
-              <ul class="cv-groupe__liste"><li>Claude, ChatGPT, Muse — en complément</li></ul>
+              <h3>IA générative / automatisation</h3>
+              <ul class="cv-groupe__liste"><li>Claude Code, Codex, agents</li><li>Claude, ChatGPT, Muse — en complément</li></ul>
             </div>
           </section>
 
@@ -170,7 +192,7 @@
             <h2 id="cv-interets" data-revele>Centres d'intérêt</h2>
             <ul class="cv-interets" data-revele>
               <li><strong>Passionné d'automobile et de mécanique</strong></li>
-              <li><strong>Informatique réseaux et sécurité</strong></li>
+              <li><strong>Informatique, réseaux et sécurité</strong></li>
               <li><strong>Programmation web / app</strong></li>
               <li><strong>IA générative</strong></li>
               <li><strong>Sport</strong> natation &amp; musculation</li>
@@ -184,12 +206,20 @@
             <h2 id="cv-projets" data-revele>Projets</h2>
             <ul class="cv-projets">
               <li data-revele>
-                <h3>Infrastructure serveur GTA V RP (FiveM) — Iris RP · 2021-2023</h3>
-                <p>Développement et gestion d'un serveur GTA RP : scripting Lua, configuration serveur, base de données MySQL, communauté de 100+ joueurs.</p>
+                <h3>Jarvis — assistant vocal IA personnel · 2026</h3>
+                <p>Assistant vocal en Python inspiré du J.A.R.V.I.S. d'Iron Man (~13&nbsp;000 lignes, 402 tests)&nbsp;: Whisper local sur GPU, Claude Code comme cerveau, relais Codex, IA locales, interface web locale sécurisée. <a class="lien-texte cv-lien-ecran" href="jarvis.html">Voir le projet</a><span class="cv-lien-papier">goldenyan0.github.io/portfolio/jarvis.html</span></p>
+              </li>
+              <li data-revele>
+                <h3>Infrastructure serveur GTA V RP (FiveM) — Iris RP · 2021–2023</h3>
+                <p>Développement et gestion d'un serveur GTA RP&nbsp;: scripting Lua, configuration serveur, base de données MySQL, communauté de 100+ joueurs.</p>
               </li>
               <li data-revele>
                 <h3>Plateformes de cybersécurité — TryHackMe / HackTheBox</h3>
                 <p>Résolution de machines et challenges CTF. Apprentissage des vulnérabilités web et système, bases en sécurité offensive et défensive.</p>
+              </li>
+              <li data-revele>
+                <h3>Homelab personnel — en cours d'évolution</h3>
+                <p>Proxmox VE (VM, LXC Debian), pfSense avec VLAN segmentés, AD de lab sous Windows Server, Docker / Portainer, Nginx Proxy Manager, DNS Pi-hole, VPN WireGuard, Uptime Kuma / Grafana, NAS et sauvegardes.</p>
               </li>
             </ul>
           </section>
@@ -201,16 +231,16 @@
               <ol>
                 <li class="etape etape--actuelle" data-revele>
                   <h3>Alternant informatique</h3>
-                  <p class="etape__lieu"><span class="etape__date">Depuis août 2026</span> Établissement Français du Sang</p>
+                  <p class="etape__lieu"><span class="etape__date">Depuis 2026</span> Établissement Français du Sang</p>
                   <ul class="cv-puces">
-                    <li>Administration systèmes et réseaux : Active Directory (droits, OU, GPO), sauvegardes serveurs Veeam, Hyper-V, Microsoft 365 (comptes, licences).</li>
-                    <li>Déploiement de postes (MDT), imprimantes réseau, brassage / câblage ; support utilisateurs N1, GLPI, plans de maintenance.</li>
-                    <li><strong>Maison du Don Rennes Longchamps</strong> — chef de projet du volet informatique de l'ouverture du nouveau site : déploiement des postes, imprimantes, réseau et automates ; coordination des prestataires et des équipes ; suivi des commandes, directives, recettes et mise en service.</li>
+                    <li>Administration systèmes et réseaux&nbsp;: Active Directory (droits, OU, GPO), sauvegardes serveurs Veeam, Hyper-V, Microsoft&nbsp;365 (comptes, licences).</li>
+                    <li>Déploiement de postes (MDT), imprimantes réseau, brassage / câblage&#8239;; support utilisateurs N1, GLPI, plans de maintenance.</li>
+                    <li><strong>Maison du Don Rennes Longchamps</strong> — chef de projet informatique de l'ouverture du site&nbsp;: postes, imprimantes, réseau et automates&#8239;; coordination des prestataires et des équipes&#8239;; suivi des commandes, directives, recettes et mise en service.</li>
                   </ul>
                 </li>
                 <li class="etape" data-revele>
                   <h3>Responsable préparation automobile</h3>
-                  <p class="etape__lieu"><span class="etape__date">Depuis février 2026</span> AAA Locatour / Europcar — Rennes</p>
+                  <p class="etape__lieu"><span class="etape__date">2026</span> AAA Locatour / Europcar — Rennes</p>
                   <ul class="cv-puces">
                     <li>Accueil des clients et réalisation des check-out (remise du véhicule, état des lieux).</li>
                     <li>Contrôle et préparation des véhicules (niveaux, carburant, pression).</li>
@@ -225,12 +255,12 @@
                 <li class="etape" data-revele>
                   <h3>Équipier polyvalent restauration rapide</h3>
                   <p class="etape__lieu"><span class="etape__date">2025</span> McDonald's — Pleumeleuc</p>
-                  <ul class="cv-puces"><li>Travail en période de forte affluence ; respect strict des normes d'hygiène et de sécurité.</li></ul>
+                  <ul class="cv-puces"><li>Travail en période de forte affluence&#8239;; respect strict des normes d'hygiène et de sécurité.</li></ul>
                 </li>
                 <li class="etape" data-revele>
                   <h3>Enquêteur vacataire / inventoriste</h3>
                   <p class="etape__lieu"><span class="etape__date">2024</span> RGIS — Bretagne</p>
-                  <ul class="cv-puces"><li>Utilisation de lecteurs codes-barres et logiciels dédiés.</li></ul>
+                  <ul class="cv-puces"><li>Utilisation de lecteurs de codes-barres et logiciels dédiés.</li></ul>
                 </li>
               </ol>
             </div>
@@ -242,14 +272,14 @@
               <span class="timeline__trait" aria-hidden="true"></span>
               <ol>
                 <li class="etape etape--actuelle" data-revele>
-                  <h3>BTS SIO — Services informatiques aux organisations</h3>
-                  <p class="etape__lieu"><span class="etape__date">2026 — 2028</span> MyDigitalSchool, en alternance à l'Établissement Français du Sang</p>
+                  <h3>BTS SIO option SISR — Services informatiques aux organisations</h3>
+                  <p class="etape__lieu"><span class="etape__date">2026–2028</span> MyDigitalSchool — en alternance</p>
                   <p class="etape__texte">Reconversion après la licence, en alternance à l'Établissement Français du Sang.</p>
                 </li>
                 <li class="etape" data-revele>
                   <h3>Licence informatique, 1<sup>re</sup> année</h3>
-                  <p class="etape__lieu"><span class="etape__date">2024</span> Université de Rennes 1 — ISTIC, Rennes</p>
-                  <p class="etape__texte">Algorithmique, bases de données, développement web, réseaux, génie logiciel. Après cette première année, réorientation vers le BTS SIO en alternance.</p>
+                  <p class="etape__lieu"><span class="etape__date">2024–2026</span> Université de Rennes&nbsp;1 — ISTIC, Rennes</p>
+                  <p class="etape__texte">Algorithmique, bases de données, développement web, réseaux, génie logiciel, puis réorientation vers le BTS SIO en alternance.</p>
                 </li>
                 <li class="etape" data-revele>
                   <h3>Baccalauréat général — spécialités Mathématiques et NSI</h3>
@@ -270,6 +300,7 @@
         <ul class="pied__liens">
           <li><a href="index.html">Portfolio</a></li>
           <li><a href="e39.html">Projet automobile</a></li>
+          <li><a href="jarvis.html">Jarvis</a></li>
           <li><a href="https://github.com/Goldenyan0" target="_blank" rel="noopener">GitHub</a></li>
           <li><a href="mailto:y.poulain04@gmail.com">E-mail</a></li>
         </ul>
