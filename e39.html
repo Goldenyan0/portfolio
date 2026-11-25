@@ -162,7 +162,7 @@
     <section class="section en-bref" id="en-bref" data-etape="En bref" aria-labelledby="en-bref-titre">
       <div class="conteneur">
         <div class="entete-section">
-          <p class="surtitre" data-revele>En bref · état au 20/11/2026</p>
+          <p class="surtitre" data-revele>En bref · état au 25/11/2026</p>
           <h2 class="titre-section" id="en-bref-titre" data-mots>Ce qui a été fait, <em>en bref.</em></h2>
           <p data-revele>Trois mois de travail sur une E39 520i : d'abord la remettre en état, puis la convertir à l'E85. La page suit cet ordre, en quatre parties.</p>
         </div>
@@ -170,7 +170,7 @@
           <li><strong>≈ 164 000 km</strong><span>à l'achat, le 16/08/2026</span></li>
           <li><strong>0 %</strong><span>de correction de mélange après la réparation (octobre)</span></li>
           <li><strong>≈ 170 ch</strong><span>mesurés le 14/11 (calcul à partir des logs et du GPS)</span></li>
-          <li><strong>81 octets</strong><span>modifiés dans le calculateur, flashés le 19/11</span></li>
+          <li><strong>4 flashs</strong><span>du calculateur entre le 19 et le 23/11, chacun validé valeur par valeur</span></li>
         </ul>
         <ol class="frise" data-revele>
           <li><p class="frise__date">16/08/2026</p><p>Achat de la voiture, environ 164 000 km. <a href="#chantiers">Les chantiers</a></p></li>
@@ -183,13 +183,17 @@
           <li><p class="frise__date">14/11/2026</p><p>Puissance mesurée (environ 170 ch) et premiers litres d'E85. <a href="#mesures">Les mesures</a></p></li>
           <li><p class="frise__date">19/11/2026</p><p>Bougies, pression d'essence, puis flash du fichier flex v1. <a href="#e85-flash">Le flash</a></p></li>
           <li><p class="frise__date">20/11/2026</p><p>Démarrage à froid à l'E85 : propre. <a href="#e85-flash">Le flash</a></p></li>
-          <li><p class="frise__date">Ensuite</p><p>Paliers d'éthanol, pleine charge, puis l'avance pour gagner en puissance. <a href="#e85-avance">La suite</a></p></li>
+          <li><p class="frise__date">20/11/2026</p><p>Avance à l'allumage augmentée (+2,25° au plus), flashée le soir. <a href="#e85-avance">L'avance</a></p></li>
+          <li><p class="frise__date">23/11/2026</p><p>Démarrage à froid renforcé, consommation affichée corrigée : deux petits flashs. <a href="#e85-suite-flashs">Les flashs suivants</a></p></li>
+          <li><p class="frise__date">25/11/2026</p><p>Premier plein complet d'E85 : 47 L, montée au rupteur sans raté. <a href="#e85-suite-flashs">Le plein</a></p></li>
+          <li><p class="frise__date">Ensuite</p><p>Consommation mesurée à ras, capteur ABS avant gauche, passage au banc. <a href="#e85-suite">À venir</a></p></li>
         </ol>
         <ol class="parties" data-revele>
           <li><a href="#fiche-technique"><span>Partie 1</span>La voiture<small>Fiche technique, tour en 3D, le moteur expliqué, les pièces</small></a></li>
           <li><a href="#fil-rouge"><span>Partie 2</span>La remise en état<small>Août au 14/11/2026 : méthode, chantiers, relevés, mesures, outils</small></a></li>
-          <li><a href="#ethanol"><span>Partie 3</span>La conversion E85<small>09/10 au 20/11/2026 : valeurs, flash, essais, suite</small></a></li>
-          <li><a href="#galerie"><span>Partie 4</span>Galerie<small>La voiture en photos</small></a></li>
+          <li><a href="#ethanol"><span>Partie 3</span>La conversion E85<small>09/10 au 25/11/2026 : valeurs, flashs, essais, suite</small></a></li>
+          <li><a href="#sources"><span>Partie 4</span>Les sources<small>Comment j'ai trouvé mes informations</small></a></li>
+          <li><a href="#galerie"><span>Partie 5</span>Galerie<small>La voiture en photos</small></a></li>
         </ol>
       </div>
     </section>
@@ -1038,13 +1042,78 @@
             </li>
 
             <!-- 19/11 soir : flash -->
-            <li class="etape chantier etape--actuelle" data-revele>
+            <li class="etape chantier" data-revele>
               <p class="etape__date">19 · 20/11/2026</p>
               <h4>Le fichier flex v1 flashé, premier démarrage à froid</h4>
               <div class="chantier__corps">
                 <div>
                   <p>Après la validation de chaque valeur par Yanis, la calibration flex v1 est écrite dans le calculateur le 19/11 au soir, puis <strong>15 L d'E85</strong> sont ajoutés. Le lendemain matin, démarrage à froid à 15 °C : propre.</p>
                   <p><a class="lien-fleche" href="#ethanol">Voir la conversion en détail</a></p>
+                </div>
+              </div>
+            </li>
+
+            <!-- 20/11 soir : avance -->
+            <li class="etape chantier" data-revele>
+              <p class="etape__date">20/11/2026 · soir</p>
+              <h4>L'avance à l'allumage augmentée</h4>
+              <div class="chantier__corps">
+                <div>
+                  <p>Deuxième flash : <strong>+2,25°</strong> d'avance au plus, à forte charge entre 2 500 et 4 000 tr/min, moins aux bords. Batterie à 12,52 V avant l'écriture, lecture de contrôle conforme. Sur la route : avance réelle conforme à moins de 1°, <strong>aucun recul pour cliquetis</strong>. Ressenti de Yanis : « à peine perceptible ».</p>
+                  <p><a class="lien-fleche" href="#e85-avance">L'avance en détail</a></p>
+                </div>
+              </div>
+            </li>
+
+            <!-- 21 au 23/11 : froid, v0d, v0e -->
+            <li class="etape chantier" data-revele>
+              <p class="etape__date">21 au 24/11/2026</p>
+              <h4>Démarrage à froid renforcé, consommation corrigée</h4>
+              <div class="chantier__corps">
+                <div>
+                  <p>Avec plus d'éthanol, le froid devient le point faible : 57 ratés sur le cylindre 5 au démarrage du 21/11 (12,8 °C), puis un calage à froid le 23/11 au matin (8 °C). Le 23/11 au soir, deux petits flashs : l'après-démarrage à froid passe à <strong>×1,20</strong>, et la consommation affichée au tableau de bord est corrigée du facteur d'injection. Le 24/11 à 9,75 °C : démarrage du premier coup, ralenti stable, aucun calage.</p>
+                  <p><a class="lien-fleche" href="#e85-suite-flashs">Les flashs suivants</a></p>
+                </div>
+              </div>
+            </li>
+
+            <!-- 24/11 : électricité, éclairage -->
+            <li class="etape chantier" data-revele>
+              <p class="etape__date">24/11/2026</p>
+              <h4>Une prise orpheline, l'ABS, l'éclairage</h4>
+              <div class="chantier__corps">
+                <div>
+                  <p>Une prise débranchée à l'avant gauche : 5 V sur deux fils, donc l'entrée d'un capteur. La lecture des défauts la relie au <strong>capteur de qualité d'air</strong> de la climatisation (recyclage automatique), en circuit ouvert : le capteur n'est plus là. Aucun effet sur le moteur.</p>
+                  <ul class="chiffres-cles">
+                    <li><strong>1</strong><span>seul défaut présent dans tous les modules : ce capteur</span></li>
+                    <li><strong>2,0 km/h</strong><span>vitesse de la roue avant gauche lue en permanence : plus de signal ABS du tout</span></li>
+                    <li><strong>37</strong><span>tests sur PC avant d'écrire les animations de l'éclairage</span></li>
+                  </ul>
+                  <details class="repli">
+                    <summary>Le détail</summary>
+                    <ul class="repli__liste">
+                      <li>ABS avant gauche : capteurs gauche et droit échangés, le défaut reste à gauche ; faisceau continu. Restent le logement du capteur, la couronne dentée et la prise à la roue.</li>
+                      <li>Module d'éclairage : animations au verrouillage et au déverrouillage, feux de recul sans scintillement, antibrouillards en feux de virage. Chaque ligne validée par Yanis, écrites le 24/11, essai : « ok tout marche nickel ».</li>
+                      <li>Test du bouchon d'huile retiré au ralenti : le régime change et la régulation réagit, le reniflard fonctionne.</li>
+                    </ul>
+                  </details>
+                </div>
+              </div>
+            </li>
+
+            <!-- 25/11 : plein d'E85 -->
+            <li class="etape chantier etape--actuelle" data-revele>
+              <p class="etape__date">25/11/2026</p>
+              <h4>Premier plein complet d'E85</h4>
+              <div class="chantier__corps">
+                <div>
+                  <p><strong>47 L d'E85</strong>, réservoir plein. Une heure de route : aucun raté, aucun recul pour cliquetis, aucun défaut moteur, et une montée au rupteur.</p>
+                  <ul class="chiffres-cles">
+                    <li><strong>≈ E60</strong><span>taux d'éthanol estimé à ±10, d'après les corrections (E85 d'hiver)</span></li>
+                    <li><strong>79 %</strong><span>ouverture des injecteurs à 6 323 tr/min (environ 82 % avec le temps mort, estimé)</span></li>
+                    <li><strong>0</strong><span>raté et recul pour cliquetis sur le trajet</span></li>
+                  </ul>
+                  <p><a class="lien-fleche" href="#e85-suite-flashs">Le plein en détail</a></p>
                 </div>
               </div>
             </li>
@@ -1375,7 +1444,7 @@
 
         <ul class="chiffres-cles chiffres-cles--resume" data-revele>
           <li><strong>1 seul PC</strong><span>branché à la voiture. L'autre analyse et prépare</span></li>
-          <li><strong>1 écriture</strong><span>de calibration dans le calculateur : le flex v1, le 19/11</span></li>
+          <li><strong>4 écritures</strong><span>de calibration dans le calculateur, du 19 au 23/11, chacune contrôlée par une relecture</span></li>
           <li><strong>5 / s</strong><span>mesures par seconde, contre une toutes les 0,8 s au téléphone</span></li>
           <li><strong>≈ 20 €</strong><span>le câble K+DCAN entre la prise OBD et le PC</span></li>
         </ul>
@@ -1386,7 +1455,7 @@
             <ul class="repli__liste">
               <li><strong>Câble K+DCAN</strong> (puce FTDI) entre la prise OBD et le PC portable.</li>
               <li><strong>EDIABAS et INPA</strong> : le moteur de communication de BMW et ses écrans de diagnostic. Ils parlent à chaque module, dont le calculateur moteur (le DME).</li>
-              <li><strong>MS4x Flasher</strong> : copie complète du calculateur, puis, le 19/11, écriture de la calibration seule.</li>
+              <li><strong>MS4x Flasher</strong> : copie complète du calculateur, puis, du 19 au 23/11, écriture de la calibration seule.</li>
               <li><strong>TunerPro</strong> : lecture des cartographies sur une copie, sur le PC fixe.</li>
               <li><strong>Deep OBD</strong> sur Android : les premiers logs, le 08/10, avec le même câble.</li>
             </ul>
@@ -1398,6 +1467,7 @@
               <li><strong>Liste blanche</strong> : seuls les jobs de lecture sont autorisés. Les commandes d'effacement, de test actif ou de programmation sont refusées.</li>
               <li>Ajouts du 14/11 : avance réelle, recul pour cliquetis, sonde de sortie de radiateur et niveau d'essence lu au combiné.</li>
               <li>Défauts relus au début et à la fin. Incidents de communication datés. Arrêt propre sans clavier.</li>
+              <li>Depuis le 25/11 : reconnexion automatique quand la liaison avec le câble se perd.</li>
               <li>Tout est testé en simulation sur le PC fixe avant d'aller à la voiture.</li>
             </ul>
           </details>
@@ -1433,10 +1503,10 @@
     <section class="section ethanol" id="ethanol" data-etape="L'éthanol" aria-labelledby="ethanol-titre">
       <div class="conteneur">
         <div class="entete-section">
-          <p class="partie-badge" data-revele>Partie 3 · La conversion E85 · 09/10 au 20/11/2026</p>
+          <p class="partie-badge" data-revele>Partie 3 · La conversion E85 · 09/10 au 25/11/2026</p>
           <p class="surtitre" data-revele>La conversion éthanol</p>
           <h2 class="titre-section" id="ethanol-titre" data-mots>Rouler <em>à l'E85.</em></h2>
-          <p data-revele>Du premier plein mélangé (09/10/2026) au démarrage à froid à l'E85 (20/11/2026) : le calculateur Siemens MS43 reprogrammé pour accepter aussi bien le SP98 que l'E85, sans capteur d'éthanol. Tout est journalisé et daté ; ce qui est marqué « estimé » est un calcul, pas une mesure. État au 20/11/2026.</p>
+          <p data-revele>Du premier plein mélangé (09/10/2026) au premier plein complet d'E85 (25/11/2026) : le calculateur Siemens MS43 reprogrammé pour accepter aussi bien le SP98 que l'E85, sans capteur d'éthanol. Tout est journalisé et daté ; ce qui est marqué « estimé » est un calcul, pas une mesure. État au 25/11/2026.</p>
         </div>
         <nav class="sous-sommaire" aria-label="Dans cette partie" data-revele>
           <a href="#e85-principe"><span>3.1</span>Le principe</a>
@@ -1445,7 +1515,8 @@
           <a href="#e85-carburant"><span>3.4</span>Le carburant</a>
           <a href="#e85-essais"><span>3.5</span>Les essais</a>
           <a href="#e85-avance"><span>3.6</span>L'avance et la puissance</a>
-          <a href="#e85-suite"><span>3.7</span>À venir</a>
+          <a href="#e85-suite-flashs"><span>3.7</span>Du 21 au 25/11</a>
+          <a href="#e85-suite"><span>3.8</span>À venir</a>
         </nav>
 
 
@@ -1466,15 +1537,17 @@
         </div>
 
         <!-- Le plan, mis à jour -->
-        <h4 class="ethanol__sous-titre" data-revele>Le plan, étape par étape (état au 20/11/2026)</h4>
+        <h4 class="ethanol__sous-titre" data-revele>Le plan, étape par étape (état au 25/11/2026)</h4>
         <ol class="plan-ethanol" data-revele>
           <li class="plan-ethanol__fait"><span>Fait</span>Lecture du calculateur, enregistreur complété, logs de référence au SP98.</li>
           <li class="plan-ethanol__fait"><span>Fait</span>Petits mélanges sans reprog : 10 L d'E85 le 14/11, puis 5,22 L le 15/11.</li>
           <li class="plan-ethanol__fait"><span>Fait</span>Remise en état : filtre à essence, durites, bougies neuves, pression mesurée au manomètre.</li>
           <li class="plan-ethanol__fait"><span>Fait</span>Fichier préparé sur le PC fixe : injection ×1,297, démarrage pour un mélange intermédiaire, avance d'origine.</li>
           <li class="plan-ethanol__fait"><span>Fait</span>Flash le 19/11 depuis le PC portable, original sauvegardé en deux copies.</li>
-          <li class="plan-ethanol__encours"><span>En cours</span>Mise au point : paliers d'éthanol, apprentissage de la MUL.</li>
-          <li><span>À faire</span>Validation à pleine charge, puis passage au banc avec mesure de richesse.</li>
+          <li class="plan-ethanol__fait"><span>Fait</span>Avance augmentée le 20/11, démarrage à froid renforcé et consommation affichée corrigée le 23/11.</li>
+          <li class="plan-ethanol__fait"><span>Fait</span>Paliers d'éthanol jusqu'au plein complet du 25/11, montée au rupteur sans raté ni cliquetis.</li>
+          <li class="plan-ethanol__encours"><span>En cours</span>Consommation réelle mesurée au prochain plein, suivi du ralenti à chaud.</li>
+          <li><span>À faire</span>Passage au banc avec mesure de richesse.</li>
         </ol>
 
         <!-- Valeurs modifiées -->
@@ -1580,7 +1653,7 @@
         </div>
 
         <!-- Carburant -->
-        <h3 class="ethanol__titre" id="e85-carburant" data-revele><span class="ethanol__num">3.4</span>Le carburant, plein par plein <span class="ethanol__date">du 09/10 au 19/11/2026</span></h3>
+        <h3 class="ethanol__titre" id="e85-carburant" data-revele><span class="ethanol__num">3.4</span>Le carburant, plein par plein <span class="ethanol__date">du 09/10 au 25/11/2026</span></h3>
         <div class="tableau-defilement" data-revele data-lenis-prevent>
           <table class="historique-ltft">
             <caption class="visuellement-cache">Quantités de carburant ajoutées et mélange estimé après chaque plein</caption>
@@ -1590,13 +1663,15 @@
               <tr><th scope="row">14/11</th><td>10 L E85</td><td>29-32 L SP98</td><td>E18-E24 (environ E12-E13 d'après la MUL du 15/11)</td></tr>
               <tr><th scope="row">15/11</th><td>5,22 L E85</td><td>environ 22 L</td><td>E22-E32 (d'après la MUL : environ E31-E33 le 18/11)</td></tr>
               <tr><th scope="row">19/11</th><td>10 L SP98</td><td>environ 12 L (±2)</td><td>environ 22 L à E12-E20</td></tr>
-              <tr class="historique-ltft__final"><th scope="row">19/11, 22:12</th><td>15,00 L E85</td><td>17-18 L (±2)</td><td>environ 32 L à E34-E50 (E40 : hypothèse de calcul)</td></tr>
+              <tr><th scope="row">19/11, 22:12</th><td>15,00 L E85</td><td>17-18 L (±2)</td><td>environ 32 L à E34-E50 (E40 : hypothèse de calcul)</td></tr>
+              <tr class="historique-ltft__final"><th scope="row">25/11</th><td>47 L E85, réservoir plein</td><td>-</td><td>environ E60, ±10 (d'après les corrections)</td></tr>
             </tbody>
           </table>
         </div>
         <ul class="ethanol__notes" data-revele>
           <li>La teneur réelle de l'E85 n'est pas affichée à la pompe (60 à 85 % autorisés) ; en hiver, elle est souvent estimée entre 65 et 75 %, d'où les fourchettes.</li>
           <li>La MUL est la vraie mesure : les calculs de plein ne servent qu'à prévoir.</li>
+          <li>Les ajouts entre le 20 et le 24/11 ne sont pas détaillés ici ; le 20/11 au soir, les corrections indiquaient déjà environ E55-E62 (estimé).</li>
           <li>Les litres « avant » viennent de la jauge lue par l'OBD (22 L le 15/11), de la jauge à 1/4 et de la masse d'air cumulée des trajets enregistrés (estimé). En roulant, la jauge ballotte de plusieurs litres.</li>
         </ul>
         <div class="graphiques ethanol__graphiques">
@@ -1658,44 +1733,71 @@
         </div>
 
         <!-- 3.6 L'avance et la puissance -->
-        <h3 class="ethanol__titre" id="e85-avance" data-revele><span class="ethanol__num">3.6</span>La suite : l'avance pour gagner en puissance <span class="ethanol__date">prévu, rien n'est modifié au 20/11/2026</span></h3>
+        <h3 class="ethanol__titre" id="e85-avance" data-revele><span class="ethanol__num">3.6</span>L'avance pour gagner en puissance <span class="ethanol__date">flashée le 20/11/2026 au soir</span></h3>
         <div class="chantier__corps" data-revele>
           <div>
-            <p>Le flex v1 ne touche <strong>pas</strong> à l'allumage : les tables d'avance ci-dessous sont celles d'origine, identiques dans l'original et dans le flex v1 (vérifié le 20/11/2026). Elles seront le cœur du prochain fichier, « éthanol avec puissance ».</p>
-            <p><strong>Pourquoi l'éthanol le permet</strong> : il résiste mieux au cliquetis que le SP98, ce qui laisse en principe de la marge pour avancer l'allumage à forte charge.</p>
-            <p><strong>Ce qui est déjà mesuré</strong> : le 14/11/2026 au SP98, l'avance réelle pied au plancher (<a href="#mesures">voir les mesures du 14/11</a>) ; le 15/11, au mélange, une avance à fond identique et environ 174 ch.</p>
-            <p><strong>Décidé par Yanis (20/11/2026)</strong> : rouler à l'E85 pendant environ un an, avec un fichier « éthanol seul », sans patch et sans mode de démarrage au volant. Le flex v1 reste le fichier de secours.</p>
-            <p><strong>Prévu, rien n'est construit</strong> : après les paliers d'éthanol, l'essai à pleine charge et un démarrage à froid à l'E85, le PC fixe construira le fichier ; Yanis le validera ligne par ligne, puis viendront le flash et des pas successifs, cliquetis enregistré à chaque fois. Avance augmentée seulement à forte charge, surtout entre 2 000 et 4 500 tr/min, là où l'origine est limitée par le cliquetis, et peu en haut des tours. Objectif estimé : +5 à 8 % de puissance et de couple (environ 179 à 184 ch), avec un premier pas prudent de +1,5 à 2°. Préalables : MUL stabilisée entre -8 et -12 %, pleine charge validée (injecteurs sous 85 %, KR 0, 0 raté), injecteurs de M54B30 si nécessaire en été. Puis un passage au banc pour confirmer.</p>
-            <p><strong>Les tables concernées</strong> : <code>ip_iga_ron_98_pl_ivvt__n__maf</code> (la table principale) et <code>ip_iga_ron_91_pl_ivvt__n__maf</code>, montrées ci-dessous ; <code>ip_iga_optm_tco_2__n__maf</code> (avance optimale moteur chaud, référence du modèle de couple), probablement à garder cohérente, pas encore étudiée ; <code>ip_iga_tco_1_pl_ivvt__n__maf</code> (moteur froid), citée seulement. Le ralenti, le mode de secours VANOS et l'anti-à-coups ne sont pas visés : l'amortissement des à-coups reste d'origine, pour le confort.</p>
+            <p>Le flex v1 ne touchait <strong>pas</strong> à l'allumage. Le 20/11 au soir, un second fichier ajoute de l'avance là où l'origine est limitée par le cliquetis : <strong>+2,25°</strong> de 2 500 à 4 000 tr/min à forte charge, +1,5° à 4 250, +0,75° à 4 500, et moins aux bords. 56 valeurs changent, sur la table principale et sur l'avance optimale qui sert de référence au modèle de couple.</p>
+            <p><strong>Pourquoi l'éthanol le permet</strong> : il résiste mieux au cliquetis que le SP98, ce qui laisse en principe de la marge à forte charge.</p>
+            <p><strong>Une version écartée</strong> : un premier fichier à +2,25° jusqu'à 4 250 tr/min dépassait, à ce régime, le repère de surveillance du couple du calculateur, alors que l'origine ne le dépassait pas. La version flashée réduit les deux lignes du haut pour rester en dessous partout.</p>
+            <p><strong>Sur la route</strong> : avance réelle conforme à la table à moins de 1° (22,5 à 22,9° à 3 000 tr/min, 24,4° à 4 000), recul pour cliquetis lu 143 fois et toujours à 0, rupteur à 6 410 et 6 443 tr/min, injecteurs à 81-82 %. Puissance estimée au GPS (±10 ch) : 165 à 180 ch entre 5 000 et 5 800 tr/min, comme avant ; dans la zone modifiée, pas de mesure de comparaison. Ressenti de Yanis : « à peine perceptible ».</p>
+            <p><strong>Consigne</strong> : rester sous 5 500 à 6 000 tr/min à pleine charge tant que les injecteurs sont ceux d'origine. Le passage au banc dira le gain réel.</p>
           </div>
           <ul class="chiffres-cles chiffres-cles--colonne">
-            <li><strong>+5 à 8 %</strong><span>de puissance et de couple visés (estimé)</span></li>
-            <li><strong>+1,5 à 2°</strong><span>premier pas d'avance, à forte charge seulement</span></li>
-            <li><strong>0</strong><span>valeur d'avance modifiée à ce jour</span></li>
+            <li><strong>+2,25°</strong><span>d'avance au plus, à forte charge</span></li>
+            <li><strong>56</strong><span>valeurs d'avance modifiées</span></li>
+            <li><strong>0</strong><span>recul pour cliquetis sur 143 lectures</span></li>
           </ul>
         </div>
-        <h4 class="ethanol__sous-titre" data-revele>Les tables d'avance, telles qu'elles sont aujourd'hui</h4>
+        <h4 class="ethanol__sous-titre" data-revele>Les tables d'avance d'origine (avant le 20/11)</h4>
         <p class="ethanol__intro" data-revele>En degrés vilebrequin avant le point mort haut, selon le régime (lignes) et la charge en mg d'air par coup (colonnes). Les valeurs négatives, à très bas régime et forte charge, sont un retard. La table SP98 est la cible normale ; la table RON 91 est le repli, plus prudent, vers lequel le calculateur glisse quand il détecte du cliquetis.</p>
         <div class="cartos" data-cartos="avance98,avance91" data-premier="avance98" data-revele></div>
 
+        <!-- Du 21 au 25/11 -->
+        <h3 class="ethanol__titre" id="e85-suite-flashs" data-revele><span class="ethanol__num">3.7</span>Le froid, la consommation, le plein <span class="ethanol__date">du 21 au 25/11/2026</span></h3>
+        <div class="timeline ethanol__chrono" data-timeline>
+          <span class="timeline__trait" aria-hidden="true"></span>
+          <ol>
+            <li class="etape" data-revele>
+              <p class="etape__date">21 · 23/11</p>
+              <h4>Le froid, point faible</h4>
+              <p>Le 21/11 à 12,8 °C : 57 ratés sur le cylindre 5 seul. Le 23/11 à 08:43, eau à 8,25 °C et batterie à 11,8 V : calage peu après le démarrage. Lecture des tables : le lancement et la pré-injection sont bien au-dessus de l'origine, mais l'après-démarrage ne reçoit aucun supplément pour l'éthanol à froid.</p>
+            </li>
+            <li class="etape" data-revele>
+              <p class="etape__date">23/11, vers 20:45</p>
+              <h4>Troisième flash : l'après-démarrage</h4>
+              <p>Une seule table modifiée : l'après-démarrage à froid <strong>×1,20</strong>, 12 valeurs. Lecture complète avant, écriture de la calibration seule, lecture de contrôle conforme. Le 24/11 à 13:27, eau à 9,75 °C : démarrage du premier coup, ralenti stable entre 1 000 et 1 070 tr/min, aucun calage, aucun recul pour cliquetis.</p>
+            </li>
+            <li class="etape" data-revele>
+              <p class="etape__date">23/11, vers 21:15</p>
+              <h4>Quatrième flash : la consommation affichée</h4>
+              <p>Le tableau de bord affichait environ 7,3 L/100 pour environ 9,5 estimés : il ne voyait pas le facteur d'injection ×1,297. La table de correction de la consommation est multipliée par ce même facteur, 6 valeurs, sans aucun effet sur le moteur. La consommation réelle reste à mesurer sur un plein à ras.</p>
+            </li>
+            <li class="etape" data-revele>
+              <p class="etape__date">25/11</p>
+              <h4>47 L d'E85 et une montée au rupteur</h4>
+              <p>Réservoir plein, kilométrage et moyenne remis à zéro. Sur une heure de route : 0 raté, 0 recul pour cliquetis, 0 défaut moteur. À 6 323 tr/min, injecteurs ouverts 15,04 ms (79 %) ; coupure à 6 421. Les corrections apprennent le nouveau mélange (MUL de -9,5 / -12 % à -5,7 / -9,2 %), soit <strong>environ E60, à ±10 près</strong> (estimé). Eau entre 76 et 98 °C, en dents de scie sur autoroute par 8 °C dehors : à suivre.</p>
+            </li>
+          </ol>
+        </div>
+        <ul class="ethanol__notes" data-revele>
+          <li>Consommation : 10,0 L/100 affichés après 178 km. La jauge, trop imprécise, ne permet pas encore de dire si l'affichage est juste : le prochain plein mesuré à ras tranchera.</li>
+          <li>Ralenti à chaud : juste après un redémarrage moteur chaud, le mélange est un peu riche la première minute, et la correction additive (ADD) a dérivé vers -0,33 ms. À surveiller.</li>
+        </ul>
+
         <!-- À venir -->
-        <h3 class="ethanol__titre" id="e85-suite" data-revele><span class="ethanol__num">3.7</span>À venir <span class="ethanol__date">prévu au 20/11/2026</span></h3>
+        <h3 class="ethanol__titre" id="e85-suite" data-revele><span class="ethanol__num">3.8</span>À venir <span class="ethanol__date">prévu au 25/11/2026</span></h3>
         <ol class="methode methode--outils" data-cascade>
           <li data-revele>
-            <span class="methode__etape">01 · Paliers d'éthanol</span>
-            <p>Un trajet chaud de 20 à 30 minutes pour que la MUL apprenne, puis environ +15 L d'E85 (environ E50, estimé), puis le plein complet (E70-E80, estimé).</p>
+            <span class="methode__etape">01 · Consommation réelle</span>
+            <p>Un plein à ras mesuré : litres pompés et kilomètres, comparés à la moyenne affichée. Il confirmera, ou corrigera, le facteur appliqué à l'affichage le 23/11.</p>
           </li>
           <li data-revele>
-            <span class="methode__etape">02 · Pleine charge</span>
-            <p>Une seule montée en 3<sup>e</sup> jusqu'à environ 5 500 tr/min, seulement quand la MUL est stable entre -8 et -12 %. Contrôles : injecteurs sous 85 %, KR 0, 0 raté. Pourquoi attendre : à fond, sans les sondes, l'injection vaut 1,297 × (1 + MUL). Avec une MUL figée vers -17 %, cela donne ×1,077, alors qu'un E40 demande ×1,149 : environ 6 % plus pauvre que la cible d'origine (calcul).</p>
+            <span class="methode__etape">02 · Capteur ABS avant gauche</span>
+            <p>Logement du capteur, couronne dentée, prise à la roue, puis un éventuel court-circuit à la masse : le capteur lui-même et le faisceau sont déjà mis hors de cause.</p>
           </li>
           <li data-revele>
-            <span class="methode__etape">02 bis · Validation au SP98</span>
-            <p>Un plein de SP98, un démarrage à froid enregistré et une MUL attendue vers -23 % (butée à -30 %) : c'est la condition pour que le fichier reste utilisable partout.</p>
-          </li>
-          <li data-revele>
-            <span class="methode__etape">03 · Fichier éthanol avec puissance</span>
-            <p>Pour rouler à l'E85 pendant environ un an : avance augmentée à forte charge, objectif estimé de +5 à 8 % de puissance et de couple. Premier pas prudent de +1,5 à 2° possible, injecteurs de M54B30 si nécessaire, banc plus tard pour confirmer.</p>
+            <span class="methode__etape">03 · Banc de puissance</span>
+            <p>Mesurer la puissance réelle et la richesse à pleine charge, à l'E85, avec l'avance du 20/11. Injecteurs de M54B30 si la marge manque en été.</p>
           </li>
           <li data-revele>
             <span class="methode__etape">04 · Décisions</span>
@@ -1741,12 +1843,57 @@
           <details class="repli repli--section">
             <summary>Les points encore ouverts</summary>
             <ul class="repli__liste">
-              <li>Capteur ABS avant gauche : faisceau, prise ou capteur à contrôler.</li>
-              <li>Ratés à froid du cylindre 4 : bougies neuves le 19/11, encore 2 ratés au démarrage à froid du 20/11.</li>
+              <li>Capteur ABS avant gauche : plus de signal du tout depuis le 24/11 au soir. Capteur et faisceau mis hors de cause ; logement, couronne dentée et prise à la roue à contrôler.</li>
+              <li>Froid : aucun calage depuis le flash du 23/11, à confirmer sous 5 °C.</li>
+              <li>Consommation réelle à mesurer sur un plein à ras.</li>
+              <li>Température d'eau en dents de scie sur autoroute par temps froid : purge et niveau à froid à refaire.</li>
               <li>Pneus arrière à remplacer.</li>
               <li>Test de l'alarme d'origine avant tout achat d'antivol.</li>
-              <li>Défauts du combiné (246, 247, 248) et de l'ASC (59), apparus pendant le flash : non effacés, non relus le 20/11.</li>
-              <li>Ratés isolés depuis le 14/11, sur des cylindres différents ; seul le cylindre 4 revient à froid.</li>
+              <li>Capteur de qualité d'air de la climatisation absent : seul le recyclage automatique est perdu.</li>
+            </ul>
+          </details>
+        </div>
+      </div>
+    </section>
+    <!-- ══ Les sources ══ -->
+    <section class="section sources-e39" id="sources" data-etape="Les sources" aria-labelledby="sources-titre">
+      <div class="conteneur">
+        <div class="entete-section">
+          <p class="partie-badge" data-revele>Partie 4 · Les sources</p>
+          <p class="surtitre" data-revele>Comment j'ai trouvé mes informations</p>
+          <h2 class="titre-section" id="sources-titre" data-mots>Partir de presque rien, <em>vérifier tout.</em></h2>
+          <p data-revele>Il y a quelques mois, je n'y connaissais pas grand-chose à la reprogrammation. J'allais payer une reprog chez un professionnel : le devis du 28/10 annonçait 650 € la reprog normale et 750 € la reprog éthanol. J'ai finalement tout fait moi-même, pour un coût très faible.</p>
+          <p data-revele>Ce travail m'a pris du temps : je voulais être sûr à 100 % de tout ce que je faisais. Chaque chiffre est revérifié à la source, chaque valeur écrite dans un calculateur est validée par moi, une par une, avant le flash, et une copie de l'original est toujours gardée pour revenir en arrière.</p>
+        </div>
+
+        <div class="replis">
+          <details class="repli repli--section">
+            <summary>Les forums et les tutoriels</summary>
+            <ul class="repli__liste">
+              <li><strong>6enligne.net</strong> : le fil « Faire soi-même sa reprog E85 sur MS43 », lu en entier, avec les retours de ceux qui l'ont fait.</li>
+              <li><strong>Le wiki ms4x.net</strong> : la page du Siemens MS43, les fichiers d'origine et la définition des cartographies du logiciel 430037.</li>
+              <li><strong>Le tutoriel d'Adrien-24</strong> et le dépôt GitHub de <strong>Sheeanatek</strong> sur la conversion E85 du M54.</li>
+              <li><strong>bimmerfest, xoutpost, Pelican Parts, z4-forum</strong> : pression d'essence, filtre, capteur de qualité d'air.</li>
+              <li><strong>Des vidéos de préparateurs</strong> sur la conversion éthanol, regardées avec recul : la plupart sont des collaborations commerciales.</li>
+            </ul>
+          </details>
+          <details class="repli repli--section">
+            <summary>Les documents de référence</summary>
+            <ul class="repli__liste">
+              <li><strong>La documentation d'atelier BMW (TIS)</strong> pour les valeurs constructeur, comme les 3,5 bar d'essence.</li>
+              <li><strong>RealOEM</strong> et les catalogues de pièces (ECS Tuning, Turner Motorsport, BimmerWorld) pour les références.</li>
+              <li><strong>Les fiches techniques des fabricants</strong>, par exemple Denso pour le couple de serrage des bougies.</li>
+              <li><strong>Légifrance</strong> pour les teneurs en éthanol autorisées de l'E85, été comme hiver.</li>
+            </ul>
+          </details>
+          <details class="repli repli--section">
+            <summary>Les logiciels et les outils</summary>
+            <ul class="repli__liste">
+              <li><strong>Câble K+DCAN</strong>, <strong>EDIABAS et INPA</strong> pour lire chaque module, <strong>NCS Expert</strong> pour le codage.</li>
+              <li><strong>MS4x Flasher</strong> pour copier et écrire le calculateur, <strong>TunerPro</strong> et sa définition XDF pour lire les cartographies, <strong>Ghidra</strong> pour lire le programme.</li>
+              <li><strong>Deep OBD</strong> sur téléphone pour les premiers relevés, une valise V519, un multimètre, un manomètre d'essence et le GPS du téléphone.</li>
+              <li><strong>Mes propres scripts</strong> en PowerShell et en Python : enregistreur de trajet, analyses, construction et contrôle des fichiers.</li>
+              <li><strong>Un assistant IA</strong>, sur deux PC : recherche, calculs, relecture et documentation. Il propose ; je décide et je valide chaque écriture.</li>
             </ul>
           </details>
         </div>
@@ -1756,7 +1903,7 @@
     <section class="section galerie volet" id="galerie" data-volet data-etape="Galerie" aria-labelledby="galerie-titre">
       <div class="conteneur">
         <div class="entete-section">
-          <p class="partie-badge" data-revele>Partie 4 · Galerie</p>
+          <p class="partie-badge" data-revele>Partie 5 · Galerie</p>
           <p class="surtitre" data-revele>Galerie</p>
           <h2 class="titre-section" id="galerie-titre" data-mots>Ma <em>voiture.</em></h2>
         </div>
