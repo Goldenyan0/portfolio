@@ -4715,3 +4715,40 @@ button.visite__compteur:hover, button.visite__compteur:focus-visible { border-co
 .entete-section .avertissement p:not(.surtitre) { color: #78350f; }
 .avertissement .avertissement__titre { margin-bottom: 4px; font-family: var(--police-mono); font-size: 0.72rem; letter-spacing: 0.08em; text-transform: uppercase; color: #92400e; }
 .pied__avertissement { margin: 0 0 18px; max-width: 90ch; font-size: 0.8rem; line-height: 1.5; color: var(--encre-3); }
+
+/* Barre de la visite en vue normale : au premier plan, collée sous la navigation pendant la section */
+.visite__hud.visite__hud--devant { position: sticky; top: calc(var(--hauteur-nav) + 12px); left: auto; z-index: 3; width: auto; max-width: none; height: 0; margin: 0 auto; overflow: visible; transform: none; pointer-events: none; transition: opacity 0.3s; }
+.visite__hud--devant .visite__sommaire, .visite__hud--devant .visite__suite { pointer-events: auto; }
+html:not(.visite-active) .visite__hud--devant { opacity: 0; visibility: hidden; }
+@media (prefers-reduced-motion: reduce) { .visite__hud.visite__hud--devant { transition: none; } }
+
+/* La scène 3D de la visite reste dans sa section : la section suivante passe devant, sur fond opaque */
+.visite-3d .reel { position: relative; z-index: 1; background: var(--fond); }
+.visite-3d:not(.voyage):not(.visite-active) .visite__scene { visibility: hidden; }
+
+/* ==== Relecture complète du 25/11/2026 ==== */
+/* 1. Encyclopédie à 360 px : le pavé de flèches ne recouvre plus le bouton « Intérieur » */
+@media (max-width: 719px) { .encyclo__pivot { bottom: 160px; } }
+/* 2. Menu mobile : il défile quand les liens sont nombreux */
+.menu-mobile { overflow-y: auto; overscroll-behavior: contain; justify-content: safe center; }
+.page-e39 .menu-mobile a { font-size: clamp(1.5rem, 7.5vw, 2.2rem); }
+/* 3. Burger : le texte masqué « Ouvrir le menu » ne dessine plus de trait */
+.nav__burger span.visuellement-cache { position: absolute !important; width: 1px !important; height: 1px !important; background: none !important; transform: none !important; }
+/* 4. Tableaux larges : la page continue de défiler verticalement au-dessus d'eux */
+.lenis .tableau-defilement { overscroll-behavior: auto; overscroll-behavior-x: contain; }
+/* 5. Page voiture : la navigation reste lisible sur la photo du hero */
+.page-e39 .nav:not(.nav--floue) .nav__logo, .page-e39 .nav:not(.nav--floue) .nav__liens a { color: #fff; }
+.page-e39 .nav:not(.nav--floue) { background: linear-gradient(180deg, rgba(10, 12, 24, 0.55), transparent); }
+/* 6. Pastilles « Partie X » lisibles */
+.entete-section p.partie-badge { color: #fff; font-size: 0.72rem; margin-top: 0; max-width: none; }
+/* 8 et 13. Titres sur petit écran : la partie en couleur peut passer à la ligne */
+@media (max-width: 400px) { .titre-section em { white-space: normal; } }
+/* 9. 3D indisponible : messages lisibles, commandes inutiles masquées */
+.moteur3d__repli { grid-template-columns: minmax(0, 1fr); }
+.moteur3d__cause { overflow-wrap: anywhere; }
+.moteur3d:not(.est-pret) .moteur3d__pivot { display: none; }
+.encyclo.est-echec .encyclo__vues, .encyclo.est-echec .encyclo__pivot, .encyclo.est-echec .encyclo__plein-ecran, .encyclo.est-echec .encyclo__aide { display: none; }
+.encyclo.est-echec::after { content: "La vue 3D ne peut pas s'afficher ici (navigateur ou réseau). Les fiches des pièces restent accessibles plus bas."; position: absolute; left: 16px; right: 16px; bottom: 16px; padding: 12px 14px; border-radius: 12px; background: rgba(255, 255, 255, 0.92); color: var(--encre); font-size: 0.9rem; }
+.comparaison-photo.est-echec .comparaison-photo__curseur, .comparaison-photo.est-echec .comparaison-photo__poignee, .comparaison-photo.est-echec .comparaison-photo__etiquette--maquette, .comparaison-photo.est-echec .comparaison-photo__maquette, .comparaison-photo.est-echec figcaption button { display: none; }
+/* 12. Accueil : le bouton des cartes de projet réagit au survol de la carte */
+.projet__carte:hover .projet__bouton { background: var(--violet); }

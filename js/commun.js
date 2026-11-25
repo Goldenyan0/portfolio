@@ -516,6 +516,9 @@
         menu mobile (libellé complet). On revient à la même section.
      ------------------------------------------------------------------ */
   function gererBasculeVue() {
+    // Option retirée le 25/11/2026 : le site reste en vue classique, aucun bouton « Changer de mode »
+    return;
+    // eslint-disable-next-line no-unreachable
     const racine = document.documentElement;
     const en3d = racine.classList.contains('mode-3d');
     // Sans animations (préférence du système) ou sans WebGL, la 3D est impossible : rien à proposer

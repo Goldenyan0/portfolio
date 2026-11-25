@@ -458,6 +458,7 @@
     });
     photos.forEach(function (img) {
       img.classList.add('agrandissable');
+      if (img.closest('.e39-hero__fond')) return; // la photo de fond du hero n'est pas un bouton
       img.tabIndex = 0;
       img.setAttribute('role', 'button');
       img.setAttribute('aria-label', 'Agrandir : ' + img.alt);
@@ -868,7 +869,6 @@
 
     const boite = document.createElement('div');
     boite.className = 'tableau-defilement carto__defilement';
-    boite.setAttribute('data-lenis-prevent', '');
     const table = document.createElement('table');
     table.className = 'carto' + (t.colonnes.valeurs.length > 10 ? ' carto--dense' : '');
     boite.appendChild(table);

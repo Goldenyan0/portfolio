@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-src 'none'; worker-src 'self' blob:; script-src 'self' https://cdn.jsdelivr.net 'sha256-SmH1AU+q8wMslBIIh+GpdAlYPebCin25FMs3N1+rY4E='; connect-src 'self' https://api.emailjs.com" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-src 'none'; worker-src 'self' blob:; script-src 'self' https://cdn.jsdelivr.net 'sha256-dGbu2WGGbNJPQ1tMY1kLd7mu6IBUIlRCslXXkcN7gzA='; connect-src 'self' https://api.emailjs.com" />
   <title>Yanis Poulain — Alternant informatique · BTS SIO</title>
   <meta name="description" content="Portfolio de Yanis Poulain, 21 ans, Rennes. Alternant en administration systèmes et réseaux à l'Établissement Français du Sang, étudiant en BTS SIO à MyDigitalSchool : cybersécurité, réseaux, développement et IA générative." />
   <meta name="author" content="Yanis Poulain" />
@@ -49,27 +49,15 @@
   <script>
     // Classes posées avant l'affichage (aucun saut de mise en page) :
     // "js" : JavaScript actif ; "anime" : le visiteur accepte les animations.
-    // Mode d'affichage commun à tout le site, mémorisé dans localStorage ("mode-affichage") :
-    // "vue-classique" par défaut (page simple et légère) ; "mode-3d" sur choix du visiteur.
-    // ?vue=3d ou ?vue=classique (posé par l'interrupteur) l'emporte, même sans stockage.
+    // Le site s'affiche toujours en vue classique : le mode 3D du site a été retiré (25/11/2026).
+    // On efface l'ancien choix mémorisé et le paramètre ?vue= des anciens liens.
     (function () {
       var racine = document.documentElement;
       racine.classList.add('js');
-      var anime = !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-      if (anime) racine.classList.add('anime');
-      var demande = /[?&]vue=(3d|classique)\b/.exec(location.search);
-      var mode = demande ? demande[1] : 'classique';
-      try {
-        if (demande) localStorage.setItem('mode-affichage', mode);
-        else mode = localStorage.getItem('mode-affichage') === '3d' ? '3d' : 'classique';
-        localStorage.removeItem('vue');
-      } catch (e) { /* stockage indisponible : mode classique (ou celui de l'adresse) */ }
-      if (demande && history.replaceState) history.replaceState(null, '', location.pathname + location.hash);
-      // La 3D demande les animations et WebGL ; sinon la page reste classique
-      var en3d = mode === '3d' && anime && !!window.WebGLRenderingContext;
-      racine.classList.add(en3d ? 'mode-3d' : 'vue-classique');
-      // "voyage" : les sections deviennent des cartes posées dans l'espace 3D (espace-3d.js)
-      if (en3d && racine.hasAttribute('data-voyage')) racine.classList.add('voyage');
+      if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) racine.classList.add('anime');
+      racine.classList.add('vue-classique');
+      try { localStorage.removeItem('mode-affichage'); localStorage.removeItem('vue'); } catch (e) { /* stockage indisponible */ }
+      if (/[?&]vue=/.test(location.search) && history.replaceState) history.replaceState(null, '', location.pathname + location.hash);
     })();
   </script>
 </head>
@@ -127,7 +115,7 @@
   </header>
 
   <!-- Menu mobile plein écran -->
-  <div class="menu-mobile" id="menu-mobile">
+  <div class="menu-mobile" id="menu-mobile" data-lenis-prevent>
     <a href="#domaines">Domaines</a>
     <a href="#projets">Projets</a>
     <a href="#stack">Stack</a>
@@ -145,7 +133,7 @@
     <div class="hero-scene" id="hero-scene" data-etape="Accueil">
       <section class="hero" id="accueil" aria-labelledby="hero-titre">
 
-        <!-- Couche 1 : réseau 3D (Three.js) ; le SVG sert de repli si WebGL est indisponible -->
+        <!-- Couche 1 : réseau en SVG (le mode 3D du site a été retiré) -->
         <div class="hero__fond" id="hero-fond" aria-hidden="true">
           <svg class="hero__repli" viewBox="0 0 1200 800" preserveAspectRatio="xMidYMid slice">
             <line x1="140" y1="180" x2="320" y2="120"/><line x1="320" y1="120" x2="470" y2="230"/>
@@ -923,7 +911,7 @@
               <figcaption>
                 <p class="version__date">Octobre 2026 · vous êtes ici</p>
                 <h4>La version actuelle</h4>
-                <p>Refonte complète, conçue avec l'IA : thème clair, réseau 3D, animations au scroll, CV imprimable et page dédiée à mon projet automobile.</p>
+                <p>Refonte complète, conçue avec l'IA : thème clair, animations au scroll, CV imprimable et page dédiée à mon projet automobile.</p>
               </figcaption>
             </figure>
           </li>
@@ -1018,6 +1006,5 @@
   <script src="js/vendor/lenis.min.js" defer></script>
   <script src="js/commun.js" defer></script>
   <script src="js/index.js" defer></script>
-  <script type="module" src="js/espace-3d.js"></script>
 </body>
 </html>

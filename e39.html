@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-src 'none'; worker-src 'self' blob:; script-src 'self' https://cdn.jsdelivr.net 'wasm-unsafe-eval' 'sha256-SmH1AU+q8wMslBIIh+GpdAlYPebCin25FMs3N1+rY4E=' 'sha256-KdwMH+AzGDNDosnmI+yteLvITvJmpIAsmYJ9JNR+oPw='; connect-src 'self' blob: data:" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-src 'none'; worker-src 'self' blob:; script-src 'self' https://cdn.jsdelivr.net 'wasm-unsafe-eval' 'sha256-dGbu2WGGbNJPQ1tMY1kLd7mu6IBUIlRCslXXkcN7gzA=' 'sha256-KdwMH+AzGDNDosnmI+yteLvITvJmpIAsmYJ9JNR+oPw='; connect-src 'self' blob: data:" />
   <title>Projet automobile — BMW E39 520i (M54B22) · Yanis Poulain</title>
   <meta name="description" content="Ma BMW E39 520i de 2002 : remise en état, diagnostic au PC, codage NCS Expert, et un projet d'étude du calculateur moteur pour l'E85, cartographies en 3D." />
   <meta name="author" content="Yanis Poulain" />
@@ -30,27 +30,15 @@
   <script>
     // Classes posées avant l'affichage (aucun saut de mise en page) :
     // "js" : JavaScript actif ; "anime" : le visiteur accepte les animations.
-    // Mode d'affichage commun à tout le site, mémorisé dans localStorage ("mode-affichage") :
-    // "vue-classique" par défaut (page simple et légère) ; "mode-3d" sur choix du visiteur.
-    // ?vue=3d ou ?vue=classique (posé par l'interrupteur) l'emporte, même sans stockage.
+    // Le site s'affiche toujours en vue classique : le mode 3D du site a été retiré (25/11/2026).
+    // On efface l'ancien choix mémorisé et le paramètre ?vue= des anciens liens.
     (function () {
       var racine = document.documentElement;
       racine.classList.add('js');
-      var anime = !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-      if (anime) racine.classList.add('anime');
-      var demande = /[?&]vue=(3d|classique)\b/.exec(location.search);
-      var mode = demande ? demande[1] : 'classique';
-      try {
-        if (demande) localStorage.setItem('mode-affichage', mode);
-        else mode = localStorage.getItem('mode-affichage') === '3d' ? '3d' : 'classique';
-        localStorage.removeItem('vue');
-      } catch (e) { /* stockage indisponible : mode classique (ou celui de l'adresse) */ }
-      if (demande && history.replaceState) history.replaceState(null, '', location.pathname + location.hash);
-      // La 3D demande les animations et WebGL ; sinon la page reste classique
-      var en3d = mode === '3d' && anime && !!window.WebGLRenderingContext;
-      racine.classList.add(en3d ? 'mode-3d' : 'vue-classique');
-      // "voyage" : les sections deviennent des cartes posées dans l'espace 3D (espace-3d.js)
-      if (en3d && racine.hasAttribute('data-voyage')) racine.classList.add('voyage');
+      if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) racine.classList.add('anime');
+      racine.classList.add('vue-classique');
+      try { localStorage.removeItem('mode-affichage'); localStorage.removeItem('vue'); } catch (e) { /* stockage indisponible */ }
+      if (/[?&]vue=/.test(location.search) && history.replaceState) history.replaceState(null, '', location.pathname + location.hash);
     })();
   </script>
 
@@ -118,7 +106,7 @@
     </div>
   </header>
 
-  <div class="menu-mobile" id="menu-mobile">
+  <div class="menu-mobile" id="menu-mobile" data-lenis-prevent>
     <a href="#histoire">L'histoire</a>
     <a href="#fiche-technique">La voiture</a>
     <a href="#fil-rouge">Remise en état</a>
@@ -388,7 +376,7 @@
         <div class="entete-section" data-carte>
           <p class="surtitre" data-revele>Documentation</p>
           <h2 class="titre-section" id="doc-titre" data-mots>Le M54 <em>expliqué.</em></h2>
-          <p data-revele>La voiture en <span data-nombre-categories>14</span> grands groupes, de la mécanique à la carrosserie : <span data-nombre-fiches>84</span> fiches en tout. Dépliez le détail d'un groupe pour ouvrir la fiche d'une pièce : sa place dans la voiture, la pièce seule en 3D et, quand elle existe, sa photo réelle.</p>
+          <p data-revele>La voiture en <span data-nombre-categories>14</span> grands groupes, de la mécanique à la carrosserie : <span data-nombre-fiches>86</span> fiches en tout. Dépliez le détail d'un groupe pour ouvrir la fiche d'une pièce : sa place dans la voiture, la pièce seule en 3D et, quand elle existe, sa photo réelle.</p>
           <p class="note-maquette" data-revele>La maquette reste une simplification : de nombreux petits éléments — durites, colliers, faisceaux électriques, capteurs, visserie — ne sont pas représentés.</p>
           <a class="visite__passer" href="#reel">Passer la visite guidée : aller à la maquette <svg class="icone" aria-hidden="true"><use href="#i-fleche"/></svg></a>
         </div>
@@ -1156,11 +1144,11 @@
             <h3>Filtre à essence à régulateur</h3>
             <p class="pieces-montees__ref">Purflux EP200</p>
           </li>
-          <li class="pieces-montees__carte pieces-montees__carte--sans-photo">
-            <div class="pieces-montees__vide" aria-hidden="true">Pas de photo</div>
+          <li class="pieces-montees__carte">
+            <figure><img src="img/pieces-montees/durites-essence-320.jpg" data-grande="img/pieces-montees/durites-essence.jpg" loading="lazy" alt="Une durite d'essence noire et ses colliers, photo d'illustration" /></figure>
             <p class="pieces-montees__date">Fin août 2026, avec le filtre</p>
             <h3>Durites d'essence (×3) et colliers</h3>
-            <p class="pieces-montees__ref">Référence non notée</p>
+            <p class="pieces-montees__ref">Référence non notée · photo d'illustration</p>
           </li>
           <li class="pieces-montees__carte">
             <figure><img src="img/pieces-montees/pompeEssence-320.png" data-grande="img/pieces-montees/pompeEssence.png" loading="lazy" alt="Pompe à essence 340 L/h, compatible E85, AEM 50-1220" /></figure>
@@ -1174,11 +1162,11 @@
             <h3>Débitmètre d'air</h3>
             <p class="pieces-montees__ref">Pierburg 7.07759.09.0</p>
           </li>
-          <li class="pieces-montees__carte pieces-montees__carte--sans-photo">
-            <div class="pieces-montees__vide" aria-hidden="true">Pas de photo</div>
+          <li class="pieces-montees__carte">
+            <figure><img src="img/pieces-montees/joint-disa-320.jpg" data-grande="img/pieces-montees/joint-disa.jpg" loading="lazy" alt="Le joint torique orange de la valve DISA, photo d'illustration" /></figure>
             <p class="pieces-montees__date">13/10/2026</p>
             <h3>Joint de la DISA</h3>
-            <p class="pieces-montees__ref">Référence non notée</p>
+            <p class="pieces-montees__ref">Référence non notée · photo d'illustration</p>
           </li>
           <li class="pieces-montees__carte">
             <figure><img src="img/pieces-montees/radiateur-320.png" data-grande="img/pieces-montees/radiateur.png" loading="lazy" alt="Dessin technique Nissens du radiateur 60648A : 650 × 438 mm" /></figure>
@@ -1192,8 +1180,8 @@
             <h3>Pompe à eau</h3>
             <p class="pieces-montees__ref">Meyle 313 011 2001</p>
           </li>
-          <li class="pieces-montees__carte pieces-montees__carte--sans-photo">
-            <div class="pieces-montees__vide" aria-hidden="true">Pas de photo</div>
+          <li class="pieces-montees__carte">
+            <figure><img src="img/pieces-montees/poulie-pompe-eau-320.jpg" data-grande="img/pieces-montees/poulie-pompe-eau.jpg" loading="lazy" alt="Poulie de pompe à eau febi 30125" /></figure>
             <p class="pieces-montees__date">Commandée le 28/09/2026</p>
             <h3>Poulie de pompe à eau</h3>
             <p class="pieces-montees__ref">febi 30125</p>
@@ -1210,8 +1198,8 @@
             <h3>Courroie d'accessoires</h3>
             <p class="pieces-montees__ref">Continental 6PK1548</p>
           </li>
-          <li class="pieces-montees__carte pieces-montees__carte--sans-photo">
-            <div class="pieces-montees__vide" aria-hidden="true">Pas de photo</div>
+          <li class="pieces-montees__carte">
+            <figure><img src="img/pieces-montees/courroie-gates-320.jpg" data-grande="img/pieces-montees/courroie-gates.jpg" loading="lazy" alt="Courroie Gates 4PK668 et son étiquette" /></figure>
             <p class="pieces-montees__date">Commandée le 11/10/2026</p>
             <h3>Courroie (4 nervures)</h3>
             <p class="pieces-montees__ref">Gates 4PK668</p>
@@ -1222,8 +1210,8 @@
             <h3>Liquide de refroidissement</h3>
             <p class="pieces-montees__ref">Mannol MN4013, 10 L</p>
           </li>
-          <li class="pieces-montees__carte pieces-montees__carte--sans-photo">
-            <div class="pieces-montees__vide" aria-hidden="true">Pas de photo</div>
+          <li class="pieces-montees__carte">
+            <figure><img src="img/pieces-montees/bouchon-vase-320.jpg" data-grande="img/pieces-montees/bouchon-vase.jpg" loading="lazy" alt="Bouchon de vase d'expansion febi 12205" /></figure>
             <p class="pieces-montees__date">Commandé le 14/09/2026, posé avant le 02/10</p>
             <h3>Bouchon de vase d'expansion, 1,4 bar</h3>
             <p class="pieces-montees__ref">febi 12205</p>
@@ -1240,8 +1228,8 @@
             <h3>Bougies d'allumage (×6)</h3>
             <p class="pieces-montees__ref">Denso IK20TT</p>
           </li>
-          <li class="pieces-montees__carte pieces-montees__carte--sans-photo">
-            <div class="pieces-montees__vide" aria-hidden="true">Pas de photo</div>
+          <li class="pieces-montees__carte">
+            <figure><img src="img/pieces-montees/cable-capot-320.jpg" data-grande="img/pieces-montees/cable-capot.jpg" loading="lazy" alt="Câble d'ouverture du capot BMW 51 23 8 176 595" /></figure>
             <p class="pieces-montees__date">Commandé le 19/11/2026</p>
             <h3>Câble d'ouverture du capot</h3>
             <p class="pieces-montees__ref">BMW 51 23 8 176 595</p>
@@ -1580,7 +1568,7 @@
         <!-- Valeurs modifiées -->
         <h3 class="ethanol__titre" id="e85-valeurs" data-revele><span class="ethanol__num">4.2</span>Toutes les valeurs : modifiées et d'origine <span class="ethanol__date">fichier flex v1 du 18/11, validé le 19/11/2026</span></h3>
         <p class="ethanol__intro" data-revele>D'abord le résumé des 81 octets modifiés, puis chaque table en détail, comme dans un logiciel de calibration.</p>
-        <div class="tableau-defilement" data-revele data-lenis-prevent>
+        <div class="tableau-defilement" data-revele>
           <table class="historique-ltft tableau-flex">
             <caption class="visuellement-cache">Valeurs du calculateur modifiées par le fichier flex v1</caption>
             <thead><tr><th scope="col">Repère</th><th scope="col">Élément (définition 430037)</th><th scope="col">Origine</th><th scope="col">Flex v1</th><th scope="col">Pourquoi</th></tr></thead>
@@ -1838,7 +1826,6 @@
   <script src="js/donnees-cartos.js" defer></script>
   <script src="js/pieces-e39.js" defer></script>
   <script src="js/e39.js" defer></script>
-  <script type="module" src="js/espace-3d.js"></script>
   <script type="module" src="js/moteur-3d.js"></script>
 </body>
 </html>

@@ -67,6 +67,8 @@ function diagnosticWebgl() {
 
 // Affiche la cause réelle dans le cadre de repli (et dans la console pour le débogage)
 function afficherEchec(cause) {
+  // 3D indisponible : l'encyclopédie et le comparatif photo / maquette passent en mode dégradé (CSS)
+  document.querySelectorAll('.encyclo, .comparaison-photo').forEach((el) => el.classList.add('est-echec'));
   if (!cadre) return;
   cadre.classList.remove('est-pret');
   const repli = document.getElementById('moteur-repli');
@@ -3138,6 +3140,14 @@ async function demarrer() {
   };
   if (avecVisite) {
     racineHtml.classList.add('visite-3d');
+    // Vue normale : la barre de la visite (pièce, groupe, « Aller à la suite ») est sortie du fond 3D,
+    // sinon le texte de la section passe par-dessus et ses boutons ne reçoivent pas les clics
+    const cadreVisite = document.getElementById('visite');
+    const hud = cadreVisite && cadreVisite.querySelector('.visite__hud');
+    if (hud && !racineHtml.classList.contains('voyage')) {
+      cadreVisite.after(hud);
+      hud.classList.add('visite__hud--devant');
+    }
     observateur.observe(zoneVisite);
     // La page s'allonge : le défilement fluide doit recalculer sa longueur
     requestAnimationFrame(() => { if (window.Site && window.Site.lenis) window.Site.lenis.resize(); });
@@ -3510,7 +3520,9 @@ async function demarrer() {
     if (avecVisite && enVoyage()) racineHtml.classList.toggle('visite-active', mode === 'visite');
     else if (avecVisite) {
       const z = sectionVisite.getBoundingClientRect();
-      racineHtml.classList.toggle('visite-active', z.top <= 0 && z.bottom >= window.innerHeight);
+      // La barre de la visite n'apparaît qu'une fois l'en-tête de la section passé (sinon elle couvre le titre)
+      const entete = sectionVisite.querySelector('.entete-section');
+      racineHtml.classList.toggle('visite-active', z.top <= 0 && z.bottom >= window.innerHeight && (!entete || entete.getBoundingClientRect().bottom < 140));
     }
     majVisite();
     demanderRendu();
