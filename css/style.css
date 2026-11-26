@@ -4752,3 +4752,16 @@ html:not(.visite-active) .visite__hud--devant { opacity: 0; visibility: hidden; 
 .comparaison-photo.est-echec .comparaison-photo__curseur, .comparaison-photo.est-echec .comparaison-photo__poignee, .comparaison-photo.est-echec .comparaison-photo__etiquette--maquette, .comparaison-photo.est-echec .comparaison-photo__maquette, .comparaison-photo.est-echec figcaption button { display: none; }
 /* 12. Accueil : le bouton des cartes de projet réagit au survol de la carte */
 .projet__carte:hover .projet__bouton { background: var(--violet); }
+
+/* ==== Simulation virtuelle BeamNG.drive (26/11/2026) ==== */
+.simulation__capture { margin: 0 0 20px; }
+.simulation__capture img { display: block; width: 100%; height: auto; border-radius: 14px; border: 1px solid var(--ligne); cursor: zoom-in; }
+.simulation__capture figcaption { margin-top: 8px; font-size: 0.85rem; color: var(--encre-2); }
+/* Partie simulation, version détaillée : formule, points, crédit, chaîne de 7 étapes */
+.simulation__credit { display: block; margin-top: 4px; font-size: 0.75rem; color: var(--encre-3); }
+.simulation__formule { margin: 12px 0 16px; padding: 12px 16px; border-radius: 12px; background: var(--violet-pale); border: 1px solid var(--violet-clair); font-family: var(--police-titre); font-size: clamp(0.9rem, 3.6vw, 1.1rem); text-align: center; overflow-wrap: anywhere; }
+.simulation__points { margin: 0 0 20px; padding-left: 1.1em; display: grid; gap: 8px; }
+.simulation__points li { font-size: 0.95rem; color: var(--encre-2); }
+.chaine--simulation { margin-bottom: 24px; }
+.chaine--simulation code, .simulation__points code { overflow-wrap: anywhere; }
+@media (min-width: 900px) { .chaine--simulation .chaine__bloc:nth-child(4n+1)::before { display: none; } }

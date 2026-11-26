@@ -1501,7 +1501,8 @@
           <a href="#e85-avance"><span>4.3</span>L'avance</a>
           <a href="#e85-v0d"><span>4.4</span>Le froid et l'affichage</a>
           <a href="#e85-verif"><span>4.5</span>Les vérifications</a>
-          <a href="#e85-suite"><span>4.6</span>La suite</a>
+          <a href="#e85-simulation"><span>4.6</span>La simulation</a>
+          <a href="#e85-suite"><span>4.7</span>La suite</a>
         </nav>
 
         <!-- Les 4 fichiers, en un coup d'œil -->
@@ -1648,8 +1649,131 @@
           </li>
         </ol>
 
+        <!-- Les essais en simulation virtuelle (BeamNG.drive) -->
+        <h3 class="ethanol__titre" id="e85-simulation" data-revele><span class="ethanol__num">4.6</span>Les essais en simulation virtuelle <span class="ethanol__date">BeamNG.drive, 25 et 26/11/2026</span></h3>
+        <div class="en-simple" data-revele>
+          <p class="en-simple__titre">En simple</p>
+          <p>BeamNG.drive est un jeu qui calcule la physique d'une voiture : pneus, suspensions, poids, moteur. J'y ai mis une E39 520i avec le moteur mesuré sur la mienne, puis un programme fait les essais tout seul et chronomètre. Cela montre comment la voiture réagit, sans risque et sans route. Mais c'est une simulation virtuelle : ses chiffres ne sont pas des mesures de la vraie voiture.</p>
+        </div>
+        <figure class="simulation__capture" data-revele>
+          <img src="img/e39/beamng-0-100-960.webp" srcset="img/e39/beamng-0-100-480.webp 480w, img/e39/beamng-0-100-960.webp 960w, img/e39/beamng-0-100-1600.webp 1600w" sizes="(max-width: 1039px) 100vw, 900px" data-grande="img/e39/beamng-0-100-1600.webp" width="1600" height="900" loading="lazy" alt="Capture de BeamNG.drive : une E39 520i bleue vue de l'arrière, en pleine accélération sur une immense dalle de béton, plaque du jeu à mon pseudo" />
+          <figcaption><strong>Simulation virtuelle</strong> · l'essai 1 du 0 à 100 km/h, sur la carte d'essai du jeu.<small class="simulation__credit">Modèle 3D : mod BMW 5-Series [E39] de Kenemation pour BeamNG.drive (pièces de pabl0154, ARH3K et autres contributeurs). Ce n'est pas mon travail.</small></figcaption>
+        </figure>
+
+        <h4 class="ethanol__sous-titre" data-revele>La chaîne, de la mesure à la courbe</h4>
+        <figure class="chaine chaine--simulation" data-revele>
+          <ol class="chaine__etapes">
+            <li class="chaine__bloc">
+              <p class="chaine__nom">1. La mesure du 14/11</p>
+              <p>Sur la vraie voiture, au SP98, logiciel d'origine : environ 168 ch, 208 à 220 Nm entre 2 625 et 6 375 tr/min (<code>calc_puissance_14-11.py</code>).</p>
+            </li>
+            <li class="chaine__bloc">
+              <p class="chaine__nom">2. Le générateur</p>
+              <p><code>generer_moteur_e39.py</code> calcule la table de couple que le jeu doit recevoir pour retomber sur cette mesure.</p>
+            </li>
+            <li class="chaine__bloc">
+              <p class="chaine__nom">3. La pièce moteur</p>
+              <p>Un bloc M54B22 ajouté au mod, qui remplace celui d'origine dans la voiture du jeu.</p>
+            </li>
+            <li class="chaine__bloc">
+              <p class="chaine__nom">4. La configuration</p>
+              <p>Une 520i restylée à boîte manuelle avec ce bloc, plus ses variantes : moteur estimé, avec ou sans ABS, pont ouvert ou autobloquant.</p>
+            </li>
+            <li class="chaine__bloc chaine__bloc--portable">
+              <p class="chaine__nom">5. L'essai piloté</p>
+              <p><code>essais.py</code> parle au serveur de pilotage intégré au jeu, en local : il fait apparaître la voiture, la place et lance l'essai.</p>
+            </li>
+            <li class="chaine__bloc chaine__bloc--portable">
+              <p class="chaine__nom">6. Le chronomètre</p>
+              <p>Un petit module dans la voiture du jeu (<code>lcmE39Essai</code>) mesure et enregistre à chaque image.</p>
+            </li>
+            <li class="chaine__bloc">
+              <p class="chaine__nom">7. Les fichiers et les courbes</p>
+              <p>Un fichier CSV par essai : temps, vitesse, régime, rapport, couple, distance, vitesse des roues arrière. Puis les courbes de cette page.</p>
+            </li>
+          </ol>
+          <figcaption>Tout tourne sur le PC fixe. Les scripts sont dans un dépôt privé.</figcaption>
+        </figure>
+
+        <h4 class="ethanol__sous-titre" data-revele>La formule du jeu</h4>
+        <p class="ethanol__intro" data-revele>Le jeu ne lit pas directement une courbe de couple : il la fabrique à partir de plusieurs tables, puis retire les frottements du moteur.</p>
+        <p class="simulation__formule" data-revele>couple = table × multiplicateur + admission + échappement − frottements</p>
+        <ul class="simulation__points" data-revele>
+          <li><strong>Frottements</strong> : 16,2 Nm fixes, plus une part qui croît avec le régime (0,033 Nm par radian par seconde, soit environ 10 Nm à 3 000 tr/min et 17 Nm à 5 000).</li>
+          <li><strong>Admission et échappement</strong> : ceux d'origine du mod. Ils retirent quelques newtons-mètres, de plus en plus avec le régime.</li>
+          <li><strong>Le calcul à l'envers</strong> : pour chaque régime, la table vaut la mesure, plus les frottements, plus ce que retirent l'admission et l'échappement. Exemple à 4 000 tr/min : 213 Nm mesurés + 16,2 + 13,8 de frottements + 1,3 d'admission + 4,9 d'échappement = 249 Nm dans la table. Le multiplicateur d'origine du bloc est neutralisé (1 partout).</li>
+          <li><strong>Sous 2 500 tr/min</strong>, il n'y a pas de mesure : la forme vient du moteur du mod, mise à l'échelle pour rejoindre la mesure.</li>
+        </ul>
+        <p class="ethanol__intro" data-revele><strong>Les variantes estimées</strong> ne changent que le multiplicateur, régime par régime :</p>
+        <ul class="simulation__points" data-revele>
+          <li><strong>v0c</strong> : ×1,03 de 2 500 à 4 000 tr/min, puis 1,02 et 1,01, plus rien au-delà de 4 750 tr/min. Hypothèse : environ +1,3 % de couple par degré d'avance ajouté par la v0c.</li>
+          <li><strong>v0f</strong> : ×1,05 de 2 500 à 4 000 tr/min, puis 1,04 à 1,02. Environ 172 ch.</li>
+          <li><strong>Version complète, injecteurs de M54B30</strong> : ×1,08 de 2 500 à 4 500 tr/min, puis 1,06 et 1,05. Environ 176 à 177 ch.</li>
+          <li>Ces chiffres restent sous ceux des préparateurs : environ +5 % de puissance et +10 % de couple annoncés par un préparateur MS43 (stages 1 à 3), +13 ch et +15 Nm au banc pour une 330ci à l'E85. Ce sont des estimations, jamais mesurées : le jeu ne simule ni la combustion, ni l'avance, ni l'E85.</li>
+        </ul>
+
+        <h4 class="ethanol__sous-titre" data-revele>Les essais, pas à pas</h4>
+        <ol class="methode methode--outils" data-cascade>
+          <li data-revele>
+            <span class="methode__etape">01 · Immobiliser</span>
+            <p>Boîte automatique du jeu, voiture tenue au frein à main pendant 2,5 s. Piège : dans ce mode, appuyer sur le frein à l'arrêt engage la marche arrière. D'où le frein à main.</p>
+          </li>
+          <li data-revele>
+            <span class="methode__etape">02 · Pleins gaz</span>
+            <p>Frein à main relâché, accélérateur à fond : le chronomètre part à cet instant. La boîte du jeu passe les rapports seule.</p>
+          </li>
+          <li data-revele>
+            <span class="methode__etape">03 · Mesurer</span>
+            <p>Vitesse de la voiture par rapport au sol, et non celle des roues : au freinage, une roue bloquée lirait 0 alors que la voiture glisse encore. Le module note le 0 à 50, le 0 à 100 et la distance jusqu'à 100 km/h.</p>
+          </li>
+          <li data-revele>
+            <span class="methode__etape">04 · Freinage, prévu</span>
+            <p>Élan jusqu'à 103 km/h, puis frein à fond jusqu'à l'arrêt, sur route sèche et mouillée, avec et sans ABS. Écrit dans le script, pas encore lancé.</p>
+          </li>
+          <li data-revele>
+            <span class="methode__etape">05 · Le point de départ</span>
+            <p>Bug trouvé : le jeu fait réapparaître chaque nouvelle voiture là où était la précédente, en bout de piste, face à un mur. Correction : toutes les voitures sont ramenées au premier point de départ de la série. Pas encore retestée.</p>
+          </li>
+        </ol>
+
+        <p class="ethanol__intro" data-revele><strong>Le seul résultat exploitable</strong> : dans la simulation virtuelle, la version d'origine fait le 0 à 100 km/h en 8,97 s (0 à 50 km/h en 3,55 s, 145 m parcourus), sur 3 essais identiques au centième. Pour comparer, la fiche technique annonce 9,1 s. C'est un chiffre du jeu, pas une mesure de la vraie voiture.</p>
+        <div class="graphiques">
+          <figure class="graphique graphique--large" id="simulation-0-100" data-revele>
+            <figcaption><h3>Les 3 essais du 0 à 100 virtuel</h3><p>Vitesse relevée dans le jeu, toutes les 0,25 s. Les trois courbes se superposent : au plus 0,1 km/h d'écart. Les deux paliers sont les passages de rapport : 1<sup>re</sup> vers 2<sup>e</sup> vers 47 km/h, 2<sup>e</sup> vers 3<sup>e</sup> vers 82 km/h, à environ 6 350 tr/min.</p></figcaption>
+            <div class="graphique__zone" data-graphique="eth-simulation"></div>
+          </figure>
+        </div>
+
+        <h4 class="ethanol__sous-titre" data-revele>Le pont des feux, en simulation</h4>
+        <p class="ethanol__intro" data-revele>Mon correctif du module d'éclairage tourne aussi dans le jeu, sans aucune voiture réelle. À chaque image, le jeu envoie l'état des commandes (contact, phares, clignotants) à un programme sur le PC, en local par UDP. Ce programme fait tourner le correctif sur un émulateur du processeur du module (un 68HC11), 100 fois par seconde comme le vrai, puis renvoie les feux à allumer. Le jeu les ajoute aux siens : le pont n'éteint jamais un feu du jeu. Étude publique : <a href="https://github.com/Goldenyan0/e39-lcm3-analyse" target="_blank" rel="noopener">e39-lcm3-analyse</a>.</p>
+        <ul class="simulation__points" data-revele>
+          <li><strong>Limites</strong> : les feux de position du jeu remplacent les angel eyes ; les antibrouillards gauche et droit s'allument ensemble ; le jeu n'a pas de verrouillage centralisé, il se simule par une touche du pont.</li>
+        </ul>
+
+        <div class="replis">
+          <details class="repli repli--section">
+            <summary>Ce qui n'a pas marché</summary>
+            <ul class="repli__liste">
+              <li>Les essais des variantes v0c et v0f sont partis du mauvais endroit, face au mur (le bug du point de départ). Puis le jeu a planté pendant la version complète.</li>
+              <li>Il n'existe donc aucune comparaison valable entre les versions.</li>
+              <li>La route mouillée est une approximation : l'adhérence du sol est multipliée par 0,65, sans eau ni aquaplaning simulés.</li>
+              <li>La masse, les pneus et la boîte sont ceux du mod, pas des valeurs vérifiées sur ma voiture.</li>
+            </ul>
+          </details>
+          <details class="repli repli--section">
+            <summary>Les sources de cette partie</summary>
+            <ul class="repli__liste">
+              <li><a href="https://www.beamng.com/game/" target="_blank" rel="noopener">BeamNG.drive</a>, version 0.40.6, et sa <a href="https://documentation.beamng.com/modding/" target="_blank" rel="noopener">documentation de modding</a>.</li>
+              <li>Le fichier du jeu qui calcule le couple : <code>lua/vehicle/powertrain/combustionEngine.lua</code> (assemblage des tables, puis retrait des frottements).</li>
+              <li>Fourchette des préparateurs : <a href="https://chaoscalibrations.com" target="_blank" rel="noopener">Chaos Calibrations</a> (MS43, stages 1 à 3 : « ~5% increase in whp and 10% increase in wtq ») et la vidéo <a href="https://www.youtube.com/watch?v=VNzBoInUrX4" target="_blank" rel="noopener">CARPROG 77 sur le M54 à l'E85</a> (222 à 235 ch au banc).</li>
+              <li>Modèle 3D : mod BMW 5-Series [E39] de Kenemation, auteurs déclarés dans ses fichiers (pabl0154, ARH3K, Diamondback, RifiON).</li>
+              <li>Mes fichiers : <code>generer_moteur_e39.py</code>, <code>essais.py</code>, le module <code>lcmE39Essai</code>, le journal et les CSV des essais (dépôt privé).</li>
+            </ul>
+          </details>
+        </div>
+
         <!-- La suite -->
-        <h3 class="ethanol__titre" id="e85-suite" data-revele><span class="ethanol__num">4.6</span>La suite <span class="ethanol__date">au 25/11/2026</span></h3>
+        <h3 class="ethanol__titre" id="e85-suite" data-revele><span class="ethanol__num">4.7</span>La suite <span class="ethanol__date">au 25/11/2026</span></h3>
         <ol class="methode methode--outils" data-cascade>
           <li data-revele>
             <span class="methode__etape">01 · Rouler à l'E85 légalement</span>

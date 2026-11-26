@@ -1150,6 +1150,21 @@
           .concat(lanc.map(function (l) { return ['Lancement', l[0], '×' + fr(l[1], 2)]; }))]
       });
     }
+
+    // Simulation virtuelle BeamNG.drive du 26/11 : vitesse pendant les 3 essais du 0 à 100 (version d'origine)
+    const z8 = zone('eth-simulation');
+    if (z8 && E.simulation) {
+      const S = E.simulation;
+      const sec = S.t.map(function (t) { return fr(t, 2) + ' s'; });
+      graphiqueCourbes(z8, {
+        series: [{ nom: 'Essai 1', valeurs: S.v1, couleur: 'var(--serie-1)' }, { nom: 'Essai 2', valeurs: S.v2, couleur: 'var(--serie-2)', pointilles: true }, { nom: 'Essai 3', valeurs: S.v3, couleur: 'var(--serie-3)', pointilles: true }],
+        etiquettes: sec, axeX: 'temps depuis le départ',
+        min: 0, max: 120, pas: 20, unite: 'km/h', decimalesValeur: 1, hauteur: 240,
+        seuils: [{ v: 100, texte: '100 km/h à 8,97 s' }],
+        description: 'Vitesse dans la simulation virtuelle pendant les 3 essais du 0 à 100 km/h : courbes superposées à 0,1 km/h près, 50 km/h à 3,55 s, 100 km/h à 8,97 s, deux paliers aux passages de rapport vers 47 et 82 km/h'
+      });
+      tableau(z8, ['Temps', 'Essai 1', 'Essai 2', 'Essai 3'], S.t.map(function (t, i) { return [sec[i], fr(S.v1[i], 1) + ' km/h', fr(S.v2[i], 1) + ' km/h', fr(S.v3[i], 1) + ' km/h']; }));
+    }
   }
 
 
